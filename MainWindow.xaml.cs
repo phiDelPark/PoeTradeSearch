@@ -1279,7 +1279,7 @@ namespace PoeTradeSearch
                     }
 
                     dcItemInfo.Rarity = itemRarity;
-                    dcItemInfo.Category = itemCategory;
+                    dcItemInfo.Category = itemCategory ?? "";
                     dcItemInfo.Count = optionCount;
                     dcItemInfo.Shaper = ckShaper.IsChecked == true;
                     dcItemInfo.Elder = ckElder.IsChecked == true;
@@ -1478,204 +1478,212 @@ namespace PoeTradeSearch
         {
             if (dcItemInfo.Rarity != null && dcItemInfo.Rarity != "")
             {
-                JsonData jsonData = new JsonData();
-                jsonData.Query = new q_Query();
-
-                jsonData.Query.Stats = new q_Stats[0];
-                jsonData.Query.Status.Option = "online";
-                jsonData.Sort.Price = "asc";
-
-                jsonData.Query.Filters.Type_filters.type_filters_filters.Rarity.Option = "any";
-                jsonData.Query.Filters.Type_filters.type_filters_filters.Category.Option = "any";
-
-                jsonData.Query.Filters.Misc_filters.misc_filters_filters.Elder.Option = dcItemInfo.Elder == true ? "true" : "any";
-                jsonData.Query.Filters.Misc_filters.misc_filters_filters.Shaper.Option = dcItemInfo.Shaper == true ? "true" : "any";
-                jsonData.Query.Filters.Misc_filters.misc_filters_filters.Corrupted.Option = dcItemInfo.Vaal == true ? "true" : "any";
-
-                jsonData.Query.Filters.Misc_filters.misc_filters_filters.Quality.Min = 99999;
-                jsonData.Query.Filters.Misc_filters.misc_filters_filters.Quality.Max = 99999;
-                jsonData.Query.Filters.Misc_filters.misc_filters_filters.Ilvl.Min = 99999;
-                jsonData.Query.Filters.Misc_filters.misc_filters_filters.Ilvl.Max = 99999;
-                jsonData.Query.Filters.Misc_filters.misc_filters_filters.Gem_level.Min = 99999;
-                jsonData.Query.Filters.Misc_filters.misc_filters_filters.Gem_level.Max = 99999;
-
-                string category = dcItemInfo.Category != "" ? dcItemInfo.Category.Split('/')[0] : "";
-
-                jsonData.Query.Name = ResStr.ServerLang == 1 ? dcItemInfo.NameEN : dcItemInfo.NameKR;
-                jsonData.Query.Type = ResStr.ServerLang == 1 ? dcItemInfo.TypeEN : dcItemInfo.TypeKR;
-
-                if (itemfilters.Count > 0)
+                try
                 {
-                    jsonData.Query.Stats = new q_Stats[1];
-                    jsonData.Query.Stats[0] = new q_Stats();
-                    jsonData.Query.Stats[0].Type = "and";
-                    jsonData.Query.Stats[0].Filters = new q_Stats_filters[itemfilters.Count];
+                    JsonData jsonData = new JsonData();
+                    jsonData.Query = new q_Query();
 
-                    int idx = 0;
-                    for (int i = 0; i < itemfilters.Count; i++)
+                    jsonData.Query.Stats = new q_Stats[0];
+                    jsonData.Query.Status.Option = "online";
+                    jsonData.Sort.Price = "asc";
+
+                    jsonData.Query.Filters.Type_filters.type_filters_filters.Rarity.Option = "any";
+                    jsonData.Query.Filters.Type_filters.type_filters_filters.Category.Option = "any";
+
+                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Elder.Option = dcItemInfo.Elder == true ? "true" : "any";
+                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Shaper.Option = dcItemInfo.Shaper == true ? "true" : "any";
+                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Corrupted.Option = dcItemInfo.Vaal == true ? "true" : "any";
+
+                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Quality.Min = 99999;
+                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Quality.Max = 99999;
+                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Ilvl.Min = 99999;
+                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Ilvl.Max = 99999;
+                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Gem_level.Min = 99999;
+                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Gem_level.Max = 99999;
+
+                    string category = dcItemInfo.Category != "" ? dcItemInfo.Category.Split('/')[0] : "";
+
+                    jsonData.Query.Name = ResStr.ServerLang == 1 ? dcItemInfo.NameEN : dcItemInfo.NameKR;
+                    jsonData.Query.Type = ResStr.ServerLang == 1 ? dcItemInfo.TypeEN : dcItemInfo.TypeKR;
+
+                    if (itemfilters.Count > 0)
                     {
-                        string input = itemfilters[i].text;
-                        string type = itemfilters[i].type;
+                        jsonData.Query.Stats = new q_Stats[1];
+                        jsonData.Query.Stats[0] = new q_Stats();
+                        jsonData.Query.Stats[0].Type = "and";
+                        jsonData.Query.Stats[0].Filters = new q_Stats_filters[itemfilters.Count];
 
-                        if (input.Trim() != "")
+                        int idx = 0;
+                        for (int i = 0; i < itemfilters.Count; i++)
                         {
-                            FilterData filter = null;
-                            string cateLower = category.ToLower();
+                            string input = itemfilters[i].text;
+                            string type = itemfilters[i].type;
 
-                            int key = ResStr.lParticular.ContainsKey(input) ? ResStr.lParticular[input] : 0;
-
-                            if ((key == 1 && category == "Weapons") || (key == 2 && category == "Armours"))
+                            if (input.Trim() != "")
                             {
-                                filter = filterDatas.Find(x => x.text == input + "(특정)" && x.type == type && x.force == cateLower);
-                                if (filter == null)
-                                    filter = filterDatas.Find(x => x.text == input + "(특정)" && x.type == type);
-                            }
+                                FilterData filter = null;
+                                string cateLower = category.ToLower();
 
-                            if (filter == null)
-                            {
-                                filter = filterDatas.Find(x => x.text == input && x.type == type && x.force == cateLower);
-                                if (filter == null)
-                                    filter = filterDatas.Find(x => x.text == input && x.type == type);
-                            }
+                                int key = ResStr.lParticular.ContainsKey(input) ? ResStr.lParticular[input] : 0;
 
-                            if (filter != null)
-                            {
-                                if (filter.id != null && filter.id.Trim() != "")
+                                if ((key == 1 && category == "Weapons") || (key == 2 && category == "Armours"))
                                 {
-                                    jsonData.Query.Stats[0].Filters[idx] = new q_Stats_filters();
-                                    jsonData.Query.Stats[0].Filters[idx].Value = new q_Min_And_Max();
-                                    jsonData.Query.Stats[0].Filters[idx].Disabled = itemfilters[i].disabled == true;
-                                    jsonData.Query.Stats[0].Filters[idx].Value.Min = itemfilters[i].min;
-                                    jsonData.Query.Stats[0].Filters[idx].Value.Max = itemfilters[i].max;
-                                    jsonData.Query.Stats[0].Filters[idx++].Id = filter.id;
+                                    filter = filterDatas.Find(x => x.text == input + "(특정)" && x.type == type && x.force == cateLower);
+                                    if (filter == null)
+                                        filter = filterDatas.Find(x => x.text == input + "(특정)" && x.type == type);
+                                }
+
+                                if (filter == null)
+                                {
+                                    filter = filterDatas.Find(x => x.text == input && x.type == type && x.force == cateLower);
+                                    if (filter == null)
+                                        filter = filterDatas.Find(x => x.text == input && x.type == type);
+                                }
+
+                                if (filter != null)
+                                {
+                                    if (filter.id != null && filter.id.Trim() != "")
+                                    {
+                                        jsonData.Query.Stats[0].Filters[idx] = new q_Stats_filters();
+                                        jsonData.Query.Stats[0].Filters[idx].Value = new q_Min_And_Max();
+                                        jsonData.Query.Stats[0].Filters[idx].Disabled = itemfilters[i].disabled == true;
+                                        jsonData.Query.Stats[0].Filters[idx].Value.Min = itemfilters[i].min;
+                                        jsonData.Query.Stats[0].Filters[idx].Value.Max = itemfilters[i].max;
+                                        jsonData.Query.Stats[0].Filters[idx++].Id = filter.id;
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                jsonData.Query.Filters.Socket_filters = new q_Socket_filters();
-                jsonData.Query.Filters.Socket_filters.Disabled = false;
-                jsonData.Query.Filters.Socket_filters.socket_filters_filters.Links.Min = 99999;
-                jsonData.Query.Filters.Socket_filters.socket_filters_filters.Links.Max = 99999;
-                jsonData.Query.Filters.Socket_filters.socket_filters_filters.Sockets.Min = 99999;
-                jsonData.Query.Filters.Socket_filters.socket_filters_filters.Sockets.Max = 99999;
+                    jsonData.Query.Filters.Socket_filters = new q_Socket_filters();
+                    jsonData.Query.Filters.Socket_filters.Disabled = false;
+                    jsonData.Query.Filters.Socket_filters.socket_filters_filters.Links.Min = 99999;
+                    jsonData.Query.Filters.Socket_filters.socket_filters_filters.Links.Max = 99999;
+                    jsonData.Query.Filters.Socket_filters.socket_filters_filters.Sockets.Min = 99999;
+                    jsonData.Query.Filters.Socket_filters.socket_filters_filters.Sockets.Max = 99999;
 
-                if (isThread && !ckSocket.Dispatcher.CheckAccess() && dcItemInfo.Link > 4)
-                {
-                    jsonData.Query.Filters.Socket_filters.socket_filters_filters.Links.Min = dcItemInfo.Link;
-                    jsonData.Query.Filters.Socket_filters.socket_filters_filters.Sockets.Min = dcItemInfo.Socket;
-                }
-                else if (ckSocket.Dispatcher.CheckAccess())
-                {
-                    if (ckSocket.IsChecked == true)
+                    if (isThread && !ckSocket.Dispatcher.CheckAccess() && dcItemInfo.Link > 4)
                     {
-                        jsonData.Query.Filters.Socket_filters.socket_filters_filters.Links.Min = StrToDouble(tbLinksMin.Text, 99999);
-                        jsonData.Query.Filters.Socket_filters.socket_filters_filters.Links.Max = StrToDouble(tbLinksMax.Text, 99999);
-                        jsonData.Query.Filters.Socket_filters.socket_filters_filters.Sockets.Min = StrToDouble(tbSocketMin.Text, 99999);
-                        jsonData.Query.Filters.Socket_filters.socket_filters_filters.Sockets.Max = StrToDouble(tbSocketMax.Text, 99999);
+                        jsonData.Query.Filters.Socket_filters.socket_filters_filters.Links.Min = dcItemInfo.Link;
+                        jsonData.Query.Filters.Socket_filters.socket_filters_filters.Sockets.Min = dcItemInfo.Socket;
                     }
-
-                    if (ckQuality.IsChecked == true)
+                    else if (ckSocket.Dispatcher.CheckAccess())
                     {
-                        jsonData.Query.Filters.Misc_filters.misc_filters_filters.Quality.Min = StrToDouble(tbQualityMin.Text, 99999);
-                        jsonData.Query.Filters.Misc_filters.misc_filters_filters.Quality.Max = StrToDouble(tbQualityMax.Text, 99999);
-                    }
-
-                    if (ckLv.IsChecked == true)
-                    {
-                        if (category == "Gems")
+                        if (ckSocket.IsChecked == true)
                         {
-                            jsonData.Query.Filters.Misc_filters.misc_filters_filters.Gem_level.Min = StrToDouble(tbLvMin.Text, 99999);
-                            jsonData.Query.Filters.Misc_filters.misc_filters_filters.Gem_level.Max = StrToDouble(tbLvMax.Text, 99999);
+                            jsonData.Query.Filters.Socket_filters.socket_filters_filters.Links.Min = StrToDouble(tbLinksMin.Text, 99999);
+                            jsonData.Query.Filters.Socket_filters.socket_filters_filters.Links.Max = StrToDouble(tbLinksMax.Text, 99999);
+                            jsonData.Query.Filters.Socket_filters.socket_filters_filters.Sockets.Min = StrToDouble(tbSocketMin.Text, 99999);
+                            jsonData.Query.Filters.Socket_filters.socket_filters_filters.Sockets.Max = StrToDouble(tbSocketMax.Text, 99999);
                         }
-                        else
+
+                        if (ckQuality.IsChecked == true)
                         {
-                            jsonData.Query.Filters.Misc_filters.misc_filters_filters.Ilvl.Min = StrToDouble(tbLvMin.Text, 99999);
-                            jsonData.Query.Filters.Misc_filters.misc_filters_filters.Ilvl.Max = StrToDouble(tbLvMax.Text, 99999);
+                            jsonData.Query.Filters.Misc_filters.misc_filters_filters.Quality.Min = StrToDouble(tbQualityMin.Text, 99999);
+                            jsonData.Query.Filters.Misc_filters.misc_filters_filters.Quality.Max = StrToDouble(tbQualityMax.Text, 99999);
                         }
-                    }
 
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Elder.Option = ckElder.IsChecked == true ? "true" : "any";
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Shaper.Option = ckShaper.IsChecked == true ? "true" : "any";
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Corrupted.Option = ckVaal.IsChecked == true ? "true" : "any";
-                }
-                else
-                {
-                    jsonData.Query.Filters.Socket_filters.Disabled = true;
-                }
-
-                bool byType;
-
-                if (cbName.Dispatcher.CheckAccess() && cbName.Visibility == Visibility.Visible)
-                {
-                    byType = cbName.IsChecked != true;
-                }
-                else
-                {
-                    byType = configData.options.by_type && (category == "Weapons" || category == "Quivers" || category == "Armours" || category == "Amulets" || category == "Rings" || category == "Belts");
-                }
-
-                if (ResStr.lCategory.ContainsKey(category))
-                {
-                    string option = ResStr.lCategory[category];
-
-                    if (byType && category == "Weapons" || category == "Armours")
-                    {
-                        string[] tmp = dcItemInfo.Category.Split('/');
-
-                        if (tmp.Length > 2)
+                        if (ckLv.IsChecked == true)
                         {
-                            string tmp2 = tmp[category == "Armours" ? 1 : 2].ToLower();
-
-                            if (category == "Weapons")
+                            if (category == "Gems")
                             {
-                                tmp2 = tmp2.Replace("hand", "");
-                                tmp2 = tmp2.Remove(tmp2.Length - 1);
+                                jsonData.Query.Filters.Misc_filters.misc_filters_filters.Gem_level.Min = StrToDouble(tbLvMin.Text, 99999);
+                                jsonData.Query.Filters.Misc_filters.misc_filters_filters.Gem_level.Max = StrToDouble(tbLvMax.Text, 99999);
                             }
-                            else if (category == "Armours" && (tmp2 == "shields" || tmp2 == "helmets" || tmp2 == "bodyarmours"))
+                            else
                             {
-                                if (tmp2 == "bodyarmours")
-                                    tmp2 = "chest";
-                                else
+                                jsonData.Query.Filters.Misc_filters.misc_filters_filters.Ilvl.Min = StrToDouble(tbLvMin.Text, 99999);
+                                jsonData.Query.Filters.Misc_filters.misc_filters_filters.Ilvl.Max = StrToDouble(tbLvMax.Text, 99999);
+                            }
+                        }
+
+                        jsonData.Query.Filters.Misc_filters.misc_filters_filters.Elder.Option = ckElder.IsChecked == true ? "true" : "any";
+                        jsonData.Query.Filters.Misc_filters.misc_filters_filters.Shaper.Option = ckShaper.IsChecked == true ? "true" : "any";
+                        jsonData.Query.Filters.Misc_filters.misc_filters_filters.Corrupted.Option = ckVaal.IsChecked == true ? "true" : "any";
+                    }
+                    else
+                    {
+                        jsonData.Query.Filters.Socket_filters.Disabled = true;
+                    }
+
+                    bool byType;
+
+                    if (cbName.Dispatcher.CheckAccess() && cbName.Visibility == Visibility.Visible)
+                    {
+                        byType = cbName.IsChecked != true;
+                    }
+                    else
+                    {
+                        byType = configData.options.by_type && (category == "Weapons" || category == "Quivers" || category == "Armours" || category == "Amulets" || category == "Rings" || category == "Belts");
+                    }
+
+                    if (ResStr.lCategory.ContainsKey(category))
+                    {
+                        string option = ResStr.lCategory[category];
+
+                        if (byType && category == "Weapons" || category == "Armours")
+                        {
+                            string[] tmp = dcItemInfo.Category.Split('/');
+
+                            if (tmp.Length > 2)
+                            {
+                                string tmp2 = tmp[category == "Armours" ? 1 : 2].ToLower();
+
+                                if (category == "Weapons")
+                                {
+                                    tmp2 = tmp2.Replace("hand", "");
                                     tmp2 = tmp2.Remove(tmp2.Length - 1);
-                            }
+                                }
+                                else if (category == "Armours" && (tmp2 == "shields" || tmp2 == "helmets" || tmp2 == "bodyarmours"))
+                                {
+                                    if (tmp2 == "bodyarmours")
+                                        tmp2 = "chest";
+                                    else
+                                        tmp2 = tmp2.Remove(tmp2.Length - 1);
+                                }
 
-                            option += "." + tmp2;
+                                option += "." + tmp2;
+                            }
                         }
+
+                        jsonData.Query.Filters.Type_filters.type_filters_filters.Category.Option = option;
                     }
 
-                    jsonData.Query.Filters.Type_filters.type_filters_filters.Category.Option = option;
-                }
+                    jsonData.Query.Filters.Type_filters.type_filters_filters.Rarity.Option = "any";
+                    if (ResStr.lRarity.ContainsKey(dcItemInfo.Rarity))
+                    {
+                        jsonData.Query.Filters.Type_filters.type_filters_filters.Rarity.Option = ResStr.lRarity[dcItemInfo.Rarity];
+                    }
 
-                jsonData.Query.Filters.Type_filters.type_filters_filters.Rarity.Option = "any";
-                if (ResStr.lRarity.ContainsKey(dcItemInfo.Rarity))
+                    string sEntity = Json.Serialize<JsonData>(jsonData);
+
+                    if (dcItemInfo.Rarity != ResStr.Unique || jsonData.Query.Name == "")
+                    {
+                        sEntity = sEntity.Replace("\"name\":\"" + jsonData.Query.Name + "\",", "");
+
+                        if (category == "Jewels" || byType)
+                            sEntity = sEntity.Replace("\"type\":\"" + jsonData.Query.Type + "\",", "");
+                        else if (category == "Prophecies")
+                            sEntity = sEntity.Replace("\"type\":\"" + jsonData.Query.Type + "\",", "\"name\":\"" + jsonData.Query.Type + "\",");
+                    }
+
+                    int week = configData.options.week_before;
+                    // 컨트랙트 만들기 기찮아서 나중에 함 임시로 Replace 사용
+                    sEntity = sEntity.Replace("\"trade_filters\":null,", isThread ? "\"trade_filters\":{\"disabled\":false,\"filters\":{\"indexed\":{\"option\":\"" + week + "week\"}}}," : "");
+                    sEntity = sEntity.Replace("{\"max\":99999,\"min\":99999}", "{}");
+                    sEntity = sEntity.Replace("{\"max\":99999,", "{");
+                    sEntity = sEntity.Replace(",\"min\":99999}", "}");
+
+                    sEntity = Regex.Replace(sEntity, "\"(rarity|category|corrupted|elder_item|shaper_item)\":{\"option\":\"any\"},?", "");
+
+                    return sEntity.Replace("},}", "}}");
+                }
+                catch (Exception ex)
                 {
-                    jsonData.Query.Filters.Type_filters.type_filters_filters.Rarity.Option = ResStr.lRarity[dcItemInfo.Rarity];
+                    Console.WriteLine(ex.Message);
+                    return "";
                 }
-
-                string sEntity = Json.Serialize<JsonData>(jsonData);
-
-                if (dcItemInfo.Rarity != ResStr.Unique || jsonData.Query.Name == "")
-                {
-                    sEntity = sEntity.Replace("\"name\":\"" + jsonData.Query.Name + "\",", "");
-
-                    if (category == "Jewels" || byType)
-                        sEntity = sEntity.Replace("\"type\":\"" + jsonData.Query.Type + "\",", "");
-                    else if (category == "Prophecies")
-                        sEntity = sEntity.Replace("\"type\":\"" + jsonData.Query.Type + "\",", "\"name\":\"" + jsonData.Query.Type + "\",");
-                }
-
-                int week = configData.options.week_before;
-                // 컨트랙트 만들기 기찮아서 나중에 함 임시로 Replace 사용
-                sEntity = sEntity.Replace("\"trade_filters\":null,", isThread ? "\"trade_filters\":{\"disabled\":false,\"filters\":{\"indexed\":{\"option\":\"" + week + "week\"}}}," : "");
-                sEntity = sEntity.Replace("{\"max\":99999,\"min\":99999}", "{}");
-                sEntity = sEntity.Replace("{\"max\":99999,", "{");
-                sEntity = sEntity.Replace(",\"min\":99999}", "}");
-
-                sEntity = Regex.Replace(sEntity, "\"(rarity|category|corrupted|elder_item|shaper_item)\":{\"option\":\"any\"},?", "");
-
-                return sEntity.Replace("},}", "}}");
             }
             else
             {
