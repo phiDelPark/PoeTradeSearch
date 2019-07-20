@@ -27,21 +27,21 @@
 
       "options":{
         "league":"Standard",    // 현재 리그 ["Legion", "Hardcore Legion", "Standard", "Hardcore"]
-        "server":"kr",             // 기본 검색 서버 ["kr", "en"]
+        "server":"kr",          // 기본 검색 서버 ["kr", "en"]
         "week_before":1,        // 1~2 주일 전 물품만 시세 조회 [1, 2]
-        "by_type":true,          // 기본 검색시 아이템 유형으로 검색 [true, false]
+        "by_type":true,         // 기본 검색시 아이템 유형으로 검색 [true, false]
         "ctrl_wheel":true       // 창고를 Ctrl+Wheel 로 이동 가능하게 할지 [true, false]
       },
        "shortcuts":[  
             {"keycode":113,"value":"{Enter}/hideout{Enter}"},    // F2. 은신처 ("{Enter}채팅명령어{Enter}")
-            {"keycode":115,"value":"{Enter}/exit{Enter}"},         // F4. 나가기
-            {"keycode":116,"value":"{Enter}/remaining{Enter}"}, // F5. 남은 몬스터
-            {"keycode":120,"value":"사원보상표.jpg"},            // F9. 데이터 폴더의 이미지 출력 (단, .jpg 만 가능)
-            {"keycode":121,"value":"신디보상표.jpg"},            // 주로 이렇게 POE 정보를 이미지로 만들어 사용
-            {"keycode":122,"value":"{Pause}"},                     // F11. 값이 "{Pause}"면 일시 중지 키로 사용됨
-            {"keycode":27,"value":"{Close}"},                       // ESC. 값이 "{Close}"면 창 닫기 키로 사용됨
+            {"keycode":115,"value":"{Enter}/exit{Enter}"},       // F4. 나가기
+            {"keycode":116,"value":"{Enter}/remaining{Enter}"},  // F5. 남은 몬스터
+            {"keycode":120,"value":"사원보상표.jpg"},             // F9. 데이터 폴더의 이미지 출력 (단, .jpg 만 가능)
+            {"keycode":121,"value":"신디보상표.jpg"},             // 주로 이렇게 POE 정보를 이미지로 만들어 사용
+            {"keycode":122,"value":"{Pause}"},                   // F11. 값이 "{Pause}"면 일시 중지 키로 사용됨
+            {"keycode":27,"value":"{Close}"},                    // ESC. 값이 "{Close}"면 창 닫기 키로 사용됨
             {"keycode":87,"ctrl":true,"value":"{Link}https//poe.ninja/{Link}" // Ctrl+W. 링크 열기 ("{Link}URL{Link}")
-            {"keycode":0,"ctrl":true,"value":"{Run}"}               // 작동키 변경, 값이 "{Run}"면 Ctrl+설정키로 작동
+            {"keycode":0,"ctrl":true,"value":"{Run}"}            // 작동키 변경, 값이 "{Run}"면 Ctrl+설정키로 작동
         ],
       "checked":[  ]            // 기본적으로 자동 선택될 옵션들
 
