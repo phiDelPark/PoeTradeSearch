@@ -161,7 +161,7 @@ namespace PoeTradeSearch
 
         private static bool bIsHotKey = false;
         public static bool bIsPause = false;
-        //public static bool bIsDebug = false;        
+        //public static bool bIsDebug = false;
 
         public MainWindow()
         {
@@ -432,7 +432,7 @@ namespace PoeTradeSearch
             {
                 InstallRegisterHotKey();
             }
-            else if(bIsHotKey && !chk)
+            else if (bIsHotKey && !chk)
             {
                 RemoveRegisterHotKey();
             }
@@ -492,13 +492,13 @@ namespace PoeTradeSearch
         {
             if (msg == WM_CLIPBOARDUPDATE)
             {
-                IDataObject iData = Clipboard.GetDataObject();
+                IntPtr findHwnd = FindWindow(ResStr.PoeClass, ResStr.PoeCaption);
 
-                if (iData.GetDataPresent(DataFormats.UnicodeText) || iData.GetDataPresent(DataFormats.Text))
+                if (!bIsPause && GetForegroundWindow().Equals(findHwnd))
                 {
-                    IntPtr findHwnd = FindWindow(ResStr.PoeClass, ResStr.PoeCaption);
+                    IDataObject iData = Clipboard.GetDataObject();
 
-                    if (!bIsPause && GetForegroundWindow().Equals(findHwnd))
+                    if (iData.GetDataPresent(DataFormats.UnicodeText) || iData.GetDataPresent(DataFormats.Text))
                     {
                         ShowWindow(GetClipText(iData.GetDataPresent(DataFormats.UnicodeText) ? DataFormats.UnicodeText : DataFormats.Text));
                     }
@@ -665,16 +665,7 @@ namespace PoeTradeSearch
 
         private string GetClipText(string dataFormats)
         {
-            for (int i = 0; i < 10; i++)
-            {
-                try
-                {
-                    return (string)Clipboard.GetData(dataFormats);
-                }
-                catch { }
-                Thread.Sleep(10);
-            }
-            return "";
+            return (string)Clipboard.GetData(dataFormats);
         }
 
         private void SetClipText(string dataFormats, string text)
@@ -1808,9 +1799,6 @@ namespace PoeTradeSearch
         {
             e.Cancel = !bIsClose;
             this.Visibility = Visibility.Hidden;
-
-            if (bIsAdministrator && e.Cancel == true)
-                InstallRegisterHotKey();
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -1819,10 +1807,13 @@ namespace PoeTradeSearch
                 RemoveClipboardFormatListener(mainHwnd);
 
             if (bIsAdministrator)
-                RemoveRegisterHotKey();
+            {
+                if (bIsHotKey)
+                    RemoveRegisterHotKey();
 
-            if (bIsAdministrator && configData != null && configData.options.ctrl_wheel)
-                MouseHook.Stop();
+                if (configData != null && configData.options.ctrl_wheel)
+                    MouseHook.Stop();
+            }
 
             TrayIcon.Visible = false;
             TrayIcon.Dispose();
@@ -1830,28 +1821,17 @@ namespace PoeTradeSearch
 
         private void InstallRegisterHotKey()
         {
-            if (bIsHotKey)
-                RemoveRegisterHotKey();
-
-            if (GetForegroundWindow().Equals(FindWindow(ResStr.PoeClass, ResStr.PoeCaption)))
-            {
-                // 0x0 : 조합키 없이 사용, 0x1: ALT, 0x2: Ctrl, 0x3: Shift
-                foreach (int code in HotKeys)
-                    RegisterHotKey(mainHwnd, Math.Abs(code) + 10000, code < 0 ? 0x2 : 0x0, Math.Abs(code));
-
-                bIsHotKey = true;
-            }
+            bIsHotKey = true;
+            // 0x0 : 조합키 없이 사용, 0x1: ALT, 0x2: Ctrl, 0x3: Shift
+            foreach (int code in HotKeys)
+                RegisterHotKey(mainHwnd, Math.Abs(code) + 10000, code < 0 ? 0x2 : 0x0, Math.Abs(code));
         }
 
         private void RemoveRegisterHotKey()
         {
-            if (bIsHotKey)
-            {
-                foreach (int code in HotKeys)
-                    UnregisterHotKey(mainHwnd, Math.Abs(code) + 10000);
-
-                bIsHotKey = false;
-            }
+            bIsHotKey = false;
+            foreach (int code in HotKeys)
+                UnregisterHotKey(mainHwnd, Math.Abs(code) + 10000);
         }
 
         private void Logs(string s)
@@ -1914,19 +1894,21 @@ namespace PoeTradeSearch
 
         private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (nCode >= 0 && MouseMessages.WM_MOUSEWHEEL == (MouseMessages)wParam)
+            if (nCode >= 0)
             {
-                bool chkPOE = MainWindow.GetForegroundWindow().Equals(MainWindow.FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
-                if (chkPOE && (GetKeyState(VK_CONTROL) & 0x100) != 0)
+                if (MouseMessages.WM_MOUSEWHEEL == (MouseMessages)wParam && (GetKeyState(VK_CONTROL) & 0x100) != 0)
                 {
-                    MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
-                    int GET_WHEEL_DELTA_WPARAM = (short)(hookStruct.mouseData >> 0x10); // HIWORD
-                    MouseEventArgs mouseEventArgs = new MouseEventArgs();
-                    mouseEventArgs.zDelta = GET_WHEEL_DELTA_WPARAM;
-                    mouseEventArgs.x = hookStruct.pt.x;
-                    mouseEventArgs.y = hookStruct.pt.y;
-                    MouseAction(null, mouseEventArgs);
-                    return new IntPtr(1);
+                    if (MainWindow.GetForegroundWindow().Equals(MainWindow.FindWindow(ResStr.PoeClass, ResStr.PoeCaption)))
+                    {
+                        MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
+                        int GET_WHEEL_DELTA_WPARAM = (short)(hookStruct.mouseData >> 0x10); // HIWORD
+                        MouseEventArgs mouseEventArgs = new MouseEventArgs();
+                        mouseEventArgs.zDelta = GET_WHEEL_DELTA_WPARAM;
+                        mouseEventArgs.x = hookStruct.pt.x;
+                        mouseEventArgs.y = hookStruct.pt.y;
+                        MouseAction(null, mouseEventArgs);
+                        return new IntPtr(1);
+                    }
                 }
             }
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
