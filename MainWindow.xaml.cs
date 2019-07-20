@@ -1777,7 +1777,7 @@ namespace PoeTradeSearch
         {
             MessageBox.Show(Application.Current.MainWindow,
                 "버전: " + GetFileVersion() + '\n' +
-                "만든이: 파이델 (is4975@naver.com)" + '\n' + '\n' + '\n' +
+                "https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' + '\n' +
                 "브라우저는 윈도우 기본 브라우저를 사용합니다." + '\n' + '\n' +
                 "시세를 클릭하면 현재 옵션으로 다시 검색 합니다." + '\n' +
                 "시세정보) 최소값 ~ 최대값 < 총수 = 많은[수] 1 ~ 2위" + '\n' + '\n' + '\n' +
