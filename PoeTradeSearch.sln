@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29009.5
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoeTradeSearch", "PoeTradeSearch.csproj", "{58398A01-9050-45B4-A168-21DF9DDD6972}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{58398A01-9050-45B4-A168-21DF9DDD6972}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58398A01-9050-45B4-A168-21DF9DDD6972}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58398A01-9050-45B4-A168-21DF9DDD6972}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58398A01-9050-45B4-A168-21DF9DDD6972}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9790D4FE-B884-45D1-B6FF-62EAF2895072}
+	EndGlobalSection
+EndGlobal

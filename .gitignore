@@ -1,0 +1,10 @@
+.vs
+bin/
+obj/
+ 
+# OS generated files #
+######################
+.DS_Store*
+ehthumbs?
+Icons/
+Thumbs.db
