@@ -163,6 +163,8 @@ namespace PoeTradeSearch
         public static bool bIsPause = false;
         //public static bool bIsDebug = false;
 
+        public static DateTime MouseHookCallbackTime;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -407,6 +409,7 @@ namespace PoeTradeSearch
 
                 if (configData.options.ctrl_wheel)
                 {
+                    MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
                     MouseHook.MouseAction += new EventHandler(MouseEvent);
                     MouseHook.Start();
                 }
@@ -435,6 +438,13 @@ namespace PoeTradeSearch
             else if (bIsHotKey && !chk)
             {
                 RemoveRegisterHotKey();
+            }
+
+            if (chk && !bIsPause && configData.options.ctrl_wheel)
+            {
+                TimeSpan dateDiff = Convert.ToDateTime(DateTime.Now) - MouseHookCallbackTime;
+                if (dateDiff.Ticks > 3000000000) // 5분간 마우스 움직임이 없으면 훜이 풀렸을 수 있어 다시...
+                    MouseHook.Start();
             }
         }
 
@@ -496,11 +506,14 @@ namespace PoeTradeSearch
 
                 if (!bIsPause && GetForegroundWindow().Equals(findHwnd))
                 {
-                    IDataObject iData = Clipboard.GetDataObject();
-
-                    if (iData.GetDataPresent(DataFormats.UnicodeText) || iData.GetDataPresent(DataFormats.Text))
+                    try
                     {
-                        ShowWindow(GetClipText(iData.GetDataPresent(DataFormats.UnicodeText) ? DataFormats.UnicodeText : DataFormats.Text));
+                        if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
+                            ShowWindow(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText) ? TextDataFormat.UnicodeText : TextDataFormat.Text));
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
                     }
                 }
             }
@@ -566,12 +579,14 @@ namespace PoeTradeSearch
                                     if (!bIsPause)
                                     {
                                         Thread.Sleep(300);
-
-                                        IDataObject iData = Clipboard.GetDataObject();
-
-                                        if (iData.GetDataPresent(DataFormats.UnicodeText) || iData.GetDataPresent(DataFormats.Text))
+                                        try
                                         {
-                                            ShowWindow(GetClipText(iData.GetDataPresent(DataFormats.UnicodeText) ? DataFormats.UnicodeText : DataFormats.Text));
+                                            if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
+                                                ShowWindow(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText) ? TextDataFormat.UnicodeText : TextDataFormat.Text));
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Console.WriteLine(ex.Message);
                                         }
                                     }
                                 }
@@ -657,24 +672,24 @@ namespace PoeTradeSearch
 
         protected void ClipThreadWorker(string text)
         {
-            var clipboardThread = new Thread(() => SetClipText(DataFormats.UnicodeText, text));
+            var clipboardThread = new Thread(() => SetClipText(text, TextDataFormat.UnicodeText));
             clipboardThread.SetApartmentState(ApartmentState.STA);
             clipboardThread.IsBackground = false;
             clipboardThread.Start();
         }
 
-        private string GetClipText(string dataFormats)
+        private string GetClipText(TextDataFormat textDataFormat)
         {
-            return (string)Clipboard.GetData(dataFormats);
+            return Clipboard.GetText(textDataFormat);
         }
 
-        private void SetClipText(string dataFormats, string text)
+        private void SetClipText(string text, TextDataFormat textDataFormat)
         {
             for (int i = 0; i < 10; i++)
             {
                 try
                 {
-                    Clipboard.SetData(dataFormats, (Object)text);
+                    Clipboard.SetText(text, textDataFormat);
                     return;
                 }
                 catch { }
@@ -1784,7 +1799,7 @@ namespace PoeTradeSearch
                 "  \"shortcuts\":[ 단축키 설정들 (Config.txt 참고) ]" + '\n' +
                 "  \"checked\":[ 자동 선택될 옵션들 (Config.txt 참고) ]" + '\n' +
                 "}" + '\n' + '\n' +
-                "설정된 단축키나 창고이동은 관리자 권한으로 실행해야 합니다.",
+                "설정된 단축키나 창고 이동은 관리자 권한으로 실행해야 합니다.",
                 "POE 거래소 검색"
                 );
         }
@@ -1900,16 +1915,22 @@ namespace PoeTradeSearch
                 {
                     if (MainWindow.GetForegroundWindow().Equals(MainWindow.FindWindow(ResStr.PoeClass, ResStr.PoeCaption)))
                     {
-                        MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
-                        int GET_WHEEL_DELTA_WPARAM = (short)(hookStruct.mouseData >> 0x10); // HIWORD
-                        MouseEventArgs mouseEventArgs = new MouseEventArgs();
-                        mouseEventArgs.zDelta = GET_WHEEL_DELTA_WPARAM;
-                        mouseEventArgs.x = hookStruct.pt.x;
-                        mouseEventArgs.y = hookStruct.pt.y;
-                        MouseAction(null, mouseEventArgs);
+                        try
+                        {
+                            MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
+                            int GET_WHEEL_DELTA_WPARAM = (short)(hookStruct.mouseData >> 0x10); // HIWORD
+                            MouseEventArgs mouseEventArgs = new MouseEventArgs();
+                            mouseEventArgs.zDelta = GET_WHEEL_DELTA_WPARAM;
+                            mouseEventArgs.x = hookStruct.pt.x;
+                            mouseEventArgs.y = hookStruct.pt.y;
+                            MouseAction(null, mouseEventArgs);
+                        }
+                        catch { }
                         return new IntPtr(1);
                     }
                 }
+
+                MainWindow.MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
             }
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
