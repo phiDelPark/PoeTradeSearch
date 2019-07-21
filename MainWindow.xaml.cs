@@ -104,10 +104,9 @@ namespace PoeTradeSearch
             public string Category { get; set; }
             public bool Elder { get; set; }
             public bool Shaper { get; set; }
-            public bool Vaal { get; set; }
+            public bool Corrupt { get; set; }
             public int Socket { get; set; }
             public int Link { get; set; }
-            public int Count { get; set; }
         }
 
         [DataContract]
@@ -713,10 +712,45 @@ namespace PoeTradeSearch
             }
         }
 
+        private void ResetControls()
+        {
+            tbLinksMin.Text = "";
+            tbSocketMin.Text = "";
+            tbLinksMax.Text = "";
+            tbSocketMax.Text = "";
+            tbLvMin.Text = "";
+            tbLvMax.Text = "";
+            tbQualityMin.Text = "";
+            tbQualityMax.Text = "";
+
+            cbAiiCheck.IsChecked = false;
+            ckLv.IsChecked = false;
+            ckQuality.IsChecked = false;
+            ckSocket.IsChecked = false;
+            ckElder.IsChecked = false;
+            ckShaper.IsChecked = false;
+            ckCorrupt.IsChecked = false;
+            ckCorrupt.FontWeight = FontWeights.Normal;
+            ckCorrupt.Foreground = System.Windows.SystemColors.WindowTextBrush;
+
+            lbDPS.Content = "옵션";
+
+            for (int i = 0; i < 10; i++)
+            {
+                ((ComboBox)this.FindName("cbOpt" + i)).Items.Clear();
+                ((TextBox)this.FindName("tbOpt" + i)).Text = "";
+                ((TextBox)this.FindName("tbOpt" + i + "_0")).Text = "";
+                ((TextBox)this.FindName("tbOpt" + i + "_1")).Text = "";
+                ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
+                ((TextBox)this.FindName("tbOpt" + i)).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
+                ((TextBox)this.FindName("tbOpt" + i + "_0")).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
+                ((TextBox)this.FindName("tbOpt" + i + "_1")).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
+                ((CheckBox)this.FindName("tbOpt" + i + "_2")).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
+            }
+        }
+
         private void ShowWindow(string sText)
         {
-            int optionCount = 0;
-
             string itemName = "";
             string itemType = "";
             string itemRarity = "";
@@ -726,170 +760,197 @@ namespace PoeTradeSearch
             {
                 string[] asData = (sText ?? "").Trim().Split(new string[] { "--------" }, StringSplitOptions.None);
 
-                if (asData.Length > 0 && asData[0].Length > 6 && asData[0].Substring(0, 5) == ResStr.Rarity + ": ")
+                if (asData.Length > 1 && asData[0].Length > 6 && asData[0].Substring(0, 5) == ResStr.Rarity + ": ")
                 {
                     dcItemInfo = new ItemBaseInfo();
+                    ResetControls();
 
-                    tbLinksMin.Text = "";
-                    tbSocketMin.Text = "";
-                    tbLinksMax.Text = "";
-                    tbSocketMax.Text = "";
-                    tbLvMin.Text = "";
-                    tbLvMax.Text = "";
-                    tbQualityMin.Text = "";
-                    tbQualityMax.Text = "";
+                    string[] asOpt = asData[0].Trim().Split(new string[] { "\r\n" }, StringSplitOptions.None);
 
-                    cbAiiCheck.IsChecked = false;
-                    ckLv.IsChecked = false;
-                    ckQuality.IsChecked = false;
-                    ckSocket.IsChecked = false;
-                    ckElder.IsChecked = false;
-                    ckShaper.IsChecked = false;
-                    ckVaal.IsChecked = false;
-                    ckVaal.FontWeight = FontWeights.Normal;
-                    ckVaal.Foreground = System.Windows.SystemColors.WindowTextBrush;
+                    itemRarity = asOpt[0].Split(':')[1].Trim();
+                    itemName = Regex.Replace(asOpt[1] ?? "", @"<<set:[A-Z]+>>", "");
+                    itemType = asOpt.Length > 2 && asOpt[2] != "" ? asOpt[2] : itemName;
+                    if (asOpt.Length == 2) itemName = "";
 
-                    ckSocket.Tag = false;
-                    ckElder.Tag = false;
-                    ckShaper.Tag = false;
-                    ckVaal.Tag = false;
+                    bool isFlask = false, isProphecy = false, isMapFragments = false;
 
-                    lbDPS.Content = "옵션";
+                    int k = 0, baki = 0, notImpCnt = 0;
+                    double attackSpeedIncr = 0;
+                    double PhysicalDamageIncr = 0;
+                    List<Itemfilter> itemfilters = new List<Itemfilter>();
 
-                    for (int i = 0; i < 10; i++)
+                    Dictionary<string, string> lItemOption = new Dictionary<string, string>()
                     {
-                        ((ComboBox)this.FindName("cbOpt" + i)).Items.Clear();
-                        ((TextBox)this.FindName("tbOpt" + i)).Text = "";
-                        ((TextBox)this.FindName("tbOpt" + i + "_0")).Text = "";
-                        ((TextBox)this.FindName("tbOpt" + i + "_1")).Text = "";
-                        ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
-                        ((TextBox)this.FindName("tbOpt" + i)).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
-                        ((TextBox)this.FindName("tbOpt" + i + "_0")).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
-                        ((TextBox)this.FindName("tbOpt" + i + "_1")).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
-                        ((CheckBox)this.FindName("tbOpt" + i + "_2")).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
-                    }
-                    string quality = "", level = "";
-                    int iStartOptPos = 0;
-                    bool isUnIdentify = false, isCurrency = false, isDivinationCard = false, isProphecy = false, isFlask = false;
-                    bool isMap = false, isMapFragment = false, isCharm = false, isQuestItems = false;
+                        { ResStr.Quality, "" }, { ResStr.Lv, "" }, { ResStr.ItemLv, "" }, { ResStr.CharmLv, "" }, { ResStr.MaTier, "" }, { ResStr.Socket, "" },
+                        { ResStr.PhysicalDamage, "" }, { ResStr.ElementalDamage, "" }, { ResStr.ChaosDamage, "" }, { ResStr.AttacksPerSecond, "" },
+                        { ResStr.Shaper, "" }, { ResStr.Elder, "" }, { ResStr.Corrupt, "" }, { ResStr.Unidentify, "" }
+                    };
 
-                    for (int i = 0; i < asData.Length; i++)
+                    for (int i = 1; i < asData.Length; i++)
                     {
-                        string[] asOpt = asData[i].Trim().Split(new string[] { "\r\n" }, StringSplitOptions.None);
-                        string[] asTmp = asOpt[0].Split(':');
+                        asOpt = asData[i].Trim().Split(new string[] { "\r\n" }, StringSplitOptions.None);
 
-                        if (asTmp.Length > 1)
+                        for (int j = 0; j < asOpt.Length; j++)
                         {
-                            if (asTmp[0] == ResStr.Rarity)
-                            {
-                                itemRarity = asTmp[1].Trim();
+                            string[] asTmp = asOpt[j].Split(':');
 
-                                if (asOpt.Length > 2)
+                            if (lItemOption.ContainsKey(asTmp[0]))
+                            {
+                                if (lItemOption[asTmp[0]] == "")
+                                    lItemOption[asTmp[0]] = asTmp.Length > 1 ? asTmp[1] : "_TRUE_";
+                            }
+                            else
+                            {
+                                if (!isFlask && asTmp[0].IndexOf(ResStr.ChkFlask) == 0)
+                                    isFlask = true;
+                                else if (!isProphecy && asTmp[0].IndexOf(ResStr.ChkProphecy) == 0)
+                                    isProphecy = true;
+                                else if (!isMapFragments && asTmp[0].IndexOf(ResStr.ChkMapFragment) == 0)
+                                    isMapFragments = true;
+                                else if (lItemOption[ResStr.ItemLv] != "" && k < 10)
                                 {
-                                    itemName = Regex.Replace(asOpt[1], @"<<set:[A-Z]+>>", "");
-                                    itemType = asOpt[2];
-                                }
-                                else
-                                {
-                                    itemName = "";
-                                    itemType = asOpt[1];
-                                }
+                                    bool crafted = asOpt[j].IndexOf("(crafted)") > -1;
+                                    string input = Regex.Replace(asOpt[j], @" \([a-zA-Z]+\)", "");
+                                    input = Regex.Escape(Regex.Replace(input, @"[+-]?[0-9]+\.[0-9]+|[+-]?[0-9]+", "#"));
+                                    input = Regex.Replace(input, @"\\#", "[+-]?([0-9]+\\.[0-9]+|[0-9]+|#)");
+                                    //input = Regex.Replace(input, @"\+#", "(+|)#");
 
-                                if (!isCurrency && itemRarity == ResStr.Currency)
-                                    isCurrency = true;
-                                else if (!isDivinationCard && itemRarity == ResStr.DivinationCard)
-                                    isDivinationCard = true;
-                            }
-                            else if (asTmp[0] == ResStr.Socket)
-                            {
-                                ckSocket.Tag = true;
-                                string socket = asTmp[1].Trim();
-                                int sckcnt = socket.Replace(" ", "-").Split('-').Length;
-                                string[] scklinks = socket.Split(' ');
+                                    Regex rgx;
+                                    FilterData filter;
 
-                                int lnkcnt = 0;
-                                for (int s = 0; s < scklinks.Length; s++)
-                                {
-                                    if (lnkcnt < scklinks[s].Length)
-                                        lnkcnt = scklinks[s].Length;
-                                }
+                                    rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
 
-                                dcItemInfo.Socket = sckcnt;
-                                tbSocketMin.Text = sckcnt.ToString();
-                                dcItemInfo.Link = lnkcnt < 3 ? 0 : lnkcnt - (int)Math.Ceiling((double)lnkcnt / 2) + 1;
-                                tbLinksMin.Text = dcItemInfo.Link > 0 ? dcItemInfo.Link.ToString() : "";
-                                ckSocket.IsChecked = dcItemInfo.Link > 4;
-                            }
-                            else if (asTmp[0] == ResStr.ItemLv)
-                            {
-                                iStartOptPos = i + 1;
-                                level = asTmp[1].Trim();
-                            }
-                            else if (!isCharm && asTmp[0] == ResStr.CharmLv)
-                                isCharm = true;
-                            else if (!isMap && asTmp[0] == ResStr.Map)
-                                isMap = true;
-                            else if (asTmp[0] == ResStr.IQuality)
-                                quality = asTmp[1];
-                        }
-                        else if (asTmp.Length == 1)
-                        {
-                            if (!((bool)ckElder.Tag) && asTmp[0] == ResStr.Elder)
-                            {
-                                ckElder.Tag = true;
-                                ckElder.IsChecked = true;
-                            }
-                            else if (!((bool)ckShaper.Tag) && asTmp[0] == ResStr.Shaper)
-                            {
-                                ckShaper.Tag = true;
-                                ckShaper.IsChecked = true;
-                            }
-                            else if (!((bool)ckVaal.Tag) && asTmp[0] == ResStr.Corrupted)
-                            {
-                                ckVaal.Tag = true;
-                                ckVaal.FontWeight = FontWeights.Bold;
-                                ckVaal.Foreground = System.Windows.Media.Brushes.DarkRed;
-                            }
-                            else if (!isUnIdentify && asTmp[0] == ResStr.Unidentify)
-                                isUnIdentify = true;
-                            else if (!isProphecy && asTmp[0] == ResStr.ChkProphecy)
-                                isProphecy = true;
-                            else if (!isFlask && asTmp[0].IndexOf(ResStr.ChkFlask) == 0)
-                                isFlask = true;
-                            else if (!isMapFragment && asTmp[0].IndexOf(ResStr.ChkMapFragment) == 0)
-                                isMapFragment = true;
-
-                            if (quality == "")
-                            {
-                                if (itemRarity == ResStr.Gem)
-                                {
-                                    if (asOpt[0].IndexOf(ResStr.Vaal + ", ") > -1 || asOpt[0].IndexOf(", " + ResStr.Vaal) > -1)
+                                    foreach (var item in ResStr.lFilterType)
                                     {
-                                        itemType = ResStr.Vaal + " " + itemType;
+                                        filter = filterDatas.Find(x => rgx.IsMatch(x.text) && x.type == item.Value);
+                                        if (filter != null)
+                                            ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(item.Key);
                                     }
 
-                                    for (int t = 0; t < asOpt.Length; t++)
+                                    filter = null;
+                                    int selidx = ((ComboBox)this.FindName("cbOpt" + k)).Items.IndexOf("제작");
+
+                                    if (crafted && selidx > -1)
                                     {
-                                        string[] ttmp = asOpt[t].Split(':');
-                                        if (ttmp.Length > 1)
+                                        ((TextBox)this.FindName("tbOpt" + k)).BorderBrush = System.Windows.Media.Brushes.Blue;
+                                        ((TextBox)this.FindName("tbOpt" + k + "_0")).BorderBrush = System.Windows.Media.Brushes.Blue;
+                                        ((TextBox)this.FindName("tbOpt" + k + "_1")).BorderBrush = System.Windows.Media.Brushes.Blue;
+                                        ((CheckBox)this.FindName("tbOpt" + k + "_2")).BorderBrush = System.Windows.Media.Brushes.Blue;
+
+                                        filter = filterDatas.Find(x => rgx.IsMatch(x.text) && x.type == "crafted");
+                                        ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex = selidx;
+                                    }
+                                    else
+                                    {
+                                        foreach (var item in ResStr.lFilterType)
                                         {
-                                            if (ttmp[0] == ResStr.IQuality)
-                                                quality = ttmp[1];
-                                            else if (ttmp[0] == ResStr.GemLv)
-                                                level = ttmp[1].Trim();
+                                            filter = filterDatas.Find(x => rgx.IsMatch(x.text) && x.type == item.Value);
+                                            if (filter != null)
+                                            {
+                                                selidx = ((ComboBox)this.FindName("cbOpt" + k)).Items.IndexOf(item.Key);
+                                                ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex = selidx;
+                                                break;
+                                            }
                                         }
                                     }
-                                }
-                                else if (asOpt.Length > 1 && asOpt[1].Split(':')[0] == ResStr.IQuality)
-                                {
-                                    quality = asOpt[1].Split(':')[1] ?? "";
+
+                                    if (filter != null)
+                                    {
+                                        if (i != baki)
+                                        {
+                                            baki = i;
+                                            notImpCnt = 0;
+                                        }
+
+                                        ((TextBox)this.FindName("tbOpt" + k)).Text = filter.text;
+
+                                        bool isMin = false, isMax = false;
+                                        int idxMin = 0, idxMax = 1;
+                                        MatchCollection matches = Regex.Matches(filter.text, @"[0-9]+\.[0-9]+|[0-9]+|#");
+                                        for (int t = 0; t < matches.Count; t++)
+                                        {
+                                            if (((Match)matches[t]).Value == "#")
+                                            {
+                                                if (!isMin)
+                                                {
+                                                    isMin = true;
+                                                    idxMin = t;
+                                                }
+                                                else if (!isMax)
+                                                {
+                                                    isMax = true;
+                                                    idxMax = t;
+                                                }
+                                            }
+                                        }
+
+                                        double min, max;
+                                        matches = Regex.Matches(asOpt[j], @"[-]?[0-9]+\.[0-9]+|[-]?[0-9]+");
+
+                                        min = matches.Count > idxMin ? StrToDouble(((Match)matches[idxMin]).Value, 99999) : 99999;
+                                        max = idxMin < idxMax && matches.Count > idxMax ? StrToDouble(((Match)matches[idxMax]).Value, 99999) : 99999;
+
+                                        ((TextBox)this.FindName("tbOpt" + k + "_0")).Text = min == 99999 ? "" : min.ToString();
+                                        ((TextBox)this.FindName("tbOpt" + k + "_1")).Text = max == 99999 ? "" : max.ToString();
+
+                                        if (((TextBox)this.FindName("tbOpt" + k + "_0")).Text.IndexOf("-") == 0 && ((TextBox)this.FindName("tbOpt" + k + "_1")).Text == "")
+                                        {
+                                            ((TextBox)this.FindName("tbOpt" + k + "_1")).Text = ((TextBox)this.FindName("tbOpt" + k + "_0")).Text;
+                                            ((TextBox)this.FindName("tbOpt" + k + "_0")).Text = "";
+                                        }
+
+                                        Itemfilter itemfilter = new Itemfilter
+                                        {
+                                            text = filter.text,
+                                            type = filter.type,
+                                            max = max,
+                                            min = min,
+                                            disabled = true,
+                                            isImplicit = false
+                                        };
+
+                                        itemfilters.Add(itemfilter);
+
+                                        if (filter.text == ResStr.AttackSpeedIncr && min > 0 && min < 999)
+                                        {
+                                            attackSpeedIncr += min;
+                                        }
+                                        else if (filter.text == ResStr.PhysicalDamageIncr && min > 0 && min < 9999)
+                                        {
+                                            PhysicalDamageIncr += min;
+                                        }
+
+                                        k++;
+                                        notImpCnt++;
+                                    }
                                 }
                             }
                         }
                     }
 
-                    tbLvMin.Text = Regex.Replace(level.Trim(), "[^0-9]", "");
-                    tbQualityMin.Text = Regex.Replace(quality.Trim(), "[^0-9]", "");
+                    bool isUnIdentify = lItemOption[ResStr.Unidentify] == "_TRUE_";
+                    bool isMap = lItemOption[ResStr.MaTier] != "";
+                    bool isGem = itemRarity == ResStr.Gem;
+                    bool isCurrency = itemRarity == ResStr.Currency;
+                    bool isDivinationCard = itemRarity == ResStr.DivinationCard;
+
+                    if (isMap || isCurrency) isMapFragments = false;
+                    bool isDetail = isCurrency || isDivinationCard || isProphecy || isMapFragments;
+
+                    if(isGem && lItemOption[ResStr.Corrupt] == "_TRUE_")
+                    {
+                        WordData tmpBaseType = baseTypeDatas.Find(x => x.kr == ResStr.Vaal + " " + itemType);
+                        if (tmpBaseType != null)
+                            itemType = tmpBaseType.kr;
+                    }
+
+                    //Match matchName = null;
+                    Match matchType = null;
+                    if (isMap)
+                    {
+                        matchType = Regex.Match(itemType, @"\([a-zA-Z\s']+\)$");
+                        itemType = Regex.Replace(itemType, @"\([a-zA-Z\s']+\)$", "").Trim();
+                    }
 
                     if ((isUnIdentify || itemRarity == ResStr.Normal) && itemType.Length > 4 && itemType.IndexOf(ResStr.Higher + " ") == 0)
                         itemType = itemType.Substring(3);
@@ -898,46 +959,27 @@ namespace PoeTradeSearch
                         itemType = itemType.Substring(4);
 
                     if (!isUnIdentify && itemRarity == ResStr.Magic)
+                    {
                         itemType = itemType.Split('-')[0].Trim();
 
-                    Match matchName = null;
-                    Match matchType = null;
-
-                    if (isMap || isCurrency)
-                    {
-                        isMapFragment = false;
-                        matchType = Regex.Match(itemType, @"\([a-zA-Z\s']+\)$");
-                        itemType = Regex.Replace(itemType, @"\([a-zA-Z\s']+\)$", "").Trim();
-                    }
-
-                    bool isDetail = isProphecy || isCurrency || isDivinationCard || isMapFragment || isQuestItems;
-
-                    WordData baseType = null;
-
-                    if (isDetail)
-                    {
-                        string tmp = itemType;
-                        baseType = DetailNameDatas.Find(x => x.kr == tmp);
-                        if (baseType != null)
-                            itemCategory = baseType.id;
-                    }
-                    else if (!isUnIdentify && itemRarity == ResStr.Magic)
-                    {
-                        string[] tmp = itemType.Split(' ');
-
-                        if (tmp.Length > 1)
+                        if (!isDetail)
                         {
-                            for (int i = 0; i < tmp.Length - 2; i++)
-                            {
-                                tmp[i] = "";
-                                string tmp2 = string.Join(" ", tmp).Trim();
+                            string[] tmp = itemType.Split(' ');
 
-                                baseType = baseTypeDatas.Find(x => x.kr == tmp2);
-                                if (baseType != null)
+                            if (tmp.Length > 1)
+                            {
+                                for (int i = 0; i < tmp.Length - 2; i++)
                                 {
-                                    itemType = baseType.kr;
-                                    itemCategory = baseType.id;
-                                    break;
+                                    tmp[i] = "";
+                                    string tmp2 = string.Join(" ", tmp).Trim();
+
+                                    WordData tmpBaseType = baseTypeDatas.Find(x => x.kr == tmp2);
+                                    if (tmpBaseType != null)
+                                    {
+                                        itemType = tmpBaseType.kr;
+                                        itemCategory = tmpBaseType.id;
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -945,31 +987,45 @@ namespace PoeTradeSearch
 
                     if (itemCategory == "")
                     {
-                        string tmp = itemType;
-                        baseType = baseTypeDatas.Find(x => x.kr == tmp);
-                        if (baseType != null)
-                            itemCategory = baseType.id;
+                        WordData tmpBaseType = isDetail ? DetailNameDatas.Find(x => x.kr == itemType) : null;
+                        if (tmpBaseType == null)
+                            tmpBaseType = baseTypeDatas.Find(x => x.kr == itemType);
+                        if (tmpBaseType != null)
+                            itemCategory = tmpBaseType.id;
                     }
 
                     string category = itemCategory.Split('/')[0];
-                    List<Itemfilter> itemfilters = new List<Itemfilter>();
+                    bool byType = category == "Weapons" || category == "Quivers" || category == "Armours" || category == "Amulets" || category == "Rings" || category == "Belts";
 
-                    isDetail = isDetail || (!isDetail && (category == "Scarabs" || category == "MapFragments" || category == "Incubations" || category == "Labyrinth"));
+                    dcItemInfo.Rarity = itemRarity;
+                    dcItemInfo.Category = itemCategory;
+
+                    tbLvMin.Text = Regex.Replace(lItemOption[isGem ? ResStr.Lv : ResStr.ItemLv].Trim(), "[^0-9]", "");
+                    tbQualityMin.Text = Regex.Replace(lItemOption[ResStr.Quality].Trim(), "[^0-9]", "");
+
+                    ckShaper.IsChecked = lItemOption[ResStr.Shaper] == "_TRUE_";
+                    ckElder.IsChecked = lItemOption[ResStr.Elder] == "_TRUE_";
+                    ckCorrupt.IsChecked = lItemOption[ResStr.Corrupt] == "_TRUE_";
+                    dcItemInfo.Shaper = ckShaper.IsChecked == true;
+                    dcItemInfo.Elder = ckElder.IsChecked == true;
+                    dcItemInfo.Corrupt = ckCorrupt.IsChecked == true;
+
+                    dcItemInfo.NameKR = itemName;// + (matchName == null ? "" : matchName.Value);
+                    dcItemInfo.TypeKR = itemType + (matchType == null ? "" : matchType.Value);
 
                     WordData wordData;
-
-                    dcItemInfo.NameKR = itemName + (matchName == null ? "" : matchName.Value);
-                    dcItemInfo.TypeKR = itemType + (matchType == null ? "" : matchType.Value);
+                    isDetail = isDetail || (!isDetail && (category == "Gems" || category == "Scarabs" || category == "MapFragments" || category == "Incubations" || category == "Labyrinth"));
 
                     if (isDetail)
                     {
                         dcItemInfo.NameEN = "";
 
-                        if (category == "Essences" || category == "Scarabs" || category == "Incubations" || category == "Labyrinth")
+                        if (category == "Gems" || category == "Essences" || category == "Scarabs" || category == "Incubations" || category == "Labyrinth")
                         {
+                            int i = category == "Gems" ? 3 : 1;
                             wordData = baseTypeDatas.Find(x => x.kr == itemType);
                             dcItemInfo.TypeEN = wordData == null ? itemType : wordData.en;
-                            tkDetail.Text = asData.Length > 2 ? ((category != "Essences" && category != "Incubations" ? asData[1] : "") + asData[2]) : "";
+                            tkDetail.Text = asData.Length > 2 ? ((category != "Essences" && category != "Incubations" ? asData[i] : "") + asData[i + 1]) : "";
                         }
                         else
                         {
@@ -1032,269 +1088,63 @@ namespace PoeTradeSearch
                         dcItemInfo.TypeEN = wordData == null ? itemType : wordData.en;
                     }
 
-                    double attackSpeedIncr = 0;
-                    double PhysicalDamageIncr = 0;
+                    if (ResStr.ServerLang == 1)
+                        lbName.Content = dcItemInfo.NameEN + " " + dcItemInfo.TypeEN;
+                    else
+                        lbName.Content = Regex.Replace(dcItemInfo.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(dcItemInfo.TypeKR, @"\([a-zA-Z\s']+\)$", "");
 
-                    if (!isDetail && !isUnIdentify && iStartOptPos > 1 && asData.Length < 15)
-                    {
-                        int k = 0;
-                        string sOptCnts = "";
-                        iStartOptPos = isCharm ? iStartOptPos + 1 : iStartOptPos;
-
-                        for (int i = iStartOptPos; i < asData.Length; i++)
-                        {
-                            int optCnt = 0;
-                            string[] asOpt = asData[i].Trim().Split(new string[] { "\r\n" }, StringSplitOptions.None);
-
-                            for (int j = 0; j < asOpt.Length; j++)
-                            {
-                                if (k > 9) continue;
-
-                                bool crafted = asOpt[j].IndexOf("(crafted)") > -1;
-                                string input = Regex.Replace(asOpt[j], @" \([a-zA-Z]+\)", "");
-                                input = Regex.Escape(Regex.Replace(input, @"[+-]?[0-9]+\.[0-9]+|[+-]?[0-9]+", "#"));
-                                input = Regex.Replace(input, @"\\#", "[+-]?([0-9]+\\.[0-9]+|[0-9]+|#)");
-                                //input = Regex.Replace(input, @"\+#", "(+|)#");
-
-                                Regex rgx;
-                                FilterData filter;
-
-                                rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
-
-                                foreach (var item in ResStr.lFilterType)
-                                {
-                                    filter = filterDatas.Find(x => rgx.IsMatch(x.text) && x.type == item.Value);
-                                    if (filter != null)
-                                        ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(item.Key);
-                                }
-
-                                filter = null;
-                                int selidx = ((ComboBox)this.FindName("cbOpt" + k)).Items.IndexOf("제작");
-
-                                if (crafted && selidx > -1)
-                                {
-                                    ((TextBox)this.FindName("tbOpt" + k)).BorderBrush = System.Windows.Media.Brushes.Blue;
-                                    ((TextBox)this.FindName("tbOpt" + k + "_0")).BorderBrush = System.Windows.Media.Brushes.Blue;
-                                    ((TextBox)this.FindName("tbOpt" + k + "_1")).BorderBrush = System.Windows.Media.Brushes.Blue;
-                                    ((CheckBox)this.FindName("tbOpt" + k + "_2")).BorderBrush = System.Windows.Media.Brushes.Blue;
-
-                                    filter = filterDatas.Find(x => rgx.IsMatch(x.text) && x.type == "crafted");
-                                    ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex = selidx;
-                                }
-                                else
-                                {
-                                    foreach (var item in ResStr.lFilterType)
-                                    {
-                                        filter = filterDatas.Find(x => rgx.IsMatch(x.text) && x.type == item.Value);
-                                        if (filter != null)
-                                        {
-                                            selidx = ((ComboBox)this.FindName("cbOpt" + k)).Items.IndexOf(item.Key);
-                                            ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex = selidx;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                if (filter != null)
-                                {
-                                    ((TextBox)this.FindName("tbOpt" + k)).Text = filter.text;
-
-                                    bool isMin = false, isMax = false;
-                                    int idxMin = 0, idxMax = 1;
-                                    MatchCollection matches = Regex.Matches(filter.text, @"[0-9]+\.[0-9]+|[0-9]+|#");
-                                    for (int t = 0; t < matches.Count; t++)
-                                    {
-                                        if (((Match)matches[t]).Value == "#")
-                                        {
-                                            if (!isMin)
-                                            {
-                                                isMin = true;
-                                                idxMin = t;
-                                            }
-                                            else if (!isMax)
-                                            {
-                                                isMax = true;
-                                                idxMax = t;
-                                            }
-                                        }
-                                    }
-
-                                    double min, max;
-                                    matches = Regex.Matches(asOpt[j], @"[-]?[0-9]+\.[0-9]+|[-]?[0-9]+");
-
-                                    min = matches.Count > idxMin ? StrToDouble(((Match)matches[idxMin]).Value, 99999) : 99999;
-                                    max = idxMin < idxMax && matches.Count > idxMax ? StrToDouble(((Match)matches[idxMax]).Value, 99999) : 99999;
-
-                                    ((TextBox)this.FindName("tbOpt" + k + "_0")).Text = min == 99999 ? "" : min.ToString();
-                                    ((TextBox)this.FindName("tbOpt" + k + "_1")).Text = max == 99999 ? "" : max.ToString();
-
-                                    if (((TextBox)this.FindName("tbOpt" + k + "_0")).Text.IndexOf("-") == 0 && ((TextBox)this.FindName("tbOpt" + k + "_1")).Text == "")
-                                    {
-                                        ((TextBox)this.FindName("tbOpt" + k + "_1")).Text = ((TextBox)this.FindName("tbOpt" + k + "_0")).Text;
-                                        ((TextBox)this.FindName("tbOpt" + k + "_0")).Text = "";
-                                    }
-
-                                    bool isDisabled = true;
-
-                                    if (category != "" && filter.type != "implicit" && filter.type != "enchant")
-                                    {
-                                        if (configData.Checked.Find(x => x.text == filter.text && x.id.IndexOf(category + "/") > -1) != null)
-                                        {
-                                            ((CheckBox)this.FindName("tbOpt" + k + "_2")).IsChecked = true;
-                                            isDisabled = false;
-                                        }
-                                    }
-
-                                    ((CheckBox)this.FindName("tbOpt" + k + "_2")).Tag = filter.type;
-
-                                    Itemfilter itemfilter = new Itemfilter
-                                    {
-                                        text = filter.text,
-                                        type = filter.type,
-                                        max = max,
-                                        min = min,
-                                        disabled = isDisabled,
-                                        isImplicit = false
-                                    };
-
-                                    itemfilters.Add(itemfilter);
-
-                                    if (filter.text == ResStr.ChkAttackSpeedIncr && min > 0 && min < 999)
-                                    {
-                                        attackSpeedIncr += min;
-                                    }
-                                    else if (filter.text == ResStr.ChkPhysicalDamageIncr && min > 0 && min < 9999)
-                                    {
-                                        PhysicalDamageIncr += min;
-                                    }
-
-                                    k++;
-                                    optCnt++;
-                                }
-                            }
-
-                            if (optCnt > 0)
-                                sOptCnts += optCnt.ToString() + ",";
-                        }
-
-                        int imCnt = 0;
-                        string[] tmp = sOptCnts.TrimEnd(',').Split(',');
-
-                        for (int i = 0; i < tmp.Length - 1; i++)
-                        {
-                            imCnt += int.Parse(tmp[i]);
-                        }
-
-                        for (int j = 0; j < imCnt; j++)
-                        {
-                            ((TextBox)this.FindName("tbOpt" + j)).BorderBrush = System.Windows.Media.Brushes.DarkRed;
-                            ((TextBox)this.FindName("tbOpt" + j + "_0")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
-                            ((TextBox)this.FindName("tbOpt" + j + "_1")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
-                            ((CheckBox)this.FindName("tbOpt" + j + "_2")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
-                            ((CheckBox)this.FindName("tbOpt" + j + "_2")).IsChecked = false;
-
-                            if (j < itemfilters.Count)
-                            {
-                                int selidx = ((ComboBox)this.FindName("cbOpt" + j)).Items.IndexOf("인챈");
-                                if (selidx == -1)
-                                    selidx = ((ComboBox)this.FindName("cbOpt" + j)).Items.IndexOf("고정");
-                                if (selidx == -1)
-                                    selidx = 0;
-
-                                ((ComboBox)this.FindName("cbOpt" + j)).SelectedIndex = selidx;
-                                string tmp2 = (string)((ComboBox)this.FindName("cbOpt" + j)).SelectedValue;
-
-                                if (ResStr.lFilterType.ContainsKey(tmp2 ?? "error"))
-                                {
-                                    itemfilters[j].type = ResStr.lFilterType[tmp2];
-                                }
-
-                                itemfilters[j].isImplicit = true;
-                                itemfilters[j].disabled = true;
-                            }
-                        }
-
-                        optionCount = k;
-                    }
-
-                    if (!isUnIdentify && category == "Weapons" && asData.Length > 2)
-                    {
-                        double PhysicalDPS = 0;
-                        double ElementalDPS = 0;
-                        double ChaosDPS = 0;
-                        double attacksPerSecond = 0;
-
-                        for (int i = 1; i < 3; i++)
-                        {
-                            string[] asOpt = asData[i].Trim().Split(new string[] { "\r\n" }, StringSplitOptions.None);
-
-                            for (int j = 0; j < asOpt.Length; j++)
-                            {
-                                string[] asTmp = asOpt[j].Split(':');
-                                if (asTmp.Length > 1)
-                                {
-                                    if (asTmp[0] == ResStr.PhysicalDamage || asTmp[0] == ResStr.ElementalDamage || asTmp[0] == ResStr.ChaosDamage)
-                                    {
-                                        string[] stmps = Regex.Replace(asTmp[1], @"\([a-zA-Z]+\)", "").Split(',');
-                                        for (int t = 0; t < stmps.Length; t++)
-                                        {
-                                            string[] maidps = (stmps[t] ?? "").Trim().Split('-');
-                                            if (maidps.Length == 2)
-                                            {
-                                                double dps = double.Parse(maidps[0].Trim()) + double.Parse(maidps[1].Trim());
-                                                if (asTmp[0] == ResStr.ElementalDamage)
-                                                    ElementalDPS += dps;
-                                                else if (asTmp[0] == ResStr.ChaosDamage)
-                                                    ChaosDPS += dps;
-                                                else
-                                                    PhysicalDPS += dps;
-                                            }
-                                        }
-                                    }
-                                    else if (asTmp[0] == ResStr.AttacksPerSecond)
-                                    {
-                                        attacksPerSecond = double.Parse(Regex.Replace(asTmp[1], @"\([a-zA-Z]+\)", "").Trim());
-                                    }
-                                }
-                            }
-                        }
-
-                        if (attackSpeedIncr > 0)
-                        {
-                            double baseAttackSpeed = attacksPerSecond / (attackSpeedIncr / 100 + 1);
-                            double modVal = baseAttackSpeed % 0.05;
-                            baseAttackSpeed += modVal > 0.025 ? (0.05 - modVal) : -modVal;
-                            attacksPerSecond = baseAttackSpeed * (attackSpeedIncr / 100 + 1);
-                        }
-
-                        int qualityDps = tbQualityMin.Text == "" ? 0 : int.Parse(tbQualityMin.Text);
-                        if (qualityDps < 20)
-                        {
-                            PhysicalDPS = PhysicalDPS * (PhysicalDamageIncr + 120) / (PhysicalDamageIncr + qualityDps + 100);
-                        }
-
-                        lbDPS.Content = "DPS: P." + Math.Round((PhysicalDPS / 2) * attacksPerSecond, 2).ToString() +
-                                        " + E." + Math.Round((ElementalDPS / 2) * attacksPerSecond, 2).ToString() +
-                                        " = T." + Math.Round(((PhysicalDPS + ElementalDPS + ChaosDPS) / 2) * attacksPerSecond, 2).ToString();
-                    }
-
-                    dcItemInfo.Rarity = itemRarity;
-                    dcItemInfo.Category = itemCategory ?? "";
-                    dcItemInfo.Count = optionCount;
-                    dcItemInfo.Shaper = ckShaper.IsChecked == true;
-                    dcItemInfo.Elder = ckElder.IsChecked == true;
-                    dcItemInfo.Vaal = ckVaal.IsChecked == true;
-
-                    lbName.Content = (ResStr.ServerLang == 1 ? dcItemInfo.NameEN + " " + dcItemInfo.TypeEN : dcItemInfo.NameKR + " " + dcItemInfo.TypeKR).Trim();
                     cbName.Content = lbName.Content;
                     lbRarity.Content = itemRarity;
 
-                    bool byType = category == "Weapons" || category == "Quivers" || category == "Armours" || category == "Amulets" || category == "Rings" || category == "Belts";
                     lbName.Visibility = dcItemInfo.Rarity != ResStr.Unique && byType ? Visibility.Hidden : Visibility.Visible;
                     cbName.Visibility = dcItemInfo.Rarity != ResStr.Unique && byType ? Visibility.Visible : Visibility.Hidden;
                     cbName.IsChecked = !configData.options.by_type;
 
                     bdDetail.Visibility = isDetail ? Visibility.Visible : Visibility.Hidden;
+                    Thickness thickness = bdDetail.Margin;
+                    thickness.Bottom = isGem ? 145 : 91;
+                    bdDetail.Margin = thickness;
+
+                    int ImpCnt = itemfilters.Count - notImpCnt;
+                    for (int i = 0; i < itemfilters.Count; i++)
+                    {
+                        Itemfilter itemfilter = itemfilters[i];
+
+                        if (i < ImpCnt)
+                        {
+                            ((TextBox)this.FindName("tbOpt" + i)).BorderBrush = System.Windows.Media.Brushes.DarkRed;
+                            ((TextBox)this.FindName("tbOpt" + i + "_0")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
+                            ((TextBox)this.FindName("tbOpt" + i + "_1")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
+                            ((CheckBox)this.FindName("tbOpt" + i + "_2")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
+                            ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
+
+                            int selidx = ((ComboBox)this.FindName("cbOpt" + i)).Items.IndexOf("인챈");
+                            if (selidx == -1)
+                                selidx = ((ComboBox)this.FindName("cbOpt" + i)).Items.IndexOf("고정");
+                            if (selidx == -1)
+                                selidx = 0;
+
+                            ((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex = selidx;
+                            string tmp2 = (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue;
+
+                            if (ResStr.lFilterType.ContainsKey(tmp2 ?? "error"))
+                            {
+                                itemfilters[i].type = ResStr.lFilterType[tmp2];
+                            }
+
+                            itemfilters[i].isImplicit = true;
+                            itemfilters[i].disabled = true;
+                        }
+
+                        if (category != "" && itemfilter.type != "implicit" && itemfilter.type != "enchant")
+                        {
+                            if (configData.Checked.Find(x => x.text == itemfilter.text && x.id.IndexOf(category + "/") > -1) != null)
+                            {
+                                ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = true;
+                                itemfilters[i].disabled = false;
+                            }
+                        }
+                    }
 
                     PriceUpdateThreadWorker(itemfilters);
 
@@ -1492,7 +1342,7 @@ namespace PoeTradeSearch
 
                     jsonData.Query.Filters.Misc_filters.misc_filters_filters.Elder.Option = dcItemInfo.Elder == true ? "true" : "any";
                     jsonData.Query.Filters.Misc_filters.misc_filters_filters.Shaper.Option = dcItemInfo.Shaper == true ? "true" : "any";
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Corrupted.Option = dcItemInfo.Vaal == true ? "true" : "any";
+                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Corrupted.Option = dcItemInfo.Corrupt == true ? "true" : "any";
 
                     jsonData.Query.Filters.Misc_filters.misc_filters_filters.Quality.Min = 99999;
                     jsonData.Query.Filters.Misc_filters.misc_filters_filters.Quality.Max = 99999;
@@ -1600,7 +1450,7 @@ namespace PoeTradeSearch
 
                         jsonData.Query.Filters.Misc_filters.misc_filters_filters.Elder.Option = ckElder.IsChecked == true ? "true" : "any";
                         jsonData.Query.Filters.Misc_filters.misc_filters_filters.Shaper.Option = ckShaper.IsChecked == true ? "true" : "any";
-                        jsonData.Query.Filters.Misc_filters.misc_filters_filters.Corrupted.Option = ckVaal.IsChecked == true ? "true" : "any";
+                        jsonData.Query.Filters.Misc_filters.misc_filters_filters.Corrupted.Option = ckCorrupt.IsChecked == true ? "true" : "any";
                     }
                     else
                     {
@@ -1722,16 +1572,16 @@ namespace PoeTradeSearch
         {
             ResStr.ServerLang = 0;
             btnSearch.Content = "거래소에서 찾기 (한글)";
-            lbName.Content = (dcItemInfo.NameKR + " " + dcItemInfo.TypeKR).Trim();
             cbName.Content = lbName.Content;
+            lbName.Content = Regex.Replace(dcItemInfo.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(dcItemInfo.TypeKR, @"\([a-zA-Z\s']+\)$", "");
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             ResStr.ServerLang = 1;
             btnSearch.Content = "거래소에서 찾기 (영어)";
-            lbName.Content = (dcItemInfo.NameEN + " " + dcItemInfo.TypeEN).Trim();
             cbName.Content = lbName.Content;
+            lbName.Content = (dcItemInfo.NameEN + " " + dcItemInfo.TypeEN).Trim();
         }
 
         private void CkElder_Checked(object sender, RoutedEventArgs e)
