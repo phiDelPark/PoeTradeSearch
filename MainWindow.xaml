@@ -153,7 +153,7 @@
         <TextBlock Text="?" HorizontalAlignment="Left" Margin="367,2,0,0" VerticalAlignment="Top" FontWeight="Bold" TextAlignment="Center" Height="17" Width="17" MouseDown="TextBlock_MouseDown" Cursor="Hand" FontFamily="Malgun Gothic" MouseEnter="TextBlock_MouseEnter" MouseLeave="TextBlock_MouseLeave" />
 
         <Border Name="bdDetail" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" BorderThickness="0,1,0,0" Margin="0,60,0,91" Width="385" Visibility="Hidden">
-            <TextBlock Name="tkDetail" TextWrapping="Wrap" Text="TextBlock" Background="White" Padding="5" />
+            <TextBlock Name="tkDetail" TextWrapping="Wrap" Text="TextBlock" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Padding="5" />
         </Border>
     </Grid>
 </Window>

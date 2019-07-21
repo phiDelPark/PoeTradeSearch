@@ -749,6 +749,23 @@ namespace PoeTradeSearch
             }
         }
 
+        private double DamageToDPS(string damage)
+        {
+            double dps = 0;
+            try
+            {
+                string[] stmps = Regex.Replace(damage, @"\([a-zA-Z]+\)", "").Split(',');
+                for (int t = 0; t < stmps.Length; t++)
+                {
+                    string[] maidps = (stmps[t] ?? "").Trim().Split('-');
+                    if (maidps.Length == 2)
+                        dps += double.Parse(maidps[0].Trim()) + double.Parse(maidps[1].Trim());
+                }
+            }
+            catch { }
+            return dps;
+        }
+
         private void ShowWindow(string sText)
         {
             string itemName = "";
@@ -1144,6 +1161,32 @@ namespace PoeTradeSearch
                                 itemfilters[i].disabled = false;
                             }
                         }
+                    }
+
+                    if (!isUnIdentify && category == "Weapons")
+                    {
+                        double PhysicalDPS = DamageToDPS(lItemOption[ResStr.PhysicalDamage]);
+                        double ElementalDPS = DamageToDPS(lItemOption[ResStr.ElementalDamage]);
+                        double ChaosDPS = DamageToDPS(lItemOption[ResStr.ChaosDamage]);
+                        double attacksPerSecond = StrToDouble(Regex.Replace(lItemOption[ResStr.AttacksPerSecond], @"\([a-zA-Z]+\)", "").Trim(), 0);
+
+                        if (attackSpeedIncr > 0)
+                        {
+                            double baseAttackSpeed = attacksPerSecond / (attackSpeedIncr / 100 + 1);
+                            double modVal = baseAttackSpeed % 0.05;
+                            baseAttackSpeed += modVal > 0.025 ? (0.05 - modVal) : -modVal;
+                            attacksPerSecond = baseAttackSpeed * (attackSpeedIncr / 100 + 1);
+                        }
+
+                        int qualityDps = tbQualityMin.Text == "" ? 0 : int.Parse(tbQualityMin.Text);
+                        if (qualityDps < 20)
+                        {
+                            PhysicalDPS = PhysicalDPS * (PhysicalDamageIncr + 120) / (PhysicalDamageIncr + qualityDps + 100);
+                        }
+
+                        lbDPS.Content = "DPS: P." + Math.Round((PhysicalDPS / 2) * attacksPerSecond, 2).ToString() +
+                                        " + E." + Math.Round((ElementalDPS / 2) * attacksPerSecond, 2).ToString() +
+                                        " = T." + Math.Round(((PhysicalDPS + ElementalDPS + ChaosDPS) / 2) * attacksPerSecond, 2).ToString();
                     }
 
                     PriceUpdateThreadWorker(itemfilters);
