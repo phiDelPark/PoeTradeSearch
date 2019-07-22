@@ -13,6 +13,8 @@ using System.Web.Script.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Threading;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace PoeTradeSearch
 {
@@ -396,14 +398,6 @@ namespace PoeTradeSearch
                                 }
                                 else if (valueLower.IndexOf("{enter}") == 0)
                                 {
-                                    /*
-                                    CultureInfo cultureInfo  =GetCurrentKeyboardLayout(hwnd);
-                                    if(cultureInfo.TwoLetterISOLanguageName == "ko")
-                                    {
-                                    }
-                                    System.Windows.Forms.SendKeys.SendWait(shortcut.value);
-                                    */
-
                                     Regex regex = new Regex(@"{enter}", RegexOptions.IgnoreCase);
                                     string tmp = regex.Replace(shortcut.value, "" + '\n');
                                     string[] strs = tmp.Trim().Split('\n');
@@ -502,6 +496,7 @@ namespace PoeTradeSearch
             tbLvMax.Text = "";
             tbQualityMin.Text = "";
             tbQualityMax.Text = "";
+            tkDetail.Text = "";
 
             cbAiiCheck.IsChecked = false;
             ckLv.IsChecked = false;
@@ -885,25 +880,36 @@ namespace PoeTradeSearch
                     }
 
                     WordData wordData;
-                    isDetail = isDetail || (!isDetail && (category == "Gems" || category == "Scarabs" || category == "MapFragments" || category == "Incubations" || category == "Labyrinth"));
+                    isDetail = isDetail || (!isDetail && (category == "Gems" || category == "Scarabs" || category == "MapFragments" || category == "Fossil" || category == "Incubations" || category == "Labyrinth"));
 
                     if (isDetail)
                     {
                         dcItemInfo.NameEN = "";
 
-                        if (category == "Gems" || category == "Essences" || category == "Scarabs" || category == "Incubations" || category == "Labyrinth")
+                        try
                         {
-                            int i = category == "Gems" ? 3 : 1;
-                            wordData = baseTypeDatas.Find(x => x.kr == itemType);
-                            dcItemInfo.TypeEN = wordData == null ? itemType : wordData.en;
-                            tkDetail.Text = asData.Length > 2 ? ((category != "Essences" && category != "Incubations" ? asData[i] : "") + asData[i + 1]) : "";
+                            if (category == "Gems" || category == "Essences" || category == "Scarabs" || category == "Incubations" || category == "Labyrinth")
+                            {
+                                int i = category == "Gems" ? 3 : 1;
+                                wordData = baseTypeDatas.Find(x => x.kr == itemType);
+                                dcItemInfo.TypeEN = wordData == null ? itemType : wordData.en;
+                                tkDetail.Text = asData.Length > 2 ? ((category != "Essences" && category != "Incubations" ? asData[i] : "") + asData[i + 1]) : "";
+                            }
+                            else
+                            {
+                                wordData = DetailNameDatas.Find(x => x.kr == itemType);
+                                dcItemInfo.TypeEN = wordData == null ? itemType : wordData.en;
+                                if ((wordData?.detail ?? "") != "")
+                                    tkDetail.Text = "세부사항:" + '\n' + '\n' + wordData.detail.Replace("\\n", "" + '\n');
+                                else
+                                {
+                                    int i = category == "Delve" ? 3 : (category == "Currency" ? 2 : 1);
+                                    tkDetail.Text = asData.Length > 2 ? asData[i] + asData[i + 1] + (asData[i].TrimStart().IndexOf("적용: ") == 0 ? asData[i + 2] : "") : "";
+                                }
+                            }
+
                         }
-                        else
-                        {
-                            wordData = DetailNameDatas.Find(x => x.kr == itemType);
-                            dcItemInfo.TypeEN = wordData == null ? itemType : wordData.en;
-                            tkDetail.Text = "세부사항:" + '\n' + '\n' + (wordData?.detail ?? "").Replace("\\n", "" + '\n');
-                        }
+                        catch { }
                     }
                     else
                     {
@@ -1004,13 +1010,12 @@ namespace PoeTradeSearch
                     {
                         exchange = new string[2];
                         exchange[0] = ResStr.lExchangeCurrency[itemType];
-                        exchange[1] = "chaos";
-                        cbOrbs.SelectedIndex = cbOrbs.Items.IndexOf("카오스 오브");
+                        exchange[1] = exchange[0] == "chaos" ? "exa" : "chaos";
+                        cbOrbs.SelectedIndex = cbOrbs.Items.IndexOf(exchange[0] == "chaos" ? "엑잘티드 오브" : "카오스 오브");
                     }
 
                     PriceUpdateThreadWorker(itemfilters, exchange);
 
-                    //Keyboard.ClearFocus();
                     this.ShowActivated = false;
                     this.Visibility = Visibility.Visible;
                 }

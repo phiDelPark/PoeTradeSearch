@@ -144,7 +144,7 @@
         <Button Name="btnSearch" Content="거래소에서 찾기 (한글)" HorizontalAlignment="Left" Margin="0,460,0,-5" VerticalAlignment="Top" Width="245" Height="38" Click="Button_Click" />
         <Button Content="한" HorizontalAlignment="Left" Margin="245,460,0,0" VerticalAlignment="Top" Height="19" Width="19" Click="Button_Click_2" />
         <Button Content="영" HorizontalAlignment="Left" Margin="245,479,0,-2" VerticalAlignment="Top" Height="19" Width="19" Click="Button_Click_3" />
-        <Button Content="닫기" HorizontalAlignment="Left" Margin="290,460,0,-5" VerticalAlignment="Top" Width="95" Height="38" Click="Button_Click_1" IsDefault="True" />
+        <Button Name="btnClose" Content="닫기" HorizontalAlignment="Left" Margin="290,460,0,-5" VerticalAlignment="Top" Width="95" Height="38" Click="Button_Click_1" IsDefault="True" />
 
         <Border BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" BorderThickness="1" HorizontalAlignment="Left" Height="1" Margin="0,76,0,0" VerticalAlignment="Top" Width="385" RenderTransformOrigin="0.5,0.5" />
         <Border BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" BorderThickness="1" HorizontalAlignment="Left" Height="1" Margin="0,352,0,0" VerticalAlignment="Top" Width="385" RenderTransformOrigin="0.5,0.5" />

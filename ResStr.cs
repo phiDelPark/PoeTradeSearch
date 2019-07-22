@@ -72,7 +72,8 @@ namespace PoeTradeSearch
             { "Weapons","weapon" }, { "Quivers","armour.quiver" }, { "Armours","armour" },
             { "Amulets","accessory.amulet" }, { "Rings","accessory.ring" }, { "Belts","accessory.belt" }, /* accessory */
             { "Jewels","jewel" }, { "Flasks","flask" }, { "DivinationCards","card" }, { "Prophecies","prophecy" }, { "Gems","gem" },
-            { "Currency","currency" },  { "Essences","currency" }, { "Maps","map" }, { "MapFragments","map" }, { "Scarabs","map" }
+            { "Currency","currency" },  { "Essences","currency" }, { "Maps","map" }, { "MapFragments","map" }, { "Scarabs","map" },
+            { "Fossil","currency" }, { "Delve","currency" }
         };
 
         internal static Dictionary<string, string> lRarity = new Dictionary<string, string>()
@@ -93,7 +94,10 @@ namespace PoeTradeSearch
             { "조프의 축복", "blessing-xoph"}, { "툴의 축복", "blessing-tul"}, { "에쉬의 축복", "blessing-esh"}, { "울네톨의 축복", "blessing-uul-netol"}, { "차율라의 축복", "blessing-chayula"},
             { "무궁한 영원한 제국 파편", "timeless-eternal-empire-splinter"}, { "무궁한 바알 파편", "timeless-vaal-splinter"}, { "무궁한 카루이 파편", "timeless-karui-splinter"}, { "무궁한 템플러 파편", "timeless-templar-splinter"}, { "무궁한 마라케스 파편", "timeless-maraketh-splinter"},
             { "무궁한 영원한 제국 상징", "timeless-eternal-emblem"}, { "무궁한 바알 상징", "timeless-vaal-emblem"}, { "무궁한 카루이 상징", "timeless-karui-emblem"}, { "무궁한 템플러 상징", "timeless-templar-emblem"}, { "무궁한 마라케스 상징", "timeless-maraketh-emblem"},
-            { "카드 묶음", "stacked-deck"}, { "페란두스 코인", "p"}
+            { "카드 묶음", "stacked-deck"}, { "페란두스 코인", "p"},
+            { "대장장이의 숫돌", "whe"}, { "방어구 장인의 고철", "scr"}, { "소멸의 파편", "annulment-shard"}, { "거울 파편", "mirror-shard"}, { "엑잘티드 파편", "exalted-shard"},
+            { "속박의 파편", "binding-shard"},{ "지평의 파편", "horizon-shard"}, { "선구자의 파편", "harbingers-shard"}, { "기술자의 파편", "engineers-shard"}, { "고대의 파편", "ancient-shard"},
+            { "카오스 파편", "chaos-shard"},{ "제왕의 파편", "regal-shard"}
         };
     }
 }

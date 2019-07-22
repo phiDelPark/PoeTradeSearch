@@ -184,6 +184,9 @@ namespace PoeTradeSearch
             cbSplinters.Items.Add("원하는 파편 선택");
             foreach (KeyValuePair<string, string> item in ResStr.lExchangeCurrency)
             {
+                if (item.Key == "대장장이의 숫돌")
+                    break;
+
                 if (cnt++ > 32)
                     cbSplinters.Items.Add(item.Key);
                 else
@@ -251,9 +254,8 @@ namespace PoeTradeSearch
             }
 
             string tmp = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n' + 
-                    "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' +
-                    "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
-                    "추가 단축키나 창고 이동 기능은 관리자로 실행해야 작동합니다.";
+                    "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
+                    (bIsAdministrator ? "관리자로 실행했기에 추가 단축키나 창고 휠 이동 기능이" : "추가 단축키나 창고 휠 이동 기능은 관리자로 실행해야") + " 작동합니다.";
 
             if (configData.options.check_updates && CheckUpdates())
             {
@@ -483,6 +485,8 @@ namespace PoeTradeSearch
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = !bIsClose;
+
+            Keyboard.ClearFocus();
             this.Visibility = Visibility.Hidden;
         }
 
