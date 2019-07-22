@@ -9,13 +9,13 @@
 
 **한글 POE 전용**이고 영문 POE 는 trade macro 가 있어서 안만들었습니다.
 
-### 개발환경: 
+### 개발환경:
 * 한글 윈도우 10, 한글 POE 전체 창 모드<br>
-* 윈7 은 프레임워크 버전이 낮아 [4.0 업데이트↗](https://www.microsoft.com/ko-kr/download/details.aspx?id=17851) 필수 (윈10 은 이미 최신이니 받지마세요)
+* 윈7 은 프레임워크 버전 [4.7.2 업데이트↗](https://support.microsoft.com/ko-kr/help/4054530/microsoft-net-framework-4-7-2-offline-installer-for-windows) 필수 (윈10 은 이미 최신이니 받지마세요)
 
-### 사용: 
+### 사용:
 * 인게임 아이템 위에서 Ctrl+C 하면 검색창이 뜹니다.
-### 종료: 
+### 종료:
 * 트레이 아이콘을 우클릭 하시면 됩니다.
 
 ### 참고:
@@ -23,7 +23,7 @@
  2. 작동키 Ctrl+C 는 그냥 실행해도 가능하지만 창고휠 이동과 단축키들은 관리자 권한으로 실행해야 합니다.<br>
     (기본 단축키 = F2 은신처, F4 나가기, F5 남은몬스터, F9 정보보기, F11 일시중지, ESC 창닫기, Ctrl+W 닌자열기)
 
-### 옵션 파일 ( Config.txt ) 설명 
+### 옵션 파일 ( Config.txt ) 설명
 
       "options":{
         "league":"Standard",    // 현재 리그 ["Legion", "Hardcore Legion", "Standard", "Hardcore"]
@@ -32,7 +32,7 @@
         "by_type":true,         // 기본 검색시 아이템 유형으로 검색 [true, false]
         "ctrl_wheel":true       // 창고를 Ctrl+Wheel 로 이동 가능하게 할지 [true, false]
       },
-       "shortcuts":[  
+       "shortcuts":[
             {"keycode":113,"value":"{Enter}/hideout{Enter}"},    // F2. 은신처 ("{Enter}채팅명령어{Enter}")
             {"keycode":115,"value":"{Enter}/exit{Enter}"},       // F4. 나가기
             {"keycode":116,"value":"{Enter}/remaining{Enter}"},  // F5. 남은 몬스터

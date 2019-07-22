@@ -227,6 +227,34 @@ namespace PoeTradeSearch
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
+        private bool CheckUpdate()
+        {
+            string url = "https://raw.githubusercontent.com/phiDelPark/PoeTradeSearch/master/VERSION";
+
+            try
+            {
+                string version = "";
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(url));
+                request.Timeout = 3000;
+
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream responseStream = response.GetResponseStream())
+                using (StreamReader streamReader = new StreamReader(responseStream, Encoding.UTF8))
+                {
+                    version = streamReader.ReadToEnd();
+                }
+
+                var version1 = new Version(GetFileVersion());
+                var version2 = new Version(version);
+
+                return version1.CompareTo(version2) < 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         private String SendHTTP(string sEntity, string urlString)
         {
             string result = "";
@@ -426,13 +454,30 @@ namespace PoeTradeSearch
                 }
             }
 
-            MessageBox.Show(Application.Current.MainWindow,
-                "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n' +
-                "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' +
-                "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
-                "추가 단축키나 창고 이동 기능은 관리자로 실행해야 작동합니다." + '\n' +
-                "더 자세한 정보를 보시려면 프로그램 상단 (?) 를 눌러 확인하세요."
-                , "POE 거래소 검색");
+            string tmp = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n' + 
+                    "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' +
+                    "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
+                    "추가 단축키나 창고 이동 기능은 관리자로 실행해야 작동합니다." + '\n' +
+                    "더 자세한 정보를 보시려면 프로그램 상단 (?) 를 눌러 확인하세요.";
+
+            if (CheckUpdate())
+            {
+                MessageBoxResult result = MessageBox.Show(Application.Current.MainWindow,
+                        tmp + '\n' + '\n' + "이 프로그램의 최신 버전이 있습니다. 지금 새 버전을 받으러 가시겠습니까?",
+                        "POE 거래소 검색", MessageBoxButton.YesNo, MessageBoxImage.Question
+                    );
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    Process.Start("https://github.com/phiDelPark/PoeTradeSearch/");
+                    bIsClose = true;
+                    Close();
+                }
+            }
+            else
+            {
+                MessageBox.Show(Application.Current.MainWindow, tmp , "POE 거래소 검색");
+            }
 
             this.Title += " - " + ResStr.ServerType;
             this.Visibility = Visibility.Hidden;
