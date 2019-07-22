@@ -967,11 +967,16 @@ namespace PoeTradeSearch
 
                     dcItemInfo.Shaper = lItemOption[ResStr.Shaper] == "_TRUE_";
                     dcItemInfo.Elder = lItemOption[ResStr.Elder] == "_TRUE_";
-                    dcItemInfo.Corrupt = lItemOption[ResStr.Corrupt] == "_TRUE_";
 
                     ckShaper.IsChecked = dcItemInfo.Shaper == true;
                     ckElder.IsChecked = dcItemInfo.Elder == true;
-                    ckCorrupt.IsChecked = dcItemInfo.Corrupt == true;
+
+                    dcItemInfo.Corrupt = false;
+                    if(lItemOption[ResStr.Corrupt] == "_TRUE_")
+                    {
+                        ckCorrupt.FontWeight = FontWeights.Bold;
+                        ckCorrupt.Foreground = System.Windows.Media.Brushes.DarkRed;
+                    }
 
                     tbLvMin.Text = Regex.Replace(lItemOption[isGem ? ResStr.Lv : ResStr.ItemLv].Trim(), "[^0-9]", "");
                     tbQualityMin.Text = Regex.Replace(lItemOption[ResStr.Quality].Trim(), "[^0-9]", "");
