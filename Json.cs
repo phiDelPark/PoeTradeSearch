@@ -254,27 +254,6 @@ namespace PoeTradeSearch
         internal q_Sort Sort = new q_Sort();
     }
 
-    [DataContract]
-    public class Config_options
-    {
-        public string league { get; set; }
-        public string server { get; set; }
-    }
-
-    [DataContract]
-    public class Config_checkeds
-    {
-        public string id { get; set; }
-        public string text { get; set; }
-    }
-
-    [DataContract]
-    public class ConfigData
-    {
-        public Config_options options = new Config_options();
-        public Config_checkeds[] checkeds = new Config_checkeds[0];
-    }
-
     public static class Json
     {
         public static string Serialize<T>(object obj) where T : class

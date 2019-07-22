@@ -4,6 +4,7 @@
 			"server":"kr",
 			"week_before":1,
 			"by_type":false,
+			"check_updates":true,
 			"ctrl_wheel":true
 		},
 	"shortcuts":[
