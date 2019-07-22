@@ -161,10 +161,20 @@ namespace PoeTradeSearch
     }
 
     [DataContract]
+    internal class q_Trade_filters_filters
+    {
+        [DataMember(Name = "indexed")]
+        internal q_Option Indexed = new q_Option();
+    }
+
+    [DataContract]
     internal class q_Trade_filters
     {
         [DataMember(Name = "disabled")]
         internal bool Disabled = false;
+
+        [DataMember(Name = "filters")]
+        internal q_Trade_filters_filters trade_filters_filters = new q_Trade_filters_filters();
     }
 
     [DataContract]
@@ -180,7 +190,7 @@ namespace PoeTradeSearch
         internal q_Socket_filters Socket_filters;
 
         [DataMember(Name = "trade_filters")]
-        internal q_Trade_filters Trade_filters = null;
+        internal q_Trade_filters Trade_filters;
     }
 
 

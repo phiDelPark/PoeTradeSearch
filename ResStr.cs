@@ -13,6 +13,7 @@ namespace PoeTradeSearch
         internal static string[] TradeUrl = { "https://poe.game.daum.net/trade/search/", "https://www.pathofexile.com/trade/search/" };
         internal static string[] TradeApi = { "https://poe.game.daum.net/api/trade/search/", "https://www.pathofexile.com/api/trade/search/" };
         internal static string[] FetchApi = { "https://poe.game.daum.net/api/trade/fetch/", "https://www.pathofexile.com/api/trade/fetch/" };
+        internal static string[] ExchangeApi = { "https://poe.game.daum.net/api/trade/exchange/", "https://www.pathofexile.com/api/trade/exchange/" };
 
         internal const string Rarity = "희귀도";
         internal const string Unique = "고유";
@@ -25,8 +26,6 @@ namespace PoeTradeSearch
 
         internal const string DivinationCard = "점술 카드";
         internal const string Gem = "젬";
-
-        internal const string Vaal = "바알";
 
         internal const string Higher = "상급";
         internal const string formed = "형성된";
@@ -49,6 +48,7 @@ namespace PoeTradeSearch
         internal const string Shaper = "쉐이퍼 아이템";
         internal const string Elder = "엘더 아이템";
         internal const string Corrupt = "타락";
+        internal const string Vaal = "바알";
         internal const string Unidentify = "미확인";
 
         internal const string ChkProphecy = "우클릭으로 이 예언을 캐릭터에 추가하십시오.";
@@ -78,6 +78,22 @@ namespace PoeTradeSearch
         internal static Dictionary<string, string> lRarity = new Dictionary<string, string>()
         {
             { Unique, "unique"}, { Rare, "rare"}, { Magic, "magic"}/*, { Normal, "normal"}*/
+        };
+
+        internal static Dictionary<string, string> lExchangeCurrency = new Dictionary<string, string>()
+        {
+            { "고대의 오브", "engineers-orb"}, { "기술자의 오브", "ancient-orb"}, { "기회의 오브", "chance"}, { "바알 오브", "vaal"}, { "변화의 오브", "alt"},
+            { "선구자의 오브", "harbingers-orb"}, { "소멸의 오브", "orb-of-annulment"}, { "속박의 오브", "orb-of-binding"}, { "신성한 오브", "divine"}, { "색채의 오브", "chrom"},
+            { "연결의 오브", "fuse"}, { "연금술의 오브", "alch"}, { "영원의 오브", "ete"}, { "엑잘티드 오브", "exa"}, { "정제의 오브", "scour"},
+            { "쥬얼러 오브", "jew"}, { "지평의 오브", "orb-of-horizons"}, { "진화의 오브", "tra"},  { "제왕의 오브", "regal"},  { "축복의 오브", "blessed"},
+            { "카오스 오브", "chaos"}, { "칼란드라의 거울", "mir"}, { "확장의 오브", "aug"}, { "후회의 오브", "regret"}, { "세공사의 프리즘", "gcp"}, 
+            { "유리직공의 방울", "ba"}, { "실버 코인", "silver"}, { "감정 주문서", "wis"}, { "포탈 주문서", "port"}, { "지도제작자의 끌", "chisel"},
+            { "수습 지도제작자의 육분의", "apprentice-sextant"}, { "숙련 지도제작자의 육분의", "journeyman-sextant"}, { "대가 지도제작자의 육분의", "master-sextant"},
+            { "조프의 파편", "splinter-xoph"}, { "툴의 파편", "splinter-tul"}, { "에쉬의 파편", "splinter-esh"}, { "울네톨의 파편", "splinter-uul"}, { "차율라의 파편", "splinter-chayula"},
+            { "조프의 축복", "blessing-xoph"}, { "툴의 축복", "blessing-tul"}, { "에쉬의 축복", "blessing-esh"}, { "울네톨의 축복", "blessing-uul-netol"}, { "차율라의 축복", "blessing-chayula"},
+            { "무궁한 영원한 제국 파편", "timeless-eternal-empire-splinter"}, { "무궁한 바알 파편", "timeless-vaal-splinter"}, { "무궁한 카루이 파편", "timeless-karui-splinter"}, { "무궁한 템플러 파편", "timeless-templar-splinter"}, { "무궁한 마라케스 파편", "timeless-maraketh-splinter"},
+            { "무궁한 영원한 제국 상징", "timeless-eternal-emblem"}, { "무궁한 바알 상징", "timeless-vaal-emblem"}, { "무궁한 카루이 상징", "timeless-karui-emblem"}, { "무궁한 템플러 상징", "timeless-templar-emblem"}, { "무궁한 마라케스 상징", "timeless-maraketh-emblem"},
+            { "카드 묶음", "stacked-deck"}, { "페란두스 코인", "p"}
         };
     }
 }

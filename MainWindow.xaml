@@ -135,7 +135,8 @@
         <CheckBox Name="ckCorrupt" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Content="타락" HorizontalAlignment="Left" Margin="214,385,0,0" VerticalAlignment="Top" Width="50" />
         <CheckBox Name="ckElder" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Content="엘더" HorizontalAlignment="Left" Margin="269,385,0,0" VerticalAlignment="Top" Width="50" Checked="CkElder_Checked" />
         <CheckBox Name="ckShaper" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Content="쉐이퍼" HorizontalAlignment="Left" Margin="324,385,0,0" VerticalAlignment="Top" Width="57" Checked="CkShaper_Checked" />
-
+        
+        <TextBlock Name="tkPriceTotal" Text="total" HorizontalAlignment="Left" Margin="5,412,0,0" VerticalAlignment="Top" />
         <Border Margin="0,410,0,0" MaxWidth="385" Padding="6,2,6,4" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" BorderThickness="0,0,0,1" VerticalAlignment="Top" MouseEnter="TkPrice_MouseEnter" MouseLeave="TkPrice_MouseLeave" Cursor="Hand" MouseLeftButtonDown="TkPrice_MouseLeftButtonDown">
             <TextBlock Name="tkPrice1" TextAlignment="Right" Text="TextBlock" />
         </Border>
@@ -154,6 +155,15 @@
 
         <Border Name="bdDetail" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" BorderThickness="0,1,0,0" Margin="0,60,0,91" Width="385" Visibility="Hidden">
             <TextBlock Name="tkDetail" TextWrapping="Wrap" Text="TextBlock" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Padding="5" />
+        </Border>
+
+        <Border Name="bdExchange" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" BorderThickness="0,1,0,0" Margin="0,353,0,91" Width="385" Visibility="Hidden">
+            <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" >
+                <ComboBox Name="cbOrbs" HorizontalAlignment="Left" Margin="10,15,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="175" SelectionChanged="CbOrbs_SelectionChanged" >
+                </ComboBox>
+                <ComboBox Name="cbSplinters" HorizontalAlignment="Left" Margin="200,15,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="175" SelectionChanged="CbSplinters_SelectionChanged" >
+                </ComboBox>
+            </Grid>
         </Border>
     </Grid>
 </Window>
