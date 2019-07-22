@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Windows;
 using System.Collections.Generic;
-using System.Windows.Controls;
-using System.Runtime.Serialization;
-using System.Security.Principal;
 using System.Diagnostics;
-using System.Net;
 using System.IO;
-using System.Text;
+using System.Net;
 using System.Runtime.InteropServices;
-using System.Web.Script.Serialization;
+using System.Security.Principal;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Web.Script.Serialization;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
-using System.Windows.Input;
-using System.Windows.Media;
 
 namespace PoeTradeSearch
 {
@@ -723,7 +720,7 @@ namespace PoeTradeSearch
                         }
                     }
 
-                    if(lItemOption[ResStr.Socket] != "")
+                    if (lItemOption[ResStr.Socket] != "")
                     {
                         string socket = lItemOption[ResStr.Socket];
                         int sckcnt = socket.Replace(" ", "-").Split('-').Length - 1;
@@ -759,6 +756,9 @@ namespace PoeTradeSearch
                             itemType = tmpBaseType.kr;
                     }
 
+                    if (!isUnIdentify && itemRarity == ResStr.Magic)
+                        itemType = itemType.Split('-')[0].Trim();
+
                     //Match matchName = null;
                     Match matchType = null;
                     if (isMap)
@@ -775,26 +775,21 @@ namespace PoeTradeSearch
 
                     if (!isUnIdentify && itemRarity == ResStr.Magic)
                     {
-                        itemType = itemType.Split('-')[0].Trim();
+                        string[] tmp = itemType.Split(' ');
 
-                        if (!isDetail)
+                        if (tmp.Length > 1)
                         {
-                            string[] tmp = itemType.Split(' ');
-
-                            if (tmp.Length > 1)
+                            for (int i = 0; i < tmp.Length - 2; i++)
                             {
-                                for (int i = 0; i < tmp.Length - 2; i++)
-                                {
-                                    tmp[i] = "";
-                                    string tmp2 = string.Join(" ", tmp).Trim();
+                                tmp[i] = "";
+                                string tmp2 = string.Join(" ", tmp).Trim();
 
-                                    WordData tmpBaseType = baseTypeDatas.Find(x => x.kr == tmp2);
-                                    if (tmpBaseType != null)
-                                    {
-                                        itemType = tmpBaseType.kr;
-                                        itemCategory = tmpBaseType.id;
-                                        break;
-                                    }
+                                WordData tmpBaseType = baseTypeDatas.Find(x => x.kr == tmp2);
+                                if (tmpBaseType != null)
+                                {
+                                    itemType = tmpBaseType.kr;
+                                    itemCategory = tmpBaseType.id;
+                                    break;
                                 }
                             }
                         }
@@ -812,7 +807,7 @@ namespace PoeTradeSearch
                     string category = itemCategory.Split('/')[0];
                     bool byType = category == "Weapons" || category == "Quivers" || category == "Armours" || category == "Amulets" || category == "Rings" || category == "Belts";
 
-                    int ImpCnt = itemfilters.Count - notImpCnt;
+                    int ImpCnt = itemfilters.Count - (!isDetail && itemRarity == ResStr.Normal ? 0 : notImpCnt);
                     for (int i = 0; i < itemfilters.Count; i++)
                     {
                         Itemfilter itemfilter = itemfilters[i];
@@ -907,7 +902,6 @@ namespace PoeTradeSearch
                                     tkDetail.Text = asData.Length > 2 ? asData[i] + asData[i + 1] + (asData[i].TrimStart().IndexOf("적용: ") == 0 ? asData[i + 2] : "") : "";
                                 }
                             }
-
                         }
                         catch { }
                     }
