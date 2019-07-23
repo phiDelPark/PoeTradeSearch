@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -26,6 +26,7 @@ namespace PoeTradeSearch
         {
             //public string id { get; set; }
             public string text { get; set; }
+
             public string type { get; set; }
             public double max { get; set; }
             public double min { get; set; }
@@ -34,19 +35,35 @@ namespace PoeTradeSearch
         }
 
         [DataContract]
-        public class ItemBaseInfo
+        public class ItemOption
         {
-            public string Rarity { get; set; }
+            public bool Elder { get; set; }
+            public bool Shaper { get; set; }
+            public bool Corrupt { get; set; }
+            public bool ByType { get; set; }
+            public bool ChkSocket { get; set; }
+            public bool ChkQuality { get; set; }
+            public bool ChkLv { get; set; }
+            public double SocketMin { get; set; }
+            public double SocketMax { get; set; }
+            public double LinkMin { get; set; }
+            public double LinkMax { get; set; }
+            public double QualityMin { get; set; }
+            public double QualityMax { get; set; }
+            public double LvMin { get; set; }
+            public double LvMax { get; set; }
+            public List<Itemfilter> itemfilters = new List<Itemfilter>();
+        }
+
+        [DataContract]
+        public class ItemBaseName
+        {
             public string NameKR { get; set; }
             public string TypeKR { get; set; }
             public string NameEN { get; set; }
             public string TypeEN { get; set; }
+            public string Rarity { get; set; }
             public string Category { get; set; }
-            public bool Elder { get; set; }
-            public bool Shaper { get; set; }
-            public bool Corrupt { get; set; }
-            public int Socket { get; set; }
-            public int Link { get; set; }
         }
 
         [DataContract]
@@ -54,8 +71,11 @@ namespace PoeTradeSearch
         {
             public string league { get; set; }
             public string server { get; set; }
-            public int week_before { get; set; }
-            public bool by_type { get; set; }
+            public int server_timeout { get; set; }
+            public bool server_redirect { get; set; }
+            public string server_useragent { get; set; }
+            public int search_week_before { get; set; }
+            public bool search_by_type { get; set; }
             public bool check_updates { get; set; }
             public bool ctrl_wheel { get; set; }
         }
@@ -89,9 +109,11 @@ namespace PoeTradeSearch
         private List<WordData> baseTypeDatas;
         private List<WordData> wordNameDatas;
         private List<WordData> DetailNameDatas;
-        private ConfigData configData;
 
-        private ItemBaseInfo dcItemInfo;
+        private ConfigData configData;
+        private ItemBaseName itemBaseName;
+
+        //private ItemBaseInfo dcItemInfo;
 
         private System.Windows.Forms.NotifyIcon TrayIcon;
 
@@ -222,15 +244,9 @@ namespace PoeTradeSearch
             HwndSource source = HwndSource.FromHwnd(mainHwnd);
             source.AddHook(new HwndSourceHook(WndProc));
 
-            // SetClipboardViewer는 윈도우 10 이상에서만 가능하기에 AddClipboardFormatListener 사용
-            //  IntPtr mNextClipBoardViewerHWnd = SetClipboardViewer(hwnd);
-
             if (!bDisableClip)
             {
-                if (!AddClipboardFormatListener(mainHwnd))
-                {
-                    MessageBox.Show(Application.Current.MainWindow, "클립보드 설치를 실패했습니다.", "에러");
-                }
+                IntPtr mNextClipBoardViewerHWnd = SetClipboardViewer(new WindowInteropHelper(this).Handle);
             }
 
             if (bIsAdministrator)
@@ -253,7 +269,7 @@ namespace PoeTradeSearch
                 }
             }
 
-            string tmp = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n' + 
+            string tmp = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n' +
                     "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
                     (bIsAdministrator ? "관리자로 실행했기에 추가 단축키나 창고 휠 이동 기능이" : "추가 단축키나 창고 휠 이동 기능은 관리자로 실행해야") + " 작동합니다.";
 
@@ -302,44 +318,70 @@ namespace PoeTradeSearch
             string url = "";
             string[] exchange = null;
 
-            try
+            if (bdExchange.Visibility == Visibility.Visible)
             {
-                if (bdExchange.Visibility == Visibility.Visible)
+                if (cbOrbs.SelectedIndex < 1 && cbSplinters.SelectedIndex < 1)
                 {
-                    if (cbOrbs.SelectedIndex < 1 && cbSplinters.SelectedIndex < 1)
-                    {
-                        MessageBox.Show(Application.Current.MainWindow, "교환을 원하는 화폐를 선택해 주세요.", "화폐 교환");
-                        return;
-                    }
+                    MessageBox.Show(Application.Current.MainWindow, "교환을 원하는 화폐를 선택해 주세요.", "화폐 교환");
+                    return;
+                }
 
-                    exchange = new string[2];
-                    exchange[0] = ResStr.lExchangeCurrency[dcItemInfo.TypeKR];
-                    exchange[1] = ResStr.lExchangeCurrency[(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
-                    url = ResStr.ExchangeApi[ResStr.ServerLang] + ResStr.ServerType + "/?redirect&source=";
-                    url += System.Uri.EscapeDataString("{\"exchange\":{\"status\":{\"option\":\"online\"},\"have\":[\"" + exchange[0] + "\"],\"want\":[\"" + exchange[1] + "\"]}}");
+                exchange = new string[2];
+                exchange[0] = ResStr.lExchangeCurrency[itemBaseName.TypeKR];
+                exchange[1] = ResStr.lExchangeCurrency[(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
+                url = ResStr.ExchangeApi[ResStr.ServerLang] + ResStr.ServerType + "/?redirect&source=";
+                url += Uri.EscapeDataString("{\"exchange\":{\"status\":{\"option\":\"online\"},\"have\":[\"" + exchange[0] + "\"],\"want\":[\"" + exchange[1] + "\"]}}");
+                Process.Start(url);
+            }
+            else
+            {
+                sEntity = CreateJson(GetItemOptions());
+
+                if (sEntity == null || sEntity == "")
+                {
+                    MessageBox.Show(Application.Current.MainWindow, "Json 생성을 실패했습니다.", "에러");
+                    return;
+                }
+
+                if (configData.options.server_redirect)
+                {
+                    url = ResStr.TradeApi[ResStr.ServerLang] + ResStr.ServerType + "/?redirect&source=";
+                    url += Uri.EscapeDataString(sEntity);
+                    Process.Start(url);
                 }
                 else
                 {
-                    sEntity = CreateJson(GetItemfilters());
+                    string sResult = null;
 
-                    if (sEntity == null || sEntity == "")
+                    // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
+                    Thread thread = new Thread(() =>
                     {
-                        MessageBox.Show(Application.Current.MainWindow, "Json 생성을 실패했습니다.", "에러");
+                        sResult = SendHTTP(sEntity, ResStr.TradeApi[ResStr.ServerLang] + ResStr.ServerType);
+                        if ((sResult ?? "") != "")
+                        {
+                            try
+                            {
+                                ResultData resultData = Json.Deserialize<ResultData>(sResult);
+                                url = ResStr.TradeUrl[ResStr.ServerLang] + ResStr.ServerType + "/" + resultData.Id;
+                                Process.Start(url);
+                            }
+                            catch { }
+                        }
+                    });
+
+                    thread.Start();
+                    thread.Join();
+
+                    if ((sResult ?? "") == "")
+                    {
+                        MessageBox.Show(Application.Current.MainWindow,
+                            "현재 거래소 접속이 원활하지 않을 수 있습니다." + '\n' +
+                            "한/영 서버를 바꾸거나 거래소 접속을 확인 하신후 다시 시도하세요.",
+                            "검색 실패"
+                       );
                         return;
                     }
-
-                    string sResult = SendHTTP(sEntity, ResStr.TradeApi[ResStr.ServerLang]);
-                    ResultData resultData = Json.Deserialize<ResultData>(sResult);
-                    url = ResStr.TradeUrl[ResStr.ServerLang] + ResStr.ServerType + "/" + resultData.Id;
                 }
-
-                if (url != "")
-                    Process.Start(url);
-            }
-            catch (Exception)
-            {
-                MessageBox.Show(Application.Current.MainWindow, "현재 거래소 접속이 원활하지 않을 수 있습니다." + '\n' + "한/영 서버를 바꾸거나 거래소 접속을 확인 하신후 다시 시도하세요.", "검색에 실패하였습니다.");
-                //throw;
             }
 
             Hide();
@@ -354,7 +396,7 @@ namespace PoeTradeSearch
         {
             ResStr.ServerLang = 0;
             btnSearch.Content = "거래소에서 찾기 (한글)";
-            lbName.Content = Regex.Replace(dcItemInfo.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(dcItemInfo.TypeKR, @"\([a-zA-Z\s']+\)$", "");
+            lbName.Content = Regex.Replace(itemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(itemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "");
             cbName.Content = lbName.Content;
         }
 
@@ -362,7 +404,7 @@ namespace PoeTradeSearch
         {
             ResStr.ServerLang = 1;
             btnSearch.Content = "거래소에서 찾기 (영어)";
-            lbName.Content = (dcItemInfo.NameEN + " " + dcItemInfo.TypeEN).Trim();
+            lbName.Content = (itemBaseName.NameEN + " " + itemBaseName.TypeEN).Trim();
             cbName.Content = lbName.Content;
         }
 
@@ -434,11 +476,11 @@ namespace PoeTradeSearch
                 }
 
                 exchange = new string[2];
-                exchange[0] = ResStr.lExchangeCurrency[dcItemInfo.TypeKR];
+                exchange[0] = ResStr.lExchangeCurrency[itemBaseName.TypeKR];
                 exchange[1] = ResStr.lExchangeCurrency[(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
             }
 
-            PriceUpdateThreadWorker(GetItemfilters(), exchange);
+            PriceUpdateThreadWorker(exchange != null ? null : GetItemOptions(), exchange);
         }
 
         private void TextBlock_MouseEnter(object sender, MouseEventArgs e)
@@ -462,11 +504,11 @@ namespace PoeTradeSearch
                 "옵션 파일 (Config.txt) 설명" + '\n' +
                 "{" + '\n' +
                 "  \"options\":{" + '\n' +
-                "    \"league\":\"standard\",   // 현재 리그" + '\n' +
-                "    \"server\":\"kr\",            // 검색 서버 [\"kr\", \"en\"]" + '\n' +
-                "    \"week_before\":1,      // 1주일 전 물품만 시세 조회" + '\n' +
-                "    \"by_type\":true,         // 검색시 유형으로 검색" + '\n' +
-                "    \"ctrl_wheel\":true      // 창고 Ctrl+Wheel 이동 여부" + '\n' +
+                "    \"league\":\"standard\",       // 현재 리그" + '\n' +
+                "    \"server\":\"kr\",                 // 검색 서버 [\"kr\", \"en\"]" + '\n' +
+                "    \"search_week_before\":1,  // 1주일 전 물품만 시세 조회" + '\n' +
+                "    \"search_by_type\":false,    // 검색시 유형으로 검색" + '\n' +
+                "    \"ctrl_wheel\":true            // 창고 Ctrl+Wheel 이동 여부" + '\n' +
                 "  }," + '\n' +
                 "  \"shortcuts\":[ 단축키 설정들 (Config.txt 참고) ]" + '\n' +
                 "  \"checked\":[ 자동 선택될 옵션들 (Config.txt 참고) ]" + '\n' +
@@ -492,9 +534,6 @@ namespace PoeTradeSearch
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            if (!bDisableClip)
-                RemoveClipboardFormatListener(mainHwnd);
-
             if (bIsAdministrator)
             {
                 if (bIsHotKey)

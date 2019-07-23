@@ -2,8 +2,10 @@
 	"options":{
 			"league":"legion",
 			"server":"kr",
-			"week_before":1,
-			"by_type":false,
+			"server_timeout":5,
+			"server_redirect":false,
+			"search_week_before":1,
+			"search_by_type":false,
 			"check_updates":true,
 			"ctrl_wheel":true
 		},
