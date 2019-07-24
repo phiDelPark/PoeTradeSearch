@@ -642,11 +642,23 @@ namespace PoeTradeSearch
                                         min = matches.Count > idxMin ? StrToDouble(((Match)matches[idxMin]).Value, 99999) : 99999;
                                         max = idxMin < idxMax && matches.Count > idxMax ? StrToDouble(((Match)matches[idxMax]).Value, 99999) : 99999;
 
-                                        bool defMaxPosition = (filter.default_position ?? "") == "max";
-                                        if ((defMaxPosition && min > 0 && max == 99999) || (!defMaxPosition && min < 0 && max == 99999))
+                                        if (min != 99999 && max != 99999)
                                         {
-                                            max = min;
-                                            min = 99999;
+                                            if(filter.text.IndexOf("#~#") > -1)
+                                            {
+                                                min += max;
+                                                min = Math.Truncate(min / 2 * 10) / 10;
+                                                max = 99999;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            bool defMaxPosition = (filter.default_position ?? "") == "max";
+                                            if ((defMaxPosition && min > 0 && max == 99999) || (!defMaxPosition && min < 0 && max == 99999))
+                                            {
+                                                max = min;
+                                                min = 99999;
+                                            }
                                         }
 
                                         ((TextBox)this.FindName("tbOpt" + k + "_0")).Text = min == 99999 ? "" : min.ToString();
