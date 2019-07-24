@@ -26,7 +26,6 @@ namespace PoeTradeSearch
         {
             //public string id { get; set; }
             public string text { get; set; }
-
             public string type { get; set; }
             public double max { get; set; }
             public double min { get; set; }

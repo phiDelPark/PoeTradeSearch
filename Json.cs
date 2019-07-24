@@ -21,6 +21,7 @@ namespace PoeTradeSearch
         public string text { get; set; }
         public string type { get; set; }
         public string force { get; set; }
+        public string default_position { get; set; }
     }
 
     [DataContract]

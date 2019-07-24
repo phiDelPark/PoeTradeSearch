@@ -642,14 +642,15 @@ namespace PoeTradeSearch
                                         min = matches.Count > idxMin ? StrToDouble(((Match)matches[idxMin]).Value, 99999) : 99999;
                                         max = idxMin < idxMax && matches.Count > idxMax ? StrToDouble(((Match)matches[idxMax]).Value, 99999) : 99999;
 
+                                        bool defMaxPosition = (filter.default_position ?? "") == "max";
+                                        if ((defMaxPosition && min > 0 && max == 99999) || (!defMaxPosition && min < 0 && max == 99999))
+                                        {
+                                            max = min;
+                                            min = 99999;
+                                        }
+
                                         ((TextBox)this.FindName("tbOpt" + k + "_0")).Text = min == 99999 ? "" : min.ToString();
                                         ((TextBox)this.FindName("tbOpt" + k + "_1")).Text = max == 99999 ? "" : max.ToString();
-
-                                        if (((TextBox)this.FindName("tbOpt" + k + "_0")).Text.IndexOf("-") == 0 && ((TextBox)this.FindName("tbOpt" + k + "_1")).Text == "")
-                                        {
-                                            ((TextBox)this.FindName("tbOpt" + k + "_1")).Text = ((TextBox)this.FindName("tbOpt" + k + "_0")).Text;
-                                            ((TextBox)this.FindName("tbOpt" + k + "_0")).Text = "";
-                                        }
 
                                         Itemfilter itemfilter = new Itemfilter
                                         {
