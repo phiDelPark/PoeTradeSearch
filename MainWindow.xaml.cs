@@ -202,7 +202,7 @@ namespace PoeTradeSearch
 
             int cnt = 0;
             cbOrbs.Items.Add("원하는 오브 선택");
-            cbSplinters.Items.Add("원하는 파편 선택");
+            cbSplinters.Items.Add("원하는 화석, 파편 선택");
             foreach (KeyValuePair<string, string> item in ResStr.lExchangeCurrency)
             {
                 if (item.Key == "대장장이의 숫돌")
