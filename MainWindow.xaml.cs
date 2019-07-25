@@ -440,7 +440,7 @@ namespace PoeTradeSearch
         {
             string idx = (string)((CheckBox)sender).Tag;
             ((TextBox)this.FindName("tbOpt" + idx)).Tag = ((TextBox)this.FindName("tbOpt" + idx)).Text;
-            ((TextBox)this.FindName("tbOpt" + idx)).Text = "모든 원소 저항 #%";
+            ((TextBox)this.FindName("tbOpt" + idx)).Text = "총 저항 #%";
         }
 
         private void TbOpt0_3_Unchecked(object sender, RoutedEventArgs e)

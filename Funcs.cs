@@ -436,7 +436,15 @@ namespace PoeTradeSearch
             return Clipboard.GetText(textDataFormat);
         }
 
-        private void SetClipText(string text, TextDataFormat textDataFormat)
+        protected void SetClipText(string text, TextDataFormat textDataFormat)
+        {
+            var ClipboardThread = new Thread(() => ClipboardThreadWorker(text, textDataFormat));
+            ClipboardThread.SetApartmentState(ApartmentState.STA);
+            ClipboardThread.IsBackground = false;
+            ClipboardThread.Start();
+        }
+
+        private void ClipboardThreadWorker(string text, TextDataFormat textDataFormat)
         {
             for (int i = 0; i < 10; i++)
             {
