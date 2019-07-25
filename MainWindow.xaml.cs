@@ -85,6 +85,7 @@ namespace PoeTradeSearch
             public int keycode { get; set; }
             public bool ctrl { get; set; }
             public string value { get; set; }
+            public string position { get; set; }            
         }
 
         [DataContract]

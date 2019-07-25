@@ -11,7 +11,7 @@
 
 ### 개발환경:
 * 한글 윈도우 10, 한글 POE 전체 창 모드<br>
-* 윈도우 7 은 프레임워크 버전 [4.7.2 업데이트↗](https://support.microsoft.com/ko-kr/help/4054530/microsoft-net-framework-4-7-2-offline-installer-for-windows) 필수 (윈도우 10,은 받지마세요)
+* 윈도우 7 은 [프레임워크 버전 4.5.2↗](https://www.microsoft.com/ko-KR/download/details.aspx?id=42642) 필수 (윈도우 10,은 받지마세요)
 
 ### 사용:
 * 인게임 아이템 위에서 Ctrl+C 하면 검색창이 뜹니다.

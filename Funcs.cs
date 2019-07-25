@@ -276,9 +276,9 @@ namespace PoeTradeSearch
 
                 if (GetForegroundWindow().Equals(findHwnd))
                 {
-                    PopWindow popWindow = null;
                     int keyIdx = wParam.ToInt32();
 
+                    string popWinTitle = "이곳을 잡고 이동, 이미지 클릭시 닫힘";
                     Config_shortcuts shortcut = configData.shortcuts.Find(x => x.keycode == (keyIdx - 10000));
 
                     if (shortcut != null && shortcut.value != null)
@@ -343,13 +343,19 @@ namespace PoeTradeSearch
                                 }
                                 else if (valueLower == "{close}")
                                 {
-                                    if (this.Visibility == Visibility.Hidden)
+                                    IntPtr pHwnd = FindWindow(null, popWinTitle);
+
+                                    if (this.Visibility == Visibility.Hidden && pHwnd.ToInt32() == 0)
                                     {
                                         SendMessage(findHwnd, 0x0101, shortcut.keycode, 0);
                                     }
                                     else
                                     {
-                                        Close();
+                                        if (pHwnd.ToInt32() != 0)
+                                            SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, 0, 0);
+
+                                        if (this.Visibility == Visibility.Visible)
+                                            Close();
                                     }
                                 }
                                 else if (valueLower.IndexOf("{enter}") == 0)
@@ -378,12 +384,21 @@ namespace PoeTradeSearch
                                 }
                                 else if (valueLower.IndexOf(".jpg") > 0)
                                 {
-                                    popWindow = new PopWindow(shortcut.value);
-
-                                    IntPtr pHwnd = FindWindow(null, popWindow.Title);
+                                    IntPtr pHwnd = FindWindow(null, popWinTitle);
                                     if (pHwnd.ToInt32() != 0)
                                         SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, 0, 0);
 
+                                    PopWindow popWindow = new PopWindow(shortcut.value);
+
+                                    if ((shortcut.position ?? "") != "")
+                                    {
+                                        string[] strs = shortcut.position.ToLower().Split('x');
+                                        popWindow.WindowStartupLocation = WindowStartupLocation.Manual;
+                                        popWindow.Left = double.Parse(strs[0]);
+                                        popWindow.Top = double.Parse(strs[1]);
+                                    }
+
+                                    popWindow.Title = popWinTitle;
                                     popWindow.Show();
                                 }
                             }
@@ -642,7 +657,7 @@ namespace PoeTradeSearch
 
                                         if (min != 99999 && max != 99999)
                                         {
-                                            if(filter.text.IndexOf("#~#") > -1)
+                                            if (filter.text.IndexOf("#~#") > -1)
                                             {
                                                 min += max;
                                                 min = Math.Truncate(min / 2 * 10) / 10;
