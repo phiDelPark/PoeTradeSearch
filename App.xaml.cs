@@ -18,6 +18,8 @@ namespace PoeTradeSearch
     {
         Mutex mutex = null;
 
+        [STAThread]
+
         protected override void OnStartup(StartupEventArgs e)
         {             
             string mutexName = "POE 거래소 검색 by phiDel"; 

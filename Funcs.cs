@@ -360,7 +360,7 @@ namespace PoeTradeSearch
 
                                     for (int i = 0; i < strs.Length; i++)
                                     {
-                                        ClipThreadWorker(strs[i]);
+                                        SetClipText(strs[i], TextDataFormat.UnicodeText);
                                         Thread.Sleep(300);
                                         System.Windows.Forms.SendKeys.SendWait("{enter}");
                                         System.Windows.Forms.SendKeys.SendWait("^{a}");
@@ -414,14 +414,6 @@ namespace PoeTradeSearch
                     exchange != null ? exchange : new string[1] { CreateJson(itemOptions) }
                 ));
             priceThread.Start();
-        }
-
-        protected void ClipThreadWorker(string text)
-        {
-            var clipboardThread = new Thread(() => SetClipText(text, TextDataFormat.UnicodeText));
-            clipboardThread.SetApartmentState(ApartmentState.STA);
-            clipboardThread.IsBackground = false;
-            clipboardThread.Start();
         }
 
         private string GetClipText(TextDataFormat textDataFormat)
