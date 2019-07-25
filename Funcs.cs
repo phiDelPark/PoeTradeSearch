@@ -1214,7 +1214,7 @@ namespace PoeTradeSearch
             {
                 Itemfilter itemfilter = new Itemfilter();
                 itemfilter.text = ((TextBox)this.FindName("tbOpt" + i)).Text.Trim();
-                itemfilter.type = (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue;
+                itemfilter.type = itemfilter.text == "총 저항 #%" ? "유사" : (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue;
 
                 if (itemfilter.text != "" && ResStr.lFilterType.ContainsKey(itemfilter.type ?? "error"))
                 {
