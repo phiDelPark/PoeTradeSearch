@@ -469,10 +469,13 @@ namespace PoeTradeSearch
                 ((TextBox)this.FindName("tbOpt" + i + "_0")).Text = "";
                 ((TextBox)this.FindName("tbOpt" + i + "_1")).Text = "";
                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
+                ((CheckBox)this.FindName("tbOpt" + i + "_3")).IsChecked = false;
+                ((CheckBox)this.FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
                 ((TextBox)this.FindName("tbOpt" + i)).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
                 ((TextBox)this.FindName("tbOpt" + i + "_0")).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
                 ((TextBox)this.FindName("tbOpt" + i + "_1")).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
+                ((CheckBox)this.FindName("tbOpt" + i + "_3")).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
             }
         }
 
@@ -580,6 +583,7 @@ namespace PoeTradeSearch
                                         ((TextBox)this.FindName("tbOpt" + k + "_0")).BorderBrush = System.Windows.Media.Brushes.Blue;
                                         ((TextBox)this.FindName("tbOpt" + k + "_1")).BorderBrush = System.Windows.Media.Brushes.Blue;
                                         ((CheckBox)this.FindName("tbOpt" + k + "_2")).BorderBrush = System.Windows.Media.Brushes.Blue;
+                                        ((CheckBox)this.FindName("tbOpt" + k + "_3")).BorderBrush = System.Windows.Media.Brushes.Blue;
 
                                         filter = filterDatas.Find(x => rgx.IsMatch(x.text) && x.type == "crafted");
                                         ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex = selidx;
@@ -607,6 +611,8 @@ namespace PoeTradeSearch
                                         }
 
                                         ((TextBox)this.FindName("tbOpt" + k)).Text = filter.text;
+                                        if (ResStr.lIsResistance.ContainsKey(filter.text))
+                                            ((CheckBox)this.FindName("tbOpt" + k + "_3")).Visibility = Visibility.Visible;
 
                                         bool isMin = false, isMax = false;
                                         int idxMin = 0, idxMax = 1;
@@ -815,6 +821,7 @@ namespace PoeTradeSearch
                                 ((TextBox)this.FindName("tbOpt" + i + "_1")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
                                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
                                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
+                                ((CheckBox)this.FindName("tbOpt" + i + "_3")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
 
                                 int selidx = ((ComboBox)this.FindName("cbOpt" + i)).Items.IndexOf("인챈");
                                 if (selidx == -1)
@@ -952,7 +959,7 @@ namespace PoeTradeSearch
                     lbName.Visibility = itemRarity != ResStr.Unique && byType ? Visibility.Hidden : Visibility.Visible;
                     lbRarity.Content = itemRarity;
 
-                    bool IsExchangeCurrency = category == "Currency" && ResStr.lExchangeCurrency.ContainsKey(itemType);
+                    bool IsExchangeCurrency = (category == "Currency" || category == "Fossil") && ResStr.lExchangeCurrency.ContainsKey(itemType);
 
                     bdDetail.Visibility = isDetail ? Visibility.Visible : Visibility.Hidden;
                     if (bdDetail.Visibility == Visibility.Visible)

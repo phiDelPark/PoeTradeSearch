@@ -435,6 +435,19 @@ namespace PoeTradeSearch
             }
         }
 
+        private void TbOpt0_3_Checked(object sender, RoutedEventArgs e)
+        {
+            string idx = (string)((CheckBox)sender).Tag;
+            ((TextBox)this.FindName("tbOpt" + idx)).Tag = ((TextBox)this.FindName("tbOpt" + idx)).Text;
+            ((TextBox)this.FindName("tbOpt" + idx)).Text = "모든 원소 저항 #%";
+        }
+
+        private void TbOpt0_3_Unchecked(object sender, RoutedEventArgs e)
+        {
+            string idx = (string)((CheckBox)sender).Tag;
+            ((TextBox)this.FindName("tbOpt" + idx)).Text =  (string)((TextBox)this.FindName("tbOpt" + idx)).Tag;
+        }
+
         private void CbOrbs_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             cbSplinters.SelectionChanged -= CbSplinters_SelectionChanged;

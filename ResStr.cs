@@ -81,6 +81,12 @@ namespace PoeTradeSearch
             { Unique, "unique"}, { Rare, "rare"}, { Magic, "magic"}/*, { Normal, "normal"}*/
         };
 
+        internal static Dictionary<string, bool> lIsResistance = new Dictionary<string, bool>()
+        {
+            { "냉기 저항 #%", true }, { "화염 저항 #%", true }, { "번개 저항 #%", true }, { "카오스 저항 #%", true },
+            { "화염 및 냉기 저항 #%", true }, { "냉기 및 번개 저항 #%", true }, { "화염 및 번개 저항 #%", true }
+        };        
+
         internal static Dictionary<string, string> lExchangeCurrency = new Dictionary<string, string>()
         {
             { "고대의 오브", "engineers-orb"}, { "기술자의 오브", "ancient-orb"}, { "기회의 오브", "chance"}, { "바알 오브", "vaal"}, { "변화의 오브", "alt"},

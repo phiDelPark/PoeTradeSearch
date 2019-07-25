@@ -26,6 +26,7 @@
         <TextBox Name="tbOpt0_0" HorizontalAlignment="Left" Height="20" Margin="280,92,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <TextBox Name="tbOpt0_1" HorizontalAlignment="Left" Height="20" Margin="320,92,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <CheckBox Name="tbOpt0_2" Content="" HorizontalAlignment="Left" Margin="365,92,0,0" VerticalAlignment="Top" />
+        <CheckBox Name="tbOpt0_3" Content="" HorizontalAlignment="Left" Margin="249,92,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="0" Checked="TbOpt0_3_Checked" Unchecked="TbOpt0_3_Unchecked" />
 
         <ComboBox Name="cbOpt1" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="5,115,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0">
             <ComboBox.Resources>
@@ -36,6 +37,7 @@
         <TextBox Name="tbOpt1_0" HorizontalAlignment="Left" Height="20" Margin="280,117,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <TextBox Name="tbOpt1_1" HorizontalAlignment="Left" Height="20" Margin="320,117,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <CheckBox Name="tbOpt1_2" Content="" HorizontalAlignment="Left" Margin="365,117,0,0" VerticalAlignment="Top" />
+        <CheckBox Name="tbOpt1_3" Content="" HorizontalAlignment="Left" Margin="249,117,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="1" Checked="TbOpt0_3_Checked" Unchecked="TbOpt0_3_Unchecked" />
 
         <ComboBox Name="cbOpt2" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="5,140,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0">
             <ComboBox.Resources>
@@ -46,6 +48,7 @@
         <TextBox Name="tbOpt2_0" HorizontalAlignment="Left" Height="20" Margin="280,142,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <TextBox Name="tbOpt2_1" HorizontalAlignment="Left" Height="20" Margin="320,142,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <CheckBox Name="tbOpt2_2" Content="" HorizontalAlignment="Left" Margin="365,142,0,0" VerticalAlignment="Top" />
+        <CheckBox Name="tbOpt2_3" Content="" HorizontalAlignment="Left" Margin="249,142,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="2" Checked="TbOpt0_3_Checked" Unchecked="TbOpt0_3_Unchecked" />
 
         <ComboBox Name="cbOpt3" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="5,165,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0">
             <ComboBox.Resources>
@@ -56,6 +59,7 @@
         <TextBox Name="tbOpt3_0" HorizontalAlignment="Left" Height="20" Margin="280,167,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <TextBox Name="tbOpt3_1" HorizontalAlignment="Left" Height="20" Margin="320,167,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <CheckBox Name="tbOpt3_2" Content="" HorizontalAlignment="Left" Margin="365,167,0,0" VerticalAlignment="Top" />
+        <CheckBox Name="tbOpt3_3" Content="" HorizontalAlignment="Left" Margin="249,167,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="3" Checked="TbOpt0_3_Checked" Unchecked="TbOpt0_3_Unchecked" />
 
         <ComboBox Name="cbOpt4" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="5,190,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0">
             <ComboBox.Resources>
@@ -66,6 +70,7 @@
         <TextBox Name="tbOpt4_0" HorizontalAlignment="Left" Height="20" Margin="280,192,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <TextBox Name="tbOpt4_1" HorizontalAlignment="Left" Height="20" Margin="320,192,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <CheckBox Name="tbOpt4_2" Content="" HorizontalAlignment="Left" Margin="365,192,0,0" VerticalAlignment="Top" />
+        <CheckBox Name="tbOpt4_3" Content="" HorizontalAlignment="Left" Margin="249,192,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="4" Checked="TbOpt0_3_Checked" Unchecked="TbOpt0_3_Unchecked" />
 
         <ComboBox Name="cbOpt5" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="5,215,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0">
             <ComboBox.Resources>
@@ -76,6 +81,7 @@
         <TextBox Name="tbOpt5_0" HorizontalAlignment="Left" Height="20" Margin="280,217,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <TextBox Name="tbOpt5_1" HorizontalAlignment="Left" Height="20" Margin="320,217,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <CheckBox Name="tbOpt5_2" Content="" HorizontalAlignment="Left" Margin="365,217,0,0" VerticalAlignment="Top" />
+        <CheckBox Name="tbOpt5_3" Content="" HorizontalAlignment="Left" Margin="249,217,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="5" Checked="TbOpt0_3_Checked" Unchecked="TbOpt0_3_Unchecked" />
 
         <ComboBox Name="cbOpt6" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="5,240,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0">
             <ComboBox.Resources>
@@ -86,6 +92,7 @@
         <TextBox Name="tbOpt6_0" HorizontalAlignment="Left" Height="20" Margin="280,242,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <TextBox Name="tbOpt6_1" HorizontalAlignment="Left" Height="20" Margin="320,242,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <CheckBox Name="tbOpt6_2" Content="" HorizontalAlignment="Left" Margin="365,242,0,0" VerticalAlignment="Top" />
+        <CheckBox Name="tbOpt6_3" Content="" HorizontalAlignment="Left" Margin="249,242,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="6" Checked="TbOpt0_3_Checked" Unchecked="TbOpt0_3_Unchecked" />
 
         <ComboBox Name="cbOpt7" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="5,265,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0">
             <ComboBox.Resources>
@@ -96,6 +103,7 @@
         <TextBox Name="tbOpt7_0" HorizontalAlignment="Left" Height="20" Margin="280,267,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <TextBox Name="tbOpt7_1" HorizontalAlignment="Left" Height="20" Margin="320,267,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <CheckBox Name="tbOpt7_2" Content="" HorizontalAlignment="Left" Margin="365,267,0,0" VerticalAlignment="Top" />
+        <CheckBox Name="tbOpt7_3" Content="" HorizontalAlignment="Left" Margin="249,267,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="7" Checked="TbOpt0_3_Checked" Unchecked="TbOpt0_3_Unchecked" />
 
         <ComboBox Name="cbOpt8" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="5,290,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0">
             <ComboBox.Resources>
@@ -106,6 +114,7 @@
         <TextBox Name="tbOpt8_0" HorizontalAlignment="Left" Height="20" Margin="280,292,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <TextBox Name="tbOpt8_1" HorizontalAlignment="Left" Height="20" Margin="320,292,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <CheckBox Name="tbOpt8_2" Content="" HorizontalAlignment="Left" Margin="365,292,0,0" VerticalAlignment="Top" />
+        <CheckBox Name="tbOpt8_3" Content="" HorizontalAlignment="Left" Margin="249,292,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="8" Checked="TbOpt0_3_Checked" Unchecked="TbOpt0_3_Unchecked" />
 
         <ComboBox Name="cbOpt9" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="5,315,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0">
             <ComboBox.Resources>
@@ -116,6 +125,7 @@
         <TextBox Name="tbOpt9_0" HorizontalAlignment="Left" Height="20" Margin="280,317,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <TextBox Name="tbOpt9_1" HorizontalAlignment="Left" Height="20" Margin="320,317,0,0"  Text="" VerticalAlignment="Top" Width="34" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
         <CheckBox Name="tbOpt9_2" Content="" HorizontalAlignment="Left" Margin="365,317,0,0" VerticalAlignment="Top" />
+        <CheckBox Name="tbOpt9_3" Content="" HorizontalAlignment="Left" Margin="249,317,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="9" Checked="TbOpt0_3_Checked" Unchecked="TbOpt0_3_Unchecked" />
 
         <CheckBox Name="ckLv" Content="레벨" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" HorizontalAlignment="Left" Margin="5,363,0,0" VerticalAlignment="Top" Width="50" />
         <TextBox Name="tbLvMin" HorizontalAlignment="Left" Height="18" Margin="72,360,0,0" Text="" VerticalAlignment="Top" Width="25" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />

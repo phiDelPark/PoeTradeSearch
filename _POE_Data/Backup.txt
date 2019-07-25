@@ -1,5 +1,7 @@
 ﻿안쓰이는 것들... 혹시 몰라서 백업
 
+{"id":"pseudo.pseudo_count_resistances","text":"총 저항 #","type":"pseudo"},
+{"id":"pseudo.pseudo_count_elemental_resistances","text":"총 원소 저항력 #","type":"pseudo"},
 
 {"id": "Currency/CurrencyImprint", "kr": "각인", "en": "Imprint", "detail": "설명을 작성해주세요."},
 {"id": "Currency/CurrencyLabyrinthEnchant", "kr": "인챈트", "en": "Enchant", "detail": "설명을 작성해주세요."},
