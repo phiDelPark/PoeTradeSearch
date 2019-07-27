@@ -897,8 +897,9 @@ namespace PoeTradeSearch
                             ElementalDPS = (ElementalDPS / 2) * attacksPerSecond;
                             ChaosDPS = (ChaosDPS / 2) * attacksPerSecond;
 
-                            //20 퀄리티 기준으로 계산 안함
-                            //quality20Dps = quality20Dps < 20 ? PhysicalDPS * (PhysicalDamageIncr + 120) / (PhysicalDamageIncr + quality20Dps + 100) : 0;
+                            //20 퀄리티 보다 낮을땐 20 퀄리티 기준으로 계산
+                            quality20Dps = quality20Dps < 20 ? PhysicalDPS * (PhysicalDamageIncr + 120) / (PhysicalDamageIncr + quality20Dps + 100) : 0;
+                            PhysicalDPS = quality20Dps > 0 ? quality20Dps : PhysicalDPS;
 
                             lbDPS.Content = "DPS: P." + Math.Round(PhysicalDPS, 2).ToString() +
                                             " + E." + Math.Round(ElementalDPS, 2).ToString() +
