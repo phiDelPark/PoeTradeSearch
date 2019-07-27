@@ -30,20 +30,12 @@ namespace PoeTradeSearch
         internal const string Higher = "상급";
         internal const string formed = "형성된";
 
-        internal const string AttackSpeedIncr = "공격 속도 #% 증가";
-        internal const string PhysicalDamageIncr = "물리 피해 #% 증가";
-
         internal const string Quality = "퀄리티";
         internal const string Lv = "레벨";
         internal const string ItemLv = "아이템 레벨";
         internal const string CharmLv = "부적 등급";
         internal const string MaTier = "지도 등급";
         internal const string Socket = "홈";
-
-        internal const string PhysicalDamage = "물리 피해";
-        internal const string ElementalDamage = "원소 피해";
-        internal const string ChaosDamage = "카오스 피해";
-        internal const string AttacksPerSecond = "초당 공격 횟수";
 
         internal const string Shaper = "쉐이퍼 아이템";
         internal const string Elder = "엘더 아이템";
@@ -54,6 +46,14 @@ namespace PoeTradeSearch
         internal const string ChkProphecy = "우클릭으로 이 예언을 캐릭터에 추가하십시오.";
         internal const string ChkMapFragment = "템플러의 실험실이나 전용 지도 장치에서";
         internal const string ChkFlask = "마시려면 우클릭하십시오. 허리띠에 장착 중일 때만 충전이 유지됩니다.";
+
+        internal const string PhysicalDamage = "물리 피해";
+        internal const string ElementalDamage = "원소 피해";
+        internal const string ChaosDamage = "카오스 피해";
+        internal const string AttacksPerSecond = "초당 공격 횟수";
+
+        internal const string AttackSpeedIncr = "공격 속도 #% 증가";
+        internal const string PhysicalDamageIncr = "물리 피해 #% 증가";
 
         internal static Dictionary<string, byte> lParticular = new Dictionary<string, byte>()
         {
@@ -89,7 +89,7 @@ namespace PoeTradeSearch
 
         internal static Dictionary<string, string> lExchangeCurrency = new Dictionary<string, string>()
         {
-            { "고대의 오브", "engineers-orb"}, { "기술자의 오브", "ancient-orb"}, { "기회의 오브", "chance"}, { "바알 오브", "vaal"}, { "변화의 오브", "alt"},
+            { "고대의 오브", "ancient-orb"}, { "기술자의 오브", "engineers-orb"}, { "기회의 오브", "chance"}, { "바알 오브", "vaal"}, { "변화의 오브", "alt"},
             { "선구자의 오브", "harbingers-orb"}, { "소멸의 오브", "orb-of-annulment"}, { "속박의 오브", "orb-of-binding"}, { "신성한 오브", "divine"}, { "색채의 오브", "chrom"},
             { "연결의 오브", "fuse"}, { "연금술의 오브", "alch"}, { "영원의 오브", "ete"}, { "엑잘티드 오브", "exa"}, { "정제의 오브", "scour"},
             { "쥬얼러 오브", "jew"}, { "지평의 오브", "orb-of-horizons"}, { "진화의 오브", "tra"},  { "제왕의 오브", "regal"},  { "축복의 오브", "blessed"},

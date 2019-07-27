@@ -446,14 +446,18 @@ namespace PoeTradeSearch
                 cbSplinters.SelectionChanged -= CbOrbs_SelectionChanged;
                 cbSplinters.SelectedIndex = 0;
                 cbSplinters.SelectionChanged += CbOrbs_SelectionChanged;
+                cbSplinters.FontWeight = FontWeights.Normal;
             }
             else
             {
                 cbOrbs.SelectionChanged -= CbOrbs_SelectionChanged;
                 cbOrbs.SelectedIndex = 0;
                 cbOrbs.SelectionChanged += CbOrbs_SelectionChanged;
+                cbOrbs.FontWeight = FontWeights.Normal;
             }
 
+            ((ComboBox)sender).FontWeight = ((ComboBox)sender).SelectedIndex == 0 ? FontWeights.Normal : FontWeights.SemiBold;
+            
             SetSearchButtonText();
             TkPrice_MouseLeftButtonDown(null, null);
         }

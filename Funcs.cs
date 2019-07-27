@@ -493,6 +493,9 @@ namespace PoeTradeSearch
             cbOrbs.SelectionChanged += CbOrbs_SelectionChanged;
             cbSplinters.SelectionChanged += CbOrbs_SelectionChanged;
 
+            cbOrbs.FontWeight = FontWeights.Normal;
+            cbSplinters.FontWeight = FontWeights.Normal;
+
             lbDPS.Content = "옵션";
             SetSearchButtonText();
 
@@ -1061,6 +1064,8 @@ namespace PoeTradeSearch
                         if (resultData.Result.Length > 0)
                         {
                             int xcnt = entity.Length > 1 ? 6 : 4;
+                            string sent0 = entity.Length > 1 ? Regex.Replace(entity[0], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2") : "";
+                            string sent1 = entity.Length > 1 ? Regex.Replace(entity[1], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2") : "";
 
                             for (int x = 0; x < xcnt; x++)
                             {
@@ -1110,7 +1115,7 @@ namespace PoeTradeSearch
                                             double amount = fetchData.Result[i].Listing.Price.Amount;
 
                                             if (entity.Length > 1)
-                                                key = Math.Round(amount, 4).ToString();
+                                                key = amount < 1 ? Math.Round(1 / amount, 1) + " " + sent1 : Math.Round(amount, 1) + " " + sent0;
                                             else
                                                 key = Math.Round(amount - 0.1) + " " + fetchData.Result[i].Listing.Price.Currency;
 
@@ -1162,11 +1167,6 @@ namespace PoeTradeSearch
                                 result2 = Regex.Replace(result2.TrimEnd(',', ' '), @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
                                 if (result2 == "")
                                     result2 = "가장 많은 수 없음";
-
-                                if (entity.Length > 1)
-                                {
-                                    result = "1 " + Regex.Replace(entity[1], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2") + " = " + result;
-                                }
                             }
                         }
 
