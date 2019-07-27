@@ -95,11 +95,11 @@ namespace PoeTradeSearch
             try
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(urlString));
-                request.Timeout = timeout > 0 ? timeout : configData.options.server_timeout * 1000;
+                request.Timeout = timeout > 0 ? timeout : mConfigData.Options.server_timeout * 1000;
 
                 // 특정 사양에서 안되는거 같아 UserAgent 입력으로 대비
-                if ((configData.options.server_useragent ?? "") != "")
-                    request.UserAgent = configData.options.server_useragent;
+                if ((mConfigData.Options.server_useragent ?? "") != "")
+                    request.UserAgent = mConfigData.Options.server_useragent;
                 else
                     request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.0.0 Safari/537.36";
 
@@ -132,6 +132,47 @@ namespace PoeTradeSearch
             return result;
         }
 
+        private bool DatabaseUpdates(string path)
+        {
+            bool success = false;
+
+            // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
+            Thread thread = new Thread(() =>
+            {
+                string u = "https://poe.game.daum.net/api/trade/data/stats";
+                string sResult = SendHTTP(null, u, 5000);
+                if ((sResult ?? "") != "")
+                {
+                    var jsSerializer = new JavaScriptSerializer();
+                    FilterData rootClass = jsSerializer.Deserialize<FilterData>(sResult);
+
+                    for (int i = 0; i < rootClass.result.Length; i++)
+                    {
+                        if (
+                            rootClass.result[i].entries.Length > 0
+                            && ResStr.lFilterTypeName.ContainsKey(rootClass.result[i].entries[0].type)
+                        )
+                        {
+                            rootClass.result[i].label = ResStr.lFilterTypeName[rootClass.result[i].entries[0].type];
+                        }
+                    }
+
+                    using (StreamWriter writer = new StreamWriter(path, false))
+                    {
+                        var contentsToWriteToFile = jsSerializer.Serialize(rootClass);
+                        writer.Write(contentsToWriteToFile);
+                    }
+
+                    success = true;
+                }
+            });
+
+            thread.Start();
+            thread.Join();
+
+            return success;
+        }
+
         private void Setting()
         {
 #if DEBUG
@@ -143,43 +184,61 @@ namespace PoeTradeSearch
 
             try
             {
-                FileStream fs = new FileStream(path + "Filters.txt", FileMode.Open);
-                StreamReader reader = new StreamReader(fs);
-                string json = reader.ReadToEnd();
-                var jsSerializer = new JavaScriptSerializer();
-                filterDatas = jsSerializer.Deserialize<List<FilterData>>("[" + json + "]");
-                fs.Close();
+                using (FileStream fs = new FileStream(path + "Config.txt", FileMode.Open))
+                {
+                    using (StreamReader reader = new StreamReader(fs))
+                    {
+                        string json = reader.ReadToEnd();
+                        JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
+                        mConfigData = jsSerializer.Deserialize<ConfigData>(json);
+                    }
+                }
 
-                fs = new FileStream(path + "Bases.txt", FileMode.Open);
-                reader = new StreamReader(fs);
-                json = reader.ReadToEnd();
-                jsSerializer = new JavaScriptSerializer();
-                baseTypeDatas = jsSerializer.Deserialize<List<WordData>>("[" + json + "]");
-                fs.Close();
+                if (!File.Exists(path + "Filters.txt"))
+                    DatabaseUpdates(path + "Filters.txt");
 
-                fs = new FileStream(path + "Words.txt", FileMode.Open);
-                reader = new StreamReader(fs);
-                json = reader.ReadToEnd();
-                jsSerializer = new JavaScriptSerializer();
-                wordNameDatas = jsSerializer.Deserialize<List<WordData>>("[" + json + "]");
-                fs.Close();
+                using (FileStream fs = new FileStream(path + "Filters.txt", FileMode.Open))
+                {
+                    using (StreamReader reader = new StreamReader(fs))
+                    {
+                        string json = reader.ReadToEnd();
+                        JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
+                        mFilterData = jsSerializer.Deserialize<FilterData>(json);
+                    }
+                }
 
-                fs = new FileStream(path + "Details.txt", FileMode.Open);
-                reader = new StreamReader(fs);
-                json = reader.ReadToEnd();
-                jsSerializer = new JavaScriptSerializer();
-                DetailNameDatas = jsSerializer.Deserialize<List<WordData>>("[" + json + "]");
-                fs.Close();
+                using (FileStream fs = new FileStream(path + "Bases.txt", FileMode.Open))
+                {
+                    using (StreamReader reader = new StreamReader(fs))
+                    {
+                        string json = reader.ReadToEnd();
+                        JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
+                        baseTypeDatas = jsSerializer.Deserialize<List<WordData>>("[" + json + "]");
+                    }
+                }
 
-                fs = new FileStream(path + "Config.txt", FileMode.Open);
-                reader = new StreamReader(fs);
-                json = reader.ReadToEnd();
-                jsSerializer = new JavaScriptSerializer();
-                configData = jsSerializer.Deserialize<ConfigData>(json);
-                fs.Close();
+                using (FileStream fs = new FileStream(path + "Words.txt", FileMode.Open))
+                {
+                    using (StreamReader reader = new StreamReader(fs))
+                    {
+                        string json = reader.ReadToEnd();
+                        JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
+                        wordNameDatas = jsSerializer.Deserialize<List<WordData>>("[" + json + "]");
+                    }
+                }
 
-                if (configData.options.server_timeout < 1) configData.options.server_timeout = 5;
-                if (configData.options.search_week_before < 1) configData.options.search_week_before = 1;
+                using (FileStream fs = new FileStream(path + "Details.txt", FileMode.Open))
+                {
+                    using (StreamReader reader = new StreamReader(fs))
+                    {
+                        string json = reader.ReadToEnd();
+                        JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
+                        DetailNameDatas = jsSerializer.Deserialize<List<WordData>>("[" + json + "]");
+                    }
+                }
+
+                if (mConfigData.Options.server_timeout < 1) mConfigData.Options.server_timeout = 5;
+                if (mConfigData.Options.search_week_before < 1) mConfigData.Options.search_week_before = 1;
             }
             catch (Exception)
             {
@@ -215,7 +274,7 @@ namespace PoeTradeSearch
                 RemoveRegisterHotKey();
             }
 
-            if (chk && !bIsPause && configData.options.ctrl_wheel)
+            if (chk && !bIsPause && mConfigData.Options.ctrl_wheel)
             {
                 TimeSpan dateDiff = Convert.ToDateTime(DateTime.Now) - MouseHookCallbackTime;
                 if (dateDiff.Ticks > 3000000000) // 5분간 마우스 움직임이 없으면 훜이 풀렸을 수 있어 다시...
@@ -279,7 +338,7 @@ namespace PoeTradeSearch
                     int keyIdx = wParam.ToInt32();
 
                     string popWinTitle = "이곳을 잡고 이동, 이미지 클릭시 닫힘";
-                    Config_shortcuts shortcut = configData.shortcuts.Find(x => x.keycode == (keyIdx - 10000));
+                    ConfigShortcut shortcut = Array.Find(mConfigData.Shortcuts, x => x.keycode == (keyIdx - 10000));
 
                     if (shortcut != null && shortcut.value != null)
                     {
@@ -293,7 +352,7 @@ namespace PoeTradeSearch
                                 {
                                     bIsPause = false;
 
-                                    if (bIsAdministrator && configData.options.ctrl_wheel)
+                                    if (bIsAdministrator && mConfigData.Options.ctrl_wheel)
                                     {
                                         MouseHook.Start();
                                     }
@@ -307,7 +366,7 @@ namespace PoeTradeSearch
                                 {
                                     bIsPause = true;
 
-                                    if (bIsAdministrator && configData.options.ctrl_wheel)
+                                    if (bIsAdministrator && mConfigData.Options.ctrl_wheel)
                                     {
                                         MouseHook.Stop();
                                     }
@@ -485,7 +544,7 @@ namespace PoeTradeSearch
             ckCorrupt.IsChecked = false;
             ckCorrupt.FontWeight = FontWeights.Normal;
             ckCorrupt.Foreground = SystemColors.WindowTextBrush;
-            
+
             cbOrbs.SelectionChanged -= CbOrbs_SelectionChanged;
             cbSplinters.SelectionChanged -= CbOrbs_SelectionChanged;
             cbOrbs.SelectedIndex = 0;
@@ -501,7 +560,6 @@ namespace PoeTradeSearch
 
             for (int i = 0; i < 10; i++)
             {
-                ((ComboBox)this.FindName("cbOpt" + i)).Items.Clear();
                 ((TextBox)this.FindName("tbOpt" + i)).Text = "";
                 ((TextBox)this.FindName("tbOpt" + i + "_0")).Text = "";
                 ((TextBox)this.FindName("tbOpt" + i + "_1")).Text = "";
@@ -513,6 +571,11 @@ namespace PoeTradeSearch
                 ((TextBox)this.FindName("tbOpt" + i + "_1")).BorderBrush = SystemColors.ActiveBorderBrush;
                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).BorderBrush = SystemColors.ActiveBorderBrush;
                 ((CheckBox)this.FindName("tbOpt" + i + "_3")).BorderBrush = SystemColors.ActiveBorderBrush;
+
+                ((ComboBox)this.FindName("cbOpt" + i)).Items.Clear();
+                // ((ComboBox)this.FindName("cbOpt" + i)).ItemsSource = new List<FilterEntrie>();
+                ((ComboBox)this.FindName("cbOpt" + i)).DisplayMemberPath = "Name";
+                ((ComboBox)this.FindName("cbOpt" + i)).SelectedValuePath = "Name";
             }
         }
 
@@ -547,7 +610,7 @@ namespace PoeTradeSearch
                 if (asData.Length > 1 && asData[0].Length > 6 && asData[0].Substring(0, 5) == ResStr.Rarity + ": ")
                 {
                     ResetControls();
-                    itemBaseName = new ItemBaseName();
+                    mItemBaseName = new ItemBaseName();
 
                     string[] asOpt = asData[0].Trim().Split(new string[] { "\r\n" }, StringSplitOptions.None);
 
@@ -593,26 +656,35 @@ namespace PoeTradeSearch
                                     isMapFragments = true;
                                 else if (lItemOption[ResStr.ItemLv] != "" && k < 10)
                                 {
+                                    bool resistance = false;
                                     bool crafted = asOpt[j].IndexOf("(crafted)") > -1;
                                     string input = Regex.Replace(asOpt[j], @" \([a-zA-Z]+\)", "");
                                     input = Regex.Escape(Regex.Replace(input, @"[+-]?[0-9]+\.[0-9]+|[+-]?[0-9]+", "#"));
-                                    input = Regex.Replace(input, @"\\#", "[+-]?([0-9]+\\.[0-9]+|[0-9]+|#)");
+                                    input = Regex.Replace(input, @"\\#", "[+-]?([0-9]+\\.[0-9]+|[0-9]+|\\#)");
                                     //input = Regex.Replace(input, @"\+#", "(+|)#");
 
-                                    Regex rgx;
-                                    FilterData filter;
+                                    FilterResultEntrie filter = null;
+                                    Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
 
-                                    rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
+                                    FilterResult[] filterResults = mFilterData.result;
 
-                                    foreach (var item in ResStr.lFilterType)
+                                    foreach (FilterResult filterResult in filterResults)
                                     {
-                                        filter = filterDatas.Find(x => rgx.IsMatch(x.text) && x.type == item.Value);
-                                        if (filter != null)
-                                            ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(item.Key);
+                                        FilterResultEntrie entrie = Array.Find(filterResult.entries, x => rgx.IsMatch(x.text));
+                                        if (entrie != null)
+                                        {
+                                            ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(new FilterEntrie(entrie.id, filterResult.label));
+                                            if (filter == null)
+                                            {
+                                                string[] id_split = entrie.id.Split('.');
+                                                resistance = id_split.Length == 2 && ResStr.lResistance.ContainsKey(id_split[1]);
+                                                filter = entrie;
+                                            }
+                                        }
                                     }
 
-                                    filter = null;
-                                    int selidx = ((ComboBox)this.FindName("cbOpt" + k)).Items.IndexOf("제작");
+                                    ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Crafted;
+                                    int selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
 
                                     if (crafted && selidx > -1)
                                     {
@@ -621,22 +693,24 @@ namespace PoeTradeSearch
                                         ((TextBox)this.FindName("tbOpt" + k + "_1")).BorderBrush = System.Windows.Media.Brushes.Blue;
                                         ((CheckBox)this.FindName("tbOpt" + k + "_2")).BorderBrush = System.Windows.Media.Brushes.Blue;
                                         ((CheckBox)this.FindName("tbOpt" + k + "_3")).BorderBrush = System.Windows.Media.Brushes.Blue;
-
-                                        filter = filterDatas.Find(x => rgx.IsMatch(x.text) && x.type == "crafted");
                                         ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex = selidx;
                                     }
                                     else
                                     {
-                                        foreach (var item in ResStr.lFilterType)
+                                        ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Pseudo;
+                                        selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
+                                        if (selidx == -1)
                                         {
-                                            filter = filterDatas.Find(x => rgx.IsMatch(x.text) && x.type == item.Value);
-                                            if (filter != null)
-                                            {
-                                                selidx = ((ComboBox)this.FindName("cbOpt" + k)).Items.IndexOf(item.Key);
-                                                ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex = selidx;
-                                                break;
-                                            }
+                                            ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Explicit;
+                                            selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
                                         }
+                                        if (selidx == -1)
+                                        {
+                                            ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Fractured;
+                                            selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
+                                        }
+
+                                        ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex = selidx;
                                     }
 
                                     if (filter != null)
@@ -648,8 +722,7 @@ namespace PoeTradeSearch
                                         }
 
                                         ((TextBox)this.FindName("tbOpt" + k)).Text = filter.text;
-                                        if (ResStr.lIsResistance.ContainsKey(filter.text))
-                                            ((CheckBox)this.FindName("tbOpt" + k + "_3")).Visibility = Visibility.Visible;
+                                        ((CheckBox)this.FindName("tbOpt" + k + "_3")).Visibility = resistance ? Visibility.Visible : Visibility.Hidden;
 
                                         bool isMin = false, isMax = false;
                                         int idxMin = 0, idxMax = 1;
@@ -688,7 +761,8 @@ namespace PoeTradeSearch
                                         }
                                         else
                                         {
-                                            bool defMaxPosition = (filter.default_position ?? "") == "max";
+                                            string[] split = filter.id.Split('.');
+                                            bool defMaxPosition = split.Length == 2 && ResStr.lDefaultPosition.ContainsKey(split[1]);
                                             if ((defMaxPosition && min > 0 && max == 99999) || (!defMaxPosition && min < 0 && max == 99999))
                                             {
                                                 max = min;
@@ -701,8 +775,8 @@ namespace PoeTradeSearch
 
                                         Itemfilter itemfilter = new Itemfilter
                                         {
+                                            id = filter.type,
                                             text = filter.text,
-                                            type = filter.type,
                                             max = max,
                                             min = min,
                                             disabled = true,
@@ -819,7 +893,7 @@ namespace PoeTradeSearch
 
                     if (isDetail)
                     {
-                        itemBaseName.NameEN = "";
+                        mItemBaseName.NameEN = "";
 
                         try
                         {
@@ -827,13 +901,13 @@ namespace PoeTradeSearch
                             {
                                 int i = category == "Gems" ? 3 : 1;
                                 wordData = baseTypeDatas.Find(x => x.kr == itemType);
-                                itemBaseName.TypeEN = wordData == null ? itemType : wordData.en;
+                                mItemBaseName.TypeEN = wordData == null ? itemType : wordData.en;
                                 tkDetail.Text = asData.Length > 2 ? ((category != "Essences" && category != "Incubations" ? asData[i] : "") + asData[i + 1]) : "";
                             }
                             else
                             {
                                 wordData = DetailNameDatas.Find(x => x.kr == itemType);
-                                itemBaseName.TypeEN = wordData == null ? itemType : wordData.en;
+                                mItemBaseName.TypeEN = wordData == null ? itemType : wordData.en;
                                 if ((wordData?.detail ?? "") != "")
                                     tkDetail.Text = "세부사항:" + '\n' + '\n' + wordData.detail.Replace("\\n", "" + '\n');
                                 else
@@ -850,6 +924,7 @@ namespace PoeTradeSearch
                         int ImpCnt = itemfilters.Count - (itemRarity == ResStr.Normal ? 0 : notImpCnt);
                         for (int i = 0; i < itemfilters.Count; i++)
                         {
+                            int selidx = -1;
                             Itemfilter ifilter = itemfilters[i];
 
                             if (i < ImpCnt)
@@ -861,27 +936,24 @@ namespace PoeTradeSearch
                                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
                                 ((CheckBox)this.FindName("tbOpt" + i + "_3")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
 
-                                int selidx = ((ComboBox)this.FindName("cbOpt" + i)).Items.IndexOf("인챈");
+                                ((ComboBox)this.FindName("cbOpt" + i)).SelectedValue = ResStr.Enchant;
+                                selidx = ((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex;
                                 if (selidx == -1)
-                                    selidx = ((ComboBox)this.FindName("cbOpt" + i)).Items.IndexOf("고정");
-                                if (selidx == -1)
-                                    selidx = 0;
-
-                                ((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex = selidx;
-                                string tmp2 = (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue;
-
-                                if (ResStr.lFilterType.ContainsKey(tmp2 ?? "error"))
                                 {
-                                    itemfilters[i].type = ResStr.lFilterType[tmp2];
+                                    ((ComboBox)this.FindName("cbOpt" + i)).SelectedValue = ResStr.Implicit;
+                                    selidx = ((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex;
                                 }
+
+                                if (selidx != -1)
+                                    ((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex = selidx;
 
                                 itemfilters[i].isImplicit = true;
                                 itemfilters[i].disabled = true;
                             }
 
-                            if (category != "" && ifilter.type != "implicit" && ifilter.type != "enchant")
+                            if (category != "" && selidx == -1)
                             {
-                                if (configData.Checked.Find(x => x.text == ifilter.text && x.id.IndexOf(category + "/") > -1) != null)
+                                if (Array.Find(mConfigData.Checked, x => x.text == ifilter.text && x.id.IndexOf(category + "/") > -1) != null)
                                 {
                                     ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = true;
                                     itemfilters[i].disabled = false;
@@ -921,7 +993,7 @@ namespace PoeTradeSearch
                         }
 
                         wordData = wordNameDatas.Find(x => x.kr == itemName);
-                        itemBaseName.NameEN = wordData == null ? itemName : wordData.en;
+                        mItemBaseName.NameEN = wordData == null ? itemName : wordData.en;
 
                         if (wordData == null && itemRarity == ResStr.Rare)
                         {
@@ -939,7 +1011,7 @@ namespace PoeTradeSearch
                                     if (wordData != null)
                                     {
                                         idx = i + 1;
-                                        itemBaseName.NameEN = wordData.en;
+                                        mItemBaseName.NameEN = wordData.en;
                                         break;
                                     }
                                 }
@@ -951,7 +1023,7 @@ namespace PoeTradeSearch
                                     wordData = wordNameDatas.Find(x => x.kr == tmp2);
                                     if (wordData != null)
                                     {
-                                        itemBaseName.NameEN += wordData.en;
+                                        mItemBaseName.NameEN += wordData.en;
                                         break;
                                     }
                                 }
@@ -969,18 +1041,18 @@ namespace PoeTradeSearch
                             }
                         }
 
-                        itemBaseName.TypeEN = wordData == null ? itemType : wordData.en;
+                        mItemBaseName.TypeEN = wordData == null ? itemType : wordData.en;
                     }
 
-                    itemBaseName.Rarity = itemRarity;
-                    itemBaseName.Category = itemCategory;
-                    itemBaseName.NameKR = itemName;// + (matchName == null ? "" : matchName.Value);
-                    itemBaseName.TypeKR = itemType + (matchType == null ? "" : matchType.Value);
+                    mItemBaseName.Rarity = itemRarity;
+                    mItemBaseName.Category = itemCategory;
+                    mItemBaseName.NameKR = itemName;// + (matchName == null ? "" : matchName.Value);
+                    mItemBaseName.TypeKR = itemType + (matchType == null ? "" : matchType.Value);
 
                     if (ResStr.ServerLang == 1)
-                        lbName.Content = itemBaseName.NameEN + " " + itemBaseName.TypeEN;
+                        lbName.Content = mItemBaseName.NameEN + " " + mItemBaseName.TypeEN;
                     else
-                        lbName.Content = Regex.Replace(itemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(itemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "");
+                        lbName.Content = Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "");
 
                     cbName.Content = lbName.Content;
 
@@ -997,7 +1069,7 @@ namespace PoeTradeSearch
                     tbQualityMin.Text = itemQuality;
 
                     cbName.Visibility = itemRarity != ResStr.Unique && byType ? Visibility.Visible : Visibility.Hidden;
-                    cbName.IsChecked = !configData.options.search_by_type;
+                    cbName.IsChecked = !mConfigData.Options.search_by_type;
 
                     lbName.Visibility = itemRarity != ResStr.Unique && byType ? Visibility.Hidden : Visibility.Visible;
                     lbRarity.Content = itemRarity;
@@ -1221,15 +1293,15 @@ namespace PoeTradeSearch
             for (int i = 0; i < 10; i++)
             {
                 Itemfilter itemfilter = new Itemfilter();
-                itemfilter.text = ((TextBox)this.FindName("tbOpt" + i)).Text.Trim();
-                itemfilter.type = itemfilter.text == "총 저항 #%" ? "유사" : (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue;
+                ComboBox comboBox = (ComboBox)this.FindName("cbOpt" + i);
 
-                if (itemfilter.text != "" && ResStr.lFilterType.ContainsKey(itemfilter.type ?? "error"))
+                if (comboBox.SelectedIndex > -1)
                 {
+                    itemfilter.text = ((TextBox)this.FindName("tbOpt" + i)).Text.Trim();
                     itemfilter.disabled = ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked != true;
                     itemfilter.min = StrToDouble(((TextBox)this.FindName("tbOpt" + i + "_0")).Text, 99999);
                     itemfilter.max = StrToDouble(((TextBox)this.FindName("tbOpt" + i + "_1")).Text, 99999);
-                    itemfilter.type = ResStr.lFilterType[itemfilter.type];
+                    itemfilter.id = itemfilter.text == ResStr.TotalResistance ? "pseudo.pseudo_total_resistance" : ((FilterEntrie)comboBox.SelectedItem).ID;
                     itemOption.itemfilters.Add(itemfilter);
                 }
             }
@@ -1239,17 +1311,17 @@ namespace PoeTradeSearch
 
         private string CreateJson(ItemOption itemOptions)
         {
-            if (itemBaseName.Rarity != null && itemBaseName.Rarity != "")
+            if (mItemBaseName.Rarity != null && mItemBaseName.Rarity != "")
             {
                 try
                 {
                     JsonData jsonData = new JsonData();
                     jsonData.Query = new q_Query();
 
-                    jsonData.Query.Name = ResStr.ServerLang == 1 ? itemBaseName.NameEN : itemBaseName.NameKR;
-                    jsonData.Query.Type = ResStr.ServerLang == 1 ? itemBaseName.TypeEN : itemBaseName.TypeKR;
+                    jsonData.Query.Name = ResStr.ServerLang == 1 ? mItemBaseName.NameEN : mItemBaseName.NameKR;
+                    jsonData.Query.Type = ResStr.ServerLang == 1 ? mItemBaseName.TypeEN : mItemBaseName.TypeKR;
 
-                    string category = itemBaseName.Category != "" ? itemBaseName.Category.Split('/')[0] : "";
+                    string category = mItemBaseName.Category != "" ? mItemBaseName.Category.Split('/')[0] : "";
 
                     jsonData.Query.Stats = new q_Stats[0];
                     jsonData.Query.Status.Option = "online";
@@ -1296,27 +1368,44 @@ namespace PoeTradeSearch
                         for (int i = 0; i < itemOptions.itemfilters.Count; i++)
                         {
                             string input = itemOptions.itemfilters[i].text;
-                            string type = itemOptions.itemfilters[i].type;
+                            string type = itemOptions.itemfilters[i].id.Split('.')[0];
 
                             if (input.Trim() != "")
                             {
-                                FilterData filter = null;
-                                string cateLower = category.ToLower();
+                                string type_name = ResStr.lFilterTypeName[type];
 
-                                int key = ResStr.lParticular.ContainsKey(input) ? ResStr.lParticular[input] : 0;
+                                FilterResultEntrie filter = null;
+                                FilterResult filterResult = Array.Find(mFilterData.result, x => x.label == type_name);
 
-                                if ((key == 1 && category == "Weapons") || (key == 2 && category == "Armours"))
+                                input = Regex.Escape(input).Replace("\\+\\#", "[+]?\\#");
+
+                                if (category == "Weapons" || category == "Armours")
                                 {
-                                    filter = filterDatas.Find(x => x.text == input + "(특정)" && x.type == type && x.force == cateLower);
-                                    if (filter == null)
-                                        filter = filterDatas.Find(x => x.text == input + "(특정)" && x.type == type);
+                                    Regex rgx = new Regex("^" + input + "(\\(" + ResStr.Local + "\\))?$", RegexOptions.IgnoreCase);
+                                    FilterResultEntrie[] tmp_filters = Array.FindAll(filterResult.entries, x => rgx.IsMatch(x.text) && x.type == type);
+                                    if (tmp_filters.Length > 1)
+                                    {
+                                        foreach (FilterResultEntrie tmp_filter in tmp_filters)
+                                        {
+                                            string[] tmp_split = tmp_filter.id.Split('.');
+
+                                            if (tmp_split.Length == 2 && ResStr.lParticular.ContainsKey(tmp_split[1]))
+                                            {
+                                                filter = tmp_filter;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else if (tmp_filters.Length == 1)
+                                    {
+                                        filter = tmp_filters[0];
+                                    }
                                 }
 
                                 if (filter == null)
                                 {
-                                    filter = filterDatas.Find(x => x.text == input && x.type == type && x.force == cateLower);
-                                    if (filter == null)
-                                        filter = filterDatas.Find(x => x.text == input && x.type == type);
+                                    Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
+                                    filter = Array.Find(filterResult.entries, x => rgx.IsMatch(x.text) && x.type == type);
                                 }
 
                                 if (filter != null)
@@ -1346,7 +1435,7 @@ namespace PoeTradeSearch
 
                         if (itemOptions.ByType && category == "Weapons" || category == "Armours")
                         {
-                            string[] tmp = itemBaseName.Category.Split('/');
+                            string[] tmp = mItemBaseName.Category.Split('/');
 
                             if (tmp.Length > 2)
                             {
@@ -1373,14 +1462,14 @@ namespace PoeTradeSearch
                     }
 
                     jsonData.Query.Filters.Type_filters.type_filters_filters.Rarity.Option = "any";
-                    if (ResStr.lRarity.ContainsKey(itemBaseName.Rarity))
+                    if (ResStr.lRarity.ContainsKey(mItemBaseName.Rarity))
                     {
-                        jsonData.Query.Filters.Type_filters.type_filters_filters.Rarity.Option = ResStr.lRarity[itemBaseName.Rarity];
+                        jsonData.Query.Filters.Type_filters.type_filters_filters.Rarity.Option = ResStr.lRarity[mItemBaseName.Rarity];
                     }
 
                     string sEntity = Json.Serialize<JsonData>(jsonData);
 
-                    if (itemBaseName.Rarity != ResStr.Unique || jsonData.Query.Name == "")
+                    if (mItemBaseName.Rarity != ResStr.Unique || jsonData.Query.Name == "")
                     {
                         sEntity = sEntity.Replace("\"name\":\"" + jsonData.Query.Name + "\",", "");
 
@@ -1444,6 +1533,29 @@ namespace PoeTradeSearch
                 }
             }
             catch { }
+        }
+    }
+
+    public static class Json
+    {
+        public static string Serialize<T>(object obj) where T : class
+        {
+            DataContractJsonSerializer dcsJson = new DataContractJsonSerializer(typeof(T));
+            MemoryStream mS = new MemoryStream();
+            dcsJson.WriteObject(mS, obj);
+            var json = mS.ToArray();
+            mS.Close();
+            return Encoding.UTF8.GetString(json, 0, json.Length);
+        }
+
+        public static T Deserialize<T>(string strData) where T : class
+        {
+            DataContractJsonSerializer dcsJson = new DataContractJsonSerializer(typeof(T));
+            byte[] byteArray = Encoding.UTF8.GetBytes(strData);
+            MemoryStream mS = new MemoryStream(byteArray);
+            T tRet = dcsJson.ReadObject(mS) as T;
+            mS.Dispose();
+            return (tRet);
         }
     }
 

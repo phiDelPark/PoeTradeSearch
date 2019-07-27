@@ -100,6 +100,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Contracts.cs" />
     <Compile Include="ResStr.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -110,7 +111,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Funcs.cs" />
-    <Compile Include="Json.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

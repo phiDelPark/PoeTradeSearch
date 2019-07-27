@@ -21,99 +21,14 @@ namespace PoeTradeSearch
     /// </summary>
     public partial class MainWindow : Window
     {
-        [DataContract]
-        public class Itemfilter
-        {
-            //public string id { get; set; }
-            public string text { get; set; }
-            public string type { get; set; }
-            public double max { get; set; }
-            public double min { get; set; }
-            public bool disabled { get; set; }
-            public bool isImplicit { get; set; }
-        }
-
-        [DataContract]
-        public class ItemOption
-        {
-            public bool Elder { get; set; }
-            public bool Shaper { get; set; }
-            public bool Corrupt { get; set; }
-            public bool ByType { get; set; }
-            public bool ChkSocket { get; set; }
-            public bool ChkQuality { get; set; }
-            public bool ChkLv { get; set; }
-            public double SocketMin { get; set; }
-            public double SocketMax { get; set; }
-            public double LinkMin { get; set; }
-            public double LinkMax { get; set; }
-            public double QualityMin { get; set; }
-            public double QualityMax { get; set; }
-            public double LvMin { get; set; }
-            public double LvMax { get; set; }
-            public List<Itemfilter> itemfilters = new List<Itemfilter>();
-        }
-
-        [DataContract]
-        public class ItemBaseName
-        {
-            public string NameKR { get; set; }
-            public string TypeKR { get; set; }
-            public string NameEN { get; set; }
-            public string TypeEN { get; set; }
-            public string Rarity { get; set; }
-            public string Category { get; set; }
-        }
-
-        [DataContract]
-        public class Config_options
-        {
-            public string league { get; set; }
-            public string server { get; set; }
-            public int server_timeout { get; set; }
-            public bool server_redirect { get; set; }
-            public string server_useragent { get; set; }
-            public int search_week_before { get; set; }
-            public bool search_by_type { get; set; }
-            public bool check_updates { get; set; }
-            public bool ctrl_wheel { get; set; }
-        }
-
-        [DataContract]
-        public class Config_shortcuts
-        {
-            public int keycode { get; set; }
-            public bool ctrl { get; set; }
-            public string value { get; set; }
-            public string position { get; set; }            
-        }
-
-        [DataContract]
-        public class Config_checked
-        {
-            public string id { get; set; }
-            public string text { get; set; }
-        }
-
-        [DataContract]
-        public class ConfigData
-        {
-            public Config_options options = new Config_options();
-            public List<Config_shortcuts> shortcuts = new List<Config_shortcuts>();
-
-            [DataMember(Name = "checked")]
-            public List<Config_checked> Checked = new List<Config_checked>();
-        }
-
-        private List<FilterData> filterDatas;
         private List<WordData> baseTypeDatas;
         private List<WordData> wordNameDatas;
         private List<WordData> DetailNameDatas;
 
-        private ConfigData configData;
-        private ItemBaseName itemBaseName;
+        private ConfigData mConfigData;
+        private FilterData mFilterData;
 
-        //private ItemBaseInfo dcItemInfo;
+        private ItemBaseName mItemBaseName;
 
         private System.Windows.Forms.NotifyIcon TrayIcon;
 
@@ -123,7 +38,6 @@ namespace PoeTradeSearch
 
         private static bool bIsHotKey = false;
         public static bool bIsPause = false;
-        //public static bool bIsDebug = false;
 
         public static DateTime MouseHookCallbackTime;
 
@@ -183,9 +97,9 @@ namespace PoeTradeSearch
         {
             Setting();
 
-            ResStr.ServerType = ResStr.ServerType == "" ? configData.options.league : ResStr.ServerType;
+            ResStr.ServerType = ResStr.ServerType == "" ? mConfigData.Options.league : ResStr.ServerType;
             ResStr.ServerType = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(ResStr.ServerType.ToLower()).Replace(" ", "%20");
-            ResStr.ServerLang = (byte)(configData.options.server == "en" ? 1 : 0);
+            ResStr.ServerLang = (byte)(mConfigData.Options.server == "en" ? 1 : 0);
 
             ControlTemplate ct = cbOrbs.Template;
             Popup popup = ct.FindName("PART_Popup", cbOrbs) as Popup;
@@ -217,7 +131,7 @@ namespace PoeTradeSearch
 
             if (bIsAdministrator)
             {
-                foreach (var item in configData.shortcuts)
+                foreach (var item in mConfigData.Shortcuts)
                 {
                     if (item.keycode > 0 && (item.value ?? "") != "")
                     {
@@ -259,7 +173,7 @@ namespace PoeTradeSearch
                 timer.Tick += new EventHandler(Timer_Tick);
                 timer.Start();
 
-                if (configData.options.ctrl_wheel)
+                if (mConfigData.Options.ctrl_wheel)
                 {
                     MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
                     MouseHook.MouseAction += new EventHandler(MouseEvent);
@@ -271,7 +185,7 @@ namespace PoeTradeSearch
                     "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
                     (bIsAdministrator ? "관리자로 실행했기에 추가 단축키나 창고 휠 이동 기능이" : "추가 단축키나 창고 휠 이동 기능은 관리자로 실행해야") + " 작동합니다.";
 
-            if (configData.options.check_updates && CheckUpdates())
+            if (mConfigData.Options.check_updates && CheckUpdates())
             {
                 MessageBoxResult result = MessageBox.Show(Application.Current.MainWindow,
                         tmp + '\n' + '\n' + "이 프로그램의 최신 버전이 발견 되었습니다." + '\n' + "지금 새 버전을 받으러 가시겠습니까?",
@@ -319,7 +233,7 @@ namespace PoeTradeSearch
             if (bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0))
             {
                 exchange = new string[2];
-                exchange[0] = ResStr.lExchangeCurrency[itemBaseName.TypeKR];
+                exchange[0] = ResStr.lExchangeCurrency[mItemBaseName.TypeKR];
                 exchange[1] = ResStr.lExchangeCurrency[(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
                 url = ResStr.ExchangeApi[ResStr.ServerLang] + ResStr.ServerType + "/?redirect&source=";
                 url += Uri.EscapeDataString("{\"exchange\":{\"status\":{\"option\":\"online\"},\"have\":[\"" + exchange[0] + "\"],\"want\":[\"" + exchange[1] + "\"]}}");
@@ -335,7 +249,7 @@ namespace PoeTradeSearch
                     return;
                 }
 
-                if (configData.options.server_redirect)
+                if (mConfigData.Options.server_redirect)
                 {
                     url = ResStr.TradeApi[ResStr.ServerLang] + ResStr.ServerType + "/?redirect&source=";
                     url += Uri.EscapeDataString(sEntity);
@@ -416,7 +330,7 @@ namespace PoeTradeSearch
         {
             string idx = (string)((CheckBox)sender).Tag;
             ((TextBox)this.FindName("tbOpt" + idx)).Tag = ((TextBox)this.FindName("tbOpt" + idx)).Text;
-            ((TextBox)this.FindName("tbOpt" + idx)).Text = "총 저항 #%";
+            ((TextBox)this.FindName("tbOpt" + idx)).Text = ResStr.TotalResistance;
         }
 
         private void TbOpt0_3_Unchecked(object sender, RoutedEventArgs e)
@@ -430,9 +344,9 @@ namespace PoeTradeSearch
             ResStr.ServerLang = byte.Parse((string)((Button)sender).Tag);
 
             if (ResStr.ServerLang == 0)
-                lbName.Content = Regex.Replace(itemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(itemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "");
+                lbName.Content = Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "");
             else
-                lbName.Content = (itemBaseName.NameEN + " " + itemBaseName.TypeEN).Trim();
+                lbName.Content = (mItemBaseName.NameEN + " " + mItemBaseName.TypeEN).Trim();
 
             cbName.Content = lbName.Content;
 
@@ -481,7 +395,7 @@ namespace PoeTradeSearch
             if (bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0))
             {
                 exchange = new string[2];
-                exchange[0] = ResStr.lExchangeCurrency[itemBaseName.TypeKR];
+                exchange[0] = ResStr.lExchangeCurrency[mItemBaseName.TypeKR];
                 exchange[1] = ResStr.lExchangeCurrency[(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
             }
 
@@ -544,7 +458,7 @@ namespace PoeTradeSearch
                 if (bIsHotKey)
                     RemoveRegisterHotKey();
 
-                if (configData != null && configData.options.ctrl_wheel)
+                if (mConfigData != null && mConfigData.Options.ctrl_wheel)
                     MouseHook.Stop();
             }
 

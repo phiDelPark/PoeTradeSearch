@@ -7,7 +7,8 @@
 			"search_week_before":1,
 			"search_by_type":false,
 			"check_updates":true,
-			"ctrl_wheel":true
+			"ctrl_wheel":true,
+			"data_version":"3.7.4",
 		},
 	"shortcuts":[
 			{"keycode":113,"value":"{Enter}/hideout{Enter}","Detail":"은신처 이동 (F2)"},

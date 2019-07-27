@@ -55,16 +55,48 @@ namespace PoeTradeSearch
         internal const string AttackSpeedIncr = "공격 속도 #% 증가";
         internal const string PhysicalDamageIncr = "물리 피해 #% 증가";
 
-        internal static Dictionary<string, byte> lParticular = new Dictionary<string, byte>()
+        internal const string Pseudo = "유사";
+        internal const string Explicit = "일반";
+        internal const string Fractured = "분열";
+        internal const string Crafted = "제작";
+        internal const string Implicit = "고정";
+        internal const string Enchant = "인챈";
+        internal const string Veiled = "장막";
+        internal const string Monster = "야수";
+        internal const string Delve = "탐광";
+
+        internal const string Local = "특정";
+
+        internal const string TotalResistance = "총 저항 +#%";
+
+        internal static Dictionary<string, string> lFilterTypeName = new Dictionary<string, string>()
         {
-            { AttackSpeedIncr, 1 }, { "정확도 #", 1 }, {"명중 시 #%의 확률로 중독", 1}, { "#~#의 카오스 피해 추가", 1 },
-            { "#~#의 물리 피해 추가", 1 }, { "#~#의 번개 피해 추가", 1 },{ "#~#의 화염 피해 추가", 1 },   { "#~#의 냉기 피해 추가", 1 },
-            { "에너지 보호막 최대치 #", 2 }, { "회피 #% 증가", 2 }, {"회피 #", 2}, { "방어도 #% 증가", 2}, { "방어도 #", 2 }
+            { "pseudo", Pseudo}, { "explicit", Explicit}, { "fractured", Fractured}, { "crafted", Crafted}, { "implicit", Implicit},
+            { "enchant", Enchant}, { "veiled", Veiled}, { "monster", Monster}, { "delve", Delve}
         };
 
-        internal static Dictionary<string, string> lFilterType = new Dictionary<string, string>()
+        internal static Dictionary<string, bool> lDefaultPosition = new Dictionary<string, bool>()
         {
-            { "유사", "pseudo"}, { "일반", "explicit"}, { "분열", "fractured"}, { "제작", "crafted"}, { "고정", "implicit"}, { "인챈", "enchant"}
+            { "stat_3441651621", true}, { "stat_3853018505", true}, { "stat_969865219", true},  { "stat_4176970656", true},
+            { "stat_3277537093", true}, { "stat_3691641145", true}, { "stat_3557561376", true}, { "stat_705686721", true},
+            { "stat_2156764291", true}, { "stat_3743301799", true}, { "stat_1187803783", true}, { "stat_3612407781", true},
+            { "stat_496011033", true},  { "stat_1625103793", true}, { "stat_308618188", true},  { "stat_2590715472", true},
+            { "stat_1964333391", true}, { "stat_614758785", true},  { "stat_2440172920", true}, { "stat_321765853", true},
+            { "stat_465051235", true},  { "stat_261654754", true},  { "stat_3522931817", true}, { "stat_1443108510", true}, { "stat_2477636501", true}
+        };
+
+        internal static Dictionary<string, byte> lParticular = new Dictionary<string, byte>()
+        {
+            { "stat_821021828", 1}, { "stat_640052854", 1},
+            { "stat_210067635", 1}, { "stat_691932474", 1}, { "stat_3885634897", 1}, { "stat_2223678961", 1},
+            { "stat_1940865751", 1}, { "stat_3336890334", 1}, { "stat_709508406", 1}, { "stat_1037193709", 1},
+            { "stat_4052037485", 2}, { "stat_124859000", 2}, { "stat_53045048", 2}, { "stat_1062208444", 2}, { "stat_3484657501", 2}
+        };
+
+        internal static Dictionary<string, bool> lResistance = new Dictionary<string, bool>()
+        {
+            { "stat_4220027924", true }, { "stat_3372524247", true }, { "stat_1671376347", true }, { "stat_2923486259", true },
+            { "stat_2915988346", true }, { "stat_4277795662", true }, { "stat_3441501978", true }
         };
 
         internal static Dictionary<string, string> lCategory = new Dictionary<string, string>()
@@ -80,12 +112,6 @@ namespace PoeTradeSearch
         {
             { Unique, "unique"}, { Rare, "rare"}, { Magic, "magic"}/*, { Normal, "normal"}*/
         };
-
-        internal static Dictionary<string, bool> lIsResistance = new Dictionary<string, bool>()
-        {
-            { "냉기 저항 #%", true }, { "화염 저항 #%", true }, { "번개 저항 #%", true }, { "카오스 저항 #%", true },
-            { "화염 및 냉기 저항 #%", true }, { "냉기 및 번개 저항 #%", true }, { "화염 및 번개 저항 #%", true }
-        };        
 
         internal static Dictionary<string, string> lExchangeCurrency = new Dictionary<string, string>()
         {
