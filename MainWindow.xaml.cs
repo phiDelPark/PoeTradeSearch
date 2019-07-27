@@ -187,8 +187,6 @@ namespace PoeTradeSearch
             ResStr.ServerType = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(ResStr.ServerType.ToLower()).Replace(" ", "%20");
             ResStr.ServerLang = (byte)(configData.options.server == "en" ? 1 : 0);
 
-            btnSearch.Content = "거래소에서 찾기 (" + (ResStr.ServerLang == 0 ? "한글" : "영어") + ")";
-
             ControlTemplate ct = cbOrbs.Template;
             Popup popup = ct.FindName("PART_Popup", cbOrbs) as Popup;
 
@@ -202,7 +200,7 @@ namespace PoeTradeSearch
                 popup.Placement = PlacementMode.Top;
 
             int cnt = 0;
-            cbOrbs.Items.Add("원하는 오브 선택");
+            cbOrbs.Items.Add("교환을 원하는 오브 선택");
             cbSplinters.Items.Add("원하는 화석, 파편 선택");
             foreach (KeyValuePair<string, string> item in ResStr.lExchangeCurrency)
             {
@@ -318,14 +316,8 @@ namespace PoeTradeSearch
             string url = "";
             string[] exchange = null;
 
-            if (bdExchange.Visibility == Visibility.Visible)
+            if (bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0))
             {
-                if (cbOrbs.SelectedIndex < 1 && cbSplinters.SelectedIndex < 1)
-                {
-                    MessageBox.Show(Application.Current.MainWindow, "교환을 원하는 화폐를 선택해 주세요.", "화폐 교환");
-                    return;
-                }
-
                 exchange = new string[2];
                 exchange[0] = ResStr.lExchangeCurrency[itemBaseName.TypeKR];
                 exchange[1] = ResStr.lExchangeCurrency[(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
@@ -392,22 +384,6 @@ namespace PoeTradeSearch
             this.Close();
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            ResStr.ServerLang = 0;
-            btnSearch.Content = "거래소에서 찾기 (한글)";
-            lbName.Content = Regex.Replace(itemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(itemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "");
-            cbName.Content = lbName.Content;
-        }
-
-        private void Button_Click_3(object sender, RoutedEventArgs e)
-        {
-            ResStr.ServerLang = 1;
-            btnSearch.Content = "거래소에서 찾기 (영어)";
-            lbName.Content = (itemBaseName.NameEN + " " + itemBaseName.TypeEN).Trim();
-            cbName.Content = lbName.Content;
-        }
-
         private void CkElder_Checked(object sender, RoutedEventArgs e)
         {
             if (ckElder.IsChecked == true)
@@ -446,21 +422,40 @@ namespace PoeTradeSearch
         private void TbOpt0_3_Unchecked(object sender, RoutedEventArgs e)
         {
             string idx = (string)((CheckBox)sender).Tag;
-            ((TextBox)this.FindName("tbOpt" + idx)).Text =  (string)((TextBox)this.FindName("tbOpt" + idx)).Tag;
+            ((TextBox)this.FindName("tbOpt" + idx)).Text = (string)((TextBox)this.FindName("tbOpt" + idx)).Tag;
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            ResStr.ServerLang = byte.Parse((string)((Button)sender).Tag);
+
+            if (ResStr.ServerLang == 0)
+                lbName.Content = Regex.Replace(itemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(itemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "");
+            else
+                lbName.Content = (itemBaseName.NameEN + " " + itemBaseName.TypeEN).Trim();
+
+            cbName.Content = lbName.Content;
+
+            SetSearchButtonText();
         }
 
         private void CbOrbs_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            cbSplinters.SelectionChanged -= CbSplinters_SelectionChanged;
-            cbSplinters.SelectedIndex = 0;
-            cbSplinters.SelectionChanged += CbSplinters_SelectionChanged;
-        }
+            if (((ComboBox)sender).Name == "cbOrbs")
+            {
+                cbSplinters.SelectionChanged -= CbOrbs_SelectionChanged;
+                cbSplinters.SelectedIndex = 0;
+                cbSplinters.SelectionChanged += CbOrbs_SelectionChanged;
+            }
+            else
+            {
+                cbOrbs.SelectionChanged -= CbOrbs_SelectionChanged;
+                cbOrbs.SelectedIndex = 0;
+                cbOrbs.SelectionChanged += CbOrbs_SelectionChanged;
+            }
 
-        private void CbSplinters_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            cbOrbs.SelectionChanged -= CbOrbs_SelectionChanged;
-            cbOrbs.SelectedIndex = 0;
-            cbOrbs.SelectionChanged += CbOrbs_SelectionChanged;
+            SetSearchButtonText();
+            TkPrice_MouseLeftButtonDown(null, null);
         }
 
         private void TkPrice_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -479,15 +474,8 @@ namespace PoeTradeSearch
         {
             string[] exchange = null;
 
-            if (bdExchange.Visibility == Visibility.Visible)
+            if (bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0))
             {
-                if (cbOrbs.SelectedIndex < 1 && cbSplinters.SelectedIndex < 1)
-                {
-                    tkPriceTotal.Text = "";
-                    tkPrice1.Text = "교환을 원하는 화폐를 선택해 주세요.";
-                    return;
-                }
-
                 exchange = new string[2];
                 exchange[0] = ResStr.lExchangeCurrency[itemBaseName.TypeKR];
                 exchange[1] = ResStr.lExchangeCurrency[(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];

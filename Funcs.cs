@@ -458,6 +458,12 @@ namespace PoeTradeSearch
             }
         }
 
+        private void SetSearchButtonText()
+        {
+            bool isExchange = bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0);
+            btnSearch.Content = "거래소에서 " + (isExchange ? "대량 " : "") + "찾기 (" + (ResStr.ServerLang == 0 ? "한글" : "영어") + ")";
+        }
+
         private void ResetControls()
         {
             tbLinksMin.Text = "";
@@ -478,12 +484,17 @@ namespace PoeTradeSearch
             ckShaper.IsChecked = false;
             ckCorrupt.IsChecked = false;
             ckCorrupt.FontWeight = FontWeights.Normal;
-            ckCorrupt.Foreground = System.Windows.SystemColors.WindowTextBrush;
-
-            lbDPS.Content = "옵션";
-
+            ckCorrupt.Foreground = SystemColors.WindowTextBrush;
+            
+            cbOrbs.SelectionChanged -= CbOrbs_SelectionChanged;
+            cbSplinters.SelectionChanged -= CbOrbs_SelectionChanged;
             cbOrbs.SelectedIndex = 0;
             cbSplinters.SelectedIndex = 0;
+            cbOrbs.SelectionChanged += CbOrbs_SelectionChanged;
+            cbSplinters.SelectionChanged += CbOrbs_SelectionChanged;
+
+            lbDPS.Content = "옵션";
+            SetSearchButtonText();
 
             for (int i = 0; i < 10; i++)
             {
@@ -494,11 +505,11 @@ namespace PoeTradeSearch
                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
                 ((CheckBox)this.FindName("tbOpt" + i + "_3")).IsChecked = false;
                 ((CheckBox)this.FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
-                ((TextBox)this.FindName("tbOpt" + i)).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
-                ((TextBox)this.FindName("tbOpt" + i + "_0")).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
-                ((TextBox)this.FindName("tbOpt" + i + "_1")).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
-                ((CheckBox)this.FindName("tbOpt" + i + "_2")).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
-                ((CheckBox)this.FindName("tbOpt" + i + "_3")).BorderBrush = System.Windows.SystemColors.ActiveBorderBrush;
+                ((TextBox)this.FindName("tbOpt" + i)).BorderBrush = SystemColors.ActiveBorderBrush;
+                ((TextBox)this.FindName("tbOpt" + i + "_0")).BorderBrush = SystemColors.ActiveBorderBrush;
+                ((TextBox)this.FindName("tbOpt" + i + "_1")).BorderBrush = SystemColors.ActiveBorderBrush;
+                ((CheckBox)this.FindName("tbOpt" + i + "_2")).BorderBrush = SystemColors.ActiveBorderBrush;
+                ((CheckBox)this.FindName("tbOpt" + i + "_3")).BorderBrush = SystemColors.ActiveBorderBrush;
             }
         }
 
@@ -998,18 +1009,9 @@ namespace PoeTradeSearch
                         bdDetail.Margin = thickness;
                     }
 
-                    string[] exchange = null;
-
                     bdExchange.Visibility = isDetail && IsExchangeCurrency ? Visibility.Visible : Visibility.Hidden;
-                    if (bdExchange.Visibility == Visibility.Visible)
-                    {
-                        exchange = new string[2];
-                        exchange[0] = ResStr.lExchangeCurrency[itemType];
-                        exchange[1] = exchange[0] == "chaos" ? "exa" : "chaos";
-                        cbOrbs.SelectedIndex = cbOrbs.Items.IndexOf(exchange[0] == "chaos" ? "엑잘티드 오브" : "카오스 오브");
-                    }
 
-                    PriceUpdateThreadWorker(exchange != null ? null : GetItemOptions(), exchange);
+                    PriceUpdateThreadWorker(GetItemOptions(), null);
 
                     this.ShowActivated = false;
                     this.Visibility = Visibility.Visible;
