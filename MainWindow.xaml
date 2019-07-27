@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoeTradeSearch"
-        mc:Ignorable="d"
-        Title="POE 거래소 검색" Loaded="Window_Loaded" ResizeMode="NoResize" Topmost="True" Closing="Window_Closing" Closed="Window_Closed" Deactivated="Window_Deactivated" FontFamily="Malgun Gothic" FontSize="12" SizeToContent="WidthAndHeight" PreviewKeyDown="Window_PreviewKeyDown">
+        mc:Ignorable="d" ResizeMode="NoResize" Topmost="True" SizeToContent="WidthAndHeight" Left="30" Top="30" FontFamily="Malgun Gothic" FontSize="12"
+        Title="POE 거래소 검색" Loaded="Window_Loaded" Closing="Window_Closing" Closed="Window_Closed" Deactivated="Window_Deactivated" PreviewKeyDown="Window_PreviewKeyDown">
 
     <Grid Margin="25, 20, 25, 25">
         <Label Name="lbRarity" Content="Label" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" />
@@ -145,7 +145,7 @@
         <CheckBox Name="ckCorrupt" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Content="타락" HorizontalAlignment="Left" Margin="214,385,0,0" VerticalAlignment="Top" Width="50" />
         <CheckBox Name="ckElder" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Content="엘더" HorizontalAlignment="Left" Margin="269,385,0,0" VerticalAlignment="Top" Width="50" Checked="CkElder_Checked" />
         <CheckBox Name="ckShaper" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Content="쉐이퍼" HorizontalAlignment="Left" Margin="324,385,0,0" VerticalAlignment="Top" Width="57" Checked="CkShaper_Checked" />
-        
+
         <TextBlock Name="tkPriceTotal" Text="total" HorizontalAlignment="Left" Margin="5,412,0,0" VerticalAlignment="Top" />
         <Border Margin="0,410,0,0" MaxWidth="385" Padding="6,2,6,4" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" BorderThickness="0,0,0,1" VerticalAlignment="Top" MouseEnter="TkPrice_MouseEnter" MouseLeave="TkPrice_MouseLeave" Cursor="Hand" MouseLeftButtonDown="TkPrice_MouseLeftButtonDown">
             <TextBlock Name="tkPrice1" TextAlignment="Right" Text="TextBlock" />
@@ -168,10 +168,10 @@
         </Border>
 
         <Border Name="bdExchange" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" BorderThickness="0,1,0,0" Margin="0,353,0,91" Width="385" Visibility="Hidden">
-            <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" >
-                <ComboBox Name="cbOrbs" HorizontalAlignment="Left" Margin="10,15,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="175" SelectionChanged="CbOrbs_SelectionChanged" >
+            <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
+                <ComboBox Name="cbOrbs" HorizontalAlignment="Left" Margin="10,15,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="175" SelectionChanged="CbOrbs_SelectionChanged">
                 </ComboBox>
-                <ComboBox Name="cbSplinters" HorizontalAlignment="Left" Margin="200,15,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="175" SelectionChanged="CbSplinters_SelectionChanged" >
+                <ComboBox Name="cbSplinters" HorizontalAlignment="Left" Margin="200,15,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="175" SelectionChanged="CbSplinters_SelectionChanged">
                 </ComboBox>
             </Grid>
         </Border>

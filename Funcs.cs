@@ -798,6 +798,7 @@ namespace PoeTradeSearch
                     }
 
                     WordData wordData;
+                    string itemQuality = Regex.Replace(lItemOption[ResStr.Quality].Trim(), "[^0-9]", "");
                     string category = itemCategory.Split('/')[0];
                     bool byType = category == "Weapons" || category == "Quivers" || category == "Armours" || category == "Amulets" || category == "Rings" || category == "Belts";
                     isDetail = isDetail || (!isDetail && (category == "Gems" || category == "Scarabs" || category == "MapFragments" || category == "Fossil" || category == "Incubations" || category == "Labyrinth"));
@@ -874,11 +875,14 @@ namespace PoeTradeSearch
                             }
                         }
 
+                        // DPS 계산 POE-TradeMacro 참고
                         if (!isUnIdentify && category == "Weapons")
                         {
                             double PhysicalDPS = DamageToDPS(lItemOption[ResStr.PhysicalDamage]);
                             double ElementalDPS = DamageToDPS(lItemOption[ResStr.ElementalDamage]);
                             double ChaosDPS = DamageToDPS(lItemOption[ResStr.ChaosDamage]);
+
+                            double quality20Dps = itemQuality == "" ? 0 : StrToDouble(itemQuality, 0);
                             double attacksPerSecond = StrToDouble(Regex.Replace(lItemOption[ResStr.AttacksPerSecond], @"\([a-zA-Z]+\)", "").Trim(), 0);
 
                             if (attackSpeedIncr > 0)
@@ -889,15 +893,16 @@ namespace PoeTradeSearch
                                 attacksPerSecond = baseAttackSpeed * (attackSpeedIncr / 100 + 1);
                             }
 
-                            int qualityDps = tbQualityMin.Text == "" ? 0 : int.Parse(tbQualityMin.Text);
-                            if (qualityDps < 20)
-                            {
-                                PhysicalDPS = PhysicalDPS * (PhysicalDamageIncr + 120) / (PhysicalDamageIncr + qualityDps + 100);
-                            }
+                            PhysicalDPS = (PhysicalDPS / 2) * attacksPerSecond;
+                            ElementalDPS = (ElementalDPS / 2) * attacksPerSecond;
+                            ChaosDPS = (ChaosDPS / 2) * attacksPerSecond;
 
-                            lbDPS.Content = "DPS: P." + Math.Round((PhysicalDPS / 2) * attacksPerSecond, 2).ToString() +
-                                            " + E." + Math.Round((ElementalDPS / 2) * attacksPerSecond, 2).ToString() +
-                                            " = T." + Math.Round(((PhysicalDPS + ElementalDPS + ChaosDPS) / 2) * attacksPerSecond, 2).ToString();
+                            //20 퀄리티 기준으로 계산 안함
+                            //quality20Dps = quality20Dps < 20 ? PhysicalDPS * (PhysicalDamageIncr + 120) / (PhysicalDamageIncr + quality20Dps + 100) : 0;
+
+                            lbDPS.Content = "DPS: P." + Math.Round(PhysicalDPS, 2).ToString() +
+                                            " + E." + Math.Round(ElementalDPS, 2).ToString() +
+                                            " = T." + Math.Round(PhysicalDPS + ElementalDPS + ChaosDPS, 2).ToString();
                         }
 
                         wordData = wordNameDatas.Find(x => x.kr == itemName);
@@ -974,7 +979,7 @@ namespace PoeTradeSearch
                     }
 
                     tbLvMin.Text = Regex.Replace(lItemOption[isGem ? ResStr.Lv : ResStr.ItemLv].Trim(), "[^0-9]", "");
-                    tbQualityMin.Text = Regex.Replace(lItemOption[ResStr.Quality].Trim(), "[^0-9]", "");
+                    tbQualityMin.Text = itemQuality;
 
                     cbName.Visibility = itemRarity != ResStr.Unique && byType ? Visibility.Visible : Visibility.Hidden;
                     cbName.IsChecked = !configData.options.search_by_type;

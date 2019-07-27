@@ -282,7 +282,7 @@ namespace PoeTradeSearch
 
                 if (result == MessageBoxResult.Yes)
                 {
-                    Process.Start("https://github.com/phiDelPark/PoeTradeSearch/");
+                    Process.Start("https://github.com/phiDelPark/PoeTradeSearch/releases");
                     bIsClose = true;
                     Close();
                 }
