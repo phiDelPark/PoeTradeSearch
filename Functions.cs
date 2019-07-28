@@ -1422,6 +1422,7 @@ namespace PoeTradeSearch
             itemOption.LvMin = StrToDouble(tbLvMin.Text, 99999);
             itemOption.LvMax = StrToDouble(tbLvMax.Text, 99999);
 
+            int total_res_idx = -1;
             for (int i = 0; i < 10; i++)
             {
                 Itemfilter itemfilter = new Itemfilter();
@@ -1433,7 +1434,25 @@ namespace PoeTradeSearch
                     itemfilter.disabled = ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked != true;
                     itemfilter.min = StrToDouble(((TextBox)this.FindName("tbOpt" + i + "_0")).Text, 99999);
                     itemfilter.max = StrToDouble(((TextBox)this.FindName("tbOpt" + i + "_1")).Text, 99999);
-                    itemfilter.id = itemfilter.text == ResStr.TotalResistance ? "pseudo.pseudo_total_resistance" : ((FilterEntrie)comboBox.SelectedItem).ID;
+
+                    if(itemfilter.text == ResStr.TotalResistance)
+                    {
+                        if (total_res_idx == -1)
+                            total_res_idx = itemOption.itemfilters.Count;
+                        else
+                        {
+                            itemOption.itemfilters[total_res_idx].min += itemfilter.min == 99999 ? 0 : itemfilter.min;
+                            itemOption.itemfilters[total_res_idx].max += itemfilter.max == 99999 ? 0 : itemfilter.max;
+                            continue;
+                        }
+
+                        itemfilter.id = "pseudo.pseudo_total_resistance";
+                    }
+                    else
+                    {
+                        itemfilter.id = ((FilterEntrie)comboBox.SelectedItem).ID;
+                    }
+                    
                     itemOption.itemfilters.Add(itemfilter);
                 }
             }
