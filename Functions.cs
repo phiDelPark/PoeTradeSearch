@@ -1164,13 +1164,7 @@ namespace PoeTradeSearch
                         }
 
                         BaseResultData tmpBaseType = mBaseDatas.Find(x => x.NameKo == itemType);
-                        if (tmpBaseType != null)
-                        {
-                            isDetail = tmpBaseType.Detail != null;
-                            tkDetail.Text = "세부사항:" + '\n' + '\n' + (tmpBaseType?.Detail ?? "").Replace("\\n", "" + '\n');
-                        }
-
-                        mItemBaseName.TypeEN = wordData == null ? itemType : tmpBaseType.NameEn;
+                        mItemBaseName.TypeEN = tmpBaseType == null ? itemType : tmpBaseType.NameEn;
                     }
 
                     bool IsExchangeCurrency = inherit == "Currency" && ResStr.lExchangeCurrency.ContainsKey(itemType);
@@ -1407,7 +1401,7 @@ namespace PoeTradeSearch
             itemOption.ChkSocket = ckSocket.IsChecked == true;
             itemOption.ChkQuality = ckQuality.IsChecked == true;
             itemOption.ChkLv = ckLv.IsChecked == true;
-            itemOption.ByType = cbName.IsChecked != true;
+            itemOption.ByType = cbName.Visibility==Visibility.Visible && cbName.IsChecked != true;
 
             itemOption.SocketMin = StrToDouble(tbSocketMin.Text, 99999);
             itemOption.SocketMax = StrToDouble(tbSocketMax.Text, 99999);
