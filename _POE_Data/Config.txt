@@ -1,7 +1,7 @@
 ﻿{
 	"options":{
 			"league":"legion",
-			"server":"kr",
+			"server":"ko",
 			"server_timeout":5,
 			"server_redirect":false,
 			"search_week_before":1,

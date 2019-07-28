@@ -195,15 +195,24 @@ namespace PoeTradeSearch
                         BaseResultData[] resultDatas = rootClass.Result[0].Data;
                         BaseResultData[] resultDatas2 = rootClass2.Result[0].Data;
 
+                        List<BaseResultData> datas = new List<BaseResultData>();
+
                         for (int i = 0; i < resultDatas.Length; i++)
                         {
+                            if (
+                                resultDatas[i].InheritsFrom == "Metadata/Items/Currency/AbstractMicrotransaction"
+                                || resultDatas[i].InheritsFrom == "Metadata/Items/HideoutDoodads/AbstractHideoutDoodad"
+                            )
+                                continue;
+
                             resultDatas[i].NameKo = resultDatas2[i].NameEn;
                             resultDatas[i].ID = resultDatas[i].ID.Replace("Metadata/Items/", "");
                             resultDatas[i].InheritsFrom = resultDatas[i].InheritsFrom.Replace("Metadata/Items/", "");
                             resultDatas[i].Detail = "";
+                            datas.Add(resultDatas[i]);
                         }
 
-                        rootClass.Result[0].Data = resultDatas;
+                        rootClass.Result[0].Data = datas.ToArray();
 
                         using (StreamWriter writer = new StreamWriter(path + "Bases.txt", false, Encoding.UTF8))
                         {
@@ -960,6 +969,7 @@ namespace PoeTradeSearch
                             if (tmpBaseType != null)
                                 itemType = tmpBaseType.NameKo;
                         }
+
                         if (!is_unIdentify && itemRarity == ResStr.Magic)
                             itemType = itemType.Split('-')[0].Trim();
 
@@ -1009,8 +1019,8 @@ namespace PoeTradeSearch
                     string inherit = mItemBaseName.Inherits[0];
                     string sub_inherit = mItemBaseName.Inherits.Length > 1 ? mItemBaseName.Inherits[1] : "";
 
-                    bool is_essences = inherit == "Currency" && sub_inherit.IndexOf("CurrencyEssence") == 0;
-                    bool is_incubations = inherit == "Currency" && sub_inherit.IndexOf("CurrencyIncubation") == 0;
+                    bool is_essences = inherit == "Currency" && itemID.IndexOf("Currency/CurrencyEssence") == 0;
+                    bool is_incubations = inherit == "Legion" && sub_inherit.IndexOf("Incubator") == 0;
 
                     bool byType = inherit == "Weapons" || inherit == "Quivers" || inherit == "Armours" || inherit == "Amulets" || inherit == "Rings" || inherit == "Belts";
                     isDetail = isDetail || (!isDetail && (inherit == "MapFragments" || inherit == "UniqueFragments" || inherit == "Labyrinth"));
@@ -1401,7 +1411,7 @@ namespace PoeTradeSearch
             itemOption.ChkSocket = ckSocket.IsChecked == true;
             itemOption.ChkQuality = ckQuality.IsChecked == true;
             itemOption.ChkLv = ckLv.IsChecked == true;
-            itemOption.ByType = cbName.Visibility==Visibility.Visible && cbName.IsChecked != true;
+            itemOption.ByType = cbName.Visibility == Visibility.Visible && cbName.IsChecked != true;
 
             itemOption.SocketMin = StrToDouble(tbSocketMin.Text, 99999);
             itemOption.SocketMax = StrToDouble(tbSocketMax.Text, 99999);
