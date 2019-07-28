@@ -31,7 +31,7 @@
         "server_timeout":5,          // 서버 접속 대기 시간 (초) 인터넷이 느리면 더 올려 시간 초과를 방지
         "server_redirect":false,     // 일부 환경에서 서버 데이터를 못받아와 검색이 안되는 경우 사용하는 옵션
         "search_week_before":1,      // 1~2 주일 전 물품만 시세 조회
-        "search_by_type":true,       // 기본 검색시 아이템 유형으로 검색 [true, false]
+        "search_by_type":false,       // 기본 검색시 아이템 유형으로 검색 [true, false]
         "check_updates":true,        // 시작시 최신 버전 체크 [true, false]
         "ctrl_wheel":true            // 창고를 Ctrl+Wheel 로 이동 가능하게 할지 [true, false]
       },

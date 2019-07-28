@@ -450,7 +450,7 @@ namespace PoeTradeSearch
                     int keyIdx = wParam.ToInt32();
 
                     string popWinTitle = "이곳을 잡고 이동, 이미지 클릭시 닫힘";
-                    ConfigShortcut shortcut = Array.Find(mConfigData.Shortcuts, x => x.Keycode == (keyIdx - 10000));
+                    ConfigShortcut shortcut = mConfigData.Shortcuts[keyIdx - 10001];
 
                     if (shortcut != null && shortcut.Value != null)
                     {
@@ -1629,15 +1629,23 @@ namespace PoeTradeSearch
         {
             bIsHotKey = true;
             // 0x0 : 조합키 없이 사용, 0x1: ALT, 0x2: Ctrl, 0x3: Shift
-            foreach (int code in HotKeys)
-                RegisterHotKey(mainHwnd, Math.Abs(code) + 10000, code < 0 ? 0x2 : 0x0, Math.Abs(code));
+            for (int i = 0; i < mConfigData.Shortcuts.Length; i++)
+            {
+                ConfigShortcut shortcut = mConfigData.Shortcuts[i];
+                if (shortcut.Keycode > 0 && (shortcut.Value ?? "") != "")
+                    RegisterHotKey(mainHwnd, 10001 + i, shortcut.Ctrl ? 0x2 : 0x0, Math.Abs(shortcut.Keycode));
+            }
         }
 
         private void RemoveRegisterHotKey()
         {
             bIsHotKey = false;
-            foreach (int code in HotKeys)
-                UnregisterHotKey(mainHwnd, Math.Abs(code) + 10000);
+            for (int i = 0; i < mConfigData.Shortcuts.Length; i++)
+            {
+                ConfigShortcut shortcut = mConfigData.Shortcuts[i];
+                if (shortcut.Keycode > 0 && (shortcut.Value ?? "") != "")
+                    UnregisterHotKey(mainHwnd, 10001 + i);
+            }
         }
 
         private void Logs(string s)

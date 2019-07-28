@@ -90,7 +90,6 @@ namespace PoeTradeSearch
         }
 
         private static IntPtr mainHwnd;
-        private static List<int> HotKeys = new List<int>();
         private static int closeKeyCode = 0;
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -136,19 +135,9 @@ namespace PoeTradeSearch
                     if (item.Keycode > 0 && (item.Value ?? "") != "")
                     {
                         if (!bDisableClip && item.Value.ToLower() == "{run}")
-                        {
                             bDisableClip = true;
-                        }
-                        else
-                        {
-                            if (item.Value.ToLower() == "{close}")
+                        else if (item.Value.ToLower() == "{close}")
                                 closeKeyCode = item.Keycode;
-                        }
-
-                        if (item.Ctrl == true)
-                            HotKeys.Add(item.Keycode * -1);
-                        else
-                            HotKeys.Add(item.Keycode);
                     }
                 }
             }
