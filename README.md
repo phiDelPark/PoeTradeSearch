@@ -27,7 +27,7 @@
 
       "options":{
         "league":"Standard",         // 현재 리그 ["Legion", "Hardcore Legion", "Standard", "Hardcore"]
-        "server":"kr",               // 기본 검색 서버 ["kr", "en"]
+        "server":"ko",               // 기본 검색 서버 ["ko", "en"]
         "server_timeout":5,          // 서버 접속 대기 시간 (초) 인터넷이 느리면 더 올려 시간 초과를 방지
         "server_redirect":false,     // 일부 환경에서 서버 데이터를 못받아와 검색이 안되는 경우 사용하는 옵션
         "search_week_before":1,      // 1~2 주일 전 물품만 시세 조회

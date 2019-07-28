@@ -46,77 +46,157 @@ namespace PoeTradeSearch
             public string NameEN;
             public string TypeEN;
             public string Rarity;
-            public string Category;
+            public string[] Inherits;
         }
 
         [DataContract()]
-        public partial class ConfigData
+        internal class ConfigData
         {
-            public ConfigOption Options;
-            public ConfigShortcut[] Shortcuts;
-            public ConfigChecked[] Checked;
+            [DataMember(Name = "options")]
+            internal ConfigOption Options = null;
+
+            [DataMember(Name = "shortcuts")]
+            internal ConfigShortcut[] Shortcuts = null;
+
+            [DataMember(Name = "checked")]
+            internal ConfigChecked[] Checked = null;
         }
 
         [DataContract(Name = "options")]
-        public partial class ConfigOption
+        internal class ConfigOption
         {
-            public string league;
-            public string server;
-            public int server_timeout;
-            public bool server_redirect;
-            public string server_useragent;
-            public int search_week_before;
-            public bool search_by_type;
-            public bool check_updates;
-            public bool ctrl_wheel;
-            public string data_version;
+            [DataMember(Name = "league")]
+            internal string League = null;
+            [DataMember(Name = "server")]
+            internal string Server = null;
+            [DataMember(Name = "server_timeout")]
+            internal int ServerTimeout;
+            [DataMember(Name = "server_redirect")]
+            internal bool ServerRedirect = false;
+            [DataMember(Name = "server_useragent")]
+            internal string ServerUseragent = null;
+            [DataMember(Name = "search_week_before")]
+            internal int SearchWeekBefore;
+            [DataMember(Name = "search_by_type")]
+            internal bool SearchByType = false;
+            [DataMember(Name = "check_updates")]
+            internal bool CheckUpdates = false;
+            [DataMember(Name = "ctrl_wheel")]
+            internal bool CtrlWheel = false;
+            [DataMember(Name = "data_version")]
+            internal string DataVersion = null;
         }
 
         [DataContract(Name = "shortcuts")]
-        public partial class ConfigShortcut
+        internal class ConfigShortcut
         {
-            public int keycode;
-            public string value;
-            public string Detail;
-            public string position;
-            public bool ctrl;
+            [DataMember(Name = "keycode")]
+            internal int Keycode = 0;
+            [DataMember(Name = "value")]
+            internal string Value = null;
+            [DataMember(Name = "position")]
+            internal string Position = null;
+            [DataMember(Name = "ctrl")]
+            internal bool Ctrl = false;
         }
 
         [DataContract(Name = "checked")]
-        public partial class ConfigChecked
+        internal class ConfigChecked
         {
-            public string id;
-            public string text;
+            [DataMember(Name = "id")]
+            internal string ID = null;
+            [DataMember(Name = "text")]
+            internal string Text = null;
         }
 
         [DataContract]
-        public class WordData
+        internal class BaseData
         {
-            public string id;
-            public string kr;
-            public string en;
-            public string detail;
+            [DataMember(Name = "result")]
+            internal BaseResult[] Result = null;
         }
 
-        [DataContract()]
-        public partial class FilterData
+        [DataContract]
+        internal class BaseResult
         {
-            public FilterResult[] result;
+            [DataMember(Name = "data")]
+            internal BaseResultData[] Data;
         }
 
-        [DataContract(Name = "result")]
-        public partial class FilterResult
+        [DataContract]
+        internal class BaseResultData
         {
-            public string label;
-            public FilterResultEntrie[] entries;
+            [DataMember(Name = "Id")]
+            internal string ID;
+
+            [DataMember(Name = "Name")]
+            internal string NameEn = null;
+
+            [DataMember(Name = "NameKo")]
+            internal string NameKo = null;
+
+            [DataMember(Name = "InheritsFrom")]
+            internal string InheritsFrom;
+
+            [DataMember(Name = "Detail")]
+            internal string Detail = null;
         }
 
-        [DataContract(Name = "entries")]
-        public partial class FilterResultEntrie
+        [DataContract]
+        internal class WordData
         {
-            public string id;
-            public string text;
-            public string type;
+            [DataMember(Name = "result")]
+            public WordeResult[] Result = null;
+        }
+
+        [DataContract]
+        internal class WordeResult
+        {
+            [DataMember(Name = "data")]
+            public WordeResultData[] Data;
+        }
+
+        [DataContract]
+        internal class WordeResultData
+        {
+            [DataMember(Name = "WordlistsKey")]
+            internal string Key = null;
+
+            [DataMember(Name = "Text2")]
+            internal string NameEn = null;
+
+            [DataMember(Name = "Text2Ko")]
+            internal string NameKo = null;
+        }
+
+        [DataContract]
+        internal class FilterData
+        {
+            [DataMember(Name = "result")]
+            internal FilterResult[] Result = null;
+        }
+
+        [DataContract]
+        internal class FilterResult
+        {
+            [DataMember(Name = "label")]
+            internal string Label = "";
+
+            [DataMember(Name = "entries")]
+            internal FilterResultEntrie[] Entries = null;
+        }
+
+        [DataContract]
+        internal class FilterResultEntrie
+        {
+            [DataMember(Name = "id")]
+            internal string ID = "";
+
+            [DataMember(Name = "text")]
+            internal string Text = "";
+
+            [DataMember(Name = "type")]
+            internal string Type = "";
         }
 
         [DataContract]
@@ -146,7 +226,7 @@ namespace PoeTradeSearch
         internal class FetchDataInfo
         {
             [DataMember(Name = "id")]
-            internal string Id = "";
+            internal string ID = "";
 
             [DataMember(Name = "listing")]
             internal FetchDataListing Listing = new FetchDataListing();
@@ -166,7 +246,7 @@ namespace PoeTradeSearch
             internal string[] Result = null;
 
             [DataMember(Name = "id")]
-            internal string Id = "";
+            internal string ID = "";
 
             [DataMember(Name = "total")]
             internal int Total = 0;

@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Json;
 using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Web.Script.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -95,11 +95,11 @@ namespace PoeTradeSearch
             try
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(urlString));
-                request.Timeout = timeout > 0 ? timeout : mConfigData.Options.server_timeout * 1000;
+                request.Timeout = timeout > 0 ? timeout : mConfigData.Options.ServerTimeout * 1000;
 
                 // 특정 사양에서 안되는거 같아 UserAgent 입력으로 대비
-                if ((mConfigData.Options.server_useragent ?? "") != "")
-                    request.UserAgent = mConfigData.Options.server_useragent;
+                if ((mConfigData.Options.ServerUseragent ?? "") != "")
+                    request.UserAgent = mConfigData.Options.ServerUseragent;
                 else
                     request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.0.0 Safari/537.36";
 
@@ -132,7 +132,7 @@ namespace PoeTradeSearch
             return result;
         }
 
-        private bool DatabaseUpdates(string path)
+        private bool FilterDataUpdates(string path)
         {
             bool success = false;
 
@@ -143,24 +143,22 @@ namespace PoeTradeSearch
                 string sResult = SendHTTP(null, u, 5000);
                 if ((sResult ?? "") != "")
                 {
-                    var jsSerializer = new JavaScriptSerializer();
-                    FilterData rootClass = jsSerializer.Deserialize<FilterData>(sResult);
+                    FilterData rootClass = Json.Deserialize<FilterData>(sResult);
 
-                    for (int i = 0; i < rootClass.result.Length; i++)
+                    for (int i = 0; i < rootClass.Result.Length; i++)
                     {
                         if (
-                            rootClass.result[i].entries.Length > 0
-                            && ResStr.lFilterTypeName.ContainsKey(rootClass.result[i].entries[0].type)
+                            rootClass.Result[i].Entries.Length > 0
+                            && ResStr.lFilterTypeName.ContainsKey(rootClass.Result[i].Entries[0].Type)
                         )
                         {
-                            rootClass.result[i].label = ResStr.lFilterTypeName[rootClass.result[i].entries[0].type];
+                            rootClass.Result[i].Label = ResStr.lFilterTypeName[rootClass.Result[i].Entries[0].Type];
                         }
                     }
 
-                    using (StreamWriter writer = new StreamWriter(path, false))
+                    using (StreamWriter writer = new StreamWriter(path + "Filters.txt", false, Encoding.UTF8))
                     {
-                        var contentsToWriteToFile = jsSerializer.Serialize(rootClass);
-                        writer.Write(contentsToWriteToFile);
+                        writer.Write(Json.Serialize<FilterData>(rootClass));
                     }
 
                     success = true;
@@ -169,6 +167,107 @@ namespace PoeTradeSearch
 
             thread.Start();
             thread.Join();
+
+            return success;
+        }
+
+        private bool BaseDataUpdates(string path)
+        {
+            bool success = false;
+
+            File.Delete(path + "Bases.txt");
+            File.Delete(path + "Words.txt");
+
+            if (File.Exists(path + "Details.txt"))
+                File.Move(path + "Details.txt", path + "Details.txt.bak");
+
+            if (File.Exists(path + "Json/json_en/BaseItemTypes.json"))
+            {
+                try
+                {
+                    string sResult1 = File.ReadAllText(path + "Json/json_en/BaseItemTypes.json", Encoding.UTF8);
+                    string sResult2 = File.ReadAllText(path + "Json/json_ko/BaseItemTypes.json", Encoding.UTF8);
+                    if ((sResult1 ?? "") != "" && (sResult2 ?? "") != "")
+                    {
+                        BaseData rootClass = Json.Deserialize<BaseData>("{\"result\":" + sResult1 + "}");
+                        BaseData rootClass2 = Json.Deserialize<BaseData>("{\"result\":" + sResult2 + "}");
+
+                        BaseResultData[] resultDatas = rootClass.Result[0].Data;
+                        BaseResultData[] resultDatas2 = rootClass2.Result[0].Data;
+
+                        for (int i = 0; i < resultDatas.Length; i++)
+                        {
+                            resultDatas[i].NameKo = resultDatas2[i].NameEn;
+                            resultDatas[i].ID = resultDatas[i].ID.Replace("Metadata/Items/", "");
+                            resultDatas[i].InheritsFrom = resultDatas[i].InheritsFrom.Replace("Metadata/Items/", "");
+                            resultDatas[i].Detail = "";
+                        }
+
+                        rootClass.Result[0].Data = resultDatas;
+
+                        using (StreamWriter writer = new StreamWriter(path + "Bases.txt", false, Encoding.UTF8))
+                        {
+                            writer.Write(Json.Serialize<BaseData>(rootClass));
+                        }
+
+                        success = true;
+                    }
+
+                    sResult1 = File.ReadAllText(path + "Json/json_en/Words.json", Encoding.UTF8);
+                    sResult2 = File.ReadAllText(path + "Json/json_ko/Words.json", Encoding.UTF8);
+                    if ((sResult1 ?? "") != "" && (sResult2 ?? "") != "")
+                    {
+                        WordData rootClass = Json.Deserialize<WordData>("{\"result\":" + sResult1 + "}");
+                        WordData rootClass2 = Json.Deserialize<WordData>("{\"result\":" + sResult2 + "}");
+
+                        WordeResultData[] resultDatas = rootClass.Result[0].Data;
+                        WordeResultData[] resultDatas2 = rootClass2.Result[0].Data;
+
+                        for (int i = 0; i < resultDatas.Length; i++)
+                        {
+                            resultDatas[i].NameKo = resultDatas2[i].NameEn;
+                        }
+
+                        rootClass.Result[0].Data = resultDatas;
+
+                        using (StreamWriter writer = new StreamWriter(path + "Words.txt", false, Encoding.UTF8))
+                        {
+                            writer.Write(Json.Serialize<WordData>(rootClass));
+                        }
+
+                        success = true;
+                    }
+
+                    sResult1 = File.ReadAllText(path + "Json/json_en/Prophecies.json", Encoding.UTF8);
+                    sResult2 = File.ReadAllText(path + "Json/json_ko/Prophecies.json", Encoding.UTF8);
+                    if ((sResult1 ?? "") != "" && (sResult2 ?? "") != "")
+                    {
+                        BaseData rootClass = Json.Deserialize<BaseData>("{\"result\":" + sResult1 + "}");
+                        BaseData rootClass2 = Json.Deserialize<BaseData>("{\"result\":" + sResult2 + "}");
+
+                        BaseResultData[] resultDatas = rootClass.Result[0].Data;
+                        BaseResultData[] resultDatas2 = rootClass2.Result[0].Data;
+
+                        for (int i = 0; i < resultDatas.Length; i++)
+                        {
+                            resultDatas[i].NameKo = resultDatas2[i].NameEn;
+                            resultDatas[i].ID = "Prophecies/" + resultDatas[i].ID;
+                            resultDatas[i].InheritsFrom = "Prophecies/Prophecy";
+                            resultDatas[i].Detail = "";
+                        }
+
+                        rootClass.Result[0].Data = resultDatas;
+
+                        using (StreamWriter writer = new StreamWriter(path + "Prophecies.txt", false, Encoding.UTF8))
+                        {
+                            writer.Write(Json.Serialize<BaseData>(rootClass));
+                        }
+
+                        success = true;
+                    }
+                }
+                catch { }
+            }
 
             return success;
         }
@@ -189,31 +288,31 @@ namespace PoeTradeSearch
                     using (StreamReader reader = new StreamReader(fs))
                     {
                         string json = reader.ReadToEnd();
-                        JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
-                        mConfigData = jsSerializer.Deserialize<ConfigData>(json);
+                        mConfigData = Json.Deserialize<ConfigData>(json);
                     }
                 }
 
-                if (!File.Exists(path + "Filters.txt"))
-                    DatabaseUpdates(path + "Filters.txt");
+                if (!File.Exists(path + "Filters.txt")) FilterDataUpdates(path);
 
                 using (FileStream fs = new FileStream(path + "Filters.txt", FileMode.Open))
                 {
                     using (StreamReader reader = new StreamReader(fs))
                     {
                         string json = reader.ReadToEnd();
-                        JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
-                        mFilterData = jsSerializer.Deserialize<FilterData>(json);
+                        mFilterData = Json.Deserialize<FilterData>(json);
                     }
                 }
+
+                if (!File.Exists(path + "Bases.txt") || !File.Exists(path + "Words.txt")) BaseDataUpdates(path);
 
                 using (FileStream fs = new FileStream(path + "Bases.txt", FileMode.Open))
                 {
                     using (StreamReader reader = new StreamReader(fs))
                     {
                         string json = reader.ReadToEnd();
-                        JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
-                        baseTypeDatas = jsSerializer.Deserialize<List<WordData>>("[" + json + "]");
+                        BaseData data = Json.Deserialize<BaseData>(json);
+                        mBaseDatas = new List<BaseResultData>();
+                        mBaseDatas.AddRange(data.Result[0].Data);
                     }
                 }
 
@@ -222,23 +321,36 @@ namespace PoeTradeSearch
                     using (StreamReader reader = new StreamReader(fs))
                     {
                         string json = reader.ReadToEnd();
-                        JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
-                        wordNameDatas = jsSerializer.Deserialize<List<WordData>>("[" + json + "]");
+                        WordData data = Json.Deserialize<WordData>(json);
+                        mWordDatas = new List<WordeResultData>();
+                        mWordDatas.AddRange(data.Result[0].Data);
                     }
                 }
 
+                using (FileStream fs = new FileStream(path + "Prophecies.txt", FileMode.Open))
+                {
+                    using (StreamReader reader = new StreamReader(fs))
+                    {
+                        string json = reader.ReadToEnd();
+                        BaseData data = Json.Deserialize<BaseData>(json);
+                        mProphecyDatas = new List<BaseResultData>();
+                        mProphecyDatas.AddRange(data.Result[0].Data);
+                    }
+                }
+
+                /*
                 using (FileStream fs = new FileStream(path + "Details.txt", FileMode.Open))
                 {
                     using (StreamReader reader = new StreamReader(fs))
                     {
                         string json = reader.ReadToEnd();
-                        JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
-                        DetailNameDatas = jsSerializer.Deserialize<List<WordData>>("[" + json + "]");
+                        DetailNameDatas = Json.Deserialize<List<WordData>>("[" + json + "]");
                     }
                 }
+                */
 
-                if (mConfigData.Options.server_timeout < 1) mConfigData.Options.server_timeout = 5;
-                if (mConfigData.Options.search_week_before < 1) mConfigData.Options.search_week_before = 1;
+                if (mConfigData.Options.ServerTimeout < 1) mConfigData.Options.ServerTimeout = 5;
+                if (mConfigData.Options.SearchWeekBefore < 1) mConfigData.Options.SearchWeekBefore = 1;
             }
             catch (Exception)
             {
@@ -274,7 +386,7 @@ namespace PoeTradeSearch
                 RemoveRegisterHotKey();
             }
 
-            if (chk && !bIsPause && mConfigData.Options.ctrl_wheel)
+            if (chk && !bIsPause && mConfigData.Options.CtrlWheel)
             {
                 TimeSpan dateDiff = Convert.ToDateTime(DateTime.Now) - MouseHookCallbackTime;
                 if (dateDiff.Ticks > 3000000000) // 5분간 마우스 움직임이 없으면 훜이 풀렸을 수 있어 다시...
@@ -338,11 +450,11 @@ namespace PoeTradeSearch
                     int keyIdx = wParam.ToInt32();
 
                     string popWinTitle = "이곳을 잡고 이동, 이미지 클릭시 닫힘";
-                    ConfigShortcut shortcut = Array.Find(mConfigData.Shortcuts, x => x.keycode == (keyIdx - 10000));
+                    ConfigShortcut shortcut = Array.Find(mConfigData.Shortcuts, x => x.Keycode == (keyIdx - 10000));
 
-                    if (shortcut != null && shortcut.value != null)
+                    if (shortcut != null && shortcut.Value != null)
                     {
-                        string valueLower = shortcut.value.ToLower();
+                        string valueLower = shortcut.Value.ToLower();
 
                         try
                         {
@@ -352,7 +464,7 @@ namespace PoeTradeSearch
                                 {
                                     bIsPause = false;
 
-                                    if (bIsAdministrator && mConfigData.Options.ctrl_wheel)
+                                    if (bIsAdministrator && mConfigData.Options.CtrlWheel)
                                     {
                                         MouseHook.Start();
                                     }
@@ -366,7 +478,7 @@ namespace PoeTradeSearch
                                 {
                                     bIsPause = true;
 
-                                    if (bIsAdministrator && mConfigData.Options.ctrl_wheel)
+                                    if (bIsAdministrator && mConfigData.Options.CtrlWheel)
                                     {
                                         MouseHook.Stop();
                                     }
@@ -406,7 +518,7 @@ namespace PoeTradeSearch
 
                                     if (this.Visibility == Visibility.Hidden && pHwnd.ToInt32() == 0)
                                     {
-                                        SendMessage(findHwnd, 0x0101, shortcut.keycode, 0);
+                                        SendMessage(findHwnd, 0x0101, shortcut.Keycode, 0);
                                     }
                                     else
                                     {
@@ -420,7 +532,7 @@ namespace PoeTradeSearch
                                 else if (valueLower.IndexOf("{enter}") == 0)
                                 {
                                     Regex regex = new Regex(@"{enter}", RegexOptions.IgnoreCase);
-                                    string tmp = regex.Replace(shortcut.value, "" + '\n');
+                                    string tmp = regex.Replace(shortcut.Value, "" + '\n');
                                     string[] strs = tmp.Trim().Split('\n');
 
                                     for (int i = 0; i < strs.Length; i++)
@@ -436,7 +548,7 @@ namespace PoeTradeSearch
                                 else if (valueLower.IndexOf("{link}") == 0)
                                 {
                                     Regex regex = new Regex(@"{link}", RegexOptions.IgnoreCase);
-                                    string tmp = regex.Replace(shortcut.value, "" + '\n');
+                                    string tmp = regex.Replace(shortcut.Value, "" + '\n');
                                     string[] strs = tmp.Trim().Split('\n');
                                     if (strs.Length > 0)
                                         Process.Start(strs[0]);
@@ -447,11 +559,11 @@ namespace PoeTradeSearch
                                     if (pHwnd.ToInt32() != 0)
                                         SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, 0, 0);
 
-                                    PopWindow popWindow = new PopWindow(shortcut.value);
+                                    PopWindow popWindow = new PopWindow(shortcut.Value);
 
-                                    if ((shortcut.position ?? "") != "")
+                                    if ((shortcut.Position ?? "") != "")
                                     {
-                                        string[] strs = shortcut.position.ToLower().Split('x');
+                                        string[] strs = shortcut.Position.ToLower().Split('x');
                                         popWindow.WindowStartupLocation = WindowStartupLocation.Manual;
                                         popWindow.Left = double.Parse(strs[0]);
                                         popWindow.Top = double.Parse(strs[1]);
@@ -601,7 +713,8 @@ namespace PoeTradeSearch
             string itemName = "";
             string itemType = "";
             string itemRarity = "";
-            string itemCategory = "";
+            string itemInherits = "";
+            string itemID = "";
 
             try
             {
@@ -619,7 +732,7 @@ namespace PoeTradeSearch
                     itemType = asOpt.Length > 2 && asOpt[2] != "" ? asOpt[2] : itemName;
                     if (asOpt.Length == 2) itemName = "";
 
-                    bool isFlask = false, isProphecy = false, isMapFragments = false;
+                    bool is_flask = false, is_prophecy = false, is_map_fragments = false;
 
                     int k = 0, baki = 0, notImpCnt = 0;
                     double attackSpeedIncr = 0;
@@ -648,12 +761,12 @@ namespace PoeTradeSearch
                             }
                             else
                             {
-                                if (!isFlask && asTmp[0].IndexOf(ResStr.ChkFlask) == 0)
-                                    isFlask = true;
-                                else if (!isProphecy && asTmp[0].IndexOf(ResStr.ChkProphecy) == 0)
-                                    isProphecy = true;
-                                else if (!isMapFragments && asTmp[0].IndexOf(ResStr.ChkMapFragment) == 0)
-                                    isMapFragments = true;
+                                if (!is_flask && asTmp[0].IndexOf(ResStr.ChkFlask) == 0)
+                                    is_flask = true;
+                                else if (!is_prophecy && asTmp[0].IndexOf(ResStr.ChkProphecy) == 0)
+                                    is_prophecy = true;
+                                else if (!is_map_fragments && asTmp[0].IndexOf(ResStr.ChkMapFragment) == 0)
+                                    is_map_fragments = true;
                                 else if (lItemOption[ResStr.ItemLv] != "" && k < 10)
                                 {
                                     bool resistance = false;
@@ -666,17 +779,17 @@ namespace PoeTradeSearch
                                     FilterResultEntrie filter = null;
                                     Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
 
-                                    FilterResult[] filterResults = mFilterData.result;
+                                    FilterResult[] filterResults = mFilterData.Result;
 
                                     foreach (FilterResult filterResult in filterResults)
                                     {
-                                        FilterResultEntrie entrie = Array.Find(filterResult.entries, x => rgx.IsMatch(x.text));
+                                        FilterResultEntrie entrie = Array.Find(filterResult.Entries, x => rgx.IsMatch(x.Text));
                                         if (entrie != null)
                                         {
-                                            ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(new FilterEntrie(entrie.id, filterResult.label));
+                                            ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(new FilterEntrie(entrie.ID, filterResult.Label));
                                             if (filter == null)
                                             {
-                                                string[] id_split = entrie.id.Split('.');
+                                                string[] id_split = entrie.ID.Split('.');
                                                 resistance = id_split.Length == 2 && ResStr.lResistance.ContainsKey(id_split[1]);
                                                 filter = entrie;
                                             }
@@ -721,12 +834,12 @@ namespace PoeTradeSearch
                                             notImpCnt = 0;
                                         }
 
-                                        ((TextBox)this.FindName("tbOpt" + k)).Text = filter.text;
+                                        ((TextBox)this.FindName("tbOpt" + k)).Text = filter.Text;
                                         ((CheckBox)this.FindName("tbOpt" + k + "_3")).Visibility = resistance ? Visibility.Visible : Visibility.Hidden;
 
                                         bool isMin = false, isMax = false;
                                         int idxMin = 0, idxMax = 1;
-                                        MatchCollection matches = Regex.Matches(filter.text, @"[0-9]+\.[0-9]+|[0-9]+|#");
+                                        MatchCollection matches = Regex.Matches(filter.Text, @"[0-9]+\.[0-9]+|[0-9]+|#");
                                         for (int t = 0; t < matches.Count; t++)
                                         {
                                             if (((Match)matches[t]).Value == "#")
@@ -752,7 +865,7 @@ namespace PoeTradeSearch
 
                                         if (min != 99999 && max != 99999)
                                         {
-                                            if (filter.text.IndexOf("#~#") > -1)
+                                            if (filter.Text.IndexOf("#~#") > -1)
                                             {
                                                 min += max;
                                                 min = Math.Truncate(min / 2 * 10) / 10;
@@ -761,7 +874,7 @@ namespace PoeTradeSearch
                                         }
                                         else
                                         {
-                                            string[] split = filter.id.Split('.');
+                                            string[] split = filter.ID.Split('.');
                                             bool defMaxPosition = split.Length == 2 && ResStr.lDefaultPosition.ContainsKey(split[1]);
                                             if ((defMaxPosition && min > 0 && max == 99999) || (!defMaxPosition && min < 0 && max == 99999))
                                             {
@@ -775,8 +888,8 @@ namespace PoeTradeSearch
 
                                         Itemfilter itemfilter = new Itemfilter
                                         {
-                                            id = filter.type,
-                                            text = filter.text,
+                                            id = filter.Type,
+                                            text = filter.Text,
                                             max = max,
                                             min = min,
                                             disabled = true,
@@ -785,11 +898,11 @@ namespace PoeTradeSearch
 
                                         itemfilters.Add(itemfilter);
 
-                                        if (filter.text == ResStr.AttackSpeedIncr && min > 0 && min < 999)
+                                        if (filter.Text == ResStr.AttackSpeedIncr && min > 0 && min < 999)
                                         {
                                             attackSpeedIncr += min;
                                         }
-                                        else if (filter.text == ResStr.PhysicalDamageIncr && min > 0 && min < 9999)
+                                        else if (filter.Text == ResStr.PhysicalDamageIncr && min > 0 && min < 9999)
                                         {
                                             PhysicalDamageIncr += min;
                                         }
@@ -821,75 +934,86 @@ namespace PoeTradeSearch
                         ckSocket.IsChecked = link > 4;
                     }
 
-                    bool isUnIdentify = lItemOption[ResStr.Unidentify] == "_TRUE_";
-                    bool isMap = lItemOption[ResStr.MaTier] != "";
-                    bool isGem = itemRarity == ResStr.Gem;
-                    bool isCurrency = itemRarity == ResStr.Currency;
-                    bool isDivinationCard = itemRarity == ResStr.DivinationCard;
+                    bool is_unIdentify = lItemOption[ResStr.Unidentify] == "_TRUE_";
+                    bool is_map = lItemOption[ResStr.MaTier] != "";
+                    bool is_gem = itemRarity == ResStr.Gem;
+                    bool is_currency = itemRarity == ResStr.Currency;
+                    bool is_divinationCard = itemRarity == ResStr.DivinationCard;
 
-                    if (isMap || isCurrency) isMapFragments = false;
-                    bool isDetail = isCurrency || isDivinationCard || isProphecy || isMapFragments;
+                    if (is_map || is_currency) is_map_fragments = false;
+                    bool isDetail = is_gem || is_currency || is_divinationCard || is_prophecy || is_map_fragments;
 
-                    if (isGem && lItemOption[ResStr.Corrupt] == "_TRUE_")
+                    if (is_prophecy)
                     {
-                        WordData tmpBaseType = baseTypeDatas.Find(x => x.kr == ResStr.Vaal + " " + itemType);
+                        BaseResultData tmpBaseType = mProphecyDatas.Find(x => x.NameKo == itemType);
                         if (tmpBaseType != null)
-                            itemType = tmpBaseType.kr;
-                    }
-
-                    if (!isUnIdentify && itemRarity == ResStr.Magic)
-                        itemType = itemType.Split('-')[0].Trim();
-
-                    //Match matchName = null;
-                    Match matchType = null;
-                    if (isMap)
-                    {
-                        matchType = Regex.Match(itemType, @"\([a-zA-Z\s']+\)$");
-                        itemType = Regex.Replace(itemType, @"\([a-zA-Z\s']+\)$", "").Trim();
-                    }
-
-                    if ((isUnIdentify || itemRarity == ResStr.Normal) && itemType.Length > 4 && itemType.IndexOf(ResStr.Higher + " ") == 0)
-                        itemType = itemType.Substring(3);
-
-                    if (isMap && itemType.Length > 5 && itemType.Substring(0, 4) == ResStr.formed + " ")
-                        itemType = itemType.Substring(4);
-
-                    if (!isUnIdentify && itemRarity == ResStr.Magic)
-                    {
-                        string[] tmp = itemType.Split(' ');
-
-                        if (tmp.Length > 1)
                         {
-                            for (int i = 0; i < tmp.Length - 2; i++)
-                            {
-                                tmp[i] = "";
-                                string tmp2 = string.Join(" ", tmp).Trim();
+                            itemID = tmpBaseType.ID;
+                            itemInherits = tmpBaseType.InheritsFrom;
+                        }
+                    }
+                    else
+                    {
+                        if (is_gem && lItemOption[ResStr.Corrupt] == "_TRUE_")
+                        {
+                            BaseResultData tmpBaseType = mBaseDatas.Find(x => x.NameKo == ResStr.Vaal + " " + itemType);
+                            if (tmpBaseType != null)
+                                itemType = tmpBaseType.NameKo;
+                        }
+                        if (!is_unIdentify && itemRarity == ResStr.Magic)
+                            itemType = itemType.Split('-')[0].Trim();
 
-                                WordData tmpBaseType = baseTypeDatas.Find(x => x.kr == tmp2);
-                                if (tmpBaseType != null)
+                        if ((is_unIdentify || itemRarity == ResStr.Normal) && itemType.Length > 4 && itemType.IndexOf(ResStr.Higher + " ") == 0)
+                            itemType = itemType.Substring(3);
+
+                        if (is_map && itemType.Length > 5 && itemType.Substring(0, 4) == ResStr.formed + " ")
+                            itemType = itemType.Substring(4);
+
+                        if (!is_unIdentify && itemRarity == ResStr.Magic)
+                        {
+                            string[] tmp = itemType.Split(' ');
+
+                            if (tmp.Length > 1)
+                            {
+                                for (int i = 0; i < tmp.Length - 2; i++)
                                 {
-                                    itemType = tmpBaseType.kr;
-                                    itemCategory = tmpBaseType.id;
-                                    break;
+                                    tmp[i] = "";
+                                    string tmp2 = string.Join(" ", tmp).Trim();
+
+                                    BaseResultData tmpBaseType = mBaseDatas.Find(x => x.NameKo == tmp2);
+                                    if (tmpBaseType != null)
+                                    {
+                                        itemType = tmpBaseType.NameKo;
+                                        itemID = tmpBaseType.ID;
+                                        itemInherits = tmpBaseType.InheritsFrom;
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
 
-                    if (itemCategory == "")
+                    if (itemInherits == "")
                     {
-                        WordData tmpBaseType = isDetail ? DetailNameDatas.Find(x => x.kr == itemType) : null;
-                        if (tmpBaseType == null)
-                            tmpBaseType = baseTypeDatas.Find(x => x.kr == itemType);
+                        BaseResultData tmpBaseType = mBaseDatas.Find(x => x.NameKo == itemType);
                         if (tmpBaseType != null)
-                            itemCategory = tmpBaseType.id;
+                        {
+                            itemID = tmpBaseType.ID;
+                            itemInherits = tmpBaseType.InheritsFrom;
+                        }
                     }
 
-                    WordData wordData;
                     string itemQuality = Regex.Replace(lItemOption[ResStr.Quality].Trim(), "[^0-9]", "");
-                    string category = itemCategory.Split('/')[0];
-                    bool byType = category == "Weapons" || category == "Quivers" || category == "Armours" || category == "Amulets" || category == "Rings" || category == "Belts";
-                    isDetail = isDetail || (!isDetail && (category == "Gems" || category == "Scarabs" || category == "MapFragments" || category == "Fossil" || category == "Incubations" || category == "Labyrinth"));
+
+                    mItemBaseName.Inherits = (is_prophecy ? "Prophecies/Prophecy" : itemInherits).Split('/');
+                    string inherit = mItemBaseName.Inherits[0];
+                    string sub_inherit = mItemBaseName.Inherits.Length > 1 ? mItemBaseName.Inherits[1] : "";
+
+                    bool is_essences = inherit == "Currency" && sub_inherit.IndexOf("CurrencyEssence") == 0;
+                    bool is_incubations = inherit == "Currency" && sub_inherit.IndexOf("CurrencyIncubation") == 0;
+
+                    bool byType = inherit == "Weapons" || inherit == "Quivers" || inherit == "Armours" || inherit == "Amulets" || inherit == "Rings" || inherit == "Belts";
+                    isDetail = isDetail || (!isDetail && (inherit == "MapFragments" || inherit == "UniqueFragments" || inherit == "Labyrinth"));
 
                     if (isDetail)
                     {
@@ -897,25 +1021,34 @@ namespace PoeTradeSearch
 
                         try
                         {
-                            if (category == "Gems" || category == "Essences" || category == "Scarabs" || category == "Incubations" || category == "Labyrinth")
+                            BaseResultData tmpBaseType = is_prophecy ? mProphecyDatas.Find(x => x.NameKo == itemType) : mBaseDatas.Find(x => x.NameKo == itemType);
+
+                            mItemBaseName.TypeEN = tmpBaseType == null ? itemType : tmpBaseType.NameEn;
+
+                            if (inherit == "Gems" || is_essences || is_incubations || inherit == "UniqueFragments" || inherit == "Labyrinth")
                             {
-                                int i = category == "Gems" ? 3 : 1;
-                                wordData = baseTypeDatas.Find(x => x.kr == itemType);
-                                mItemBaseName.TypeEN = wordData == null ? itemType : wordData.en;
-                                tkDetail.Text = asData.Length > 2 ? ((category != "Essences" && category != "Incubations" ? asData[i] : "") + asData[i + 1]) : "";
+                                int i = inherit == "Gems" ? 3 : 1;
+                                tkDetail.Text = asData.Length > 2 ? ((inherit == "Gems" || inherit == "Labyrinth" ? asData[i] : "") + asData[i + 1]) : "";
                             }
                             else
                             {
-                                wordData = DetailNameDatas.Find(x => x.kr == itemType);
-                                mItemBaseName.TypeEN = wordData == null ? itemType : wordData.en;
-                                if ((wordData?.detail ?? "") != "")
-                                    tkDetail.Text = "세부사항:" + '\n' + '\n' + wordData.detail.Replace("\\n", "" + '\n');
+                                if ((tmpBaseType?.Detail ?? "") != "")
+                                    tkDetail.Text = "세부사항:" + '\n' + '\n' + tmpBaseType.Detail.Replace("\\n", "" + '\n');
                                 else
                                 {
-                                    int i = category == "Delve" ? 3 : (category == "Currency" ? 2 : 1);
-                                    tkDetail.Text = asData.Length > 2 ? asData[i] + asData[i + 1] + (asData[i].TrimStart().IndexOf("적용: ") == 0 ? asData[i + 2] : "") : "";
+                                    int i = inherit == "Delve" ? 3 : (is_divinationCard || inherit == "Currency" ? 2 : 1);
+
+                                    tkDetail.Text = asData.Length > (i + 1) ? asData[i] + asData[i + 1] : asData[asData.Length - 1];
+
+                                    if (asData.Length > (i + 1))
+                                    {
+                                        int v = asData[i - 1].TrimStart().IndexOf("적용: ");
+                                        tkDetail.Text += v > -1 ? "" + '\n' + '\n' + (asData[i - 1].TrimStart().Split('\n')[v == 0 ? 0 : 1].TrimEnd()) : "";
+                                    }
                                 }
                             }
+
+                            tkDetail.Text = tkDetail.Text.Replace(ResStr.SClickSplitItem, "");
                         }
                         catch { }
                     }
@@ -951,9 +1084,9 @@ namespace PoeTradeSearch
                                 itemfilters[i].disabled = true;
                             }
 
-                            if (category != "" && selidx == -1)
+                            if (inherit != "" && selidx == -1)
                             {
-                                if (Array.Find(mConfigData.Checked, x => x.text == ifilter.text && x.id.IndexOf(category + "/") > -1) != null)
+                                if (Array.Find(mConfigData.Checked, x => x.Text == ifilter.text && x.ID.IndexOf(inherit + "/") > -1) != null)
                                 {
                                     ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = true;
                                     itemfilters[i].disabled = false;
@@ -962,7 +1095,7 @@ namespace PoeTradeSearch
                         }
 
                         // DPS 계산 POE-TradeMacro 참고
-                        if (!isUnIdentify && category == "Weapons")
+                        if (!is_unIdentify && inherit == "Weapons")
                         {
                             double PhysicalDPS = DamageToDPS(lItemOption[ResStr.PhysicalDamage]);
                             double ElementalDPS = DamageToDPS(lItemOption[ResStr.ElementalDamage]);
@@ -992,8 +1125,8 @@ namespace PoeTradeSearch
                                             " = T." + Math.Round(PhysicalDPS + ElementalDPS + ChaosDPS, 2).ToString();
                         }
 
-                        wordData = wordNameDatas.Find(x => x.kr == itemName);
-                        mItemBaseName.NameEN = wordData == null ? itemName : wordData.en;
+                        WordeResultData wordData = mWordDatas.Find(x => x.NameKo == itemName);
+                        mItemBaseName.NameEN = wordData == null ? itemName : wordData.NameEn;
 
                         if (wordData == null && itemRarity == ResStr.Rare)
                         {
@@ -1007,11 +1140,11 @@ namespace PoeTradeSearch
                                 {
                                     tmp2 += " " + tmp[i];
                                     tmp2 = tmp2.TrimStart();
-                                    wordData = wordNameDatas.Find(x => x.kr == tmp2);
+                                    wordData = mWordDatas.Find(x => x.NameKo == tmp2);
                                     if (wordData != null)
                                     {
                                         idx = i + 1;
-                                        mItemBaseName.NameEN = wordData.en;
+                                        mItemBaseName.NameEN = wordData.NameEn;
                                         break;
                                     }
                                 }
@@ -1020,34 +1153,31 @@ namespace PoeTradeSearch
                                 for (int i = idx; i < tmp.Length; i++)
                                 {
                                     tmp2 += " " + tmp[i];
-                                    wordData = wordNameDatas.Find(x => x.kr == tmp2);
+                                    wordData = mWordDatas.Find(x => x.NameKo == tmp2);
                                     if (wordData != null)
                                     {
-                                        mItemBaseName.NameEN += wordData.en;
+                                        mItemBaseName.NameEN += wordData.NameEn;
                                         break;
                                     }
                                 }
                             }
                         }
 
-                        wordData = baseTypeDatas.Find(x => x.kr == itemType);
-                        if (wordData == null)
+                        BaseResultData tmpBaseType = mBaseDatas.Find(x => x.NameKo == itemType);
+                        if (tmpBaseType != null)
                         {
-                            wordData = DetailNameDatas.Find(x => x.kr == itemType);
-                            if (wordData != null)
-                            {
-                                isDetail = true;
-                                tkDetail.Text = "세부사항:" + '\n' + '\n' + (wordData?.detail ?? "").Replace("\\n", "" + '\n');
-                            }
+                            isDetail = tmpBaseType.Detail != null;
+                            tkDetail.Text = "세부사항:" + '\n' + '\n' + (tmpBaseType?.Detail ?? "").Replace("\\n", "" + '\n');
                         }
 
-                        mItemBaseName.TypeEN = wordData == null ? itemType : wordData.en;
+                        mItemBaseName.TypeEN = wordData == null ? itemType : tmpBaseType.NameEn;
                     }
 
+                    bool IsExchangeCurrency = inherit == "Currency" && ResStr.lExchangeCurrency.ContainsKey(itemType);
+
                     mItemBaseName.Rarity = itemRarity;
-                    mItemBaseName.Category = itemCategory;
-                    mItemBaseName.NameKR = itemName;// + (matchName == null ? "" : matchName.Value);
-                    mItemBaseName.TypeKR = itemType + (matchType == null ? "" : matchType.Value);
+                    mItemBaseName.NameKR = itemName; // + (matchName == null ? "" : matchName.Value);
+                    mItemBaseName.TypeKR = itemType; // + (matchType == null ? "" : matchType.Value);
 
                     if (ResStr.ServerLang == 1)
                         lbName.Content = mItemBaseName.NameEN + " " + mItemBaseName.TypeEN;
@@ -1065,22 +1195,20 @@ namespace PoeTradeSearch
                         ckCorrupt.Foreground = System.Windows.Media.Brushes.DarkRed;
                     }
 
-                    tbLvMin.Text = Regex.Replace(lItemOption[isGem ? ResStr.Lv : ResStr.ItemLv].Trim(), "[^0-9]", "");
+                    tbLvMin.Text = Regex.Replace(lItemOption[is_gem ? ResStr.Lv : ResStr.ItemLv].Trim(), "[^0-9]", "");
                     tbQualityMin.Text = itemQuality;
 
                     cbName.Visibility = itemRarity != ResStr.Unique && byType ? Visibility.Visible : Visibility.Hidden;
-                    cbName.IsChecked = !mConfigData.Options.search_by_type;
+                    cbName.IsChecked = !mConfigData.Options.SearchByType;
 
                     lbName.Visibility = itemRarity != ResStr.Unique && byType ? Visibility.Hidden : Visibility.Visible;
                     lbRarity.Content = itemRarity;
-
-                    bool IsExchangeCurrency = (category == "Currency" || category == "Fossil") && ResStr.lExchangeCurrency.ContainsKey(itemType);
 
                     bdDetail.Visibility = isDetail ? Visibility.Visible : Visibility.Hidden;
                     if (bdDetail.Visibility == Visibility.Visible)
                     {
                         Thickness thickness = bdDetail.Margin;
-                        thickness.Bottom = isGem ? 145 : 91;
+                        thickness.Bottom = is_gem ? 145 : 91;
                         bdDetail.Margin = thickness;
                     }
 
@@ -1158,7 +1286,7 @@ namespace PoeTradeSearch
                                 }
 
                                 string jsonResult = "";
-                                string url = ResStr.FetchApi[ResStr.ServerLang] + string.Join(",", tmp) + "?query=" + resultData.Id;
+                                string url = ResStr.FetchApi[ResStr.ServerLang] + string.Join(",", tmp) + "?query=" + resultData.ID;
                                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(url));
                                 request.Timeout = 10000;
 
@@ -1321,7 +1449,7 @@ namespace PoeTradeSearch
                     jsonData.Query.Name = ResStr.ServerLang == 1 ? mItemBaseName.NameEN : mItemBaseName.NameKR;
                     jsonData.Query.Type = ResStr.ServerLang == 1 ? mItemBaseName.TypeEN : mItemBaseName.TypeKR;
 
-                    string category = mItemBaseName.Category != "" ? mItemBaseName.Category.Split('/')[0] : "";
+                    string Inherit = mItemBaseName.Inherits.Length > 0 ? mItemBaseName.Inherits[0] : "";
 
                     jsonData.Query.Stats = new q_Stats[0];
                     jsonData.Query.Status.Option = "online";
@@ -1352,10 +1480,10 @@ namespace PoeTradeSearch
                     jsonData.Query.Filters.Misc_filters.misc_filters_filters.Quality.Min = itemOptions.ChkQuality == true ? itemOptions.QualityMin : 99999;
                     jsonData.Query.Filters.Misc_filters.misc_filters_filters.Quality.Max = itemOptions.ChkQuality == true ? itemOptions.QualityMax : 99999;
 
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Ilvl.Min = itemOptions.ChkLv != true || category == "Gems" ? 99999 : itemOptions.LvMin;
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Ilvl.Max = itemOptions.ChkLv != true || category == "Gems" ? 99999 : itemOptions.LvMax;
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Gem_level.Min = itemOptions.ChkLv == true && category == "Gems" ? itemOptions.LvMin : 99999;
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Gem_level.Max = itemOptions.ChkLv == true && category == "Gems" ? itemOptions.LvMax : 99999;
+                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Ilvl.Min = itemOptions.ChkLv != true || Inherit == "Gems" ? 99999 : itemOptions.LvMin;
+                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Ilvl.Max = itemOptions.ChkLv != true || Inherit == "Gems" ? 99999 : itemOptions.LvMax;
+                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Gem_level.Min = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMin : 99999;
+                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Gem_level.Max = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMax : 99999;
 
                     if (itemOptions.itemfilters.Count > 0)
                     {
@@ -1375,24 +1503,27 @@ namespace PoeTradeSearch
                                 string type_name = ResStr.lFilterTypeName[type];
 
                                 FilterResultEntrie filter = null;
-                                FilterResult filterResult = Array.Find(mFilterData.result, x => x.label == type_name);
+                                FilterResult filterResult = Array.Find(mFilterData.Result, x => x.Label == type_name);
 
                                 input = Regex.Escape(input).Replace("\\+\\#", "[+]?\\#");
 
-                                if (category == "Weapons" || category == "Armours")
+                                if (Inherit == "Weapons" || Inherit == "Armours")
                                 {
                                     Regex rgx = new Regex("^" + input + "(\\(" + ResStr.Local + "\\))?$", RegexOptions.IgnoreCase);
-                                    FilterResultEntrie[] tmp_filters = Array.FindAll(filterResult.entries, x => rgx.IsMatch(x.text) && x.type == type);
+                                    FilterResultEntrie[] tmp_filters = Array.FindAll(filterResult.Entries, x => rgx.IsMatch(x.Text) && x.Type == type);
                                     if (tmp_filters.Length > 1)
                                     {
                                         foreach (FilterResultEntrie tmp_filter in tmp_filters)
                                         {
-                                            string[] tmp_split = tmp_filter.id.Split('.');
+                                            string[] tmp_split = tmp_filter.ID.Split('.');
 
                                             if (tmp_split.Length == 2 && ResStr.lParticular.ContainsKey(tmp_split[1]))
                                             {
-                                                filter = tmp_filter;
-                                                break;
+                                                if ((Inherit == "Weapons" && ResStr.lParticular[tmp_split[1]] == 1) || (Inherit == "Armours" && ResStr.lParticular[tmp_split[1]] == 2))
+                                                {
+                                                    filter = tmp_filter;
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
@@ -1405,19 +1536,19 @@ namespace PoeTradeSearch
                                 if (filter == null)
                                 {
                                     Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
-                                    filter = Array.Find(filterResult.entries, x => rgx.IsMatch(x.text) && x.type == type);
+                                    filter = Array.Find(filterResult.Entries, x => rgx.IsMatch(x.Text) && x.Type == type);
                                 }
 
                                 if (filter != null)
                                 {
-                                    if (filter.id != null && filter.id.Trim() != "")
+                                    if (filter.ID != null && filter.ID.Trim() != "")
                                     {
                                         jsonData.Query.Stats[0].Filters[idx] = new q_Stats_filters();
                                         jsonData.Query.Stats[0].Filters[idx].Value = new q_Min_And_Max();
                                         jsonData.Query.Stats[0].Filters[idx].Disabled = itemOptions.itemfilters[i].disabled == true;
                                         jsonData.Query.Stats[0].Filters[idx].Value.Min = itemOptions.itemfilters[i].min;
                                         jsonData.Query.Stats[0].Filters[idx].Value.Max = itemOptions.itemfilters[i].max;
-                                        jsonData.Query.Stats[0].Filters[idx++].Id = filter.id;
+                                        jsonData.Query.Stats[0].Filters[idx++].Id = filter.ID;
                                     }
                                 }
                             }
@@ -1429,24 +1560,24 @@ namespace PoeTradeSearch
                     else if (ckSocket.Dispatcher.CheckAccess())
                     */
 
-                    if (ResStr.lCategory.ContainsKey(category))
+                    if (ResStr.lInherit.ContainsKey(Inherit))
                     {
-                        string option = ResStr.lCategory[category];
+                        string option = ResStr.lInherit[Inherit];
 
-                        if (itemOptions.ByType && category == "Weapons" || category == "Armours")
+                        if (itemOptions.ByType && Inherit == "Weapons" || Inherit == "Armours")
                         {
-                            string[] tmp = mItemBaseName.Category.Split('/');
+                            string[] tmp = mItemBaseName.Inherits;
 
                             if (tmp.Length > 2)
                             {
-                                string tmp2 = tmp[category == "Armours" ? 1 : 2].ToLower();
+                                string tmp2 = tmp[Inherit == "Armours" ? 1 : 2].ToLower();
 
-                                if (category == "Weapons")
+                                if (Inherit == "Weapons")
                                 {
                                     tmp2 = tmp2.Replace("hand", "");
                                     tmp2 = tmp2.Remove(tmp2.Length - 1);
                                 }
-                                else if (category == "Armours" && (tmp2 == "shields" || tmp2 == "helmets" || tmp2 == "bodyarmours"))
+                                else if (Inherit == "Armours" && (tmp2 == "shields" || tmp2 == "helmets" || tmp2 == "bodyarmours"))
                                 {
                                     if (tmp2 == "bodyarmours")
                                         tmp2 = "chest";
@@ -1473,9 +1604,9 @@ namespace PoeTradeSearch
                     {
                         sEntity = sEntity.Replace("\"name\":\"" + jsonData.Query.Name + "\",", "");
 
-                        if (category == "Jewels" || itemOptions.ByType)
+                        if (Inherit == "Jewels" || itemOptions.ByType)
                             sEntity = sEntity.Replace("\"type\":\"" + jsonData.Query.Type + "\",", "");
-                        else if (category == "Prophecies")
+                        else if (Inherit == "Prophecies")
                             sEntity = sEntity.Replace("\"type\":\"" + jsonData.Query.Type + "\",", "\"name\":\"" + jsonData.Query.Type + "\",");
                     }
 

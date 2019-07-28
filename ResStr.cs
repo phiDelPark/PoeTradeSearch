@@ -47,6 +47,8 @@ namespace PoeTradeSearch
         internal const string ChkMapFragment = "템플러의 실험실이나 전용 지도 장치에서";
         internal const string ChkFlask = "마시려면 우클릭하십시오. 허리띠에 장착 중일 때만 충전이 유지됩니다.";
 
+        internal const string SClickSplitItem = "Shift + 클릭으로 아이템 나누기";        
+
         internal const string PhysicalDamage = "물리 피해";
         internal const string ElementalDamage = "원소 피해";
         internal const string ChaosDamage = "카오스 피해";
@@ -99,13 +101,12 @@ namespace PoeTradeSearch
             { "stat_2915988346", true }, { "stat_4277795662", true }, { "stat_3441501978", true }
         };
 
-        internal static Dictionary<string, string> lCategory = new Dictionary<string, string>()
+        internal static Dictionary<string, string> lInherit = new Dictionary<string, string>()
         {
             { "Weapons","weapon" }, { "Quivers","armour.quiver" }, { "Armours","armour" },
             { "Amulets","accessory.amulet" }, { "Rings","accessory.ring" }, { "Belts","accessory.belt" }, /* accessory */
             { "Jewels","jewel" }, { "Flasks","flask" }, { "DivinationCards","card" }, { "Prophecies","prophecy" }, { "Gems","gem" },
-            { "Currency","currency" },  { "Essences","currency" }, { "Maps","map" }, { "MapFragments","map" }, { "Scarabs","map" },
-            { "Fossil","currency" }, { "Delve","currency" }
+            { "Currency","currency" },  { "Maps","map" }, { "MapFragments","map" }
         };
 
         internal static Dictionary<string, string> lRarity = new Dictionary<string, string>()

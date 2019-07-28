@@ -21,9 +21,9 @@ namespace PoeTradeSearch
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<WordData> baseTypeDatas;
-        private List<WordData> wordNameDatas;
-        private List<WordData> DetailNameDatas;
+        private List<BaseResultData> mBaseDatas = null;
+        private List<WordeResultData> mWordDatas = null;
+        private List<BaseResultData> mProphecyDatas = null;
 
         private ConfigData mConfigData;
         private FilterData mFilterData;
@@ -97,9 +97,9 @@ namespace PoeTradeSearch
         {
             Setting();
 
-            ResStr.ServerType = ResStr.ServerType == "" ? mConfigData.Options.league : ResStr.ServerType;
+            ResStr.ServerType = ResStr.ServerType == "" ? mConfigData.Options.League : ResStr.ServerType;
             ResStr.ServerType = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(ResStr.ServerType.ToLower()).Replace(" ", "%20");
-            ResStr.ServerLang = (byte)(mConfigData.Options.server == "en" ? 1 : 0);
+            ResStr.ServerLang = (byte)(mConfigData.Options.Server == "en" ? 1 : 0);
 
             ControlTemplate ct = cbOrbs.Template;
             Popup popup = ct.FindName("PART_Popup", cbOrbs) as Popup;
@@ -133,22 +133,22 @@ namespace PoeTradeSearch
             {
                 foreach (var item in mConfigData.Shortcuts)
                 {
-                    if (item.keycode > 0 && (item.value ?? "") != "")
+                    if (item.Keycode > 0 && (item.Value ?? "") != "")
                     {
-                        if (!bDisableClip && item.value.ToLower() == "{run}")
+                        if (!bDisableClip && item.Value.ToLower() == "{run}")
                         {
                             bDisableClip = true;
                         }
                         else
                         {
-                            if (item.value.ToLower() == "{close}")
-                                closeKeyCode = item.keycode;
+                            if (item.Value.ToLower() == "{close}")
+                                closeKeyCode = item.Keycode;
                         }
 
-                        if (item.ctrl == true)
-                            HotKeys.Add(item.keycode * -1);
+                        if (item.Ctrl == true)
+                            HotKeys.Add(item.Keycode * -1);
                         else
-                            HotKeys.Add(item.keycode);
+                            HotKeys.Add(item.Keycode);
                     }
                 }
             }
@@ -173,7 +173,7 @@ namespace PoeTradeSearch
                 timer.Tick += new EventHandler(Timer_Tick);
                 timer.Start();
 
-                if (mConfigData.Options.ctrl_wheel)
+                if (mConfigData.Options.CtrlWheel)
                 {
                     MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
                     MouseHook.MouseAction += new EventHandler(MouseEvent);
@@ -185,7 +185,7 @@ namespace PoeTradeSearch
                     "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
                     (bIsAdministrator ? "관리자로 실행했기에 추가 단축키나 창고 휠 이동 기능이" : "추가 단축키나 창고 휠 이동 기능은 관리자로 실행해야") + " 작동합니다.";
 
-            if (mConfigData.Options.check_updates && CheckUpdates())
+            if (mConfigData.Options.CheckUpdates && CheckUpdates())
             {
                 MessageBoxResult result = MessageBox.Show(Application.Current.MainWindow,
                         tmp + '\n' + '\n' + "이 프로그램의 최신 버전이 발견 되었습니다." + '\n' + "지금 새 버전을 받으러 가시겠습니까?",
@@ -249,7 +249,7 @@ namespace PoeTradeSearch
                     return;
                 }
 
-                if (mConfigData.Options.server_redirect)
+                if (mConfigData.Options.ServerRedirect)
                 {
                     url = ResStr.TradeApi[ResStr.ServerLang] + ResStr.ServerType + "/?redirect&source=";
                     url += Uri.EscapeDataString(sEntity);
@@ -268,7 +268,7 @@ namespace PoeTradeSearch
                             try
                             {
                                 ResultData resultData = Json.Deserialize<ResultData>(sResult);
-                                url = ResStr.TradeUrl[ResStr.ServerLang] + ResStr.ServerType + "/" + resultData.Id;
+                                url = ResStr.TradeUrl[ResStr.ServerLang] + ResStr.ServerType + "/" + resultData.ID;
                                 Process.Start(url);
                             }
                             catch { }
@@ -415,7 +415,7 @@ namespace PoeTradeSearch
         private void TextBlock_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             MessageBox.Show(Application.Current.MainWindow,
-                "버전: " + GetFileVersion() + '\n' +
+                "버전: " + GetFileVersion() + " (D." +mConfigData.Options.DataVersion + ")" + '\n' +
                 "https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' + '\n' +
                 "브라우저는 윈도우 기본 브라우저를 사용합니다." + '\n' + '\n' +
                 "시세를 클릭하면 현재 옵션으로 다시 검색 합니다." + '\n' +
@@ -424,7 +424,7 @@ namespace PoeTradeSearch
                 "{" + '\n' +
                 "  \"options\":{" + '\n' +
                 "    \"league\":\"standard\",       // 현재 리그" + '\n' +
-                "    \"server\":\"kr\",                 // 검색 서버 [\"kr\", \"en\"]" + '\n' +
+                "    \"server\":\"ko\",                 // 검색 서버 [\"ko\", \"en\"]" + '\n' +
                 "    \"search_week_before\":1,  // 1주일 전 물품만 시세 조회" + '\n' +
                 "    \"search_by_type\":false,    // 검색시 유형으로 검색" + '\n' +
                 "    \"ctrl_wheel\":true            // 창고 Ctrl+Wheel 이동 여부" + '\n' +
@@ -458,7 +458,7 @@ namespace PoeTradeSearch
                 if (bIsHotKey)
                     RemoveRegisterHotKey();
 
-                if (mConfigData != null && mConfigData.Options.ctrl_wheel)
+                if (mConfigData != null && mConfigData.Options.CtrlWheel)
                     MouseHook.Stop();
             }
 
