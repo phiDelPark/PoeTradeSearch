@@ -32,12 +32,12 @@ namespace PoeTradeSearch
 
         private System.Windows.Forms.NotifyIcon TrayIcon;
 
-        private bool bIsClose = false;
-        private bool bDisableClip = false;
-        private bool bIsAdministrator = false;
+        private bool mTerminate = false;
+        private bool mDisableClip = false;
+        private bool mIsAdministrator = false;
 
-        private static bool bIsHotKey = false;
-        public static bool bIsPause = false;
+        private static bool mIsHotKey = false;
+        public static bool mIsPause = false;
 
         public static DateTime MouseHookCallbackTime;
 
@@ -45,7 +45,7 @@ namespace PoeTradeSearch
         {
             InitializeComponent();
 
-            bIsAdministrator = IsAdministrator();
+            mIsAdministrator = IsAdministrator();
 
             string[] clArgs = Environment.GetCommandLineArgs();
 
@@ -81,7 +81,7 @@ namespace PoeTradeSearch
                          {
                              //Application.Current.Shutdown();
 
-                             bIsClose = true;
+                             mTerminate = true;
                              Close();
                          }
                          break;
@@ -89,7 +89,7 @@ namespace PoeTradeSearch
              };
         }
 
-        private static IntPtr mainHwnd;
+        private static IntPtr mMainHwnd;
         private static int closeKeyCode = 0;
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -126,31 +126,31 @@ namespace PoeTradeSearch
                     cbOrbs.Items.Add(item.Key);
             }
 
-            mainHwnd = new WindowInteropHelper(this).Handle;
+            mMainHwnd = new WindowInteropHelper(this).Handle;
 
-            if (bIsAdministrator)
+            if (mIsAdministrator)
             {
                 foreach (var item in mConfigData.Shortcuts)
                 {
                     if (item.Keycode > 0 && (item.Value ?? "") != "")
                     {
-                        if (!bDisableClip && item.Value.ToLower() == "{run}")
-                            bDisableClip = true;
+                        if (!mDisableClip && item.Value.ToLower() == "{run}")
+                            mDisableClip = true;
                         else if (item.Value.ToLower() == "{close}")
                                 closeKeyCode = item.Keycode;
                     }
                 }
             }
 
-            HwndSource source = HwndSource.FromHwnd(mainHwnd);
+            HwndSource source = HwndSource.FromHwnd(mMainHwnd);
             source.AddHook(new HwndSourceHook(WndProc));
 
-            if (!bDisableClip)
+            if (!mDisableClip)
             {
                 IntPtr mNextClipBoardViewerHWnd = SetClipboardViewer(new WindowInteropHelper(this).Handle);
             }
 
-            if (bIsAdministrator)
+            if (mIsAdministrator)
             {
                 // InstallRegisterHotKey();
                 // 창 활성화 후킹 사용시 가끔 꼬여서 타이머로 교체 (타이머를 쓰면 다른 목적으로 사용도 가능하고...)
@@ -172,7 +172,7 @@ namespace PoeTradeSearch
 
             string tmp = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n' +
                     "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
-                    (bIsAdministrator ? "관리자로 실행했기에 추가 단축키나 창고 휠 이동 기능이" : "추가 단축키나 창고 휠 이동 기능은 관리자로 실행해야") + " 작동합니다.";
+                    (mIsAdministrator ? "관리자로 실행했기에 추가 단축키나 창고 휠 이동 기능이" : "추가 단축키나 창고 휠 이동 기능은 관리자로 실행해야") + " 작동합니다.";
 
             if (mConfigData.Options.CheckUpdates && CheckUpdates())
             {
@@ -184,7 +184,7 @@ namespace PoeTradeSearch
                 if (result == MessageBoxResult.Yes)
                 {
                     Process.Start("https://github.com/phiDelPark/PoeTradeSearch/releases");
-                    bIsClose = true;
+                    mTerminate = true;
                     Close();
                 }
             }
@@ -434,7 +434,7 @@ namespace PoeTradeSearch
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            e.Cancel = !bIsClose;
+            e.Cancel = !mTerminate;
 
             Keyboard.ClearFocus();
             this.Visibility = Visibility.Hidden;
@@ -442,12 +442,12 @@ namespace PoeTradeSearch
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            if (bIsAdministrator)
+            if (mIsAdministrator && mConfigData != null)
             {
-                if (bIsHotKey)
+                if (mIsHotKey)
                     RemoveRegisterHotKey();
 
-                if (mConfigData != null && mConfigData.Options.CtrlWheel)
+                if (mConfigData.Options.CtrlWheel)
                     MouseHook.Stop();
             }
 

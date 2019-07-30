@@ -384,23 +384,23 @@ namespace PoeTradeSearch
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            bool chk = GetForegroundWindow().Equals(FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
+            bool chk_equals = GetForegroundWindow().Equals(FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
 
-            if (!bIsHotKey && chk)
+            if (!mIsHotKey && chk_equals)
             {
                 InstallRegisterHotKey();
             }
-            else if (bIsHotKey && !chk)
+            else if (mIsHotKey && !chk_equals)
             {
                 RemoveRegisterHotKey();
             }
 
-            if (chk && !bIsPause && mConfigData.Options.CtrlWheel)
+            if (!mIsPause && chk_equals && mConfigData.Options.CtrlWheel)
             {
                 TimeSpan dateDiff = Convert.ToDateTime(DateTime.Now) - MouseHookCallbackTime;
                 if (dateDiff.Ticks > 3000000000) // 5분간 마우스 움직임이 없으면 훜이 풀렸을 수 있어 다시...
                 {
-                    MainWindow.MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
+                    MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
                     MouseHook.Start();
                 }
             }
@@ -408,9 +408,9 @@ namespace PoeTradeSearch
 
         private void MouseEvent(object sender, EventArgs e)
         {
-            if (!HotkeyProcBlock)
+            if (!mHotkeyProcBlock)
             {
-                HotkeyProcBlock = true;
+                mHotkeyProcBlock = true;
 
                 try
                 {
@@ -423,11 +423,11 @@ namespace PoeTradeSearch
                     Console.WriteLine(ex.Message);
                 }
 
-                HotkeyProcBlock = false;
+                mHotkeyProcBlock = false;
             }
         }
 
-        private bool HotkeyProcBlock = false;
+        private bool mHotkeyProcBlock = false;
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
@@ -435,7 +435,7 @@ namespace PoeTradeSearch
             {
                 IntPtr findHwnd = FindWindow(ResStr.PoeClass, ResStr.PoeCaption);
 
-                if (!bIsPause && GetForegroundWindow().Equals(findHwnd))
+                if (!mIsPause && GetForegroundWindow().Equals(findHwnd))
                 {
                     try
                     {
@@ -448,9 +448,9 @@ namespace PoeTradeSearch
                     }
                 }
             }
-            else if (!HotkeyProcBlock && msg == (int)0x312) //WM_HOTKEY
+            else if (!mHotkeyProcBlock && msg == (int)0x312) //WM_HOTKEY
             {
-                HotkeyProcBlock = true;
+                mHotkeyProcBlock = true;
 
                 IntPtr findHwnd = FindWindow(ResStr.PoeClass, ResStr.PoeCaption);
 
@@ -469,73 +469,59 @@ namespace PoeTradeSearch
                         {
                             if (valueLower == "{pause}")
                             {
-                                if (bIsPause)
+                                mIsPause = !mIsPause;
+
+                                if (mIsPause)
                                 {
-                                    bIsPause = false;
-
-                                    if (bIsAdministrator && mConfigData.Options.CtrlWheel)
-                                    {
-                                        MouseHook.Start();
-                                    }
-
-                                    MessageBox.Show(Application.Current.MainWindow,
-                                        "프로그램 동작을 다시 시작합니다.",
-                                        "POE 거래소 검색"
-                                    );
-                                }
-                                else
-                                {
-                                    bIsPause = true;
-
-                                    if (bIsAdministrator && mConfigData.Options.CtrlWheel)
-                                    {
+                                    if (mConfigData.Options.CtrlWheel)
                                         MouseHook.Stop();
-                                    }
 
                                     MessageBox.Show(Application.Current.MainWindow,
                                         "프로그램 동작을 일시 중지합니다." + '\n' +
-                                        "다시 시작하려면 일시 중지 단축키를 한번더 누르세요.",
-                                        "POE 거래소 검색"
-                                    );
+                                        "다시 시작하려면 일시 중지 단축키를 한번더 누르세요.", "POE 거래소 검색");
+                                }
+                                else
+                                {
+                                    if (mConfigData.Options.CtrlWheel)
+                                        MouseHook.Start();
+
+                                    MessageBox.Show(Application.Current.MainWindow, "프로그램 동작을 다시 시작합니다.", "POE 거래소 검색");
                                 }
 
                                 SetForegroundWindow(findHwnd);
                             }
-                            else if (!bIsPause)
+                            else if (valueLower == "{close}")
+                            {
+                                IntPtr pHwnd = FindWindow(null, popWinTitle);
+
+                                if (this.Visibility == Visibility.Hidden && pHwnd.ToInt32() == 0)
+                                {
+                                    SendMessage(findHwnd, 0x0101, shortcut.Keycode, 0);
+                                }
+                                else
+                                {
+                                    if (pHwnd.ToInt32() != 0)
+                                        SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, 0, 0);
+
+                                    if (this.Visibility == Visibility.Visible)
+                                        Close();
+                                }
+                            }
+                            else if (!mIsPause)
                             {
                                 if (valueLower == "{run}")
                                 {
                                     System.Windows.Forms.SendKeys.SendWait("^{c}");
 
-                                    if (!bIsPause)
+                                    Thread.Sleep(300);
+                                    try
                                     {
-                                        Thread.Sleep(300);
-                                        try
-                                        {
-                                            if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
-                                                ShowWindow(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText) ? TextDataFormat.UnicodeText : TextDataFormat.Text));
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Console.WriteLine(ex.Message);
-                                        }
+                                        if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
+                                            ShowWindow(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText) ? TextDataFormat.UnicodeText : TextDataFormat.Text));
                                     }
-                                }
-                                else if (valueLower == "{close}")
-                                {
-                                    IntPtr pHwnd = FindWindow(null, popWinTitle);
-
-                                    if (this.Visibility == Visibility.Hidden && pHwnd.ToInt32() == 0)
+                                    catch (Exception ex)
                                     {
-                                        SendMessage(findHwnd, 0x0101, shortcut.Keycode, 0);
-                                    }
-                                    else
-                                    {
-                                        if (pHwnd.ToInt32() != 0)
-                                            SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, 0, 0);
-
-                                        if (this.Visibility == Visibility.Visible)
-                                            Close();
+                                        Console.WriteLine(ex.Message);
                                     }
                                 }
                                 else if (valueLower.IndexOf("{enter}") == 0)
@@ -592,7 +578,7 @@ namespace PoeTradeSearch
                     handled = true;
                 }
 
-                HotkeyProcBlock = false;
+                mHotkeyProcBlock = false;
             }
 
             return IntPtr.Zero;
@@ -950,7 +936,7 @@ namespace PoeTradeSearch
                     bool is_divinationCard = itemRarity == ResStr.DivinationCard;
 
                     if (is_map || is_currency) is_map_fragments = false;
-                    bool isDetail = is_gem || is_currency || is_divinationCard || is_prophecy || is_map_fragments;
+                    bool is_detail = is_gem || is_currency || is_divinationCard || is_prophecy || is_map_fragments;
 
                     if (is_prophecy)
                     {
@@ -1013,19 +999,21 @@ namespace PoeTradeSearch
                         }
                     }
 
-                    string itemQuality = Regex.Replace(lItemOption[ResStr.Quality].Trim(), "[^0-9]", "");
+                    string item_quality = Regex.Replace(lItemOption[ResStr.Quality].Trim(), "[^0-9]", "");
 
                     mItemBaseName.Inherits = (is_prophecy ? "Prophecies/Prophecy" : itemInherits).Split('/');
+
                     string inherit = mItemBaseName.Inherits[0];
                     string sub_inherit = mItemBaseName.Inherits.Length > 1 ? mItemBaseName.Inherits[1] : "";
 
                     bool is_essences = inherit == "Currency" && itemID.IndexOf("Currency/CurrencyEssence") == 0;
-                    bool is_incubations = inherit == "Legion" && sub_inherit.IndexOf("Incubator") == 0;
+                    bool is_incubations = inherit == "Legion" && sub_inherit == "Incubator";
 
-                    bool byType = inherit == "Weapons" || inherit == "Quivers" || inherit == "Armours" || inherit == "Amulets" || inherit == "Rings" || inherit == "Belts";
-                    isDetail = isDetail || (!isDetail && (inherit == "MapFragments" || inherit == "UniqueFragments" || inherit == "Labyrinth"));
+                    bool by_type = inherit == "Weapons" || inherit == "Quivers" || inherit == "Armours" || inherit == "Amulets" || inherit == "Rings" || inherit == "Belts";
 
-                    if (isDetail)
+                    is_detail = is_detail || is_incubations || (!is_detail && (inherit == "MapFragments" || inherit == "UniqueFragments" || inherit == "Labyrinth"));
+
+                    if (is_detail)
                     {
                         mItemBaseName.NameEN = "";
 
@@ -1064,13 +1052,13 @@ namespace PoeTradeSearch
                     }
                     else
                     {
-                        int ImpCnt = itemfilters.Count - (itemRarity == ResStr.Normal ? 0 : notImpCnt);
+                        int Imp_cnt = itemfilters.Count - (itemRarity == ResStr.Normal ? 0 : notImpCnt);
                         for (int i = 0; i < itemfilters.Count; i++)
                         {
                             int selidx = -1;
                             Itemfilter ifilter = itemfilters[i];
 
-                            if (i < ImpCnt)
+                            if (i < Imp_cnt)
                             {
                                 ((TextBox)this.FindName("tbOpt" + i)).BorderBrush = System.Windows.Media.Brushes.DarkRed;
                                 ((TextBox)this.FindName("tbOpt" + i + "_0")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
@@ -1111,7 +1099,7 @@ namespace PoeTradeSearch
                             double ElementalDPS = DamageToDPS(lItemOption[ResStr.ElementalDamage]);
                             double ChaosDPS = DamageToDPS(lItemOption[ResStr.ChaosDamage]);
 
-                            double quality20Dps = itemQuality == "" ? 0 : StrToDouble(itemQuality, 0);
+                            double quality20Dps = item_quality == "" ? 0 : StrToDouble(item_quality, 0);
                             double attacksPerSecond = StrToDouble(Regex.Replace(lItemOption[ResStr.AttacksPerSecond], @"\([a-zA-Z]+\)", "").Trim(), 0);
 
                             if (attackSpeedIncr > 0)
@@ -1200,15 +1188,15 @@ namespace PoeTradeSearch
                     }
 
                     tbLvMin.Text = Regex.Replace(lItemOption[is_gem ? ResStr.Lv : ResStr.ItemLv].Trim(), "[^0-9]", "");
-                    tbQualityMin.Text = itemQuality;
+                    tbQualityMin.Text = item_quality;
 
-                    cbName.Visibility = itemRarity != ResStr.Unique && byType ? Visibility.Visible : Visibility.Hidden;
+                    cbName.Visibility = itemRarity != ResStr.Unique && by_type ? Visibility.Visible : Visibility.Hidden;
                     cbName.IsChecked = !mConfigData.Options.SearchByType;
 
-                    lbName.Visibility = itemRarity != ResStr.Unique && byType ? Visibility.Hidden : Visibility.Visible;
+                    lbName.Visibility = itemRarity != ResStr.Unique && by_type ? Visibility.Hidden : Visibility.Visible;
                     lbRarity.Content = itemRarity;
 
-                    bdDetail.Visibility = isDetail ? Visibility.Visible : Visibility.Hidden;
+                    bdDetail.Visibility = is_detail ? Visibility.Visible : Visibility.Hidden;
                     if (bdDetail.Visibility == Visibility.Visible)
                     {
                         Thickness thickness = bdDetail.Margin;
@@ -1216,7 +1204,7 @@ namespace PoeTradeSearch
                         bdDetail.Margin = thickness;
                     }
 
-                    bdExchange.Visibility = isDetail && IsExchangeCurrency ? Visibility.Visible : Visibility.Hidden;
+                    bdExchange.Visibility = is_detail && IsExchangeCurrency ? Visibility.Visible : Visibility.Hidden;
 
                     PriceUpdateThreadWorker(GetItemOptions(), null);
 
@@ -1435,7 +1423,7 @@ namespace PoeTradeSearch
                     itemfilter.min = StrToDouble(((TextBox)this.FindName("tbOpt" + i + "_0")).Text, 99999);
                     itemfilter.max = StrToDouble(((TextBox)this.FindName("tbOpt" + i + "_1")).Text, 99999);
 
-                    if(itemfilter.text == ResStr.TotalResistance)
+                    if (itemfilter.text == ResStr.TotalResistance)
                     {
                         if (total_res_idx == -1)
                             total_res_idx = itemOption.itemfilters.Count;
@@ -1452,7 +1440,7 @@ namespace PoeTradeSearch
                     {
                         itemfilter.id = ((FilterEntrie)comboBox.SelectedItem).ID;
                     }
-                    
+
                     itemOption.itemfilters.Add(itemfilter);
                 }
             }
@@ -1656,24 +1644,24 @@ namespace PoeTradeSearch
 
         private void InstallRegisterHotKey()
         {
-            bIsHotKey = true;
+            mIsHotKey = true;
             // 0x0 : 조합키 없이 사용, 0x1: ALT, 0x2: Ctrl, 0x3: Shift
             for (int i = 0; i < mConfigData.Shortcuts.Length; i++)
             {
                 ConfigShortcut shortcut = mConfigData.Shortcuts[i];
                 if (shortcut.Keycode > 0 && (shortcut.Value ?? "") != "")
-                    RegisterHotKey(mainHwnd, 10001 + i, shortcut.Ctrl ? 0x2 : 0x0, Math.Abs(shortcut.Keycode));
+                    RegisterHotKey(mMainHwnd, 10001 + i, shortcut.Ctrl ? 0x2 : 0x0, Math.Abs(shortcut.Keycode));
             }
         }
 
         private void RemoveRegisterHotKey()
         {
-            bIsHotKey = false;
+            mIsHotKey = false;
             for (int i = 0; i < mConfigData.Shortcuts.Length; i++)
             {
                 ConfigShortcut shortcut = mConfigData.Shortcuts[i];
                 if (shortcut.Keycode > 0 && (shortcut.Value ?? "") != "")
-                    UnregisterHotKey(mainHwnd, 10001 + i);
+                    UnregisterHotKey(mMainHwnd, 10001 + i);
             }
         }
 
