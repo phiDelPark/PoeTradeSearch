@@ -440,7 +440,7 @@ namespace PoeTradeSearch
                     try
                     {
                         if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
-                            ShowWindow(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText) ? TextDataFormat.UnicodeText : TextDataFormat.Text));
+                            ShowWindow(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)));
                     }
                     catch (Exception ex)
                     {
@@ -517,7 +517,7 @@ namespace PoeTradeSearch
                                     try
                                     {
                                         if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
-                                            ShowWindow(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText) ? TextDataFormat.UnicodeText : TextDataFormat.Text));
+                                            ShowWindow(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)));
                                     }
                                     catch (Exception ex)
                                     {
@@ -597,31 +597,28 @@ namespace PoeTradeSearch
             priceThread.Start();
         }
 
-        private string GetClipText(TextDataFormat textDataFormat)
+        private string GetClipText(bool isUnicode)
         {
-            return Clipboard.GetText(textDataFormat);
+            return Clipboard.GetText(isUnicode ? TextDataFormat.UnicodeText : TextDataFormat.Text);
         }
 
         protected void SetClipText(string text, TextDataFormat textDataFormat)
         {
-            var ClipboardThread = new Thread(() => ClipboardThreadWorker(text, textDataFormat));
+            var ClipboardThread = new Thread(() => {
+                for (int i = 0; i < 10; i++)
+                {
+                    try
+                    {
+                        Clipboard.SetText(text, textDataFormat);
+                        return;
+                    }
+                    catch { }
+                    Thread.Sleep(10);
+                }
+            });
             ClipboardThread.SetApartmentState(ApartmentState.STA);
             ClipboardThread.IsBackground = false;
             ClipboardThread.Start();
-        }
-
-        private void ClipboardThreadWorker(string text, TextDataFormat textDataFormat)
-        {
-            for (int i = 0; i < 10; i++)
-            {
-                try
-                {
-                    Clipboard.SetText(text, textDataFormat);
-                    return;
-                }
-                catch { }
-                Thread.Sleep(10);
-            }
         }
 
         private void SetSearchButtonText()
@@ -715,7 +712,7 @@ namespace PoeTradeSearch
             {
                 string[] asData = (sText ?? "").Trim().Split(new string[] { "--------" }, StringSplitOptions.None);
 
-                if (asData.Length > 1 && asData[0].Length > 6 && asData[0].Substring(0, 5) == ResStr.Rarity + ": ")
+                if (asData.Length > 1 && asData[0].Length > 6 && asData[0].IndexOf(ResStr.Rarity + ": ") == 0)
                 {
                     ResetControls();
                     mItemBaseName = new ItemBaseName();

@@ -15,7 +15,7 @@ namespace PoeTradeSearch
         internal static string[] FetchApi = { "https://poe.game.daum.net/api/trade/fetch/", "https://www.pathofexile.com/api/trade/fetch/" };
         internal static string[] ExchangeApi = { "https://poe.game.daum.net/api/trade/exchange/", "https://www.pathofexile.com/api/trade/exchange/" };
 
-        internal const string Rarity = "희귀도";
+        internal const string Rarity = "아이템 희귀도";
         internal const string Unique = "고유";
         internal const string Rare = "희귀";
         internal const string Magic = "마법";
