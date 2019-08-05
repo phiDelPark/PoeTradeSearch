@@ -712,7 +712,7 @@ namespace PoeTradeSearch
             {
                 string[] asData = (sText ?? "").Trim().Split(new string[] { "--------" }, StringSplitOptions.None);
 
-                if (asData.Length > 1 && asData[0].Length > 6 && asData[0].IndexOf(ResStr.Rarity + ": ") == 0)
+                if (asData.Length > 1 && asData[0].IndexOf(ResStr.Rarity + ": ") == 0)
                 {
                     ResetControls();
                     mItemBaseName = new ItemBaseName();
