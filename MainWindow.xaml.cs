@@ -172,7 +172,7 @@ namespace PoeTradeSearch
 
             string tmp = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n' +
                     "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
-                    (mIsAdministrator ? "관리자로 실행했기에 추가 단축키나 창고 휠 이동 기능이" : "추가 단축키나 창고 휠 이동 기능은 관리자로 실행해야") + " 작동합니다.";
+                    (mIsAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "설정된 추가 단축키 기능은 관리자 권한으로 실행해야") + " 작동합니다.";
 
             if (mConfigData.Options.CheckUpdates && CheckUpdates())
             {
@@ -405,23 +405,12 @@ namespace PoeTradeSearch
         {
             MessageBox.Show(Application.Current.MainWindow,
                 "버전: " + GetFileVersion() + " (D." +mConfigData.Options.DataVersion + ")" + '\n' +
-                "https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' + '\n' +
-                "브라우저는 윈도우 기본 브라우저를 사용합니다." + '\n' + '\n' +
+                "https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' +
+                "자주 묻는 질문들:" + '\n' +
+                "https://github.com/phiDelPark/PoeTradeSearch/wiki/Q-&-A" + '\n' + '\n' + '\n' +
                 "시세를 클릭하면 현재 옵션으로 다시 검색 합니다." + '\n' +
                 "시세정보) 총수. 최소값 ~ 최대값 = 많은[수] 1 ~ 2위" + '\n' + '\n' + '\n' +
-                "옵션 파일 (Config.txt) 설명" + '\n' +
-                "{" + '\n' +
-                "  \"options\":{" + '\n' +
-                "    \"league\":\"standard\",       // 현재 리그" + '\n' +
-                "    \"server\":\"ko\",                 // 검색 서버 [\"ko\", \"en\"]" + '\n' +
-                "    \"search_week_before\":1,  // 1주일 전 물품만 시세 조회" + '\n' +
-                "    \"search_by_type\":false,    // 검색시 유형으로 검색" + '\n' +
-                "    \"ctrl_wheel\":true            // 창고 Ctrl+Wheel 이동 여부" + '\n' +
-                "  }," + '\n' +
-                "  \"shortcuts\":[ 단축키 설정들 (Config.txt 참고) ]" + '\n' +
-                "  \"checked\":[ 자동 선택될 옵션들 (Config.txt 참고) ]" + '\n' +
-                "}" + '\n' + '\n' +
-                "설정된 단축키나 창고 이동은 관리자 권한으로 실행해야 합니다.",
+                "설정 파일에 설정된 단축키는 관리자 권한으로 실행해야 작동합니다.",
                 "POE 거래소 검색"
                 );
         }

@@ -177,9 +177,186 @@ namespace PoeTradeSearch
 
             File.Delete(path + "Bases.txt");
             File.Delete(path + "Words.txt");
+            File.Delete(path + "Prophecies.txt");
 
-            if (File.Exists(path + "Details.txt"))
-                File.Move(path + "Details.txt", path + "Details.txt.bak");
+            if (File.Exists(path + "csv/ko/BaseItemTypes.csv"))
+            {
+                try
+                {
+                    string sEnContents = "";
+                    string sKoContents = "";
+
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/BaseItemTypes.csv")))
+                    {
+                        sEnContents = oStreamReader.ReadToEnd();
+                    }
+
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/BaseItemTypes.csv")))
+                    {
+                        sKoContents = oStreamReader.ReadToEnd();
+                    }
+
+                    List<string[]> oCsvEnList = new List<string[]>();
+                    List<string[]> oCsvKoList = new List<string[]>();
+
+                    string[] sEnLines = sEnContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string sLine in sEnLines)
+                    {
+                        //oCsvEnList.Add(sLine.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
+                        oCsvEnList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                    }
+
+                    string[] sKoLines = sKoContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string sLine in sKoLines)
+                    {
+                        //oCsvKoList.Add(sLine.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
+                        oCsvKoList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                    }
+
+                    List<BaseResultData> datas = new List<BaseResultData>();
+
+                    for (int i = 1; i < oCsvEnList.Count; i++)
+                    {
+                        if (
+                            oCsvEnList[i][6] == "Metadata/Items/Currency/AbstractMicrotransaction"
+                            || oCsvEnList[i][6] == "Metadata/Items/HideoutDoodads/AbstractHideoutDoodad"
+                        )
+                            continue;
+
+                        BaseResultData baseResultData = new BaseResultData();
+                        baseResultData.ID = oCsvEnList[i][1].Replace("Metadata/Items/", "");
+                        baseResultData.InheritsFrom = oCsvEnList[i][6].Replace("Metadata/Items/", "");
+                        baseResultData.NameEn = oCsvEnList[i][5];
+                        baseResultData.NameKo = oCsvKoList[i][5];
+                        baseResultData.Detail = "";
+
+                        datas.Add(baseResultData);
+                    }
+
+                    BaseData rootClass = Json.Deserialize<BaseData>("{\"result\":[{\"data\":[]}]}");
+                    rootClass.Result[0].Data = datas.ToArray();
+
+                    using (StreamWriter writer = new StreamWriter(path + "Bases.txt", false, Encoding.UTF8))
+                    {
+                        writer.Write(Json.Serialize<BaseData>(rootClass));
+                    }
+
+                    sEnContents = "";
+                    sKoContents = "";
+
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/Words.csv")))
+                    {
+                        sEnContents = oStreamReader.ReadToEnd();
+                    }
+
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/Words.csv")))
+                    {
+                        sKoContents = oStreamReader.ReadToEnd();
+                    }
+
+                    oCsvEnList = new List<string[]>();
+                    oCsvKoList = new List<string[]>();
+
+                    sEnLines = sEnContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string sLine in sEnLines)
+                    {
+                        oCsvEnList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                    }
+
+                    sKoLines = sKoContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string sLine in sKoLines)
+                    {
+                        oCsvKoList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                    }
+
+                    List<WordeResultData> wdatas = new List<WordeResultData>();
+
+                    for (int i = 1; i < oCsvEnList.Count; i++)
+                    {
+                        WordeResultData wordeResultData = new WordeResultData();
+                        wordeResultData.Key = oCsvEnList[i][1];
+                        wordeResultData.NameEn = oCsvEnList[i][6];
+                        wordeResultData.NameKo = oCsvKoList[i][6];
+                        wdatas.Add(wordeResultData);
+                    }
+
+                    WordData wordClass = Json.Deserialize<WordData>("{\"result\":[{\"data\":[]}]}");
+                    wordClass.Result[0].Data = wdatas.ToArray();
+
+                    using (StreamWriter writer = new StreamWriter(path + "Words.txt", false, Encoding.UTF8))
+                    {
+                        writer.Write(Json.Serialize<WordData>(wordClass));
+                    }
+
+                    sEnContents = "";
+                    sKoContents = "";
+
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/Prophecies.csv")))
+                    {
+                        sEnContents = oStreamReader.ReadToEnd();
+                    }
+
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/Prophecies.csv")))
+                    {
+                        sKoContents = oStreamReader.ReadToEnd();
+                    }
+
+                    oCsvEnList = new List<string[]>();
+                    oCsvKoList = new List<string[]>();
+
+                    sEnLines = sEnContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string sLine in sEnLines)
+                    {
+                        oCsvEnList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                    }
+
+                    sKoLines = sKoContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string sLine in sKoLines)
+                    {
+                        oCsvKoList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                    }
+
+                    datas = new List<BaseResultData>();
+
+                    for (int i = 1; i < oCsvEnList.Count; i++)
+                    {
+                        BaseResultData baseResultData = new BaseResultData();
+                        baseResultData.ID = "Prophecies/" + oCsvEnList[i][1];
+                        baseResultData.InheritsFrom = "Prophecies/Prophecy";
+                        baseResultData.NameEn = oCsvEnList[i][4];
+                        baseResultData.NameKo = oCsvKoList[i][4];
+                        baseResultData.Detail = "";
+
+                        datas.Add(baseResultData);
+                    }
+
+                    rootClass = Json.Deserialize<BaseData>("{\"result\":[{\"data\":[]}]}");
+                    rootClass.Result[0].Data = datas.ToArray();
+
+                    using (StreamWriter writer = new StreamWriter(path + "Prophecies.txt", false, Encoding.UTF8))
+                    {
+                        writer.Write(Json.Serialize<BaseData>(rootClass));
+                    }
+
+                    success = true;
+                }
+                catch { }
+            }
+
+            return success;
+        }
+
+        /*
+        private bool BaseDataUpdates(string path)
+        {
+            bool success = false;
+
+            File.Delete(path + "Bases.txt");
+            File.Delete(path + "Words.txt");
+            File.Delete(path + "Prophecies.txt");
+
+            //if (File.Exists(path + "Details.txt"))
+            //    File.Move(path + "Details.txt", path + "Details.txt.bak");
 
             if (File.Exists(path + "Json/json_en/BaseItemTypes.json"))
             {
@@ -280,6 +457,7 @@ namespace PoeTradeSearch
 
             return success;
         }
+    */
 
         private void Setting()
         {
@@ -301,7 +479,8 @@ namespace PoeTradeSearch
                     }
                 }
 
-                if (!File.Exists(path + "Filters.txt")) FilterDataUpdates(path);
+                if (!File.Exists(path + "Filters.txt"))
+                    FilterDataUpdates(path);
 
                 using (FileStream fs = new FileStream(path + "Filters.txt", FileMode.Open))
                 {
@@ -312,7 +491,8 @@ namespace PoeTradeSearch
                     }
                 }
 
-                if (!File.Exists(path + "Bases.txt") || !File.Exists(path + "Words.txt")) BaseDataUpdates(path);
+                if (!File.Exists(path + "Bases.txt") || !File.Exists(path + "Words.txt") || !File.Exists(path + "Prophecies.txt"))
+                    BaseDataUpdates(path);
 
                 using (FileStream fs = new FileStream(path + "Bases.txt", FileMode.Open))
                 {
@@ -806,6 +986,16 @@ namespace PoeTradeSearch
                                         selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
                                         if (selidx == -1)
                                         {
+                                            if (((ComboBox)this.FindName("cbOpt" + k)).Items.Count > 0)
+                                            {
+                                                FilterEntrie filterEntrie = (FilterEntrie)((ComboBox)this.FindName("cbOpt" + k)).Items[0];
+                                                string[] id_split = filterEntrie.ID.Split('.');
+                                                if (id_split.Length == 2 && ResStr.lPseudo.ContainsKey(id_split[1]))
+                                                {
+                                                    ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(new FilterEntrie("pseudo." + ResStr.lPseudo[id_split[1]], ResStr.Pseudo));
+                                                }
+                                            }
+
                                             ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Explicit;
                                             selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
                                         }
@@ -1504,6 +1694,7 @@ namespace PoeTradeSearch
                         for (int i = 0; i < itemOptions.itemfilters.Count; i++)
                         {
                             string input = itemOptions.itemfilters[i].text;
+                            string id = itemOptions.itemfilters[i].id;
                             string type = itemOptions.itemfilters[i].id.Split('.')[0];
 
                             if (input.Trim() != "")
@@ -1515,7 +1706,7 @@ namespace PoeTradeSearch
 
                                 input = Regex.Escape(input).Replace("\\+\\#", "[+]?\\#");
 
-                                if (Inherit == "Weapons" || Inherit == "Armours")
+                                if (type_name != ResStr.Pseudo && (Inherit == "Weapons" || Inherit == "Armours"))
                                 {
                                     Regex rgx = new Regex("^" + input + "(\\(" + ResStr.Local + "\\))?$", RegexOptions.IgnoreCase);
                                     FilterResultEntrie[] tmp_filters = Array.FindAll(filterResult.Entries, x => rgx.IsMatch(x.Text) && x.Type == type);
@@ -1543,8 +1734,10 @@ namespace PoeTradeSearch
 
                                 if (filter == null)
                                 {
-                                    Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
-                                    filter = Array.Find(filterResult.Entries, x => rgx.IsMatch(x.Text) && x.Type == type);
+                                    //Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
+                                    //filter = Array.Find(filterResult.Entries, x => rgx.IsMatch(x.Text) && x.Type == type);
+
+                                    filter = Array.Find(filterResult.Entries, x => x.ID == id && x.Type == type);
                                 }
 
                                 if (filter != null)

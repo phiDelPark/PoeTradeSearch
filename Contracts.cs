@@ -120,14 +120,14 @@ namespace PoeTradeSearch
         internal class BaseResult
         {
             [DataMember(Name = "data")]
-            internal BaseResultData[] Data;
+            internal BaseResultData[] Data = null;
         }
 
         [DataContract]
         internal class BaseResultData
         {
             [DataMember(Name = "Id")]
-            internal string ID;
+            internal string ID = null;
 
             [DataMember(Name = "Name")]
             internal string NameEn = null;
@@ -136,7 +136,7 @@ namespace PoeTradeSearch
             internal string NameKo = null;
 
             [DataMember(Name = "InheritsFrom")]
-            internal string InheritsFrom;
+            internal string InheritsFrom = null;
 
             [DataMember(Name = "Detail")]
             internal string Detail = null;
@@ -153,7 +153,7 @@ namespace PoeTradeSearch
         internal class WordeResult
         {
             [DataMember(Name = "data")]
-            public WordeResultData[] Data;
+            public WordeResultData[] Data = null;
         }
 
         [DataContract]

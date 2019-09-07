@@ -101,6 +101,13 @@ namespace PoeTradeSearch
             { "stat_2915988346", true }, { "stat_4277795662", true }, { "stat_3441501978", true }
         };
 
+        internal static Dictionary<string, string> lPseudo = new Dictionary<string, string>()
+        {
+            { "stat_4220027924", "pseudo_total_cold_resistance" }, { "stat_3372524247", "pseudo_total_fire_resistance" }, { "stat_1671376347", "pseudo_total_lightning_resistance" }, { "stat_2923486259", "pseudo_total_chaos_resistance" },
+            { "stat_3299347043", "pseudo_total_life" }, { "stat_1050105434", "pseudo_total_mana" }, { "stat_3489782002", "pseudo_total_energy_shield" },
+            { "stat_4080418644", "pseudo_total_strength" }, { "stat_3261801346", "pseudo_total_dexterity" }, { "stat_328541901", "pseudo_total_intelligence" }
+        };
+
         internal static Dictionary<string, string> lInherit = new Dictionary<string, string>()
         {
             { "Weapons","weapon" }, { "Quivers","armour.quiver" }, { "Armours","armour" },

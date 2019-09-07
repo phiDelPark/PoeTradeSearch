@@ -20,20 +20,20 @@
 * 트레이 아이콘을 우클릭 하시면 됩니다.
 
 ### 참고:
- 1. 리그 선택은 아래 옵션 파일 설명 참고하시고 해당 리그 적어 주시면 됩니다.
- 2. 브라우저는 윈도우 기본 브라우저를 사용하니 변경은 윈도우 기본 브라우저를 바꾸시면 됩니다.
+ 1. 리그 선택은 아래 옵션 파일 설명 참고하시고 해당 리그를 적어주시면 됩니다.
+ 2. 그외 자주 묻는 질문이 더 궁굼 하시면 [위키 페이지 Q&A](https://github.com/phiDelPark/PoeTradeSearch/wiki/Q-&-A) 를 참고하세요.
 
 ### 옵션 파일 ( Config.txt ) 설명
 
       "options":{
-        "league":"Standard",         // 리그 선택 ["Legion", "Hardcore Legion", "Standard", "Hardcore"]
+        "league":"Standard",         // 리그 선택 ["Blight", "Hardcore Blight", "Standard", "Hardcore"]
         "server":"ko",               // 기본 검색 서버 ["ko", "en"]
         "server_timeout":5,          // 서버 접속 대기 시간 (초) 인터넷이 느리면 더 올려 시간 초과를 방지
         "server_redirect":false,     // 일부 환경에서 서버 데이터를 못받아와 거래소 접속이 안되는 경우 사용
         "search_week_before":1,      // 해당 주일 전 물품만 시세 조회 [1 ~ 2]
         "search_by_type":false,      // 기본 검색시 아이템 유형으로 검색 [true, false]
         "check_updates":true,        // 시작시 최신 버전 체크 [true, false]
-        "ctrl_wheel":true            // 창고를 Ctrl+Wheel 로 이동 가능하게 할지 [true, false]
+        "ctrl_wheel":false           // POE 버전 3.8 이후 기본으로 지원되어 현잰 스탠용으로 남겨둠 (삭제 예정)
       },
        // 창고 Wheel 이동과 아래 단축키들은 관리자 권한으로 실행 필요
        // 키코드(keycode)는 (https://github.com/phiDelPark/PoeTradeSearch/wiki) 가시면 볼 수 있습니다.
