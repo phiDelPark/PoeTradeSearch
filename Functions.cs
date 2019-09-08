@@ -1156,7 +1156,7 @@ namespace PoeTradeSearch
 
                         if (!is_unIdentify && itemRarity == ResStr.Magic)
                             itemType = itemType.Split('-')[0].Trim();
-
+                        
                         if ((is_unIdentify || itemRarity == ResStr.Normal) && itemType.Length > 4 && itemType.IndexOf(ResStr.Higher + " ") == 0)
                             itemType = itemType.Substring(3);
 
@@ -1169,7 +1169,7 @@ namespace PoeTradeSearch
 
                             if (tmp.Length > 1)
                             {
-                                for (int i = 0; i < tmp.Length - 2; i++)
+                                for (int i = 0; i < tmp.Length - 1; i++)
                                 {
                                     tmp[i] = "";
                                     string tmp2 = string.Join(" ", tmp).Trim();
@@ -1717,7 +1717,15 @@ namespace PoeTradeSearch
 
                                 input = Regex.Escape(input).Replace("\\+\\#", "[+]?\\#");
 
-                                if (type_name != ResStr.Pseudo && (Inherit == "Weapons" || Inherit == "Armours"))
+
+                                if (type_name == ResStr.Pseudo && Inherit == "Weapons")
+                                {
+                                    if(Regex.IsMatch(id, @"^pseudo.pseudo_adds_[a-z]+_damage$"))
+                                    {
+                                        id = id + "_to_attacks";
+                                    }
+                                }
+                                else if (type_name != ResStr.Pseudo && (Inherit == "Weapons" || Inherit == "Armours"))
                                 {
                                     Regex rgx = new Regex("^" + input + "(\\(" + ResStr.Local + "\\))?$", RegexOptions.IgnoreCase);
                                     FilterResultEntrie[] tmp_filters = Array.FindAll(filterResult.Entries, x => rgx.IsMatch(x.Text) && x.Type == type);

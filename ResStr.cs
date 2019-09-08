@@ -19,7 +19,7 @@ namespace PoeTradeSearch
         internal const string Unique = "고유";
         internal const string Rare = "희귀";
         internal const string Magic = "마법";
-        internal const string Normal = "보통";
+        internal const string Normal = "일반";
 
         //internal const string Prophecy = "예언";
         internal const string Currency = "화폐";
