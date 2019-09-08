@@ -19,7 +19,7 @@
 			{"keycode":121,"value":"Temple_0.jpg","position":"0x0","Detail":"이미지 출력, 단, .jpg만 가능 (F10)"},
 			{"keycode":122,"value":"{Pause}","Detail":"일시 중지 (F11)"},
 			{"keycode":27,"value":"{Close}","Detail":"창 닫기 (ESC)"},
-			{"keycode":87,"ctrl":true,"value":"{Link}https://poe.ninja/{Link}","Detail":"해당 주소로 브라우저를 열기 (Ctrl+W)"},
+			{"keycode":78,"ctrl":true,"value":"{Link}https://poe.ninja/{Link}","Detail":"해당 주소로 브라우저를 열기 (Ctrl+N)"},
 			{"keycode":0,"ctrl":true,"value":"{Run}","Detail":"작동키 변경은 키코드 0을 원하는 키코드로 바꾸면 됨 (Ctrl+설정키)"}
 		],
 	"checked":[

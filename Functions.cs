@@ -171,6 +171,7 @@ namespace PoeTradeSearch
             return success;
         }
 
+        // 데이터 CSV 파일은 POE 클라이언트를 VisualGGPK.exe (libggpk) 를 통해 추출할 수 있다.
         private bool BaseDataUpdates(string path)
         {
             bool success = false;
@@ -1156,7 +1157,7 @@ namespace PoeTradeSearch
 
                         if (!is_unIdentify && itemRarity == ResStr.Magic)
                             itemType = itemType.Split('-')[0].Trim();
-                        
+
                         if ((is_unIdentify || itemRarity == ResStr.Normal) && itemType.Length > 4 && itemType.IndexOf(ResStr.Higher + " ") == 0)
                             itemType = itemType.Substring(3);
 
@@ -1717,10 +1718,9 @@ namespace PoeTradeSearch
 
                                 input = Regex.Escape(input).Replace("\\+\\#", "[+]?\\#");
 
-
                                 if (type_name == ResStr.Pseudo && Inherit == "Weapons")
                                 {
-                                    if(Regex.IsMatch(id, @"^pseudo.pseudo_adds_[a-z]+_damage$"))
+                                    if (Regex.IsMatch(id, @"^pseudo.pseudo_adds_[a-z]+_damage$"))
                                     {
                                         id = id + "_to_attacks";
                                     }

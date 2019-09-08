@@ -46,7 +46,7 @@
             {"keycode":121,"value":"사원보상표.jpg"},             // F10. 주로 이렇게 POE 정보를 이미지 만들어 사용
             {"keycode":122,"value":"{Pause}"},                   // F11. 값이 "{Pause}"면 일시 중지 키로 사용됨
             {"keycode":27,"value":"{Close}"},                    // ESC. 값이 "{Close}"면 창 닫기 키로 사용됨
-            {"keycode":87,"ctrl":true,"value":"{Link}URL{Link}"},// Ctrl+W. 링크열기 ("{Link}URL{Link}")
+            {"keycode":78,"ctrl":true,"value":"{Link}URL{Link}"},// Ctrl+N. 링크열기 ("{Link}URL{Link}")
             {"keycode":0,"ctrl":true,"value":"{Run}"}            // 작동키 Ctrl+C. 변경은 키코드 0을 원하는 키로 바꿈
                                                                  // 참고: "ctrl":true 는 Ctrl을 같이 눌러야 한다는 뜻
         ],
