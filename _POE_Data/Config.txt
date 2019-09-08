@@ -6,8 +6,9 @@
 			"server_redirect":false,
 			"search_week_before":1,
 			"search_by_type":false,
-			"check_updates":true,
+			"auto_select_pseudo":true,
 			"ctrl_wheel":false,
+			"check_updates":true,
 			"data_version":"3.8.0"
 		},
 	"shortcuts":[

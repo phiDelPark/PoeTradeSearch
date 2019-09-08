@@ -79,13 +79,15 @@ namespace PoeTradeSearch
             internal int SearchWeekBefore;
             [DataMember(Name = "search_by_type")]
             internal bool SearchByType = false;
-            [DataMember(Name = "check_updates")]
-            internal bool CheckUpdates = false;
+            [DataMember(Name = "auto_select_pseudo")]
+            internal bool AutoSelectPseudo = false;
             [DataMember(Name = "ctrl_wheel")]
             internal bool CtrlWheel = false;
+            [DataMember(Name = "check_updates")]
+            internal bool CheckUpdates = false;
             [DataMember(Name = "data_version")]
             internal string DataVersion = null;
-        }
+        }        
 
         [DataContract(Name = "shortcuts")]
         internal class ConfigShortcut

@@ -784,7 +784,8 @@ namespace PoeTradeSearch
 
         protected void SetClipText(string text, TextDataFormat textDataFormat)
         {
-            var ClipboardThread = new Thread(() => {
+            var ClipboardThread = new Thread(() =>
+            {
                 for (int i = 0; i < 10; i++)
                 {
                     try
@@ -984,21 +985,31 @@ namespace PoeTradeSearch
                                     {
                                         ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Pseudo;
                                         selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
+
+                                        if (selidx == -1 && ((ComboBox)this.FindName("cbOpt" + k)).Items.Count > 0)
+                                        {
+                                            FilterEntrie filterEntrie = (FilterEntrie)((ComboBox)this.FindName("cbOpt" + k)).Items[0];
+                                            string[] id_split = filterEntrie.ID.Split('.');
+                                            if (id_split.Length == 2 && ResStr.lPseudo.ContainsKey(id_split[1]))
+                                            {
+                                                ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(new FilterEntrie("pseudo." + ResStr.lPseudo[id_split[1]], ResStr.Pseudo));
+                                            }
+                                        }
+
+                                        selidx = -1;
+
+                                        if (mConfigData.Options.AutoSelectPseudo)
+                                        {
+                                            ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Pseudo;
+                                            selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
+                                        }
+
                                         if (selidx == -1)
                                         {
-                                            if (((ComboBox)this.FindName("cbOpt" + k)).Items.Count > 0)
-                                            {
-                                                FilterEntrie filterEntrie = (FilterEntrie)((ComboBox)this.FindName("cbOpt" + k)).Items[0];
-                                                string[] id_split = filterEntrie.ID.Split('.');
-                                                if (id_split.Length == 2 && ResStr.lPseudo.ContainsKey(id_split[1]))
-                                                {
-                                                    ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(new FilterEntrie("pseudo." + ResStr.lPseudo[id_split[1]], ResStr.Pseudo));
-                                                }
-                                            }
-
                                             ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Explicit;
                                             selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
                                         }
+
                                         if (selidx == -1)
                                         {
                                             ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Fractured;
