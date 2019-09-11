@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -52,6 +53,50 @@ namespace PoeTradeSearch
 
         [DllImport("user32.dll")] internal static extern IntPtr GetKeyboardLayout(uint thread);
         */
+
+        public static string Get45PlusFromRegistry()
+        {
+            const string subkey = @"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\";
+
+            using (var ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(subkey))
+            {
+                if (ndpKey != null && ndpKey.GetValue("Release") != null)
+                {
+                    return ($".NET Framework Version: {(int)ndpKey.GetValue("Release")}");
+                }
+                else
+                {
+                    return (".NET Framework Version 4.5 or later is not detected.");
+                }
+            }
+
+            /*
+            string CheckFor45PlusVersion(int releaseKey)
+            {
+                if (releaseKey >= 528040)
+                    return "4.8 or later";
+                if (releaseKey >= 461808)
+                    return "4.7.2";
+                if (releaseKey >= 461308)
+                    return "4.7.1";
+                if (releaseKey >= 460798)
+                    return "4.7";
+                if (releaseKey >= 394802)
+                    return "4.6.2";
+                if (releaseKey >= 394254)
+                    return "4.6.1";
+                if (releaseKey >= 393295)
+                    return "4.6";
+                if (releaseKey >= 379893)
+                    return "4.5.2";
+                if (releaseKey >= 378675)
+                    return "4.5.1";
+                if (releaseKey >= 378389)
+                    return "4.5";
+                return "No 4.5 or later version detected";
+            }
+            */
+        }
 
         public static bool IsAdministrator()
         {
@@ -122,10 +167,13 @@ namespace PoeTradeSearch
                 {
                     result = streamReader.ReadToEnd();
                 }
+
+                if (bIsDebug) Logs("SendHTTP" + '\n');
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //Logs(ex.Message);
+                if (bIsDebug) Logs("SendHTTP: " + ex.Message + '\n');
+                Console.WriteLine(ex.Message);
                 return null;
             }
 
@@ -1409,10 +1457,13 @@ namespace PoeTradeSearch
 
                     this.ShowActivated = false;
                     this.Visibility = Visibility.Visible;
+
+                    if (bIsDebug) Logs("ShowWindow");
                 }
             }
             catch (Exception ex)
             {
+                if (bIsDebug) Logs("ShowWindow: " + ex.Message);
                 Console.WriteLine(ex.Message);
             }
         }
@@ -1644,6 +1695,8 @@ namespace PoeTradeSearch
                 }
             }
 
+            if (bIsDebug) Logs("GetItemOptions");
+
             return itemOption;
         }
 
@@ -1837,10 +1890,13 @@ namespace PoeTradeSearch
 
                     sEntity = Regex.Replace(sEntity, "\"(rarity|category|corrupted|elder_item|shaper_item)\":{\"option\":\"any\"},?", "");
 
+                    if (bIsDebug) Logs("CreateJson");
+
                     return sEntity.Replace("},}", "}}");
                 }
                 catch (Exception ex)
                 {
+                    if (bIsDebug) Logs("CreateJson: " + ex.Message);
                     Console.WriteLine(ex.Message);
                     return "";
                 }
@@ -1881,15 +1937,7 @@ namespace PoeTradeSearch
 
             try
             {
-                using (
-                       var sw = new StreamWriter(
-                           new FileStream(logFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite),
-                           Encoding.UTF8
-                       )
-                   )
-                {
-                    sw.Write(s);
-                }
+                File.AppendAllText(logFilePath, s + '\n');
             }
             catch { }
         }

@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
-using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -41,6 +40,8 @@ namespace PoeTradeSearch
 
         public static DateTime MouseHookCallbackTime;
 
+        private bool bIsDebug = false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -51,7 +52,7 @@ namespace PoeTradeSearch
 
             if (clArgs.Length > 1)
             {
-                //bIsDebug = clArgs[1].ToLower() == "-debug";
+                bIsDebug = clArgs[1].ToLower() == "-debug";
             }
 
             Stream iconStream = Application.GetResourceStream(new Uri("pack://application:,,,/PoeTradeSearch;component/Icon1.ico")).Stream;
@@ -137,7 +138,7 @@ namespace PoeTradeSearch
                         if (!mDisableClip && item.Value.ToLower() == "{run}")
                             mDisableClip = true;
                         else if (item.Value.ToLower() == "{close}")
-                                closeKeyCode = item.Keycode;
+                            closeKeyCode = item.Keycode;
                     }
                 }
             }
@@ -172,7 +173,7 @@ namespace PoeTradeSearch
 
             string tmp = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n' +
                     "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
-                    (mIsAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "설정된 추가 단축키 기능은 관리자 권한으로 실행해야") + " 작동합니다.";
+                    (mIsAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "추가 단축키 기능은 관리자 권한으로 실행해야") + " 작동합니다.";
 
             if (mConfigData.Options.CheckUpdates && CheckUpdates())
             {
@@ -193,8 +194,17 @@ namespace PoeTradeSearch
                 MessageBox.Show(Application.Current.MainWindow, tmp + '\n' + "더 자세한 정보를 보시려면 프로그램 상단 (?) 를 눌러 확인하세요.", "POE 거래소 검색");
             }
 
-            this.Title += " - " + ResStr.ServerType;
-            this.Visibility = Visibility.Hidden;
+            if (bIsDebug)
+            {
+                this.Title += " - " + "테스트 모드";
+                btDebug.Visibility = Visibility.Visible;
+                Logs(Get45PlusFromRegistry());
+            }
+            else
+            {
+                this.Title += " - " + ResStr.ServerType;
+                this.Visibility = Visibility.Hidden;
+            }
         }
 
         private void Window_Deactivated(object sender, EventArgs e)
@@ -279,6 +289,8 @@ namespace PoeTradeSearch
                 }
             }
 
+            if (bIsDebug) return;
+
             Hide();
         }
 
@@ -360,7 +372,7 @@ namespace PoeTradeSearch
             }
 
             ((ComboBox)sender).FontWeight = ((ComboBox)sender).SelectedIndex == 0 ? FontWeights.Normal : FontWeights.SemiBold;
-            
+
             SetSearchButtonText();
             TkPrice_MouseLeftButtonDown(null, null);
         }
@@ -404,7 +416,7 @@ namespace PoeTradeSearch
         private void TextBlock_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             MessageBox.Show(Application.Current.MainWindow,
-                "버전: " + GetFileVersion() + " (D." +mConfigData.Options.DataVersion + ")" + '\n' +
+                "버전: " + GetFileVersion() + " (D." + mConfigData.Options.DataVersion + ")" + '\n' +
                 "https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' +
                 "자주 묻는 질문들:" + '\n' +
                 "https://github.com/phiDelPark/PoeTradeSearch/wiki/Q-&-A" + '\n' + '\n' + '\n' +
@@ -419,6 +431,20 @@ namespace PoeTradeSearch
         {
             if (KeyInterop.VirtualKeyFromKey(e.Key) == closeKeyCode)
                 Close();
+        }
+
+        private void BtDebug_Click(object sender, RoutedEventArgs e)
+        {
+            ShowWindow(
+               @"아이템 희귀도: 화폐
+감정 주문서
+--------
+중첩 개수: 38 / 40
+--------
+미확인 아이템 식별
+--------
+테스트"
+                );
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

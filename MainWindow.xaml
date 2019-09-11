@@ -175,5 +175,6 @@
                 </ComboBox>
             </Grid>
         </Border>
+        <Button Name="btDebug"  Content="테스트" HorizontalAlignment="Left" Margin="310,0,0,0" VerticalAlignment="Top" Width="75" Visibility="Hidden" Click="BtDebug_Click"/>
     </Grid>
 </Window>
