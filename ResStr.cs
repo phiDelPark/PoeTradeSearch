@@ -42,6 +42,7 @@ namespace PoeTradeSearch
         internal const string Corrupt = "타락";
         internal const string Vaal = "바알";
         internal const string Unidentify = "미확인";
+        internal const string plagued = "역병 걸린";
 
         internal const string ChkProphecy = "우클릭으로 이 예언을 캐릭터에 추가하십시오.";
         internal const string ChkMapFragment = "템플러의 실험실이나 전용 지도 장치에서";

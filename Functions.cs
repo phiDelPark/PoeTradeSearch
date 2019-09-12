@@ -136,36 +136,55 @@ namespace PoeTradeSearch
         private String SendHTTP(string sEntity, string urlString, int timeout = 0)
         {
             string result = "";
+            string userAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2"; // SGS Galaxy  
 
             try
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(urlString));
-                request.Timeout = timeout > 0 ? timeout : mConfigData.Options.ServerTimeout * 1000;
-
-                // 특정 사양에서 안되는거 같아 UserAgent 입력으로 대비
-                if ((mConfigData.Options.ServerUseragent ?? "") != "")
-                    request.UserAgent = mConfigData.Options.ServerUseragent;
-                else
-                    request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.0.0 Safari/537.36";
-
-                if (sEntity != null)
+                // HttpWebRequest 로 충분하지만 WebClient 코드가 있는건 테스트할게 있어서 남겨둠...
+                if (mConfigData.Options.ServerTimeout == 0)
                 {
-                    request.Method = WebRequestMethods.Http.Post;
+                    using (WebClient webClient = new WebClient())
+                    {
+                        webClient.Encoding = UTF8Encoding.UTF8;
 
-                    byte[] data = Encoding.UTF8.GetBytes(sEntity);
-                    request.ContentType = "application/json; charset=utf-8";
-                    request.ContentLength = data.Length;
-                    request.GetRequestStream().Write(data, 0, data.Length);
+                        if (sEntity == null)
+                        {
+                            result = webClient.DownloadString(urlString);
+                        }
+                        else
+                        {
+                            webClient.Headers[HttpRequestHeader.ContentType] = "application/json";
+                            result = webClient.UploadString(urlString, sEntity);
+                        }
+                    }
                 }
                 else
                 {
-                    request.Method = WebRequestMethods.Http.Get;
-                }
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(urlString));
+                    request.Timeout = timeout > 0 ? timeout : mConfigData.Options.ServerTimeout * 1000;
+                    request.UserAgent = (mConfigData.Options.ServerUseragent ?? "") == "" ? userAgent : mConfigData.Options.ServerUseragent;
 
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                using (StreamReader streamReader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
-                {
-                    result = streamReader.ReadToEnd();
+                    if (sEntity == null)
+                    {
+                        request.Method = WebRequestMethods.Http.Get;
+                    }
+                    else
+                    {
+                        request.Accept = "application/json";
+                        request.ContentType = "application/json";
+                        request.Headers.Add("Content-Encoding", "utf-8");
+                        request.Method = WebRequestMethods.Http.Post;
+
+                        byte[] data = Encoding.UTF8.GetBytes(sEntity);
+                        request.ContentLength = data.Length;
+                        request.GetRequestStream().Write(data, 0, data.Length);
+                    }
+
+                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                    using (StreamReader streamReader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        result = streamReader.ReadToEnd();
+                    }
                 }
 
                 if (bIsDebug) Logs("SendHTTP" + '\n');
@@ -575,20 +594,6 @@ namespace PoeTradeSearch
                         mProphecyDatas.AddRange(data.Result[0].Data);
                     }
                 }
-
-                /*
-                using (FileStream fs = new FileStream(path + "Details.txt", FileMode.Open))
-                {
-                    using (StreamReader reader = new StreamReader(fs))
-                    {
-                        string json = reader.ReadToEnd();
-                        DetailNameDatas = Json.Deserialize<List<WordData>>("[" + json + "]");
-                    }
-                }
-                */
-
-                if (mConfigData.Options.ServerTimeout < 1) mConfigData.Options.ServerTimeout = 5;
-                if (mConfigData.Options.SearchWeekBefore < 1) mConfigData.Options.SearchWeekBefore = 1;
             }
             catch (Exception)
             {
@@ -1208,6 +1213,9 @@ namespace PoeTradeSearch
 
                         if ((is_unIdentify || itemRarity == ResStr.Normal) && itemType.Length > 4 && itemType.IndexOf(ResStr.Higher + " ") == 0)
                             itemType = itemType.Substring(3);
+
+                        if (itemType.IndexOf(ResStr.plagued) == 0)
+                            itemType = itemType.Substring(6);
 
                         if (is_map && itemType.Length > 5 && itemType.Substring(0, 4) == ResStr.formed + " ")
                             itemType = itemType.Substring(4);

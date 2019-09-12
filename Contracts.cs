@@ -70,13 +70,13 @@ namespace PoeTradeSearch
             [DataMember(Name = "server")]
             internal string Server = null;
             [DataMember(Name = "server_timeout")]
-            internal int ServerTimeout;
+            internal int ServerTimeout = 0;
             [DataMember(Name = "server_redirect")]
             internal bool ServerRedirect = false;
             [DataMember(Name = "server_useragent")]
             internal string ServerUseragent = null;
             [DataMember(Name = "search_week_before")]
-            internal int SearchWeekBefore;
+            internal int SearchWeekBefore = 1;
             [DataMember(Name = "search_by_type")]
             internal bool SearchByType = false;
             [DataMember(Name = "auto_select_pseudo")]
