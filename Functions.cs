@@ -561,7 +561,6 @@ namespace PoeTradeSearch
             catch (Exception)
             {
                 MessageBox.Show(Application.Current.MainWindow, "데이터를 읽을 수 없습니다.", "에러");
-                Application.Current.Shutdown();
                 return false;
             }
             finally
