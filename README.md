@@ -11,7 +11,7 @@
 
 ### 개발환경:
 * 한글 윈도우 10, 한글 POE 전체 창 모드<br>
-* 윈도우 7 은 [프레임워크 버전 4.5.2↗](https://www.microsoft.com/ko-KR/download/details.aspx?id=42642) 필수 (이 버전만 가능, 윈도우 10은 받지마세요)
+* 윈도우 7 은 프레임워크 버전 4.6 이상 필요, [설치법 보러가기↗](https://github.com/phiDelPark/PoeTradeSearch/wiki/Windows-7)
 
 ### 사용:
 * 인게임 아이템 위에서 Ctrl+C 하면 검색창이 뜹니다.
@@ -34,9 +34,9 @@
         "search_by_type":false,      // 기본 검색시 아이템 유형으로 검색 [true, false]
         "auto_select_pseudo":true,   // 유사 옵션으로 검색이 가능하면 유사로 자동 선택 [true, false]
         "check_updates":true,        // 시작시 최신 버전 체크 [true, false]
-        "ctrl_wheel":false           // 창고 이동 POE 버전 3.8 이후 기본으로 지원되어 현잰 스탠용으로 남겨둠 (삭제 예정)
+        "ctrl_wheel":false           // 창고 Ctrl+Wheel 탭 이동, POE 3.8 이후 기본 지원되어 꺼둠 [true, false]
       },
-       // 창고 Ctrl + Wheel 이동과 아래 단축키들은 관리자 권한으로 실행 필요
+       // 아래 단축키들과 창고 휠 이동은 관리자 권한으로 실행이 필요합니다.
        // 키코드(keycode) 는 이 링크를 참고 (https://github.com/phiDelPark/PoeTradeSearch/wiki)
        "shortcuts":[
             {"keycode":113,"value":"{Enter}/hideout{Enter}"},    // F2.  은신처 ("{Enter}채팅명령어{Enter}")

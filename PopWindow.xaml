@@ -7,6 +7,6 @@
         mc:Ignorable="d"
         ResizeMode="NoResize" Topmost="True" WindowStartupLocation="CenterScreen" ShowActivated="False" Loaded="Window_Loaded" SizeToContent="WidthAndHeight" Deactivated="Window_Deactivated">
     <Grid>
-        <Image Name="imJpg" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="100" MinHeight="100" MouseDown="Image_MouseDown" />
+        <Image Name="imJpg" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" MinHeight="100" MinWidth="100" MouseDown="Image_MouseDown" />
     </Grid>
 </Window>

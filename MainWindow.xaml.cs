@@ -95,122 +95,127 @@ namespace PoeTradeSearch
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Setting();
-
-            ResStr.ServerType = ResStr.ServerType == "" ? mConfigData.Options.League : ResStr.ServerType;
-            ResStr.ServerType = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(ResStr.ServerType.ToLower()).Replace(" ", "%20");
-            ResStr.ServerLang = (byte)(mConfigData.Options.Server == "en" ? 1 : 0);
-
-            ControlTemplate ct = cbOrbs.Template;
-            Popup popup = ct.FindName("PART_Popup", cbOrbs) as Popup;
-
-            if (popup != null)
-                popup.Placement = PlacementMode.Top;
-
-            ct = cbSplinters.Template;
-            popup = ct.FindName("PART_Popup", cbSplinters) as Popup;
-
-            if (popup != null)
-                popup.Placement = PlacementMode.Top;
-
-            int cnt = 0;
-            cbOrbs.Items.Add("교환을 원하는 오브 선택");
-            cbSplinters.Items.Add("원하는 화석, 파편 선택");
-            foreach (KeyValuePair<string, string> item in ResStr.lExchangeCurrency)
+            if (Setting())
             {
-                if (item.Key == "대장장이의 숫돌")
-                    break;
 
-                if (cnt++ > 32)
-                    cbSplinters.Items.Add(item.Key);
-                else
-                    cbOrbs.Items.Add(item.Key);
-            }
+                ResStr.ServerType = ResStr.ServerType == "" ? mConfigData.Options.League : ResStr.ServerType;
+                ResStr.ServerType = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(ResStr.ServerType.ToLower()).Replace(" ", "%20");
+                ResStr.ServerLang = (byte)(mConfigData.Options.Server == "en" ? 1 : 0);
 
-            mMainHwnd = new WindowInteropHelper(this).Handle;
+                ControlTemplate ct = cbOrbs.Template;
+                Popup popup = ct.FindName("PART_Popup", cbOrbs) as Popup;
 
-            if (mIsAdministrator)
-            {
-                foreach (var item in mConfigData.Shortcuts)
+                if (popup != null)
+                    popup.Placement = PlacementMode.Top;
+
+                ct = cbSplinters.Template;
+                popup = ct.FindName("PART_Popup", cbSplinters) as Popup;
+
+                if (popup != null)
+                    popup.Placement = PlacementMode.Top;
+
+                int cnt = 0;
+                cbOrbs.Items.Add("교환을 원하는 오브 선택");
+                cbSplinters.Items.Add("원하는 화석, 파편 선택");
+                foreach (KeyValuePair<string, string> item in ResStr.lExchangeCurrency)
                 {
-                    if (item.Keycode > 0 && (item.Value ?? "") != "")
+                    if (item.Key == "대장장이의 숫돌")
+                        break;
+
+                    if (cnt++ > 32)
+                        cbSplinters.Items.Add(item.Key);
+                    else
+                        cbOrbs.Items.Add(item.Key);
+                }
+
+                mMainHwnd = new WindowInteropHelper(this).Handle;
+
+                if (mIsAdministrator)
+                {
+                    foreach (var item in mConfigData.Shortcuts)
                     {
-                        if (!mDisableClip && item.Value.ToLower() == "{run}")
-                            mDisableClip = true;
-                        else if (item.Value.ToLower() == "{close}")
-                            closeKeyCode = item.Keycode;
+                        if (item.Keycode > 0 && (item.Value ?? "") != "")
+                        {
+                            if (!mDisableClip && item.Value.ToLower() == "{run}")
+                                mDisableClip = true;
+                            else if (item.Value.ToLower() == "{close}")
+                                closeKeyCode = item.Keycode;
+                        }
                     }
                 }
-            }
 
-            HwndSource source = HwndSource.FromHwnd(mMainHwnd);
-            source.AddHook(new HwndSourceHook(WndProc));
+                HwndSource source = HwndSource.FromHwnd(mMainHwnd);
+                source.AddHook(new HwndSourceHook(WndProc));
 
-            if (!mDisableClip)
-            {
-                IntPtr mNextClipBoardViewerHWnd = SetClipboardViewer(new WindowInteropHelper(this).Handle);
-            }
-
-            if (mIsAdministrator)
-            {
-                // InstallRegisterHotKey();
-                // 창 활성화 후킹 사용시 가끔 꼬여서 타이머로 교체 (타이머를 쓰면 다른 목적으로 사용도 가능하고...)
-                //EventHook.EventAction += new EventHandler(WinEvent);
-                //EventHook.Start();
-
-                DispatcherTimer timer = new DispatcherTimer();
-                timer.Interval = TimeSpan.FromMilliseconds(1000);
-                timer.Tick += new EventHandler(Timer_Tick);
-                timer.Start();
-
-                if (mConfigData.Options.CtrlWheel)
+                if (!mDisableClip)
                 {
-                    MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
-                    MouseHook.MouseAction += new EventHandler(MouseEvent);
-                    MouseHook.Start();
+                    IntPtr mNextClipBoardViewerHWnd = NativeMethods.SetClipboardViewer(new WindowInteropHelper(this).Handle);
                 }
-            }
 
-            string tmp = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n' +
-                    "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
-                    (mIsAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "추가 단축키 기능은 관리자 권한으로 실행해야") + " 작동합니다.";
-
-            if (mConfigData.Options.CheckUpdates && CheckUpdates())
-            {
-                MessageBoxResult result = MessageBox.Show(Application.Current.MainWindow,
-                        tmp + '\n' + '\n' + "이 프로그램의 최신 버전이 발견 되었습니다." + '\n' + "지금 새 버전을 받으러 가시겠습니까?",
-                        "POE 거래소 검색", MessageBoxButton.YesNo, MessageBoxImage.Question
-                    );
-
-                if (result == MessageBoxResult.Yes)
+                if (mIsAdministrator)
                 {
-                    Process.Start("https://github.com/phiDelPark/PoeTradeSearch/releases");
-                    mTerminate = true;
-                    Close();
-                }
-            }
-            else
-            {
-                MessageBox.Show(Application.Current.MainWindow, tmp + '\n' + "더 자세한 정보를 보시려면 프로그램 상단 (?) 를 눌러 확인하세요.", "POE 거래소 검색");
-            }
+                    // InstallRegisterHotKey();
+                    // 창 활성화 후킹 사용시 가끔 꼬여서 타이머로 교체 (타이머를 쓰면 다른 목적으로 사용도 가능하고...)
+                    //EventHook.EventAction += new EventHandler(WinEvent);
+                    //EventHook.Start();
 
-            if (bIsDebug)
-            {
-                this.Title += " - " + "테스트 모드";
-                btDebug.Visibility = Visibility.Visible;
-                Logs(Get45PlusFromRegistry());
-            }
-            else
-            {
-                this.Title += " - " + ResStr.ServerType;
-                this.Visibility = Visibility.Hidden;
+                    DispatcherTimer timer = new DispatcherTimer();
+                    timer.Interval = TimeSpan.FromMilliseconds(1000);
+                    timer.Tick += new EventHandler(Timer_Tick);
+                    timer.Start();
+
+                    if (mConfigData.Options.CtrlWheel)
+                    {
+                        MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
+                        MouseHook.MouseAction += new EventHandler(MouseEvent);
+                        MouseHook.Start();
+                    }
+                }
+
+                string tmp = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n' +
+                        "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
+                        (mIsAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "추가 단축키 기능은 관리자 권한으로 실행해야") + " 작동합니다.";
+
+                if (mConfigData.Options.CheckUpdates && CheckUpdates())
+                {
+                    MessageBoxResult result = MessageBox.Show(Application.Current.MainWindow,
+                            tmp + '\n' + '\n' + "이 프로그램의 최신 버전이 발견 되었습니다." + '\n' + "지금 새 버전을 받으러 가시겠습니까?",
+                            "POE 거래소 검색", MessageBoxButton.YesNo, MessageBoxImage.Question
+                        );
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        Process.Start("https://github.com/phiDelPark/PoeTradeSearch/releases");
+                        mTerminate = true;
+                        Close();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(Application.Current.MainWindow, tmp + '\n' + "더 자세한 정보를 보시려면 프로그램 상단 (?) 를 눌러 확인하세요.", "POE 거래소 검색");
+                }
+
+                if (bIsDebug)
+                {
+                    this.Title += " - " + "테스트 모드";
+                    btDebug.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    this.Title += " - " + ResStr.ServerType;
+                    this.Visibility = Visibility.Hidden;
+                }
             }
         }
 
         private void Window_Deactivated(object sender, EventArgs e)
         {
             WindowInteropHelper helper = new WindowInteropHelper(this);
-            IntPtr ip = SetWindowLong(helper.Handle, GWL_EXSTYLE, GetWindowLong(helper.Handle, GWL_EXSTYLE) | WS_EX_NOACTIVATE);
+            long ip = NativeMethods.SetWindowLong(
+                helper.Handle, 
+                NativeMethods.GWL_EXSTYLE, 
+                NativeMethods.GetWindowLong(helper.Handle, NativeMethods.GWL_EXSTYLE) | NativeMethods.WS_EX_NOACTIVATE
+            );
         }
 
         private void TbOpt0_0_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -218,8 +223,12 @@ namespace PoeTradeSearch
             if (!this.IsFocused)
             {
                 WindowInteropHelper helper = new WindowInteropHelper(this);
-                IntPtr ip = SetWindowLong(helper.Handle, GWL_EXSTYLE, GetWindowLong(helper.Handle, GWL_EXSTYLE) & ~WS_EX_NOACTIVATE);
-                SetForegroundWindow(helper.Handle);
+                long ip = NativeMethods.SetWindowLong(
+                    helper.Handle, 
+                    NativeMethods.GWL_EXSTYLE, 
+                    NativeMethods.GetWindowLong(helper.Handle, NativeMethods.GWL_EXSTYLE) & ~NativeMethods.WS_EX_NOACTIVATE
+                );
+                NativeMethods.SetForegroundWindow(helper.Handle);
             }
         }
 

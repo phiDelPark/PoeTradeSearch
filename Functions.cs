@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -16,22 +15,20 @@ using System.Windows.Threading;
 
 namespace PoeTradeSearch
 {
-    public partial class MainWindow : Window
+    internal static class NativeMethods
     {
-        [DllImport("user32.dll")]
-        public static extern IntPtr SetClipboardViewer(IntPtr hWnd);
+        [DllImport("user32.dll")] internal static extern IntPtr SetClipboardViewer(IntPtr hWnd);
 
-        [DllImport("user32.dll")]
-        public static extern bool ChangeClipboardChain(IntPtr hWnd, IntPtr hWndNext);
+        [DllImport("user32.dll")] internal static extern bool ChangeClipboardChain(IntPtr hWnd, IntPtr hWndNext);
 
-        private const int WM_DRAWCLIPBOARD = 0x0308;
-        private const int WM_CHANGECBCHAIN = 0x030D;
+        internal const int WM_DRAWCLIPBOARD = 0x0308;
+        internal const int WM_CHANGECBCHAIN = 0x030D;
 
-        [DllImport("user32.dll")] internal static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)] internal static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
-        [DllImport("user32.dll")] internal static extern IntPtr FindWindowEx(IntPtr parenthWnd, IntPtr childAfter, string lpClassName, string lpWindowName);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)] internal static extern IntPtr FindWindowEx(IntPtr parenthWnd, IntPtr childAfter, string lpClassName, string lpWindowName);
 
-        [DllImport("user32.dll")] internal static extern int SendMessage(IntPtr hWnd, uint Msg, int wParam, int lParam);
+        [DllImport("user32.dll")] internal static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")] internal static extern IntPtr GetForegroundWindow();
 
@@ -40,64 +37,35 @@ namespace PoeTradeSearch
         internal const int GWL_EXSTYLE = -20;
         internal const int WS_EX_NOACTIVATE = 0x08000000;
 
-        [DllImport("user32.dll")] internal static extern IntPtr SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+        [DllImport("user32.dll")] internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
         [DllImport("user32.dll")] internal static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
-        [DllImport("user32.dll")] internal static extern int RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vk);
+        [DllImport("user32.dll")] internal static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
 
-        [DllImport("user32.dll")] internal static extern int UnregisterHotKey(IntPtr hWnd, int id);
+        [DllImport("user32.dll")] internal static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
         /*
         [DllImport("user32.dll")] internal static extern uint GetWindowThreadProcessId(IntPtr hwnd, IntPtr proccess);
-
         [DllImport("user32.dll")] internal static extern IntPtr GetKeyboardLayout(uint thread);
         */
 
-        public static string Get45PlusFromRegistry()
-        {
-            const string subkey = @"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\";
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] internal static extern IntPtr GetModuleHandle(string lpModuleName);
 
-            using (var ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(subkey))
-            {
-                if (ndpKey != null && ndpKey.GetValue("Release") != null)
-                {
-                    return ($".NET Framework Version: {(int)ndpKey.GetValue("Release")}");
-                }
-                else
-                {
-                    return (".NET Framework Version 4.5 or later is not detected.");
-                }
-            }
+        internal const int WH_MOUSE_LL = 14;
+        internal delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
 
-            /*
-            string CheckFor45PlusVersion(int releaseKey)
-            {
-                if (releaseKey >= 528040)
-                    return "4.8 or later";
-                if (releaseKey >= 461808)
-                    return "4.7.2";
-                if (releaseKey >= 461308)
-                    return "4.7.1";
-                if (releaseKey >= 460798)
-                    return "4.7";
-                if (releaseKey >= 394802)
-                    return "4.6.2";
-                if (releaseKey >= 394254)
-                    return "4.6.1";
-                if (releaseKey >= 393295)
-                    return "4.6";
-                if (releaseKey >= 379893)
-                    return "4.5.2";
-                if (releaseKey >= 378675)
-                    return "4.5.1";
-                if (releaseKey >= 378389)
-                    return "4.5";
-                return "No 4.5 or later version detected";
-            }
-            */
-        }
+        [DllImport("user32.dll")] internal static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
 
+        [DllImport("user32.dll")] internal static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+        [DllImport("user32.dll")] internal static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll")] internal static extern short GetKeyState(int nVirtKey);
+    }
+
+    public partial class MainWindow : Window
+    {
         public static bool IsAdministrator()
         {
             var identity = WindowsIdentity.GetCurrent();
@@ -136,7 +104,7 @@ namespace PoeTradeSearch
         private String SendHTTP(string sEntity, string urlString, int timeout = 0)
         {
             string result = "";
-            string userAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2"; // SGS Galaxy  
+            string userAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2"; // SGS Galaxy
 
             try
             {
@@ -527,7 +495,7 @@ namespace PoeTradeSearch
         }
     */
 
-        private void Setting()
+        private bool Setting()
         {
 #if DEBUG
             string path = System.IO.Path.GetFullPath(@"..\..\") + "_POE_Data\\";
@@ -535,71 +503,74 @@ namespace PoeTradeSearch
             string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
             path = path.Remove(path.Length - 4) + "Data\\";
 #endif
-
+            FileStream fs = null;
             try
             {
-                using (FileStream fs = new FileStream(path + "Config.txt", FileMode.Open))
+                fs = new FileStream(path + "Config.txt", FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
                 {
-                    using (StreamReader reader = new StreamReader(fs))
-                    {
-                        string json = reader.ReadToEnd();
-                        mConfigData = Json.Deserialize<ConfigData>(json);
-                    }
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    mConfigData = Json.Deserialize<ConfigData>(json);
                 }
 
                 if (!File.Exists(path + "Filters.txt"))
                     FilterDataUpdates(path);
 
-                using (FileStream fs = new FileStream(path + "Filters.txt", FileMode.Open))
+                fs = new FileStream(path + "Filters.txt", FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
                 {
-                    using (StreamReader reader = new StreamReader(fs))
-                    {
-                        string json = reader.ReadToEnd();
-                        mFilterData = Json.Deserialize<FilterData>(json);
-                    }
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    mFilterData = Json.Deserialize<FilterData>(json);
                 }
 
                 if (!File.Exists(path + "Bases.txt") || !File.Exists(path + "Words.txt") || !File.Exists(path + "Prophecies.txt"))
                     BaseDataUpdates(path);
 
-                using (FileStream fs = new FileStream(path + "Bases.txt", FileMode.Open))
+                fs = new FileStream(path + "Bases.txt", FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
                 {
-                    using (StreamReader reader = new StreamReader(fs))
-                    {
-                        string json = reader.ReadToEnd();
-                        BaseData data = Json.Deserialize<BaseData>(json);
-                        mBaseDatas = new List<BaseResultData>();
-                        mBaseDatas.AddRange(data.Result[0].Data);
-                    }
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    BaseData data = Json.Deserialize<BaseData>(json);
+                    mBaseDatas = new List<BaseResultData>();
+                    mBaseDatas.AddRange(data.Result[0].Data);
                 }
 
-                using (FileStream fs = new FileStream(path + "Words.txt", FileMode.Open))
+                fs = new FileStream(path + "Words.txt", FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
                 {
-                    using (StreamReader reader = new StreamReader(fs))
-                    {
-                        string json = reader.ReadToEnd();
-                        WordData data = Json.Deserialize<WordData>(json);
-                        mWordDatas = new List<WordeResultData>();
-                        mWordDatas.AddRange(data.Result[0].Data);
-                    }
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    WordData data = Json.Deserialize<WordData>(json);
+                    mWordDatas = new List<WordeResultData>();
+                    mWordDatas.AddRange(data.Result[0].Data);
                 }
 
-                using (FileStream fs = new FileStream(path + "Prophecies.txt", FileMode.Open))
+                fs = new FileStream(path + "Prophecies.txt", FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
                 {
-                    using (StreamReader reader = new StreamReader(fs))
-                    {
-                        string json = reader.ReadToEnd();
-                        BaseData data = Json.Deserialize<BaseData>(json);
-                        mProphecyDatas = new List<BaseResultData>();
-                        mProphecyDatas.AddRange(data.Result[0].Data);
-                    }
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    BaseData data = Json.Deserialize<BaseData>(json);
+                    mProphecyDatas = new List<BaseResultData>();
+                    mProphecyDatas.AddRange(data.Result[0].Data);
                 }
             }
             catch (Exception)
             {
                 MessageBox.Show(Application.Current.MainWindow, "데이터를 읽을 수 없습니다.", "에러");
-                throw;
+                Application.Current.Shutdown();
+                return false;
             }
+            finally
+            {
+                if (fs != null)
+                    fs.Dispose();
+            }
+
+            return true;
         }
 
         private double StrToDouble(string s, double def = 0)
@@ -618,7 +589,7 @@ namespace PoeTradeSearch
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            bool chk_equals = GetForegroundWindow().Equals(FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
+            bool chk_equals = NativeMethods.GetForegroundWindow().Equals(NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
 
             if (!mIsHotKey && chk_equals)
             {
@@ -665,11 +636,11 @@ namespace PoeTradeSearch
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (msg == WM_DRAWCLIPBOARD)
+            if (msg == NativeMethods.WM_DRAWCLIPBOARD)
             {
-                IntPtr findHwnd = FindWindow(ResStr.PoeClass, ResStr.PoeCaption);
+                IntPtr findHwnd = NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption);
 
-                if (!mIsPause && GetForegroundWindow().Equals(findHwnd))
+                if (!mIsPause && NativeMethods.GetForegroundWindow().Equals(findHwnd))
                 {
                     try
                     {
@@ -686,9 +657,9 @@ namespace PoeTradeSearch
             {
                 mHotkeyProcBlock = true;
 
-                IntPtr findHwnd = FindWindow(ResStr.PoeClass, ResStr.PoeCaption);
+                IntPtr findHwnd = NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption);
 
-                if (GetForegroundWindow().Equals(findHwnd))
+                if (NativeMethods.GetForegroundWindow().Equals(findHwnd))
                 {
                     int keyIdx = wParam.ToInt32();
 
@@ -722,20 +693,20 @@ namespace PoeTradeSearch
                                     MessageBox.Show(Application.Current.MainWindow, "프로그램 동작을 다시 시작합니다.", "POE 거래소 검색");
                                 }
 
-                                SetForegroundWindow(findHwnd);
+                                NativeMethods.SetForegroundWindow(findHwnd);
                             }
                             else if (valueLower == "{close}")
                             {
-                                IntPtr pHwnd = FindWindow(null, popWinTitle);
+                                IntPtr pHwnd = NativeMethods.FindWindow(null, popWinTitle);
 
                                 if (this.Visibility == Visibility.Hidden && pHwnd.ToInt32() == 0)
                                 {
-                                    SendMessage(findHwnd, 0x0101, shortcut.Keycode, 0);
+                                    NativeMethods.SendMessage(findHwnd, 0x0101, new IntPtr(shortcut.Keycode), IntPtr.Zero);
                                 }
                                 else
                                 {
                                     if (pHwnd.ToInt32() != 0)
-                                        SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, 0, 0);
+                                        NativeMethods.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
 
                                     if (this.Visibility == Visibility.Visible)
                                         Close();
@@ -784,9 +755,9 @@ namespace PoeTradeSearch
                                 }
                                 else if (valueLower.IndexOf(".jpg") > 0)
                                 {
-                                    IntPtr pHwnd = FindWindow(null, popWinTitle);
+                                    IntPtr pHwnd = NativeMethods.FindWindow(null, popWinTitle);
                                     if (pHwnd.ToInt32() != 0)
-                                        SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, 0, 0);
+                                        NativeMethods.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
 
                                     PopWindow popWindow = new PopWindow(shortcut.Value);
 
@@ -1214,7 +1185,7 @@ namespace PoeTradeSearch
                         if ((is_unIdentify || itemRarity == ResStr.Normal) && itemType.Length > 4 && itemType.IndexOf(ResStr.Higher + " ") == 0)
                             itemType = itemType.Substring(3);
 
-                        if (itemType.IndexOf(ResStr.plagued) == 0)
+                        if (itemType.IndexOf(ResStr.Plagued + " ") == 0)
                             itemType = itemType.Substring(6);
 
                         if (is_map && itemType.Length > 5 && itemType.Substring(0, 4) == ResStr.formed + " ")
@@ -1541,8 +1512,7 @@ namespace PoeTradeSearch
                                 request.Timeout = 10000;
 
                                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                                using (Stream responseStream = response.GetResponseStream())
-                                using (StreamReader streamReader = new StreamReader(responseStream, Encoding.UTF8))
+                                using (StreamReader streamReader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                                 {
                                     jsonResult = streamReader.ReadToEnd();
                                 }
@@ -1923,7 +1893,7 @@ namespace PoeTradeSearch
             {
                 ConfigShortcut shortcut = mConfigData.Shortcuts[i];
                 if (shortcut.Keycode > 0 && (shortcut.Value ?? "") != "")
-                    RegisterHotKey(mMainHwnd, 10001 + i, shortcut.Ctrl ? 0x2 : 0x0, Math.Abs(shortcut.Keycode));
+                    NativeMethods.RegisterHotKey(mMainHwnd, 10001 + i, (uint)(shortcut.Ctrl ? 0x2 : 0x0), (uint)Math.Abs(shortcut.Keycode));
             }
         }
 
@@ -1934,7 +1904,7 @@ namespace PoeTradeSearch
             {
                 ConfigShortcut shortcut = mConfigData.Shortcuts[i];
                 if (shortcut.Keycode > 0 && (shortcut.Value ?? "") != "")
-                    UnregisterHotKey(mMainHwnd, 10001 + i);
+                    NativeMethods.UnregisterHotKey(mMainHwnd, 10001 + i);
             }
         }
 
@@ -1990,7 +1960,7 @@ namespace PoeTradeSearch
         {
             try
             {
-                UnhookWindowsHookEx(_hookID);
+                NativeMethods.UnhookWindowsHookEx(_hookID);
                 _hookID = IntPtr.Zero;
             }
             catch (Exception)
@@ -1998,27 +1968,25 @@ namespace PoeTradeSearch
             }
         }
 
-        private static LowLevelMouseProc _proc = HookCallback;
+        private static NativeMethods.LowLevelMouseProc _proc = HookCallback;
         private static IntPtr _hookID = IntPtr.Zero;
 
-        private static IntPtr SetHook(LowLevelMouseProc proc)
+        private static IntPtr SetHook(NativeMethods.LowLevelMouseProc proc)
         {
             using (Process curProcess = Process.GetCurrentProcess())
             using (ProcessModule curModule = curProcess.MainModule)
             {
-                return SetWindowsHookEx(WH_MOUSE_LL, proc, GetModuleHandle(curModule.ModuleName), 0);
+                return NativeMethods.SetWindowsHookEx(NativeMethods.WH_MOUSE_LL, proc, NativeMethods.GetModuleHandle(curModule.ModuleName), 0);
             }
         }
-
-        private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
 
         private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
             if (nCode >= 0)
             {
-                if (MouseMessages.WM_MOUSEWHEEL == (MouseMessages)wParam && (GetKeyState(VK_CONTROL) & 0x100) != 0)
+                if (MouseMessages.WM_MOUSEWHEEL == (MouseMessages)wParam && (NativeMethods.GetKeyState(VK_CONTROL) & 0x100) != 0)
                 {
-                    if (MainWindow.GetForegroundWindow().Equals(MainWindow.FindWindow(ResStr.PoeClass, ResStr.PoeCaption)))
+                    if (NativeMethods.GetForegroundWindow().Equals(NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption)))
                     {
                         try
                         {
@@ -2037,8 +2005,10 @@ namespace PoeTradeSearch
 
                 MainWindow.MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
             }
-            return CallNextHookEx(_hookID, nCode, wParam, lParam);
+            return NativeMethods.CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
+
+        private const int VK_CONTROL = 0x11;
 
         public class MouseEventArgs : EventArgs
         {
@@ -2046,9 +2016,6 @@ namespace PoeTradeSearch
             public int x { get; set; }
             public int y { get; set; }
         }
-
-        private const int VK_CONTROL = 0x11;
-        private const int WH_MOUSE_LL = 14;
 
         private enum MouseMessages
         {
@@ -2076,21 +2043,5 @@ namespace PoeTradeSearch
             public uint time;
             public IntPtr dwExtraInfo;
         }
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr GetModuleHandle(string lpModuleName);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool UnhookWindowsHookEx(IntPtr hhk);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern short GetKeyState(int nVirtKey);
     }
 }

@@ -7,13 +7,13 @@ namespace PoeTradeSearch
         internal static string PoeClass = "POEWindowClass";
         internal static string PoeCaption = "Path of Exile";
 
-        internal static byte ServerLang = 0;
-        internal static string ServerType = "";
-
         internal static string[] TradeUrl = { "https://poe.game.daum.net/trade/search/", "https://www.pathofexile.com/trade/search/" };
         internal static string[] TradeApi = { "https://poe.game.daum.net/api/trade/search/", "https://www.pathofexile.com/api/trade/search/" };
         internal static string[] FetchApi = { "https://poe.game.daum.net/api/trade/fetch/", "https://www.pathofexile.com/api/trade/fetch/" };
         internal static string[] ExchangeApi = { "https://poe.game.daum.net/api/trade/exchange/", "https://www.pathofexile.com/api/trade/exchange/" };
+
+        internal static byte ServerLang = 0;
+        internal static string ServerType = "";
 
         internal const string Rarity = "아이템 희귀도";
         internal const string Unique = "고유";
@@ -42,7 +42,7 @@ namespace PoeTradeSearch
         internal const string Corrupt = "타락";
         internal const string Vaal = "바알";
         internal const string Unidentify = "미확인";
-        internal const string plagued = "역병 걸린";
+        internal const string Plagued = "역병 걸린";
 
         internal const string ChkProphecy = "우클릭으로 이 예언을 캐릭터에 추가하십시오.";
         internal const string ChkMapFragment = "템플러의 실험실이나 전용 지도 장치에서";

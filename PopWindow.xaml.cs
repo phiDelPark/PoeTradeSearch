@@ -58,10 +58,10 @@ namespace PoeTradeSearch
         private void Window_Deactivated(object sender, EventArgs e)
         {
             WindowInteropHelper helper = new WindowInteropHelper(this);
-            IntPtr ip = MainWindow.SetWindowLong(helper.Handle, 
-                MainWindow.GWL_EXSTYLE, 
-                MainWindow.GetWindowLong(helper.Handle, MainWindow.GWL_EXSTYLE) | MainWindow.WS_EX_NOACTIVATE
-                );
+            long ip = NativeMethods.SetWindowLong(helper.Handle,
+                NativeMethods.GWL_EXSTYLE,
+                NativeMethods.GetWindowLong(helper.Handle, NativeMethods.GWL_EXSTYLE) | NativeMethods.WS_EX_NOACTIVATE
+            );
         }
     }
 }
