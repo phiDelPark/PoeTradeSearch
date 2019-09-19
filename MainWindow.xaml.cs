@@ -41,6 +41,7 @@ namespace PoeTradeSearch
         public static DateTime MouseHookCallbackTime;
 
         private bool bIsDebug = false;
+        private bool bCreateDatabase = false;
 
         public MainWindow()
         {
@@ -86,6 +87,7 @@ namespace PoeTradeSearch
             if (clArgs.Length > 1)
             {
                 bIsDebug = clArgs[1].ToLower() == "-debug";
+                bCreateDatabase = clArgs[1].ToLower() == "-createdatabase";
             }
         }
 

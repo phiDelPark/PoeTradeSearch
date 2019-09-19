@@ -53,6 +53,7 @@ namespace PoeTradeSearch
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] internal static extern IntPtr GetModuleHandle(string lpModuleName);
 
         internal const int WH_MOUSE_LL = 14;
+
         internal delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")] internal static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
@@ -101,28 +102,28 @@ namespace PoeTradeSearch
             return isUpdates;
         }
 
-        private String SendHTTP(string sEntity, string urlString, int timeout = 0)
+        private String SendHTTP(string entity, string urlString, int timeout = 0)
         {
             string result = "";
             string userAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2"; // SGS Galaxy
 
             try
             {
-                // HttpWebRequest 로 충분하지만 WebClient 코드가 있는건 테스트할게 있어서 남겨둠...
+                // WebClient 코드는 테스트할게 있어 만들어둔 코드...
                 if (mConfigData.Options.ServerTimeout == 0)
                 {
                     using (WebClient webClient = new WebClient())
                     {
                         webClient.Encoding = UTF8Encoding.UTF8;
 
-                        if (sEntity == null)
+                        if (entity == null)
                         {
                             result = webClient.DownloadString(urlString);
                         }
                         else
                         {
                             webClient.Headers[HttpRequestHeader.ContentType] = "application/json";
-                            result = webClient.UploadString(urlString, sEntity);
+                            result = webClient.UploadString(urlString, entity);
                         }
                     }
                 }
@@ -132,7 +133,7 @@ namespace PoeTradeSearch
                     request.Timeout = timeout > 0 ? timeout : mConfigData.Options.ServerTimeout * 1000;
                     request.UserAgent = (mConfigData.Options.ServerUseragent ?? "") == "" ? userAgent : mConfigData.Options.ServerUseragent;
 
-                    if (sEntity == null)
+                    if (entity == null)
                     {
                         request.Method = WebRequestMethods.Http.Get;
                     }
@@ -143,7 +144,7 @@ namespace PoeTradeSearch
                         request.Headers.Add("Content-Encoding", "utf-8");
                         request.Method = WebRequestMethods.Http.Post;
 
-                        byte[] data = Encoding.UTF8.GetBytes(sEntity);
+                        byte[] data = Encoding.UTF8.GetBytes(entity);
                         request.ContentLength = data.Length;
                         request.GetRequestStream().Write(data, 0, data.Length);
                     }
@@ -154,8 +155,6 @@ namespace PoeTradeSearch
                         result = streamReader.ReadToEnd();
                     }
                 }
-
-                if (bIsDebug) Logs("SendHTTP" + '\n');
             }
             catch (Exception ex)
             {
@@ -211,42 +210,33 @@ namespace PoeTradeSearch
         {
             bool success = false;
 
-            File.Delete(path + "Bases.txt");
-            File.Delete(path + "Words.txt");
-            File.Delete(path + "Prophecies.txt");
-
-            if (File.Exists(path + "csv/ko/BaseItemTypes.csv"))
+            if (File.Exists(path + "csv/ko/BaseItemTypes.csv") && File.Exists(path + "csv/ko/Words.csv"))
             {
                 try
                 {
-                    string sEnContents = "";
-                    string sKoContents = "";
+                    List<string[]> oCsvEnList = new List<string[]>();
+                    List<string[]> oCsvKoList = new List<string[]>();
 
                     using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/BaseItemTypes.csv")))
                     {
-                        sEnContents = oStreamReader.ReadToEnd();
+                        string sEnContents = oStreamReader.ReadToEnd();
+                        string[] sEnLines = sEnContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        foreach (string sLine in sEnLines)
+                        {
+                            //oCsvEnList.Add(sLine.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
+                            oCsvEnList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                        }
                     }
 
                     using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/BaseItemTypes.csv")))
                     {
-                        sKoContents = oStreamReader.ReadToEnd();
-                    }
-
-                    List<string[]> oCsvEnList = new List<string[]>();
-                    List<string[]> oCsvKoList = new List<string[]>();
-
-                    string[] sEnLines = sEnContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string sLine in sEnLines)
-                    {
-                        //oCsvEnList.Add(sLine.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
-                        oCsvEnList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
-                    }
-
-                    string[] sKoLines = sKoContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string sLine in sKoLines)
-                    {
-                        //oCsvKoList.Add(sLine.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
-                        oCsvKoList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                        string sKoContents = oStreamReader.ReadToEnd();
+                        string[] sKoLines = sKoContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        foreach (string sLine in sKoLines)
+                        {
+                            //oCsvKoList.Add(sLine.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
+                            oCsvKoList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                        }
                     }
 
                     List<BaseResultData> datas = new List<BaseResultData>();
@@ -277,32 +267,29 @@ namespace PoeTradeSearch
                         writer.Write(Json.Serialize<BaseData>(rootClass));
                     }
 
-                    sEnContents = "";
-                    sKoContents = "";
-
-                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/Words.csv")))
-                    {
-                        sEnContents = oStreamReader.ReadToEnd();
-                    }
-
-                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/Words.csv")))
-                    {
-                        sKoContents = oStreamReader.ReadToEnd();
-                    }
+                    //-----------------------------
 
                     oCsvEnList = new List<string[]>();
                     oCsvKoList = new List<string[]>();
 
-                    sEnLines = sEnContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string sLine in sEnLines)
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/Words.csv")))
                     {
-                        oCsvEnList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                        string sEnContents = oStreamReader.ReadToEnd();
+                        string[] sEnLines = sEnContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        foreach (string sLine in sEnLines)
+                        {
+                            oCsvEnList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                        }
                     }
 
-                    sKoLines = sKoContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string sLine in sKoLines)
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/Words.csv")))
                     {
-                        oCsvKoList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                        string sKoContents = oStreamReader.ReadToEnd();
+                        string[] sKoLines = sKoContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        foreach (string sLine in sKoLines)
+                        {
+                            oCsvKoList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                        }
                     }
 
                     List<WordeResultData> wdatas = new List<WordeResultData>();
@@ -324,32 +311,29 @@ namespace PoeTradeSearch
                         writer.Write(Json.Serialize<WordData>(wordClass));
                     }
 
-                    sEnContents = "";
-                    sKoContents = "";
-
-                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/Prophecies.csv")))
-                    {
-                        sEnContents = oStreamReader.ReadToEnd();
-                    }
-
-                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/Prophecies.csv")))
-                    {
-                        sKoContents = oStreamReader.ReadToEnd();
-                    }
+                    //-----------------------------
 
                     oCsvEnList = new List<string[]>();
                     oCsvKoList = new List<string[]>();
 
-                    sEnLines = sEnContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string sLine in sEnLines)
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/Prophecies.csv")))
                     {
-                        oCsvEnList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                        string sEnContents = oStreamReader.ReadToEnd();
+                        string[] sEnLines = sEnContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        foreach (string sLine in sEnLines)
+                        {
+                            oCsvEnList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                        }
                     }
 
-                    sKoLines = sKoContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string sLine in sKoLines)
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/Prophecies.csv")))
                     {
-                        oCsvKoList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                        string sKoContents = oStreamReader.ReadToEnd();
+                        string[] sKoLines = sKoContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        foreach (string sLine in sKoLines)
+                        {
+                            oCsvKoList.Add(Regex.Split(sLine, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+                        }
                     }
 
                     datas = new List<BaseResultData>();
@@ -514,19 +498,18 @@ namespace PoeTradeSearch
                     mConfigData = Json.Deserialize<ConfigData>(json);
                 }
 
-                if (!File.Exists(path + "Filters.txt"))
-                    FilterDataUpdates(path);
+                //-----------------------------
 
-                fs = new FileStream(path + "Filters.txt", FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
+                if (bCreateDatabase)
                 {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    mFilterData = Json.Deserialize<FilterData>(json);
-                }
+                    File.Delete(path + "Bases.txt");
+                    File.Delete(path + "Words.txt");
+                    File.Delete(path + "Prophecies.txt");
+                    File.Delete(path + "Filters.txt");
 
-                if (!File.Exists(path + "Bases.txt") || !File.Exists(path + "Words.txt") || !File.Exists(path + "Prophecies.txt"))
-                    BaseDataUpdates(path);
+                    if (!BaseDataUpdates(path) || !FilterDataUpdates(path))
+                        throw new UnauthorizedAccessException("failed to create database");
+                }               
 
                 fs = new FileStream(path + "Bases.txt", FileMode.Open);
                 using (StreamReader reader = new StreamReader(fs))
@@ -557,10 +540,18 @@ namespace PoeTradeSearch
                     mProphecyDatas = new List<BaseResultData>();
                     mProphecyDatas.AddRange(data.Result[0].Data);
                 }
+
+                fs = new FileStream(path + "Filters.txt", FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    mFilterData = Json.Deserialize<FilterData>(json);
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show(Application.Current.MainWindow, "데이터를 읽을 수 없습니다.", "에러");
+                MessageBox.Show(Application.Current.MainWindow, ex.Message, "에러");
                 return false;
             }
             finally
@@ -1435,8 +1426,6 @@ namespace PoeTradeSearch
 
                     this.ShowActivated = false;
                     this.Visibility = Visibility.Visible;
-
-                    if (bIsDebug) Logs("ShowWindow");
                 }
             }
             catch (Exception ex)
@@ -1638,6 +1627,7 @@ namespace PoeTradeSearch
             itemOption.LvMax = StrToDouble(tbLvMax.Text, 99999);
 
             int total_res_idx = -1;
+
             for (int i = 0; i < 10; i++)
             {
                 Itemfilter itemfilter = new Itemfilter();
@@ -1671,8 +1661,6 @@ namespace PoeTradeSearch
                     itemOption.itemfilters.Add(itemfilter);
                 }
             }
-
-            if (bIsDebug) Logs("GetItemOptions");
 
             return itemOption;
         }
@@ -1866,8 +1854,6 @@ namespace PoeTradeSearch
                     sEntity = sEntity.Replace(",\"min\":99999}", "}");
 
                     sEntity = Regex.Replace(sEntity, "\"(rarity|category|corrupted|elder_item|shaper_item)\":{\"option\":\"any\"},?", "");
-
-                    if (bIsDebug) Logs("CreateJson");
 
                     return sEntity.Replace("},}", "}}");
                 }
