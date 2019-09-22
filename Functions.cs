@@ -1298,11 +1298,10 @@ namespace PoeTradeSearch
                                 itemfilters[i].disabled = true;
                             }
 
-                            if (inherit != "" && selidx == -1)
+                            if (inherit != "" && selidx == -1 && (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue != ResStr.Crafted)
                             {
-                                string sel_str = (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue;
                                 if (
-                                    (mConfigData.Options.AutoCheckUnique && itemRarity == ResStr.Unique && sel_str != ResStr.Crafted) 
+                                    (mConfigData.Options.AutoCheckUnique && itemRarity == ResStr.Unique) 
                                     || (Array.Find(mConfigData.Checked, x => x.Text == ifilter.text && x.ID.IndexOf(inherit + "/") > -1) != null)
                                 )
                                 {
