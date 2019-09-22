@@ -81,6 +81,8 @@ namespace PoeTradeSearch
             internal bool SearchByType = false;
             [DataMember(Name = "auto_select_pseudo")]
             internal bool AutoSelectPseudo = false;
+            [DataMember(Name = "auto_check_unique")]
+            internal bool AutoCheckUnique = false;
             [DataMember(Name = "ctrl_wheel")]
             internal bool CtrlWheel = false;
             [DataMember(Name = "check_updates")]

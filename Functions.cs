@@ -509,7 +509,7 @@ namespace PoeTradeSearch
 
                     if (!BaseDataUpdates(path) || !FilterDataUpdates(path))
                         throw new UnauthorizedAccessException("failed to create database");
-                }               
+                }
 
                 fs = new FileStream(path + "Bases.txt", FileMode.Open);
                 using (StreamReader reader = new StreamReader(fs))
@@ -1300,7 +1300,11 @@ namespace PoeTradeSearch
 
                             if (inherit != "" && selidx == -1)
                             {
-                                if (Array.Find(mConfigData.Checked, x => x.Text == ifilter.text && x.ID.IndexOf(inherit + "/") > -1) != null)
+                                string sel_str = (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue;
+                                if (
+                                    (mConfigData.Options.AutoCheckUnique && itemRarity == ResStr.Unique && sel_str != ResStr.Crafted) 
+                                    || (Array.Find(mConfigData.Checked, x => x.Text == ifilter.text && x.ID.IndexOf(inherit + "/") > -1) != null)
+                                )
                                 {
                                     ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = true;
                                     itemfilters[i].disabled = false;
