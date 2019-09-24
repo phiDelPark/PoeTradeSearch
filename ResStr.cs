@@ -23,18 +23,17 @@ namespace PoeTradeSearch
 
         //internal const string Prophecy = "예언";
         internal const string Currency = "화폐";
-
         internal const string DivinationCard = "점술 카드";
         internal const string Gem = "젬";
 
         internal const string Higher = "상급";
         internal const string formed = "형성된";
 
-        internal const string Quality = "퀄리티";
         internal const string Lv = "레벨";
         internal const string ItemLv = "아이템 레벨";
         internal const string CharmLv = "부적 등급";
         internal const string MaTier = "지도 등급";
+        internal const string Quality = "퀄리티";
         internal const string Socket = "홈";
 
         internal const string Shaper = "쉐이퍼 아이템";
@@ -48,15 +47,7 @@ namespace PoeTradeSearch
         internal const string ChkMapFragment = "템플러의 실험실이나 전용 지도 장치에서";
         internal const string ChkFlask = "마시려면 우클릭하십시오. 허리띠에 장착 중일 때만 충전이 유지됩니다.";
 
-        internal const string SClickSplitItem = "Shift + 클릭으로 아이템 나누기";        
-
-        internal const string PhysicalDamage = "물리 피해";
-        internal const string ElementalDamage = "원소 피해";
-        internal const string ChaosDamage = "카오스 피해";
-        internal const string AttacksPerSecond = "초당 공격 횟수";
-
-        internal const string AttackSpeedIncr = "공격 속도 #% 증가";
-        internal const string PhysicalDamageIncr = "물리 피해 #% 증가";
+        internal const string SClickSplitItem = "Shift + 클릭으로 아이템 나누기";    
 
         internal const string Pseudo = "유사";
         internal const string Explicit = "일반";
@@ -67,9 +58,14 @@ namespace PoeTradeSearch
         internal const string Veiled = "장막";
         internal const string Monster = "야수";
         internal const string Delve = "탐광";
-
         internal const string Local = "특정";
 
+        internal const string PhysicalDamage = "물리 피해";
+        internal const string ElementalDamage = "원소 피해";
+        internal const string ChaosDamage = "카오스 피해";
+        internal const string AttacksPerSecond = "초당 공격 횟수";
+        internal const string AttackSpeedIncr = "공격 속도 #% 증가";
+        internal const string PhysicalDamageIncr = "물리 피해 #% 증가";
         internal const string TotalResistance = "총 저항 +#%";
 
         internal static Dictionary<string, string> lFilterTypeName = new Dictionary<string, string>()
@@ -138,21 +134,20 @@ namespace PoeTradeSearch
             { "연결의 오브", "fuse"}, { "연금술의 오브", "alch"}, { "영원의 오브", "ete"}, { "엑잘티드 오브", "exa"}, { "정제의 오브", "scour"},
             { "쥬얼러 오브", "jew"}, { "지평의 오브", "orb-of-horizons"}, { "진화의 오브", "tra"},  { "제왕의 오브", "regal"},  { "축복의 오브", "blessed"},
             { "카오스 오브", "chaos"}, { "칼란드라의 거울", "mir"}, { "확장의 오브", "aug"}, { "후회의 오브", "regret"}, { "세공사의 프리즘", "gcp"}, 
-            { "유리직공의 방울", "ba"}, { "실버 코인", "silver"}, { "감정 주문서", "wis"}, { "포탈 주문서", "port"}, { "지도제작자의 끌", "chisel"},
+            { "유리직공의 방울", "ba"}, { "실버 코인", "silver"}, { "카드 묶음", "stacked-deck"}, { "감정 주문서", "wis"}, { "포탈 주문서", "port"}, { "지도제작자의 끌", "chisel"},
             { "수습 지도제작자의 육분의", "apprentice-sextant"}, { "숙련 지도제작자의 육분의", "journeyman-sextant"}, { "대가 지도제작자의 육분의", "master-sextant"},
             { "공허의 화석", "hollow-fossil"}, { "그을린 화석", "scorched-fossil"}, { "금속성 화석", "metallic-fossil"}, { "도금된 화석", "gilded-fossil"}, { "뒤덮인 화석", "encrusted-fossil"},
             { "부식된 화석", "corroded-fossil"}, { "분광 화석", "prismatic-fossil"}, { "분열된 화석", "fractured-fossil"},{ "뾰족한 화석", "jagged-fossil"}, { "빛나는 화석", "lucent-fossil"},
-            { "상형 문자 화석", "glyphic-fossil"},    { "속박의 화석", "bound-fossil"}, { "얽혀든 화석", "tangled-fossil"},   { "연마한 화석", "faceted-fossil"}, { "온전한 화석", "pristine-fossil"},
+            { "상형 문자 화석", "glyphic-fossil"}, { "속박의 화석", "bound-fossil"}, { "얽혀든 화석", "tangled-fossil"},   { "연마한 화석", "faceted-fossil"}, { "온전한 화석", "pristine-fossil"},
             { "완벽한 화석", "perfect-fossil"},  { "인챈트된 화석", "enchanted-fossil"}, { "에테르 화석", "aetheric-fossil"}, { "전율의 화석", "shuddering-fossil"}, { "조밀한 화석", "dense-fossil"},
             { "차디찬 화석", "frigid-fossil"}, { "축성된 화석", "sanctified-fossil"}, { "톱니 화석", "serrated-fossil"}, { "특이한 화석", "aberrant-fossil"},{ "피얼룩 화석", "bloodstained-fossil"},    
             { "울네톨의 파편", "splinter-uul"}, { "에쉬의 파편", "splinter-esh"}, { "조프의 파편", "splinter-xoph"}, { "차율라의 파편", "splinter-chayula"}, { "툴의 파편", "splinter-tul"},
             { "울네톨의 축복", "blessing-uul-netol"}, { "에쉬의 축복", "blessing-esh"}, { "조프의 축복", "blessing-xoph"}, { "차율라의 축복", "blessing-chayula"}, { "툴의 축복", "blessing-tul"},
             { "무궁한 바알 파편", "timeless-vaal-splinter"}, { "무궁한 영원한 제국 파편", "timeless-eternal-empire-splinter"}, { "무궁한 카루이 파편", "timeless-karui-splinter"}, { "무궁한 템플러 파편", "timeless-templar-splinter"}, { "무궁한 마라케스 파편", "timeless-maraketh-splinter"},
             { "무궁한 바알 상징", "timeless-vaal-emblem"}, { "무궁한 영원한 제국 상징", "timeless-eternal-emblem"}, { "무궁한 카루이 상징", "timeless-karui-emblem"}, { "무궁한 템플러 상징", "timeless-templar-emblem"}, { "무궁한 마라케스 상징", "timeless-maraketh-emblem"},
-            { "카드 묶음", "stacked-deck"}, { "페란두스 코인", "p"},
             { "대장장이의 숫돌", "whe"}, { "방어구 장인의 고철", "scr"}, { "소멸의 파편", "annulment-shard"}, { "거울 파편", "mirror-shard"}, { "엑잘티드 파편", "exalted-shard"},
             { "속박의 파편", "binding-shard"},{ "지평의 파편", "horizon-shard"}, { "선구자의 파편", "harbingers-shard"}, { "기술자의 파편", "engineers-shard"}, { "고대의 파편", "ancient-shard"},
-            { "카오스 파편", "chaos-shard"},{ "제왕의 파편", "regal-shard"}
+            { "카오스 파편", "chaos-shard"},{ "제왕의 파편", "regal-shard"}, { "페란두스 코인", "p"}
         };
     }
 }

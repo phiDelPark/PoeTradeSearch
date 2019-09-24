@@ -126,7 +126,7 @@ namespace PoeTradeSearch
                 if (item.Key == "대장장이의 숫돌")
                     break;
 
-                if (cnt++ > 32)
+                if (cnt++ > 33)
                     cbSplinters.Items.Add(item.Key);
                 else
                     cbOrbs.Items.Add(item.Key);

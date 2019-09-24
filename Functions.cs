@@ -1668,6 +1668,17 @@ namespace PoeTradeSearch
             return itemOption;
         }
 
+        private string BeforeDayToString()
+        {
+            if(mConfigData.Options.SearchBeforeDay < 3)
+                return "1day";
+            else if (mConfigData.Options.SearchBeforeDay < 7)
+                return "3days";
+            else if (mConfigData.Options.SearchBeforeDay < 14)
+                return "1week";
+            return "2weeks";
+        }
+
         private string CreateJson(ItemOption itemOptions)
         {
             if (mItemBaseName.Rarity != null && mItemBaseName.Rarity != "")
@@ -1694,7 +1705,8 @@ namespace PoeTradeSearch
                     jsonData.Query.Filters.Misc_filters.misc_filters_filters.Corrupted.Option = itemOptions.Corrupt == true ? "true" : "any";
 
                     jsonData.Query.Filters.Trade_filters = new q_Trade_filters();
-                    jsonData.Query.Filters.Trade_filters.Disabled = true;
+                    jsonData.Query.Filters.Trade_filters.Disabled = mConfigData.Options.SearchBeforeDay == 0;
+                    jsonData.Query.Filters.Trade_filters.trade_filters_filters.Indexed.Option = BeforeDayToString();
 
                     jsonData.Query.Filters.Socket_filters = new q_Socket_filters();
                     jsonData.Query.Filters.Socket_filters.Disabled = itemOptions.ChkSocket != true;
@@ -1851,7 +1863,6 @@ namespace PoeTradeSearch
                             sEntity = sEntity.Replace("\"type\":\"" + jsonData.Query.Type + "\",", "\"name\":\"" + jsonData.Query.Type + "\",");
                     }
 
-                    //sEntity = sEntity.Replace("\"trade_filters\":null,", "");
                     sEntity = sEntity.Replace("{\"max\":99999,\"min\":99999}", "{}");
                     sEntity = sEntity.Replace("{\"max\":99999,", "{");
                     sEntity = sEntity.Replace(",\"min\":99999}", "}");

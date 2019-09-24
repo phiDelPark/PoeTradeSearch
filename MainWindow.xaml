@@ -129,11 +129,11 @@
 
         <CheckBox Name="ckLv" Content="레벨" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" HorizontalAlignment="Left" Margin="5,363,0,0" VerticalAlignment="Top" Width="50" />
         <TextBox Name="tbLvMin" HorizontalAlignment="Left" Height="18" Margin="72,360,0,0" Text="" VerticalAlignment="Top" Width="25" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
-        <TextBox Name="tbLvMax" HorizontalAlignment="Left" Height="18" Margin="100,360,0,0" Text="" VerticalAlignment="Top" Width="25" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
+        <TextBox Name="tbLvMax" HorizontalAlignment="Left" Height="18" Margin="101,360,0,0" Text="" VerticalAlignment="Top" Width="25" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
 
         <CheckBox Name="ckQuality" Content="퀄리티" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" HorizontalAlignment="Left" Margin="5,385,0,0" VerticalAlignment="Top" Width="62" />
         <TextBox Name="tbQualityMin" HorizontalAlignment="Left" Height="18" Margin="72,382,0,0" Text="" VerticalAlignment="Top" Width="25" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
-        <TextBox Name="tbQualityMax" HorizontalAlignment="Left" Height="18" Margin="100,382,0,0" Text="" VerticalAlignment="Top" Width="25" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
+        <TextBox Name="tbQualityMax" HorizontalAlignment="Left" Height="18" Margin="101,382,0,0" Text="" VerticalAlignment="Top" Width="25" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
 
         <Label Content="&amp;" HorizontalAlignment="Left" Margin="324,358,0,0" VerticalAlignment="Top" Width="22" />
         <CheckBox Name="ckSocket" Content="소켓" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" HorizontalAlignment="Left" Margin="232,363,0,0" VerticalAlignment="Top" Width="50" />
