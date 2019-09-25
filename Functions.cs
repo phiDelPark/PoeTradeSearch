@@ -931,7 +931,7 @@ namespace PoeTradeSearch
                     {
                         { ResStr.Quality, "" }, { ResStr.Lv, "" }, { ResStr.ItemLv, "" }, { ResStr.CharmLv, "" }, { ResStr.MaTier, "" }, { ResStr.Socket, "" },
                         { ResStr.PhysicalDamage, "" }, { ResStr.ElementalDamage, "" }, { ResStr.ChaosDamage, "" }, { ResStr.AttacksPerSecond, "" },
-                        { ResStr.Shaper, "" }, { ResStr.Elder, "" }, { ResStr.Corrupt, "" }, { ResStr.Unidentify, "" }
+                        { ResStr.Shaper, "" }, { ResStr.Elder, "" }, { ResStr.Corrupt, "" }, { ResStr.Unidentify, "" }, { ResStr.Vaal, "" }
                     };
 
                     for (int i = 1; i < asData.Length; i++)
@@ -949,7 +949,9 @@ namespace PoeTradeSearch
                             }
                             else
                             {
-                                if (!is_flask && asTmp[0].IndexOf(ResStr.ChkFlask) == 0)
+                                if (itemRarity == ResStr.Gem && (ResStr.Vaal + " " + itemType) == asTmp[0])
+                                    lItemOption[ResStr.Vaal] = "_TRUE_";
+                                else if (!is_flask && asTmp[0].IndexOf(ResStr.ChkFlask) == 0)
                                     is_flask = true;
                                 else if (!is_prophecy && asTmp[0].IndexOf(ResStr.ChkProphecy) == 0)
                                     is_prophecy = true;
@@ -1162,7 +1164,7 @@ namespace PoeTradeSearch
                     }
                     else
                     {
-                        if (is_gem && lItemOption[ResStr.Corrupt] == "_TRUE_")
+                        if (is_gem && lItemOption[ResStr.Corrupt] == "_TRUE_" && lItemOption[ResStr.Vaal] == "_TRUE_")
                         {
                             BaseResultData tmpBaseType = mBaseDatas.Find(x => x.NameKo == ResStr.Vaal + " " + itemType);
                             if (tmpBaseType != null)
@@ -1297,8 +1299,7 @@ namespace PoeTradeSearch
                                 itemfilters[i].isImplicit = true;
                                 itemfilters[i].disabled = true;
                             }
-
-                            if (inherit != "" && selidx == -1 && (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue != ResStr.Crafted)
+                            else if (inherit != "" && selidx == -1 && (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue != ResStr.Crafted)
                             {
                                 if (
                                     (mConfigData.Options.AutoCheckUnique && itemRarity == ResStr.Unique) 
@@ -1668,19 +1669,19 @@ namespace PoeTradeSearch
             return itemOption;
         }
 
-        private string BeforeDayToString()
-        {
-            if(mConfigData.Options.SearchBeforeDay < 3)
-                return "1day";
-            else if (mConfigData.Options.SearchBeforeDay < 7)
-                return "3days";
-            else if (mConfigData.Options.SearchBeforeDay < 14)
-                return "1week";
-            return "2weeks";
-        }
-
         private string CreateJson(ItemOption itemOptions)
         {
+            string BeforeDayToString(int day)
+            {
+                if (day < 3)
+                    return "1day";
+                else if (day < 7)
+                    return "3days";
+                else if (day < 14)
+                    return "1week";
+                return "2weeks";
+            }
+
             if (mItemBaseName.Rarity != null && mItemBaseName.Rarity != "")
             {
                 try
@@ -1706,7 +1707,7 @@ namespace PoeTradeSearch
 
                     jsonData.Query.Filters.Trade_filters = new q_Trade_filters();
                     jsonData.Query.Filters.Trade_filters.Disabled = mConfigData.Options.SearchBeforeDay == 0;
-                    jsonData.Query.Filters.Trade_filters.trade_filters_filters.Indexed.Option = BeforeDayToString();
+                    jsonData.Query.Filters.Trade_filters.trade_filters_filters.Indexed.Option = BeforeDayToString(mConfigData.Options.SearchBeforeDay);
 
                     jsonData.Query.Filters.Socket_filters = new q_Socket_filters();
                     jsonData.Query.Filters.Socket_filters.Disabled = itemOptions.ChkSocket != true;
