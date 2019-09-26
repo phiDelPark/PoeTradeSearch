@@ -1067,29 +1067,32 @@ namespace PoeTradeSearch
                                             }
                                         }
 
-                                        double min, max;
-                                        matches = Regex.Matches(asOpt[j], @"[-]?[0-9]+\.[0-9]+|[-]?[0-9]+");
+                                        double min = 99999, max = 99999;
 
-                                        min = matches.Count > idxMin ? StrToDouble(((Match)matches[idxMin]).Value, 99999) : 99999;
-                                        max = idxMin < idxMax && matches.Count > idxMax ? StrToDouble(((Match)matches[idxMax]).Value, 99999) : 99999;
-
-                                        if (min != 99999 && max != 99999)
+                                        if (isMin || isMax)
                                         {
-                                            if (filter.Text.IndexOf("#~#") > -1)
+                                            matches = Regex.Matches(asOpt[j], @"[-]?[0-9]+\.[0-9]+|[-]?[0-9]+");
+                                            min = matches.Count > idxMin ? StrToDouble(((Match)matches[idxMin]).Value, 99999) : 99999;
+                                            max = idxMin < idxMax && matches.Count > idxMax ? StrToDouble(((Match)matches[idxMax]).Value, 99999) : 99999;
+
+                                            if (min != 99999 && max != 99999)
                                             {
-                                                min += max;
-                                                min = Math.Truncate(min / 2 * 10) / 10;
-                                                max = 99999;
+                                                if (filter.Text.IndexOf("#~#") > -1)
+                                                {
+                                                    min += max;
+                                                    min = Math.Truncate(min / 2 * 10) / 10;
+                                                    max = 99999;
+                                                }
                                             }
-                                        }
-                                        else
-                                        {
-                                            string[] split = filter.ID.Split('.');
-                                            bool defMaxPosition = split.Length == 2 && ResStr.lDefaultPosition.ContainsKey(split[1]);
-                                            if ((defMaxPosition && min > 0 && max == 99999) || (!defMaxPosition && min < 0 && max == 99999))
+                                            else
                                             {
-                                                max = min;
-                                                min = 99999;
+                                                string[] split = filter.ID.Split('.');
+                                                bool defMaxPosition = split.Length == 2 && ResStr.lDefaultPosition.ContainsKey(split[1]);
+                                                if ((defMaxPosition && min > 0 && max == 99999) || (!defMaxPosition && min < 0 && max == 99999))
+                                                {
+                                                    max = min;
+                                                    min = 99999;
+                                                }
                                             }
                                         }
 
@@ -1302,7 +1305,7 @@ namespace PoeTradeSearch
                             else if (inherit != "" && selidx == -1 && (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue != ResStr.Crafted)
                             {
                                 if (
-                                    (mConfigData.Options.AutoCheckUnique && itemRarity == ResStr.Unique) 
+                                    (mConfigData.Options.AutoCheckUnique && itemRarity == ResStr.Unique)
                                     || (Array.Find(mConfigData.Checked, x => x.Text == ifilter.text && x.ID.IndexOf(inherit + "/") > -1) != null)
                                 )
                                 {
