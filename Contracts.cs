@@ -35,6 +35,7 @@ namespace PoeTradeSearch
             public double QualityMax;
             public double LvMin;
             public double LvMax;
+            public string Rarity;
             public List<Itemfilter> itemfilters = new List<Itemfilter>();
         }
 
@@ -45,7 +46,7 @@ namespace PoeTradeSearch
             public string TypeKR;
             public string NameEN;
             public string TypeEN;
-            public string Rarity;
+            //public string Rarity;
             public string[] Inherits;
         }
 

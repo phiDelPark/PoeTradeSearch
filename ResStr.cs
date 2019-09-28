@@ -15,13 +15,15 @@ namespace PoeTradeSearch
         internal static byte ServerLang = 0;
         internal static string ServerType = "";
 
+        internal const string All = "모두";
+
         internal const string Rarity = "아이템 희귀도";
         internal const string Unique = "고유";
         internal const string Rare = "희귀";
         internal const string Magic = "마법";
         internal const string Normal = "일반";
 
-        //internal const string Prophecy = "예언";
+        internal const string Prophecy = "예언";
         internal const string Currency = "화폐";
         internal const string DivinationCard = "점술 카드";
         internal const string Gem = "젬";
@@ -124,7 +126,7 @@ namespace PoeTradeSearch
 
         internal static Dictionary<string, string> lRarity = new Dictionary<string, string>()
         {
-            { Unique, "unique"}, { Rare, "rare"}, { Magic, "magic"}/*, { Normal, "normal"}*/
+            { Unique, "unique"}, { Rare, "rare"}, { Magic, "magic"}, { Normal, "normal"}
         };
 
         internal static Dictionary<string, string> lExchangeCurrency = new Dictionary<string, string>()

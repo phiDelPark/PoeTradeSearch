@@ -8,9 +8,13 @@
         Title="POE 거래소 검색" Loaded="Window_Loaded" Closing="Window_Closing" Closed="Window_Closed" Deactivated="Window_Deactivated" PreviewKeyDown="Window_PreviewKeyDown">
 
     <Grid Margin="25, 20, 25, 25">
-        <Label Name="lbRarity" Content="Label" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" />
-        <Label Name="lbName" Content="Label" HorizontalAlignment="Left" Margin="0,18,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Width="384" />
-        <CheckBox Name="cbName" Content="CheckBox" HorizontalAlignment="Left" Margin="5,24,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Width="374" />
+        <ComboBox Name="cbRarity" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0">
+            <ComboBox.Resources>
+                <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
+            </ComboBox.Resources>
+        </ComboBox>
+        <Label Name="lbName" Content="Label" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Width="384" />
+        <CheckBox Name="cbName" Content="CheckBox" HorizontalAlignment="Left" Margin="4,26,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Width="379" />
 
         <Label Name="lbDPS" Content="옵션" HorizontalAlignment="Left" Margin="0,54,0,0" VerticalAlignment="Top" />
         <Label Content="최소" HorizontalAlignment="Left" Margin="280,54,0,0" VerticalAlignment="Top" />

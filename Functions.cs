@@ -858,6 +858,13 @@ namespace PoeTradeSearch
             lbDPS.Content = "옵션";
             SetSearchButtonText();
 
+            cbRarity.Items.Clear();
+            cbRarity.Items.Add(ResStr.All);
+            cbRarity.Items.Add(ResStr.Normal);
+            cbRarity.Items.Add(ResStr.Magic);
+            cbRarity.Items.Add(ResStr.Rare);
+            cbRarity.Items.Add(ResStr.Unique);
+
             for (int i = 0; i < 10; i++)
             {
                 ((TextBox)this.FindName("tbOpt" + i)).Text = "";
@@ -1172,6 +1179,7 @@ namespace PoeTradeSearch
 
                     if (is_prophecy)
                     {
+                        itemRarity = ResStr.Prophecy;
                         BaseResultData tmpBaseType = mProphecyDatas.Find(x => x.NameKo == itemType);
                         if (tmpBaseType != null)
                         {
@@ -1404,7 +1412,6 @@ namespace PoeTradeSearch
 
                     bool IsExchangeCurrency = inherit == "Currency" && ResStr.lExchangeCurrency.ContainsKey(itemType);
 
-                    mItemBaseName.Rarity = itemRarity;
                     mItemBaseName.NameKR = itemName; // + (matchName == null ? "" : matchName.Value);
                     mItemBaseName.TypeKR = itemType; // + (matchType == null ? "" : matchType.Value);
 
@@ -1431,7 +1438,18 @@ namespace PoeTradeSearch
                     cbName.IsChecked = !mConfigData.Options.SearchByType;
 
                     lbName.Visibility = itemRarity != ResStr.Unique && by_type ? Visibility.Hidden : Visibility.Visible;
-                    lbRarity.Content = itemRarity;
+
+                    cbRarity.SelectedValue = itemRarity;
+                    if (cbRarity.SelectedIndex == -1)
+                    {
+                        cbRarity.Items.Clear();
+                        cbRarity.Items.Add(itemRarity);
+                        cbRarity.SelectedIndex = cbRarity.Items.Count - 1;
+                    }
+                    else if((string)cbRarity.SelectedValue == ResStr.Normal)
+                    {
+                        cbRarity.SelectedIndex = 0;
+                    }
 
                     bdDetail.Visibility = is_detail ? Visibility.Visible : Visibility.Hidden;
                     if (bdDetail.Visibility == Visibility.Visible)
@@ -1647,6 +1665,8 @@ namespace PoeTradeSearch
             itemOption.LvMin = StrToDouble(tbLvMin.Text, 99999);
             itemOption.LvMax = StrToDouble(tbLvMax.Text, 99999);
 
+            itemOption.Rarity = (string)cbRarity.SelectedValue;
+
             int total_res_idx = -1;
 
             for (int i = 0; i < 10; i++)
@@ -1699,7 +1719,7 @@ namespace PoeTradeSearch
                 return "2weeks";
             }
 
-            if (mItemBaseName.Rarity != null && mItemBaseName.Rarity != "")
+            if (itemOptions.Rarity != null && itemOptions.Rarity != "")
             {
                 try
                 {
@@ -1864,14 +1884,14 @@ namespace PoeTradeSearch
                     }
 
                     jsonData.Query.Filters.Type_filters.type_filters_filters.Rarity.Option = "any";
-                    if (ResStr.lRarity.ContainsKey(mItemBaseName.Rarity))
+                    if (ResStr.lRarity.ContainsKey(itemOptions.Rarity))
                     {
-                        jsonData.Query.Filters.Type_filters.type_filters_filters.Rarity.Option = ResStr.lRarity[mItemBaseName.Rarity];
+                        jsonData.Query.Filters.Type_filters.type_filters_filters.Rarity.Option = ResStr.lRarity[itemOptions.Rarity];
                     }
 
                     string sEntity = Json.Serialize<JsonData>(jsonData);
 
-                    if (mItemBaseName.Rarity != ResStr.Unique || jsonData.Query.Name == "")
+                    if (itemOptions.Rarity != ResStr.Unique || jsonData.Query.Name == "")
                     {
                         sEntity = sEntity.Replace("\"name\":\"" + jsonData.Query.Name + "\",", "");
 
