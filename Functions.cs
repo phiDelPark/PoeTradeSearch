@@ -966,22 +966,65 @@ namespace PoeTradeSearch
                                     input = Regex.Replace(input, @"\\#", "[+-]?([0-9]+\\.[0-9]+|[0-9]+|\\#)");
                                     //input = Regex.Replace(input, @"\+#", "(+|)#");
 
-                                    FilterResultEntrie filter = null;
                                     Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
-
                                     FilterResult[] filterResults = mFilterData.Result;
+
+                                    double min = 99999, max = 99999;
+                                    FilterResultEntrie filter = null;
 
                                     foreach (FilterResult filterResult in filterResults)
                                     {
-                                        FilterResultEntrie entrie = Array.Find(filterResult.Entries, x => rgx.IsMatch(x.Text));
-                                        if (entrie != null)
+                                        FilterResultEntrie[] entries = Array.FindAll(filterResult.Entries, x => rgx.IsMatch(x.Text));
+                                        if (entries.Length > 0)
                                         {
-                                            ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(new FilterEntrie(entrie.ID, filterResult.Label));
-                                            if (filter == null)
+                                            MatchCollection matches1 = Regex.Matches(asOpt[j], @"[-]?[0-9]+\.[0-9]+|[-]?[0-9]+");
+                                            foreach (FilterResultEntrie entrie in entries)
                                             {
-                                                string[] id_split = entrie.ID.Split('.');
-                                                resistance = id_split.Length == 2 && ResStr.lResistance.ContainsKey(id_split[1]);
-                                                filter = entrie;
+                                                int idxMin = 0, idxMax = 0;
+                                                bool isMin = false, isMax = false;
+                                                bool isBreak = true;
+
+                                                MatchCollection matches2 = Regex.Matches(entrie.Text, @"[-]?[0-9]+\.[0-9]+|[-]?[0-9]+|#");
+
+                                                for (int t = 0; t < matches2.Count; t++)
+                                                {
+                                                    if (matches2[t].Value == "#")
+                                                    {
+                                                        if (!isMin)
+                                                        {
+                                                            isMin = true;
+                                                            idxMin = t;
+                                                        }
+                                                        else if (!isMax)
+                                                        {
+                                                            isMax = true;
+                                                            idxMax = t;
+                                                        }
+                                                    }
+                                                    else if (matches1[t].Value != matches2[t].Value)
+                                                    {
+                                                        isBreak = false;
+                                                        break;
+                                                    }
+                                                }
+
+                                                if (isBreak)
+                                                {
+                                                    ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(new FilterEntrie(entrie.ID, filterResult.Label));
+
+                                                    if (filter == null)
+                                                    {
+                                                        string[] id_split = entrie.ID.Split('.');
+                                                        resistance = id_split.Length == 2 && ResStr.lResistance.ContainsKey(id_split[1]);
+                                                        filter = entrie;
+
+                                                        MatchCollection matches = Regex.Matches(asOpt[j], @"[-]?[0-9]+\.[0-9]+|[-]?[0-9]+");
+                                                        min = isMin && matches.Count > idxMin ? StrToDouble(((Match)matches[idxMin]).Value, 99999) : 99999;
+                                                        max = isMax && idxMin < idxMax && matches.Count > idxMax ? StrToDouble(((Match)matches[idxMax]).Value, 99999) : 99999;
+                                                    }
+
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
@@ -1047,52 +1090,23 @@ namespace PoeTradeSearch
                                         ((TextBox)this.FindName("tbOpt" + k)).Text = filter.Text;
                                         ((CheckBox)this.FindName("tbOpt" + k + "_3")).Visibility = resistance ? Visibility.Visible : Visibility.Hidden;
 
-                                        bool isMin = false, isMax = false;
-                                        int idxMin = 0, idxMax = 1;
-                                        MatchCollection matches = Regex.Matches(filter.Text, @"[0-9]+\.[0-9]+|[0-9]+|#");
-                                        for (int t = 0; t < matches.Count; t++)
+                                        if (min != 99999 && max != 99999)
                                         {
-                                            if (((Match)matches[t]).Value == "#")
+                                            if (filter.Text.IndexOf("#~#") > -1)
                                             {
-                                                if (!isMin)
-                                                {
-                                                    isMin = true;
-                                                    idxMin = t;
-                                                }
-                                                else if (!isMax)
-                                                {
-                                                    isMax = true;
-                                                    idxMax = t;
-                                                }
+                                                min += max;
+                                                min = Math.Truncate(min / 2 * 10) / 10;
+                                                max = 99999;
                                             }
                                         }
-
-                                        double min = 99999, max = 99999;
-
-                                        if (isMin || isMax)
+                                        else if (min != 99999 || max != 99999)
                                         {
-                                            matches = Regex.Matches(asOpt[j], @"[-]?[0-9]+\.[0-9]+|[-]?[0-9]+");
-                                            min = matches.Count > idxMin ? StrToDouble(((Match)matches[idxMin]).Value, 99999) : 99999;
-                                            max = idxMin < idxMax && matches.Count > idxMax ? StrToDouble(((Match)matches[idxMax]).Value, 99999) : 99999;
-
-                                            if (min != 99999 && max != 99999)
+                                            string[] split = filter.ID.Split('.');
+                                            bool defMaxPosition = split.Length == 2 && ResStr.lDefaultPosition.ContainsKey(split[1]);
+                                            if ((defMaxPosition && min > 0 && max == 99999) || (!defMaxPosition && min < 0 && max == 99999))
                                             {
-                                                if (filter.Text.IndexOf("#~#") > -1)
-                                                {
-                                                    min += max;
-                                                    min = Math.Truncate(min / 2 * 10) / 10;
-                                                    max = 99999;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                string[] split = filter.ID.Split('.');
-                                                bool defMaxPosition = split.Length == 2 && ResStr.lDefaultPosition.ContainsKey(split[1]);
-                                                if ((defMaxPosition && min > 0 && max == 99999) || (!defMaxPosition && min < 0 && max == 99999))
-                                                {
-                                                    max = min;
-                                                    min = 99999;
-                                                }
+                                                max = min;
+                                                min = 99999;
                                             }
                                         }
 
