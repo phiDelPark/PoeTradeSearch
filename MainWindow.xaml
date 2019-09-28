@@ -13,8 +13,7 @@
                 <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
             </ComboBox.Resources>
         </ComboBox>
-        <Label Name="lbName" Content="Label" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Width="384" />
-        <CheckBox Name="cbName" Content="CheckBox" HorizontalAlignment="Left" Margin="4,26,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Width="379" />
+        <CheckBox Name="cbName" Content="CheckBox" HorizontalAlignment="Left" Margin="4,26,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Width="377" />
 
         <Label Name="lbDPS" Content="옵션" HorizontalAlignment="Left" Margin="0,54,0,0" VerticalAlignment="Top" />
         <Label Content="최소" HorizontalAlignment="Left" Margin="280,54,0,0" VerticalAlignment="Top" />

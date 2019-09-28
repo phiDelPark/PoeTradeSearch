@@ -357,11 +357,9 @@ namespace PoeTradeSearch
             ResStr.ServerLang = byte.Parse((string)((Button)sender).Tag);
 
             if (ResStr.ServerLang == 0)
-                lbName.Content = Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "");
+                cbName.Content = Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "");
             else
-                lbName.Content = (mItemBaseName.NameEN + " " + mItemBaseName.TypeEN).Trim();
-
-            cbName.Content = lbName.Content;
+                cbName.Content = (mItemBaseName.NameEN + " " + mItemBaseName.TypeEN).Trim();
 
             SetSearchButtonText();
         }

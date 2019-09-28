@@ -1412,15 +1412,27 @@ namespace PoeTradeSearch
 
                     bool IsExchangeCurrency = inherit == "Currency" && ResStr.lExchangeCurrency.ContainsKey(itemType);
 
+                    cbRarity.SelectedValue = itemRarity;
+                    if (cbRarity.SelectedIndex == -1)
+                    {
+                        cbRarity.Items.Clear();
+                        cbRarity.Items.Add(itemRarity);
+                        cbRarity.SelectedIndex = cbRarity.Items.Count - 1;
+                    }
+                    else if ((string)cbRarity.SelectedValue == ResStr.Normal)
+                    {
+                        cbRarity.SelectedIndex = 0;
+                    }
+
                     mItemBaseName.NameKR = itemName; // + (matchName == null ? "" : matchName.Value);
                     mItemBaseName.TypeKR = itemType; // + (matchType == null ? "" : matchType.Value);
 
                     if (ResStr.ServerLang == 1)
-                        lbName.Content = mItemBaseName.NameEN + " " + mItemBaseName.TypeEN;
+                        cbName.Content = mItemBaseName.NameEN + " " + mItemBaseName.TypeEN;
                     else
-                        lbName.Content = Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "");
+                        cbName.Content = Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "");
 
-                    cbName.Content = lbName.Content;
+                    cbName.IsChecked = !mConfigData.Options.SearchByType;
 
                     ckShaper.IsChecked = lItemOption[ResStr.Shaper] == "_TRUE_";
                     ckElder.IsChecked = lItemOption[ResStr.Elder] == "_TRUE_";
@@ -1433,23 +1445,6 @@ namespace PoeTradeSearch
 
                     tbLvMin.Text = Regex.Replace(lItemOption[is_gem ? ResStr.Lv : ResStr.ItemLv].Trim(), "[^0-9]", "");
                     tbQualityMin.Text = item_quality;
-
-                    cbName.Visibility = itemRarity != ResStr.Unique && by_type ? Visibility.Visible : Visibility.Hidden;
-                    cbName.IsChecked = !mConfigData.Options.SearchByType;
-
-                    lbName.Visibility = itemRarity != ResStr.Unique && by_type ? Visibility.Hidden : Visibility.Visible;
-
-                    cbRarity.SelectedValue = itemRarity;
-                    if (cbRarity.SelectedIndex == -1)
-                    {
-                        cbRarity.Items.Clear();
-                        cbRarity.Items.Add(itemRarity);
-                        cbRarity.SelectedIndex = cbRarity.Items.Count - 1;
-                    }
-                    else if((string)cbRarity.SelectedValue == ResStr.Normal)
-                    {
-                        cbRarity.SelectedIndex = 0;
-                    }
 
                     bdDetail.Visibility = is_detail ? Visibility.Visible : Visibility.Hidden;
                     if (bdDetail.Visibility == Visibility.Visible)
@@ -1654,7 +1649,7 @@ namespace PoeTradeSearch
             itemOption.ChkSocket = ckSocket.IsChecked == true;
             itemOption.ChkQuality = ckQuality.IsChecked == true;
             itemOption.ChkLv = ckLv.IsChecked == true;
-            itemOption.ByType = cbName.Visibility == Visibility.Visible && cbName.IsChecked != true;
+            itemOption.ByType = cbName.IsChecked != true;
 
             itemOption.SocketMin = StrToDouble(tbSocketMin.Text, 99999);
             itemOption.SocketMax = StrToDouble(tbSocketMax.Text, 99999);
@@ -1867,6 +1862,13 @@ namespace PoeTradeSearch
                                 {
                                     tmp2 = tmp2.Replace("hand", "");
                                     tmp2 = tmp2.Remove(tmp2.Length - 1);
+                                    if (tmp2 == "stave" && tmp.Length == 4)
+                                    {
+                                        if (tmp[3] == "AbstractWarstaff")
+                                            tmp2 = "warstaff";
+                                        else if (tmp[3] == "AbstractStaff")
+                                            tmp2 = "staff";
+                                    }
                                 }
                                 else if (Inherit == "Armours" && (tmp2 == "shields" || tmp2 == "helmets" || tmp2 == "bodyarmours"))
                                 {
@@ -1891,7 +1893,7 @@ namespace PoeTradeSearch
 
                     string sEntity = Json.Serialize<JsonData>(jsonData);
 
-                    if (itemOptions.Rarity != ResStr.Unique || jsonData.Query.Name == "")
+                    if (itemOptions.ByType || jsonData.Query.Name == "" || itemOptions.Rarity != ResStr.Unique)
                     {
                         sEntity = sEntity.Replace("\"name\":\"" + jsonData.Query.Name + "\",", "");
 
