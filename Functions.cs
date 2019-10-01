@@ -158,7 +158,6 @@ namespace PoeTradeSearch
             }
             catch (Exception ex)
             {
-                if (bIsDebug) Logs("SendHTTP: " + ex.Message + '\n');
                 Console.WriteLine(ex.Message);
                 return null;
             }
@@ -1347,11 +1346,13 @@ namespace PoeTradeSearch
 
                     this.ShowActivated = false;
                     this.Visibility = Visibility.Visible;
+
+                    tkPrice1.Foreground = System.Windows.SystemColors.WindowTextBrush;
+                    tkPriceTotal.Foreground = System.Windows.SystemColors.WindowTextBrush;
                 }
             }
             catch (Exception ex)
             {
-                if (bIsDebug) Logs("ShowWindow: " + ex.Message);
                 Console.WriteLine(ex.Message);
             }
         }
@@ -1800,7 +1801,6 @@ namespace PoeTradeSearch
                 }
                 catch (Exception ex)
                 {
-                    if (bIsDebug) Logs("CreateJson: " + ex.Message);
                     Console.WriteLine(ex.Message);
                     return "";
                 }
@@ -1832,18 +1832,6 @@ namespace PoeTradeSearch
                 if (shortcut.Keycode > 0 && (shortcut.Value ?? "") != "")
                     NativeMethods.UnregisterHotKey(mMainHwnd, 10001 + i);
             }
-        }
-
-        private void Logs(string s)
-        {
-            string logFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            logFilePath = logFilePath.Remove(logFilePath.Length - 4) + ".log";
-
-            try
-            {
-                File.AppendAllText(logFilePath, s + '\n');
-            }
-            catch { }
         }
     }
 

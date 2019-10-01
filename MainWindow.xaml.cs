@@ -40,7 +40,6 @@ namespace PoeTradeSearch
 
         public static DateTime MouseHookCallbackTime;
 
-        private bool bIsDebug = false;
         private bool bCreateDatabase = false;
 
         public MainWindow()
@@ -86,7 +85,6 @@ namespace PoeTradeSearch
 
             if (clArgs.Length > 1)
             {
-                bIsDebug = clArgs[1].ToLower() == "-debug";
                 bCreateDatabase = clArgs[1].ToLower() == "-createdatabase";
             }
         }
@@ -199,16 +197,8 @@ namespace PoeTradeSearch
                 MessageBox.Show(Application.Current.MainWindow, tmp + '\n' + "더 자세한 정보를 보시려면 프로그램 상단 (?) 를 눌러 확인하세요.", "POE 거래소 검색");
             }
 
-            if (bIsDebug)
-            {
-                this.Title += " - " + "테스트 모드";
-                btDebug.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                this.Title += " - " + ResStr.ServerType;
-                this.Visibility = Visibility.Hidden;
-            }
+            this.Title += " - " + ResStr.ServerType;
+            this.Visibility = Visibility.Hidden;
         }
 
         private void Window_Deactivated(object sender, EventArgs e)
@@ -301,8 +291,6 @@ namespace PoeTradeSearch
                 }
             }
 
-            if (bIsDebug) return;
-
             Hide();
         }
 
@@ -315,12 +303,16 @@ namespace PoeTradeSearch
         {
             if (ckElder.IsChecked == true)
                 ckShaper.IsChecked = false;
+
+            tkPrice_ReSet(sender, e);
         }
 
         private void CkShaper_Checked(object sender, RoutedEventArgs e)
         {
             if (ckShaper.IsChecked == true)
                 ckElder.IsChecked = false;
+
+            tkPrice_ReSet(sender, e);
         }
 
         private void cbAiiCheck_Checked(object sender, RoutedEventArgs e)
@@ -437,24 +429,22 @@ namespace PoeTradeSearch
                 );
         }
 
+        private void tkPrice_ReSet(object sender, RoutedEventArgs e)
+        {
+            tkPrice1.Foreground = System.Windows.Media.Brushes.DeepPink;
+            tkPriceTotal.Foreground = System.Windows.Media.Brushes.DeepPink;
+        }
+
+        private void tkPrice_ReSet(object sender, SelectionChangedEventArgs e)
+        {
+            tkPrice1.Foreground = System.Windows.Media.Brushes.DeepPink;
+            tkPriceTotal.Foreground = System.Windows.Media.Brushes.DeepPink;
+        }
+
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (KeyInterop.VirtualKeyFromKey(e.Key) == closeKeyCode)
                 Close();
-        }
-
-        private void BtDebug_Click(object sender, RoutedEventArgs e)
-        {
-            ShowWindow(
-               @"아이템 희귀도: 화폐
-감정 주문서
---------
-중첩 개수: 38 / 40
---------
-미확인 아이템 식별
---------
-테스트"
-                );
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
