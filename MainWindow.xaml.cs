@@ -449,7 +449,7 @@ namespace PoeTradeSearch
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (KeyInterop.VirtualKeyFromKey(e.Key) == closeKeyCode)
+            if (closeKeyCode > 0 && KeyInterop.VirtualKeyFromKey(e.Key) == closeKeyCode)
                 Close();
         }
 
