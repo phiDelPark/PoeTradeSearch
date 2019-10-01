@@ -1012,8 +1012,7 @@ namespace PoeTradeSearch
                                             text = filter.Text,
                                             max = max,
                                             min = min,
-                                            disabled = true,
-                                            isImplicit = false
+                                            disabled = true
                                         };
 
                                         itemfilters.Add(itemfilter);
@@ -1054,6 +1053,7 @@ namespace PoeTradeSearch
                         ckSocket.IsChecked = link > 4;
                     }
 
+                    bool is_plague = false;
                     bool is_unIdentify = lItemOption[ResStr.Unidentify] == "_TRUE_";
                     bool is_map = lItemOption[ResStr.MaTier] != "";
                     bool is_gem = itemRarity == ResStr.Gem;
@@ -1089,7 +1089,10 @@ namespace PoeTradeSearch
                             itemType = itemType.Substring(3);
 
                         if (itemType.IndexOf(ResStr.Plagued + " ") == 0)
+                        {
+                            is_plague = true;
                             itemType = itemType.Substring(6);
+                        }
 
                         if (is_map && itemType.Length > 5 && itemType.Substring(0, 4) == ResStr.formed + " ")
                             itemType = itemType.Substring(4);
@@ -1181,10 +1184,11 @@ namespace PoeTradeSearch
                     }
                     else
                     {
+                        bool tmp_is_plague = is_plague;
                         int Imp_cnt = itemfilters.Count - (itemRarity == ResStr.Normal ? 0 : notImpCnt);
+
                         for (int i = 0; i < itemfilters.Count; i++)
                         {
-                            int selidx = -1;
                             Itemfilter ifilter = itemfilters[i];
 
                             if (i < Imp_cnt)
@@ -1195,22 +1199,24 @@ namespace PoeTradeSearch
                                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
                                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
                                 ((CheckBox)this.FindName("tbOpt" + i + "_3")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
+                                
+                                itemfilters[i].disabled = true;
 
                                 ((ComboBox)this.FindName("cbOpt" + i)).SelectedValue = ResStr.Enchant;
-                                selidx = ((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex;
-                                if (selidx == -1)
+
+                                if (((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex == -1)
                                 {
                                     ((ComboBox)this.FindName("cbOpt" + i)).SelectedValue = ResStr.Implicit;
-                                    selidx = ((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex;
+
+                                    if (tmp_is_plague && is_map && ((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex != -1)
+                                    {
+                                        ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = true;
+                                        itemfilters[i].disabled = false;
+                                        tmp_is_plague = false;
+                                    }
                                 }
-
-                                if (selidx != -1)
-                                    ((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex = selidx;
-
-                                itemfilters[i].isImplicit = true;
-                                itemfilters[i].disabled = true;
                             }
-                            else if (inherit != "" && selidx == -1 && (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue != ResStr.Crafted)
+                            else if (inherit != "" && (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue != ResStr.Crafted)
                             {
                                 if (
                                     (mConfigData.Options.AutoCheckUnique && itemRarity == ResStr.Unique)
