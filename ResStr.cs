@@ -16,6 +16,7 @@ namespace PoeTradeSearch
         internal static string ServerType = "";
 
         internal const string All = "모두";
+        internal const string Max = "최대";
 
         internal const string Rarity = "아이템 희귀도";
         internal const string Unique = "고유";

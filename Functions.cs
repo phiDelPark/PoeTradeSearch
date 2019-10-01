@@ -1338,6 +1338,16 @@ namespace PoeTradeSearch
                     tbLvMin.Text = Regex.Replace(lItemOption[is_gem ? ResStr.Lv : ResStr.ItemLv].Trim(), "[^0-9]", "");
                     tbQualityMin.Text = item_quality;
 
+                    if(is_gem)
+                    {
+                        ckLv.IsChecked = lItemOption[ResStr.Lv].IndexOf(" (" + ResStr.Max) > 1;
+                        ckQuality.IsChecked = ckLv.IsChecked == true && item_quality != "" && int.Parse(item_quality) > 19;
+                    }
+                    else if(by_type && itemRarity == ResStr.Normal)
+                    {
+                        ckLv.IsChecked = tbLvMin.Text != "" && int.Parse(tbLvMin.Text) > 82;
+                    }
+
                     bdDetail.Visibility = is_detail ? Visibility.Visible : Visibility.Hidden;
                     if (bdDetail.Visibility == Visibility.Visible)
                     {
@@ -1360,6 +1370,7 @@ namespace PoeTradeSearch
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                MessageBox.Show(String.Format("{0} 에러:  {1}\r\n\r\n{2}\r\n\r\n", ex.Source, ex.Message, ex.StackTrace), "에러", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
