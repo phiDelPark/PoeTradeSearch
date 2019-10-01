@@ -364,7 +364,7 @@ namespace PoeTradeSearch
 
             return success;
         }
-        
+
         private bool Setting()
         {
 #if DEBUG
@@ -669,8 +669,8 @@ namespace PoeTradeSearch
 
         protected void PriceUpdateThreadWorker(ItemOption itemOptions, string[] exchange)
         {
-            tkPriceTotal.Text = "";
             tkPrice1.Text = "시세 확인중...";
+            tkPriceTotal.Text = "";
             priceThread?.Abort();
             priceThread = new Thread(() => PriceUpdate(
                     exchange != null ? exchange : new string[1] { CreateJson(itemOptions) }
@@ -750,6 +750,9 @@ namespace PoeTradeSearch
             cbRarity.Items.Add(ResStr.Magic);
             cbRarity.Items.Add(ResStr.Rare);
             cbRarity.Items.Add(ResStr.Unique);
+
+            liPriceLayout.Visibility = Visibility.Hidden;
+            liPrice.Items.Clear();
 
             for (int i = 0; i < 10; i++)
             {
@@ -1199,7 +1202,7 @@ namespace PoeTradeSearch
                                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
                                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
                                 ((CheckBox)this.FindName("tbOpt" + i + "_3")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
-                                
+
                                 itemfilters[i].disabled = true;
 
                                 ((ComboBox)this.FindName("cbOpt" + i)).SelectedValue = ResStr.Enchant;
@@ -1338,12 +1341,12 @@ namespace PoeTradeSearch
                     tbLvMin.Text = Regex.Replace(lItemOption[is_gem ? ResStr.Lv : ResStr.ItemLv].Trim(), "[^0-9]", "");
                     tbQualityMin.Text = item_quality;
 
-                    if(is_gem)
+                    if (is_gem)
                     {
                         ckLv.IsChecked = lItemOption[ResStr.Lv].IndexOf(" (" + ResStr.Max) > 1;
                         ckQuality.IsChecked = ckLv.IsChecked == true && item_quality != "" && int.Parse(item_quality) > 19;
                     }
-                    else if(by_type && itemRarity == ResStr.Normal)
+                    else if (by_type && itemRarity == ResStr.Normal)
                     {
                         ckLv.IsChecked = tbLvMin.Text != "" && int.Parse(tbLvMin.Text) > 82;
                     }
@@ -1458,13 +1461,18 @@ namespace PoeTradeSearch
 
                                         if (fetchData.Result[i].Listing.Price != null && fetchData.Result[i].Listing.Price.Amount > 0)
                                         {
-                                            string key = "";
+                                            string key = fetchData.Result[i].Listing.Price.Currency;
                                             double amount = fetchData.Result[i].Listing.Price.Amount;
+
+                                            liPrice.Dispatcher.Invoke(new Action(delegate ()
+                                            {
+                                                liPrice.Items.Add(amount + " " + key);
+                                            }));
 
                                             if (entity.Length > 1)
                                                 key = amount < 1 ? Math.Round(1 / amount, 1) + " " + sent1 : Math.Round(amount, 1) + " " + sent0;
                                             else
-                                                key = Math.Round(amount - 0.1) + " " + fetchData.Result[i].Listing.Price.Currency;
+                                                key = Math.Round(amount - 0.1) + " " + key;
 
                                             if (currencys.ContainsKey(key))
                                                 currencys[key]++;

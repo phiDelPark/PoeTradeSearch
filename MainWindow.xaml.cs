@@ -402,7 +402,13 @@ namespace PoeTradeSearch
                 exchange[1] = ResStr.lExchangeCurrency[(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
             }
 
+            liPrice.Items.Clear();
             PriceUpdateThreadWorker(exchange != null ? null : GetItemOptions(), exchange);
+        }
+
+        private void Border_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            liPriceLayout.Visibility = liPriceLayout.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
         }
 
         private void TextBlock_MouseEnter(object sender, MouseEventArgs e)
@@ -419,10 +425,10 @@ namespace PoeTradeSearch
         {
             MessageBox.Show(Application.Current.MainWindow,
                 "버전: " + GetFileVersion() + " (D." + mConfigData.Options.DataVersion + ")" + '\n' +
-                "https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' +
-                "자주 묻는 질문들:" + '\n' +
-                "https://github.com/phiDelPark/PoeTradeSearch/wiki/Q-&-A" + '\n' + '\n' + '\n' +
-                "시세를 클릭하면 현재 옵션으로 다시 검색 합니다." + '\n' +
+                "https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' + '\n' +
+                "리그 선택은 옵션 파일에서 설정 가능합니다." + '\n' + '\n' + '\n' +
+                "시세를 좌클릭하면 현재 옵션으로 다시 검색 합니다." + '\n' +
+                "시세를 우클릭하면 시세를 더 상세히 보여줍니다." + '\n' + '\n' +
                 "시세정보) 총수. 최소값 ~ 최대값 = 많은[수] 1 ~ 2위" + '\n' + '\n' + '\n' +
                 "설정 파일에 설정된 단축키는 관리자 권한으로 실행해야 작동합니다.",
                 "POE 거래소 검색"
