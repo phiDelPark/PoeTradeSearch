@@ -2,10 +2,12 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Threading;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace PoeTradeSearch
 {
@@ -14,6 +16,28 @@ namespace PoeTradeSearch
     /// </summary>
     public partial class App : Application, IDisposable
     {
+        private string logFilePath;
+
+        private void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            RunException(e.Exception);
+            e.Handled = true;
+        }
+
+        private void RunException(Exception ex)
+        {
+            try
+            {
+                File.AppendAllText(logFilePath, String.Format("{0} Error:  {1}\r\n\r\n{2}\r\n\r\n", ex.Source, ex.Message, ex.StackTrace));
+            }
+            catch { }
+
+            if (ex.InnerException != null)
+                RunException(ex.InnerException);
+            else
+                Application.Current.Shutdown();
+        }
+
         private Mutex m_Mutex = null;
 
         protected virtual void Dispose(bool disposing)
@@ -43,8 +67,6 @@ namespace PoeTradeSearch
             if (!createdNew)
             {
                 MessageBox.Show("애플리케이션이 이미 시작되었습니다.", "중복 실행", MessageBoxButton.OK, MessageBoxImage.Information);
-                //m_Mutex = null;
-                //Application.Current.Shutdown();
                 Environment.Exit(-1);
                 return;
             }
@@ -84,6 +106,12 @@ namespace PoeTradeSearch
                 return;
             }
 
+            logFilePath = Assembly.GetExecutingAssembly().Location;
+            logFilePath = logFilePath.Remove(logFilePath.Length - 4) + ".log";
+
+            if (File.Exists(logFilePath)) File.Delete(logFilePath);
+
+            Application.Current.DispatcherUnhandledException += AppDispatcherUnhandledException;
             base.OnStartup(e);
         }
 
