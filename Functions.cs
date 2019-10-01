@@ -627,7 +627,19 @@ namespace PoeTradeSearch
                                     string tmp = regex.Replace(shortcut.Value, "" + '\n');
                                     string[] strs = tmp.Trim().Split('\n');
                                     if (strs.Length > 0)
+                                    {
+                                        if (this.Visibility == Visibility.Visible)
+                                        {
+                                            strs[0] = strs[0].Replace("{item_uri}",
+                                                 (
+                                                    (string)cbRarity.SelectedValue == ResStr.Unique && mItemBaseName.NameEN != "" 
+                                                    ? mItemBaseName.NameEN : mItemBaseName.TypeEN).Replace(' ', '_')
+                                            );
+                                        }
+                                        else
+                                            strs[0] = strs[0].Replace("{item_uri}", "");
                                         Process.Start(strs[0]);
+                                    }
                                 }
                                 else if (valueLower.IndexOf(".jpg") > 0)
                                 {
@@ -1466,7 +1478,10 @@ namespace PoeTradeSearch
 
                                             liPrice.Dispatcher.Invoke(new Action(delegate ()
                                             {
-                                                liPrice.Items.Add(amount + " " + key);
+                                                if (entity.Length > 1)
+                                                    liPrice.Items.Add(Math.Round(1 / amount, 5) + " " + sent1 + "  <->  " + Math.Round(amount, 5) + " " + sent0);
+                                                else
+                                                    liPrice.Items.Add(amount + " " + key);
                                             }));
 
                                             if (entity.Length > 1)
