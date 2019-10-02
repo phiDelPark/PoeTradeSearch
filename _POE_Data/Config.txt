@@ -4,8 +4,8 @@
 			"server":"ko",
 			"server_timeout":5,
 			"server_redirect":false,
-			"search_before_day":7,
 			"search_by_type":false,
+			"search_before_day":7,
 			"auto_select_pseudo":true,
 			"auto_check_unique":true,
 			"ctrl_wheel":false,
@@ -21,7 +21,7 @@
 			{"keycode":122,"value":"{Pause}","Detail":"일시 중지 (F11)"},
 			{"keycode":27,"value":"{Close}","Detail":"창 닫기 (ESC)"},
 			{"keycode":78,"ctrl":true,"value":"{Link}https://poe.ninja/{Link}","Detail":"닌자 열기 (Ctrl+N)"},
-			{"keycode":72,"ctrl":true,"value":"{Link}https://pathofexile.gamepedia.com/{item_uri}{Link}","Detail":"위키 열기 (Ctrl+H)"},
+			{"keycode":72,"ctrl":true,"value":"{Wiki}","Detail":"위키 열기 (Ctrl+H)"},
 			{"keycode":0,"ctrl":true,"value":"{Run}","Detail":"작동키 변경은 키코드 0을 원하는 키코드로 바꾸면 됨 (Ctrl+설정키)"}
 		],
 	"checked":[

@@ -287,7 +287,7 @@ namespace PoeTradeSearch
         internal class q_Type_filters
         {
             [DataMember(Name = "filters")]
-            internal q_Type_filters_filters type_filters_filters = new q_Type_filters_filters();
+            internal q_Type_filters_filters Filters = new q_Type_filters_filters();
         }
 
         [DataContract]
@@ -307,7 +307,7 @@ namespace PoeTradeSearch
             internal bool Disabled = false;
 
             [DataMember(Name = "filters")]
-            internal q_Socket_filters_filters socket_filters_filters = new q_Socket_filters_filters();
+            internal q_Socket_filters_filters Filters = new q_Socket_filters_filters();
         }
 
         [DataContract]
@@ -339,7 +339,7 @@ namespace PoeTradeSearch
             internal bool Disabled = false;
 
             [DataMember(Name = "filters")]
-            internal q_Misc_filters_filters misc_filters_filters = new q_Misc_filters_filters();
+            internal q_Misc_filters_filters Filters = new q_Misc_filters_filters();
         }
 
         [DataContract]
@@ -356,23 +356,23 @@ namespace PoeTradeSearch
             internal bool Disabled = false;
 
             [DataMember(Name = "filters")]
-            internal q_Trade_filters_filters trade_filters_filters = new q_Trade_filters_filters();
+            internal q_Trade_filters_filters Filters = new q_Trade_filters_filters();
         }
 
         [DataContract]
         internal class q_Filters
         {
             [DataMember(Name = "type_filters")]
-            internal q_Type_filters Type_filters = new q_Type_filters();
+            internal q_Type_filters Type = new q_Type_filters();
 
             [DataMember(Name = "misc_filters")]
-            internal q_Misc_filters Misc_filters = new q_Misc_filters();
+            internal q_Misc_filters Misc = new q_Misc_filters();
 
             [DataMember(Name = "socket_filters")]
-            internal q_Socket_filters Socket_filters;
+            internal q_Socket_filters Socket;
 
             [DataMember(Name = "trade_filters")]
-            internal q_Trade_filters Trade_filters;
+            internal q_Trade_filters Trade;
         }
 
         [DataContract]

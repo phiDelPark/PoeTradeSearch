@@ -509,6 +509,7 @@ namespace PoeTradeSearch
         }
 
         private bool mHotkeyProcBlock = false;
+        private bool mClipboardBlock = false;        
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
@@ -516,12 +517,12 @@ namespace PoeTradeSearch
             {
                 IntPtr findHwnd = NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption);
 
-                if (!mIsPause && NativeMethods.GetForegroundWindow().Equals(findHwnd))
+                if (!mIsPause && !mClipboardBlock && NativeMethods.GetForegroundWindow().Equals(findHwnd))
                 {
                     try
                     {
                         if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
-                            ShowWindow(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)));
+                            ItemTextParser(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)));
                     }
                     catch (Exception ex)
                     {
@@ -590,20 +591,29 @@ namespace PoeTradeSearch
                             }
                             else if (!mIsPause)
                             {
-                                if (valueLower == "{run}")
+                                if (valueLower == "{run}" || valueLower == "{wiki}")
                                 {
-                                    System.Windows.Forms.SendKeys.SendWait("^{c}");
+                                    mClipboardBlock = true;
 
+                                    System.Windows.Forms.SendKeys.SendWait("^{c}");
                                     Thread.Sleep(300);
+
                                     try
                                     {
                                         if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
-                                            ShowWindow(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)));
+                                        {
+                                            ItemTextParser(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)), valueLower != "{wiki}");
+
+                                            if (valueLower == "{wiki}")
+                                                Button_Click_4(null, new RoutedEventArgs());
+                                        }
                                     }
                                     catch (Exception ex)
                                     {
                                         Console.WriteLine(ex.Message);
                                     }
+
+                                    mClipboardBlock = false;
                                 }
                                 else if (valueLower.IndexOf("{enter}") == 0)
                                 {
@@ -626,20 +636,7 @@ namespace PoeTradeSearch
                                     Regex regex = new Regex(@"{link}", RegexOptions.IgnoreCase);
                                     string tmp = regex.Replace(shortcut.Value, "" + '\n');
                                     string[] strs = tmp.Trim().Split('\n');
-                                    if (strs.Length > 0)
-                                    {
-                                        if (this.Visibility == Visibility.Visible)
-                                        {
-                                            strs[0] = strs[0].Replace("{item_uri}",
-                                                 (
-                                                    (string)cbRarity.SelectedValue == ResStr.Unique && mItemBaseName.NameEN != "" 
-                                                    ? mItemBaseName.NameEN : mItemBaseName.TypeEN).Replace(' ', '_')
-                                            );
-                                        }
-                                        else
-                                            strs[0] = strs[0].Replace("{item_uri}", "");
-                                        Process.Start(strs[0]);
-                                    }
+                                    if (strs.Length > 0) Process.Start(strs[0]);
                                 }
                                 else if (valueLower.IndexOf(".jpg") > 0)
                                 {
@@ -804,7 +801,7 @@ namespace PoeTradeSearch
             return dps;
         }
 
-        private void ShowWindow(string sText)
+        private void ItemTextParser(string sText, bool isWinShow = true)
         {
             string itemName = "";
             string itemType = "";
@@ -1335,9 +1332,9 @@ namespace PoeTradeSearch
                     mItemBaseName.TypeKR = itemType; // + (matchType == null ? "" : matchType.Value);
 
                     if (ResStr.ServerLang == 1)
-                        cbName.Content = mItemBaseName.NameEN + " " + mItemBaseName.TypeEN;
+                        cbName.Content = (mItemBaseName.NameEN + " " + mItemBaseName.TypeEN).Trim();
                     else
-                        cbName.Content = Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "");
+                        cbName.Content = (Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "")).Trim();
 
                     cbName.IsChecked = (itemRarity != ResStr.Rare && itemRarity != ResStr.Magic) || !(by_type && mConfigData.Options.SearchByType);
 
@@ -1355,7 +1352,7 @@ namespace PoeTradeSearch
 
                     if (is_gem)
                     {
-                        ckLv.IsChecked = lItemOption[ResStr.Lv].IndexOf(" (" + ResStr.Max) > 1;
+                        ckLv.IsChecked = lItemOption[ResStr.Lv].IndexOf(" (" + ResStr.Max) > 0;
                         ckQuality.IsChecked = ckLv.IsChecked == true && item_quality != "" && int.Parse(item_quality) > 19;
                     }
                     else if (by_type && itemRarity == ResStr.Normal)
@@ -1373,13 +1370,16 @@ namespace PoeTradeSearch
 
                     bdExchange.Visibility = is_detail && IsExchangeCurrency ? Visibility.Visible : Visibility.Hidden;
 
-                    PriceUpdateThreadWorker(GetItemOptions(), null);
+                    if (isWinShow)
+                    {
+                        PriceUpdateThreadWorker(GetItemOptions(), null);
 
-                    this.ShowActivated = false;
-                    this.Visibility = Visibility.Visible;
+                        tkPrice1.Foreground = System.Windows.SystemColors.WindowTextBrush;
+                        tkPriceTotal.Foreground = System.Windows.SystemColors.WindowTextBrush;
 
-                    tkPrice1.Foreground = System.Windows.SystemColors.WindowTextBrush;
-                    tkPriceTotal.Foreground = System.Windows.SystemColors.WindowTextBrush;
+                        this.ShowActivated = false;
+                        this.Visibility = Visibility.Visible;
+                    }
                 }
             }
             catch (Exception ex)
@@ -1648,53 +1648,55 @@ namespace PoeTradeSearch
                 {
                     JsonData jsonData = new JsonData();
                     jsonData.Query = new q_Query();
+                    q_Query JQ = jsonData.Query;
 
-                    jsonData.Query.Name = ResStr.ServerLang == 1 ? mItemBaseName.NameEN : mItemBaseName.NameKR;
-                    jsonData.Query.Type = ResStr.ServerLang == 1 ? mItemBaseName.TypeEN : mItemBaseName.TypeKR;
+                    JQ.Name = ResStr.ServerLang == 1 ? mItemBaseName.NameEN : mItemBaseName.NameKR;
+                    JQ.Type = ResStr.ServerLang == 1 ? mItemBaseName.TypeEN : mItemBaseName.TypeKR;
 
                     string Inherit = mItemBaseName.Inherits.Length > 0 ? mItemBaseName.Inherits[0] : "";
 
-                    jsonData.Query.Stats = new q_Stats[0];
-                    jsonData.Query.Status.Option = "online";
+                    JQ.Stats = new q_Stats[0];
+                    JQ.Status.Option = "online";
+
                     jsonData.Sort.Price = "asc";
 
-                    jsonData.Query.Filters.Type_filters.type_filters_filters.Rarity.Option = "any";
-                    jsonData.Query.Filters.Type_filters.type_filters_filters.Category.Option = "any";
+                    JQ.Filters.Type.Filters.Rarity.Option = "any";
+                    JQ.Filters.Type.Filters.Category.Option = "any";
 
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Elder.Option = itemOptions.Elder == true ? "true" : "any";
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Shaper.Option = itemOptions.Shaper == true ? "true" : "any";
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Corrupted.Option = itemOptions.Corrupt == true ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Elder.Option = itemOptions.Elder == true ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Shaper.Option = itemOptions.Shaper == true ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Corrupted.Option = itemOptions.Corrupt == true ? "true" : "any";
 
-                    jsonData.Query.Filters.Trade_filters = new q_Trade_filters();
-                    jsonData.Query.Filters.Trade_filters.Disabled = mConfigData.Options.SearchBeforeDay == 0;
-                    jsonData.Query.Filters.Trade_filters.trade_filters_filters.Indexed.Option = BeforeDayToString(mConfigData.Options.SearchBeforeDay);
+                    JQ.Filters.Trade = new q_Trade_filters();
+                    JQ.Filters.Trade.Disabled = mConfigData.Options.SearchBeforeDay == 0;
+                    JQ.Filters.Trade.Filters.Indexed.Option = BeforeDayToString(mConfigData.Options.SearchBeforeDay);
 
-                    jsonData.Query.Filters.Socket_filters = new q_Socket_filters();
-                    jsonData.Query.Filters.Socket_filters.Disabled = itemOptions.ChkSocket != true;
+                    JQ.Filters.Socket = new q_Socket_filters();
+                    JQ.Filters.Socket.Disabled = itemOptions.ChkSocket != true;
 
-                    jsonData.Query.Filters.Socket_filters.socket_filters_filters.Links.Min = itemOptions.LinkMin;
-                    jsonData.Query.Filters.Socket_filters.socket_filters_filters.Links.Max = itemOptions.LinkMax;
-                    jsonData.Query.Filters.Socket_filters.socket_filters_filters.Sockets.Min = itemOptions.SocketMin;
-                    jsonData.Query.Filters.Socket_filters.socket_filters_filters.Sockets.Max = itemOptions.SocketMax;
+                    JQ.Filters.Socket.Filters.Links.Min = itemOptions.LinkMin;
+                    JQ.Filters.Socket.Filters.Links.Max = itemOptions.LinkMax;
+                    JQ.Filters.Socket.Filters.Sockets.Min = itemOptions.SocketMin;
+                    JQ.Filters.Socket.Filters.Sockets.Max = itemOptions.SocketMax;
 
-                    jsonData.Query.Filters.Misc_filters.Disabled = !(
+                    JQ.Filters.Misc.Disabled = !(
                         itemOptions.ChkQuality == true || itemOptions.ChkLv == true || itemOptions.Elder == true || itemOptions.Shaper == true || itemOptions.Corrupt == true
                     );
 
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Quality.Min = itemOptions.ChkQuality == true ? itemOptions.QualityMin : 99999;
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Quality.Max = itemOptions.ChkQuality == true ? itemOptions.QualityMax : 99999;
+                    JQ.Filters.Misc.Filters.Quality.Min = itemOptions.ChkQuality == true ? itemOptions.QualityMin : 99999;
+                    JQ.Filters.Misc.Filters.Quality.Max = itemOptions.ChkQuality == true ? itemOptions.QualityMax : 99999;
 
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Ilvl.Min = itemOptions.ChkLv != true || Inherit == "Gems" ? 99999 : itemOptions.LvMin;
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Ilvl.Max = itemOptions.ChkLv != true || Inherit == "Gems" ? 99999 : itemOptions.LvMax;
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Gem_level.Min = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMin : 99999;
-                    jsonData.Query.Filters.Misc_filters.misc_filters_filters.Gem_level.Max = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMax : 99999;
+                    JQ.Filters.Misc.Filters.Ilvl.Min = itemOptions.ChkLv != true || Inherit == "Gems" ? 99999 : itemOptions.LvMin;
+                    JQ.Filters.Misc.Filters.Ilvl.Max = itemOptions.ChkLv != true || Inherit == "Gems" ? 99999 : itemOptions.LvMax;
+                    JQ.Filters.Misc.Filters.Gem_level.Min = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMin : 99999;
+                    JQ.Filters.Misc.Filters.Gem_level.Max = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMax : 99999;
 
                     if (itemOptions.itemfilters.Count > 0)
                     {
-                        jsonData.Query.Stats = new q_Stats[1];
-                        jsonData.Query.Stats[0] = new q_Stats();
-                        jsonData.Query.Stats[0].Type = "and";
-                        jsonData.Query.Stats[0].Filters = new q_Stats_filters[itemOptions.itemfilters.Count];
+                        JQ.Stats = new q_Stats[1];
+                        JQ.Stats[0] = new q_Stats();
+                        JQ.Stats[0].Type = "and";
+                        JQ.Stats[0].Filters = new q_Stats_filters[itemOptions.itemfilters.Count];
 
                         int idx = 0;
                         for (int i = 0; i < itemOptions.itemfilters.Count; i++)
@@ -1757,12 +1759,12 @@ namespace PoeTradeSearch
                                 {
                                     if (filter.ID != null && filter.ID.Trim() != "")
                                     {
-                                        jsonData.Query.Stats[0].Filters[idx] = new q_Stats_filters();
-                                        jsonData.Query.Stats[0].Filters[idx].Value = new q_Min_And_Max();
-                                        jsonData.Query.Stats[0].Filters[idx].Disabled = itemOptions.itemfilters[i].disabled == true;
-                                        jsonData.Query.Stats[0].Filters[idx].Value.Min = itemOptions.itemfilters[i].min;
-                                        jsonData.Query.Stats[0].Filters[idx].Value.Max = itemOptions.itemfilters[i].max;
-                                        jsonData.Query.Stats[0].Filters[idx++].Id = filter.ID;
+                                        JQ.Stats[0].Filters[idx] = new q_Stats_filters();
+                                        JQ.Stats[0].Filters[idx].Value = new q_Min_And_Max();
+                                        JQ.Stats[0].Filters[idx].Disabled = itemOptions.itemfilters[i].disabled == true;
+                                        JQ.Stats[0].Filters[idx].Value.Min = itemOptions.itemfilters[i].min;
+                                        JQ.Stats[0].Filters[idx].Value.Max = itemOptions.itemfilters[i].max;
+                                        JQ.Stats[0].Filters[idx++].Id = filter.ID;
                                     }
                                 }
                             }
@@ -1810,25 +1812,25 @@ namespace PoeTradeSearch
                             }
                         }
 
-                        jsonData.Query.Filters.Type_filters.type_filters_filters.Category.Option = option;
+                        JQ.Filters.Type.Filters.Category.Option = option;
                     }
 
-                    jsonData.Query.Filters.Type_filters.type_filters_filters.Rarity.Option = "any";
+                    JQ.Filters.Type.Filters.Rarity.Option = "any";
                     if (ResStr.lRarity.ContainsKey(itemOptions.Rarity))
                     {
-                        jsonData.Query.Filters.Type_filters.type_filters_filters.Rarity.Option = ResStr.lRarity[itemOptions.Rarity];
+                        JQ.Filters.Type.Filters.Rarity.Option = ResStr.lRarity[itemOptions.Rarity];
                     }
 
                     string sEntity = Json.Serialize<JsonData>(jsonData);
 
-                    if (itemOptions.ByType || jsonData.Query.Name == "" || itemOptions.Rarity != ResStr.Unique)
+                    if (itemOptions.ByType || JQ.Name == "" || itemOptions.Rarity != ResStr.Unique)
                     {
-                        sEntity = sEntity.Replace("\"name\":\"" + jsonData.Query.Name + "\",", "");
+                        sEntity = sEntity.Replace("\"name\":\"" + JQ.Name + "\",", "");
 
                         if (Inherit == "Jewels" || itemOptions.ByType)
-                            sEntity = sEntity.Replace("\"type\":\"" + jsonData.Query.Type + "\",", "");
+                            sEntity = sEntity.Replace("\"type\":\"" + JQ.Type + "\",", "");
                         else if (Inherit == "Prophecies")
-                            sEntity = sEntity.Replace("\"type\":\"" + jsonData.Query.Type + "\",", "\"name\":\"" + jsonData.Query.Type + "\",");
+                            sEntity = sEntity.Replace("\"type\":\"" + JQ.Type + "\",", "\"name\":\"" + JQ.Type + "\",");
                     }
 
                     sEntity = sEntity.Replace("{\"max\":99999,\"min\":99999}", "{}");
@@ -1854,7 +1856,7 @@ namespace PoeTradeSearch
         private void InstallRegisterHotKey()
         {
             mIsHotKey = true;
-            // 0x0 : 조합키 없이 사용, 0x1: ALT, 0x2: Ctrl, 0x3: Shift
+            // 0x0: None, 0x1: Alt, 0x2: Ctrl, 0x3: Shift
             for (int i = 0; i < mConfigData.Shortcuts.Length; i++)
             {
                 ConfigShortcut shortcut = mConfigData.Shortcuts[i];

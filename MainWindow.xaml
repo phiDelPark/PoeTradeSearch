@@ -159,12 +159,25 @@
         <Button Content="영" HorizontalAlignment="Left" Margin="245,479,0,-2" VerticalAlignment="Top" Height="19" Width="19" Tag="1" Click="Button_Click_2" />
         <Button Name="btnClose" Content="닫기" HorizontalAlignment="Left" Margin="290,460,0,-5" VerticalAlignment="Top" Width="95" Height="38" Click="Button_Click_1" IsDefault="True" />
 
+        <Button Content="Wiki"  HorizontalAlignment="Left" Height="20" Margin="307,1,0,0" VerticalAlignment="Top" Width="50" Click="Button_Click_4" >
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="9"/>
+                </Style>
+            </Button.Resources>
+        </Button>
+        
+        <Button Content="?"  HorizontalAlignment="Left" Height="20" Margin="365,1,0,0" VerticalAlignment="Top" Width="20" Click="Button_Click_3" >
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="9"/>
+                </Style>
+            </Button.Resources>
+        </Button>
+        
         <Border BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" BorderThickness="1" HorizontalAlignment="Left" Height="1" Margin="0,76,0,0" VerticalAlignment="Top" Width="385" RenderTransformOrigin="0.5,0.5" />
         <Border BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" BorderThickness="1" HorizontalAlignment="Left" Height="1" Margin="0,352,0,0" VerticalAlignment="Top" Width="385" RenderTransformOrigin="0.5,0.5" />
         <Border BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" BorderThickness="1" HorizontalAlignment="Left" Height="1" Margin="0,405,0,0" VerticalAlignment="Top" Width="385" RenderTransformOrigin="0.5,0.5" />
-
-        <Ellipse HorizontalAlignment="Left" Height="20" Margin="365,1,0,0" Stroke="CadetBlue" VerticalAlignment="Top" Width="20" />
-        <TextBlock Text="?" HorizontalAlignment="Left" Margin="367,2,0,0" VerticalAlignment="Top" FontWeight="Bold" TextAlignment="Center" Height="17" Width="17" MouseDown="TextBlock_MouseDown" Cursor="Hand" FontFamily="Malgun Gothic" MouseEnter="TextBlock_MouseEnter" MouseLeave="TextBlock_MouseLeave" />
 
         <Border Name="bdDetail" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" BorderThickness="0,1,0,0" Margin="0,60,0,91" Width="385" Visibility="Hidden">
             <TextBlock Name="tkDetail" TextWrapping="Wrap" Text="TextBlock" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Padding="5" />

@@ -70,8 +70,8 @@ namespace PoeTradeSearch
                                 ) == MessageBoxResult.Yes
                             )
                             {
-                            //Application.Current.Shutdown();
-                            mTerminate = true;
+                                //Application.Current.Shutdown();
+                                mTerminate = true;
                                 Close();
                             }
                             break;
@@ -349,7 +349,7 @@ namespace PoeTradeSearch
             ResStr.ServerLang = byte.Parse((string)((Button)sender).Tag);
 
             if (ResStr.ServerLang == 0)
-                cbName.Content = Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "");
+                cbName.Content = (Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "")).Trim();
             else
                 cbName.Content = (mItemBaseName.NameEN + " " + mItemBaseName.TypeEN).Trim();
 
@@ -411,30 +411,6 @@ namespace PoeTradeSearch
             liPriceLayout.Visibility = liPriceLayout.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
         }
 
-        private void TextBlock_MouseEnter(object sender, MouseEventArgs e)
-        {
-            ((TextBlock)sender).Foreground = System.Windows.SystemColors.HighlightBrush;
-        }
-
-        private void TextBlock_MouseLeave(object sender, MouseEventArgs e)
-        {
-            ((TextBlock)sender).Foreground = System.Windows.SystemColors.WindowTextBrush;
-        }
-
-        private void TextBlock_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            MessageBox.Show(Application.Current.MainWindow,
-                "버전: " + GetFileVersion() + " (D." + mConfigData.Options.DataVersion + ")" + '\n' +
-                "https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' + '\n' +
-                "리그 선택은 옵션 파일에서 설정 가능합니다." + '\n' + '\n' + '\n' +
-                "시세를 좌클릭하면 현재 옵션으로 다시 검색 합니다." + '\n' +
-                "시세를 우클릭하면 시세를 더 상세히 보여줍니다." + '\n' + '\n' +
-                "시세정보) 총수. 최소값 ~ 최대값 = 많은[수] 1 ~ 2위" + '\n' + '\n' + '\n' +
-                "설정 파일에 설정된 단축키는 관리자 권한으로 실행해야 작동합니다.",
-                "POE 거래소 검색"
-                );
-        }
-
         private void tkPrice_ReSet(object sender, RoutedEventArgs e)
         {
             tkPrice1.Foreground = System.Windows.Media.Brushes.DeepPink;
@@ -445,6 +421,36 @@ namespace PoeTradeSearch
         {
             tkPrice1.Foreground = System.Windows.Media.Brushes.DeepPink;
             tkPriceTotal.Foreground = System.Windows.Media.Brushes.DeepPink;
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(
+                    "https://pathofexile.gamepedia.com/" +
+                    ((string)cbRarity.SelectedValue == ResStr.Unique && mItemBaseName.NameEN != ""
+                    ? mItemBaseName.NameEN : mItemBaseName.TypeEN).Replace(' ', '_')
+                );
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(Application.Current.MainWindow, "해당 아이템의 위키 연결에 실패했습니다.", "에러");
+            }
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(Application.Current.MainWindow,
+                "버전: " + GetFileVersion() + " (D." + mConfigData.Options.DataVersion + ")" + '\n' +
+                "https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' + '\n' +
+                "리그 선택은 설정 파일에서 설정 가능합니다." + '\n' + '\n' + '\n' +
+                "시세를 좌클릭하면 현재 옵션으로 다시 검색 합니다." + '\n' +
+                "시세를 우클릭하면 시세를 더 상세히 보여줍니다. (토글)" + '\n' + '\n' +
+                "시세정보) 총수. 최소값 ~ 최대값 = 많은[수] 1 ~ 2위" + '\n' + '\n' + '\n' +
+                "설정 파일에 설정된 단축키는 관리자 권한으로 실행해야 작동합니다.",
+                "POE 거래소 검색"
+                );
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
