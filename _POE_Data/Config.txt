@@ -6,6 +6,7 @@
 			"server_redirect":false,
 			"search_by_type":false,
 			"search_before_day":7,
+			"search_price_count":20,
 			"auto_select_pseudo":true,
 			"auto_check_unique":true,
 			"ctrl_wheel":false,

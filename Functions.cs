@@ -1426,7 +1426,7 @@ namespace PoeTradeSearch
 
                         if (resultData.Result.Length > 0)
                         {
-                            int xcnt = entity.Length > 1 ? 6 : 4;
+                            int xcnt = entity.Length > 1 ? 6 : (int)Math.Ceiling(mConfigData.Options.SearchPriceCount / 5);
                             string sent0 = entity.Length > 1 ? Regex.Replace(entity[0], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2") : "";
                             string sent1 = entity.Length > 1 ? Regex.Replace(entity[1], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2") : "";
 

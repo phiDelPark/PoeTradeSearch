@@ -75,6 +75,8 @@ namespace PoeTradeSearch
             internal bool ServerRedirect = false;
             [DataMember(Name = "server_useragent")]
             internal string ServerUseragent = null;
+            [DataMember(Name = "search_price_count")]
+            internal decimal SearchPriceCount = 20;
             [DataMember(Name = "search_before_day")]
             internal int SearchBeforeDay = 0;
             [DataMember(Name = "search_by_type")]
