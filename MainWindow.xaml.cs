@@ -23,7 +23,8 @@ namespace PoeTradeSearch
         private List<BaseResultData> mBaseDatas = null;
         private List<WordeResultData> mWordDatas = null;
         private List<BaseResultData> mProphecyDatas = null;
-
+        private List<BaseResultData> mMonsterDatas = null;
+        
         private ConfigData mConfigData;
         private FilterData mFilterData;
 

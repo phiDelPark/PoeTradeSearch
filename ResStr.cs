@@ -48,10 +48,12 @@ namespace PoeTradeSearch
         internal const string Elder = "엘더 아이템";
         internal const string Synthesis = "결합된 아이템";
         internal const string Synthesised = "결합된";
+        internal const string Captured = "포획한 야수";
 
         internal const string ChkProphecy = "우클릭으로 이 예언을 캐릭터에 추가하십시오.";
         internal const string ChkMapFragment = "템플러의 실험실이나 전용 지도 장치에서";
         internal const string ChkFlask = "마시려면 우클릭하십시오. 허리띠에 장착 중일 때만 충전이 유지됩니다.";
+        internal const string ChkBeast = "우클릭으로 이것을 야수 도감에 추가하십시오.";
 
         internal const string SClickSplitItem = "Shift + 클릭으로 아이템 나누기";    
 
