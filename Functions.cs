@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Json;
@@ -1436,9 +1437,15 @@ namespace PoeTradeSearch
 
                         if (resultData.Result.Length > 0)
                         {
-                            int xcnt = entity.Length > 1 ? 6 : (int)Math.Ceiling(mConfigData.Options.SearchPriceCount / 5);
-                            string sent0 = entity.Length > 1 ? Regex.Replace(entity[0], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2") : "";
-                            string sent1 = entity.Length > 1 ? Regex.Replace(entity[1], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2") : "";
+                            int xcnt = (int)Math.Ceiling(mConfigData.Options.SearchPriceCount / 5);
+                            string ents0 = "", ents1 = "";
+
+                            if (entity.Length > 1)
+                            {
+                                xcnt = 6;
+                                ents0 = Regex.Replace(entity[0], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
+                                ents1 = Regex.Replace(entity[1], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
+                            }
 
                             for (int x = 0; x < xcnt; x++)
                             {
@@ -1485,17 +1492,22 @@ namespace PoeTradeSearch
                                         {
                                             string key = fetchData.Result[i].Listing.Price.Currency;
                                             double amount = fetchData.Result[i].Listing.Price.Amount;
+                                            string keyName = ResStr.lExchangeCurrency.ContainsValue(key) ? ResStr.lExchangeCurrency.FirstOrDefault(o => o.Value == key).Key : key;
 
                                             liPrice.Dispatcher.Invoke(new Action(delegate ()
                                             {
                                                 if (entity.Length > 1)
-                                                    liPrice.Items.Add(Math.Round(1 / amount, 5) + " " + sent1 + "  <->  " + Math.Round(amount, 5) + " " + sent0);
+                                                {
+                                                    string tName2 = ResStr.lExchangeCurrency.ContainsValue(entity[1]) 
+                                                                    ? ResStr.lExchangeCurrency.FirstOrDefault(o => o.Value == entity[1]).Key : entity[1];
+                                                    liPrice.Items.Add(Math.Round(1 / amount, 4) + " " + tName2 + " <-> " + Math.Round(amount, 4) + " " + keyName);
+                                                }
                                                 else
-                                                    liPrice.Items.Add(amount + " " + key);
+                                                    liPrice.Items.Add(amount + " " + keyName);
                                             }));
 
                                             if (entity.Length > 1)
-                                                key = amount < 1 ? Math.Round(1 / amount, 1) + " " + sent1 : Math.Round(amount, 1) + " " + sent0;
+                                                key = amount < 1 ? Math.Round(1 / amount, 1) + " " + ents1 : Math.Round(amount, 1) + " " + ents0;
                                             else
                                                 key = Math.Round(amount - 0.1) + " " + key;
 
@@ -1849,7 +1861,7 @@ namespace PoeTradeSearch
                     sEntity = sEntity.Replace("{\"max\":99999,", "{");
                     sEntity = sEntity.Replace(",\"min\":99999}", "}");
 
-                    sEntity = Regex.Replace(sEntity, "\"(rarity|category|corrupted|elder_item|shaper_item)\":{\"option\":\"any\"},?", "");
+                    sEntity = Regex.Replace(sEntity, "\"(rarity|category|corrupted|elder_item|shaper_item|synthesised_item)\":{\"option\":\"any\"},?", "");
 
                     return sEntity.Replace("},}", "}}");
                 }

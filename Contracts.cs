@@ -21,7 +21,7 @@ namespace PoeTradeSearch
         {
             public bool Elder;
             public bool Shaper;
-            public bool Synthesis;            
+            public bool Synthesis;
             public byte Corrupt;
             public bool ByType;
             public bool ChkSocket;
@@ -46,6 +46,7 @@ namespace PoeTradeSearch
             public string TypeKR;
             public string NameEN;
             public string TypeEN;
+
             //public string Rarity;
             public string[] Inherits;
         }
@@ -68,41 +69,56 @@ namespace PoeTradeSearch
         {
             [DataMember(Name = "league")]
             internal string League = null;
+
             [DataMember(Name = "server")]
             internal string Server = null;
+
             [DataMember(Name = "server_timeout")]
             internal int ServerTimeout = 0;
+
             [DataMember(Name = "server_redirect")]
             internal bool ServerRedirect = false;
+
             [DataMember(Name = "server_useragent")]
             internal string ServerUseragent = null;
+
             [DataMember(Name = "search_price_count")]
             internal decimal SearchPriceCount = 20;
+
             [DataMember(Name = "search_before_day")]
             internal int SearchBeforeDay = 0;
+
             [DataMember(Name = "search_by_type")]
             internal bool SearchByType = false;
+
             [DataMember(Name = "auto_select_pseudo")]
             internal bool AutoSelectPseudo = false;
+
             [DataMember(Name = "auto_check_unique")]
             internal bool AutoCheckUnique = false;
+
             [DataMember(Name = "ctrl_wheel")]
             internal bool CtrlWheel = false;
+
             [DataMember(Name = "check_updates")]
             internal bool CheckUpdates = false;
+
             [DataMember(Name = "data_version")]
             internal string DataVersion = null;
-        }        
+        }
 
         [DataContract(Name = "shortcuts")]
         internal class ConfigShortcut
         {
             [DataMember(Name = "keycode")]
             internal int Keycode = 0;
+
             [DataMember(Name = "value")]
             internal string Value = null;
+
             [DataMember(Name = "position")]
             internal string Position = null;
+
             [DataMember(Name = "ctrl")]
             internal bool Ctrl = false;
         }
@@ -112,6 +128,7 @@ namespace PoeTradeSearch
         {
             [DataMember(Name = "id")]
             internal string ID = null;
+
             [DataMember(Name = "text")]
             internal string Text = null;
         }

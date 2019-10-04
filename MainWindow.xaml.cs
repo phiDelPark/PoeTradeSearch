@@ -451,6 +451,8 @@ namespace PoeTradeSearch
                 "설정 파일에 설정된 단축키는 관리자 권한으로 실행해야 작동합니다.",
                 "POE 거래소 검색"
                 );
+
+            NativeMethods.SetForegroundWindow(NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
