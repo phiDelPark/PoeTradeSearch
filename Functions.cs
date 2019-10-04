@@ -680,6 +680,7 @@ namespace PoeTradeSearch
         {
             tkPrice1.Text = "시세 확인중...";
             tkPriceTotal.Text = "";
+            priceThread?.Interrupt();
             priceThread?.Abort();
             priceThread = new Thread(() => PriceUpdate(
                     exchange != null ? exchange : new string[1] { CreateJson(itemOptions) }
@@ -736,9 +737,8 @@ namespace PoeTradeSearch
             ckSocket.IsChecked = false;
             ckElder.IsChecked = false;
             ckShaper.IsChecked = false;
-            ckCorrupt.IsChecked = false;
-            ckCorrupt.FontWeight = FontWeights.Normal;
-            ckCorrupt.Foreground = SystemColors.WindowTextBrush;
+            cbCorrupt.SelectedIndex = 0;
+            cbCorrupt.BorderThickness = new Thickness(1);
 
             cbOrbs.SelectionChanged -= CbOrbs_SelectionChanged;
             cbSplinters.SelectionChanged -= CbOrbs_SelectionChanged;
@@ -836,7 +836,7 @@ namespace PoeTradeSearch
                     {
                         { ResStr.Quality, "" }, { ResStr.Lv, "" }, { ResStr.ItemLv, "" }, { ResStr.CharmLv, "" }, { ResStr.MaTier, "" }, { ResStr.Socket, "" },
                         { ResStr.PhysicalDamage, "" }, { ResStr.ElementalDamage, "" }, { ResStr.ChaosDamage, "" }, { ResStr.AttacksPerSecond, "" },
-                        { ResStr.Shaper, "" }, { ResStr.Elder, "" }, { ResStr.Corrupt, "" }, { ResStr.Unidentify, "" }, { ResStr.Vaal, "" }
+                        { ResStr.Shaper, "" }, { ResStr.Elder, "" }, { ResStr.Synthesis, "" }, { ResStr.Corrupt, "" }, { ResStr.Unidentify, "" }, { ResStr.Vaal, "" }
                     };
 
                     for (int i = 1; i < asData.Length; i++)
@@ -1100,14 +1100,22 @@ namespace PoeTradeSearch
                         if ((is_unIdentify || itemRarity == ResStr.Normal) && itemType.Length > 4 && itemType.IndexOf(ResStr.Higher + " ") == 0)
                             itemType = itemType.Substring(3);
 
-                        if (itemType.IndexOf(ResStr.Plagued + " ") == 0)
+                        if (is_map && itemType.Length > 5)
                         {
-                            is_plague = true;
-                            itemType = itemType.Substring(6);
-                        }
+                            if (itemType.IndexOf(ResStr.Plagued + " ") == 0)
+                            {
+                                is_plague = true;
+                                itemType = itemType.Substring(6);
+                            }
 
-                        if (is_map && itemType.Length > 5 && itemType.Substring(0, 4) == ResStr.formed + " ")
-                            itemType = itemType.Substring(4);
+                            if (itemType.Substring(0, 4) == ResStr.formed + " ")
+                                itemType = itemType.Substring(4);
+                        }
+                        else if(lItemOption[ResStr.Synthesis] == "_TRUE_")
+                        {
+                            if (itemType.Substring(0, 4) == ResStr.Synthesised + " ")
+                                itemType = itemType.Substring(4);
+                        }
 
                         if (!is_unIdentify && itemRarity == ResStr.Magic)
                         {
@@ -1340,11 +1348,13 @@ namespace PoeTradeSearch
 
                     ckShaper.IsChecked = lItemOption[ResStr.Shaper] == "_TRUE_";
                     ckElder.IsChecked = lItemOption[ResStr.Elder] == "_TRUE_";
+                    Synthesis.IsChecked = lItemOption[ResStr.Synthesis] == "_TRUE_";
 
                     if (lItemOption[ResStr.Corrupt] == "_TRUE_")
                     {
-                        ckCorrupt.FontWeight = FontWeights.Bold;
-                        ckCorrupt.Foreground = System.Windows.Media.Brushes.DarkRed;
+                        cbCorrupt.BorderThickness = new Thickness(2);
+                        //ckCorrupt.FontWeight = FontWeights.Bold;
+                        //ckCorrupt.Foreground = System.Windows.Media.Brushes.DarkRed;
                     }
 
                     tbLvMin.Text = Regex.Replace(lItemOption[is_gem ? ResStr.Lv : ResStr.ItemLv].Trim(), "[^0-9]", "");
@@ -1370,7 +1380,7 @@ namespace PoeTradeSearch
 
                     bdExchange.Visibility = is_detail && IsExchangeCurrency ? Visibility.Visible : Visibility.Hidden;
 
-                    if (isWinShow)
+                    if (isWinShow || this.Visibility == Visibility.Visible)
                     {
                         PriceUpdateThreadWorker(GetItemOptions(), null);
 
@@ -1573,7 +1583,8 @@ namespace PoeTradeSearch
 
             itemOption.Elder = ckElder.IsChecked == true;
             itemOption.Shaper = ckShaper.IsChecked == true;
-            itemOption.Corrupt = ckCorrupt.IsChecked == true;
+            itemOption.Synthesis = Synthesis.IsChecked == true;
+            itemOption.Corrupt = (byte)cbCorrupt.SelectedIndex;
             itemOption.ChkSocket = ckSocket.IsChecked == true;
             itemOption.ChkQuality = ckQuality.IsChecked == true;
             itemOption.ChkLv = ckLv.IsChecked == true;
@@ -1665,7 +1676,8 @@ namespace PoeTradeSearch
 
                     JQ.Filters.Misc.Filters.Elder.Option = itemOptions.Elder == true ? "true" : "any";
                     JQ.Filters.Misc.Filters.Shaper.Option = itemOptions.Shaper == true ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Corrupted.Option = itemOptions.Corrupt == true ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Synthesis.Option = itemOptions.Synthesis == true ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Corrupted.Option = itemOptions.Corrupt == 1 ? "true" : (itemOptions.Corrupt == 2 ? "false" : "any");
 
                     JQ.Filters.Trade = new q_Trade_filters();
                     JQ.Filters.Trade.Disabled = mConfigData.Options.SearchBeforeDay == 0;
@@ -1680,7 +1692,7 @@ namespace PoeTradeSearch
                     JQ.Filters.Socket.Filters.Sockets.Max = itemOptions.SocketMax;
 
                     JQ.Filters.Misc.Disabled = !(
-                        itemOptions.ChkQuality == true || itemOptions.ChkLv == true || itemOptions.Elder == true || itemOptions.Shaper == true || itemOptions.Corrupt == true
+                        itemOptions.ChkQuality == true || itemOptions.ChkLv == true || itemOptions.Elder == true || itemOptions.Shaper == true || itemOptions.Synthesis == true || itemOptions.Corrupt != 0
                     );
 
                     JQ.Filters.Misc.Filters.Quality.Min = itemOptions.ChkQuality == true ? itemOptions.QualityMin : 99999;
@@ -1844,6 +1856,7 @@ namespace PoeTradeSearch
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
+                    MessageBox.Show(String.Format("{0} 에러:  {1}\r\n\r\n{2}\r\n\r\n", ex.Source, ex.Message, ex.StackTrace), "에러", MessageBoxButton.OK, MessageBoxImage.Error);
                     return "";
                 }
             }

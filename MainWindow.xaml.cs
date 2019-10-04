@@ -104,17 +104,14 @@ namespace PoeTradeSearch
             ResStr.ServerType = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(ResStr.ServerType.ToLower()).Replace(" ", "%20");
             ResStr.ServerLang = (byte)(mConfigData.Options.Server == "en" ? 1 : 0);
 
-            ControlTemplate ct = cbOrbs.Template;
-            Popup popup = ct.FindName("PART_Popup", cbOrbs) as Popup;
-
-            if (popup != null)
-                popup.Placement = PlacementMode.Top;
-
-            ct = cbSplinters.Template;
-            popup = ct.FindName("PART_Popup", cbSplinters) as Popup;
-
-            if (popup != null)
-                popup.Placement = PlacementMode.Top;
+            ComboBox[] cbs = {cbOrbs, cbSplinters , cbCorrupt};
+            foreach(ComboBox cb in cbs)
+            {
+                ControlTemplate ct = cb.Template;
+                Popup popup = ct.FindName("PART_Popup", cb) as Popup;
+                if (popup != null)
+                    popup.Placement = PlacementMode.Top;
+            }
 
             int cnt = 0;
             cbOrbs.Items.Add("교환을 원하는 오브 선택");
@@ -419,8 +416,11 @@ namespace PoeTradeSearch
 
         private void tkPrice_ReSet(object sender, SelectionChangedEventArgs e)
         {
-            tkPrice1.Foreground = System.Windows.Media.Brushes.DeepPink;
-            tkPriceTotal.Foreground = System.Windows.Media.Brushes.DeepPink;
+            if (tkPrice1 != null)
+            {
+                tkPrice1.Foreground = System.Windows.Media.Brushes.DeepPink;
+                tkPriceTotal.Foreground = System.Windows.Media.Brushes.DeepPink;
+            }
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)

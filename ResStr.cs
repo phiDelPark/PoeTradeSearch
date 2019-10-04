@@ -39,12 +39,15 @@ namespace PoeTradeSearch
         internal const string Quality = "퀄리티";
         internal const string Socket = "홈";
 
-        internal const string Shaper = "쉐이퍼 아이템";
-        internal const string Elder = "엘더 아이템";
         internal const string Corrupt = "타락";
         internal const string Vaal = "바알";
         internal const string Unidentify = "미확인";
         internal const string Plagued = "역병 걸린";
+
+        internal const string Shaper = "쉐이퍼 아이템";
+        internal const string Elder = "엘더 아이템";
+        internal const string Synthesis = "결합된 아이템";
+        internal const string Synthesised = "결합된";
 
         internal const string ChkProphecy = "우클릭으로 이 예언을 캐릭터에 추가하십시오.";
         internal const string ChkMapFragment = "템플러의 실험실이나 전용 지도 장치에서";

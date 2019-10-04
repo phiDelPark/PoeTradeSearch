@@ -21,7 +21,8 @@ namespace PoeTradeSearch
         {
             public bool Elder;
             public bool Shaper;
-            public bool Corrupt;
+            public bool Synthesis;            
+            public byte Corrupt;
             public bool ByType;
             public bool ChkSocket;
             public bool ChkQuality;
@@ -332,6 +333,9 @@ namespace PoeTradeSearch
 
             [DataMember(Name = "shaper_item")]
             internal q_Option Shaper = new q_Option();
+
+            [DataMember(Name = "synthesised_item")]
+            internal q_Option Synthesis = new q_Option();
         }
 
         [DataContract]
