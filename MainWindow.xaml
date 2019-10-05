@@ -147,7 +147,7 @@
 
         <CheckBox Name="ckShaper" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Content="쉐이퍼" HorizontalAlignment="Left" Margin="189,360,0,0" VerticalAlignment="Top" Width="57" Checked="CkShaper_Checked" Unchecked="tkPrice_ReSet" />
         <CheckBox Name="ckElder" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Content="엘더" HorizontalAlignment="Left" Margin="253,360,0,0" VerticalAlignment="Top" Width="50" Checked="CkElder_Checked" Unchecked="tkPrice_ReSet" />
-        <CheckBox Name="Synthesis" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Content="결합" HorizontalAlignment="Left" Margin="336,360,0,0" VerticalAlignment="Top" Width="45" Checked="CkShaper_Checked" Unchecked="tkPrice_ReSet" />
+        <CheckBox Name="Synthesis" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Content="결합" HorizontalAlignment="Left" Margin="336,360,0,0" VerticalAlignment="Top" Width="45" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
 
         <ComboBox Name="cbCorrupt" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="333,378,0,0" VerticalAlignment="Top" Width="48" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
             <ComboBox.Resources>
