@@ -915,16 +915,21 @@ namespace PoeTradeSearch
                             {
                                 if (itemRarity == ResStr.Gem && (ResStr.Vaal + " " + itemType) == asTmp[0])
                                     lItemOption[ResStr.Vaal] = "_TRUE_";
-                                else if (!is_flask && asTmp[0].IndexOf(ResStr.ChkFlask) == 0)
-                                    is_flask = true;
                                 else if (!is_prophecy && asTmp[0].IndexOf(ResStr.ChkProphecy) == 0)
                                     is_prophecy = true;
                                 else if (!is_map_fragment && asTmp[0].IndexOf(ResStr.ChkMapFragment) == 0)
                                     is_map_fragment = true;
-                                else if (!is_captured_beast && asTmp[0].IndexOf(ResStr.ChkBeast) == 0)
-                                    is_captured_beast = true;
+                                else if (!is_flask && asTmp[0] == ResStr.ChkFlask)
+                                    is_flask = true;
+                                else if (!is_captured_beast && asTmp[0] == ResStr.ChkBeast1)
+                                {
+                                    string[] asTmp22 = asOpt[j+1].Split(':');
+                                    is_captured_beast = asTmp22.Length > 1 && asTmp22[0] == ResStr.ChkBeast2;
+                                }
                                 else if (lItemOption[ResStr.ItemLv] != "" && k < 10)
                                 {
+                                    if (asOpt[j] == "") break;
+
                                     bool resistance = false;
                                     bool crafted = asOpt[j].IndexOf("(crafted)") > -1;
                                     string input = Regex.Replace(asOpt[j], @" \([a-zA-Z]+\)", "");
@@ -932,6 +937,7 @@ namespace PoeTradeSearch
                                     input = Regex.Replace(input, @"\\#", "[+-]?([0-9]+\\.[0-9]+|[0-9]+|\\#)");
                                     //input = Regex.Replace(input, @"\+#", "(+|)#");
 
+                                    Regex rgx = new Regex("^" + input + (is_captured_beast ? "\\(" + ResStr.Captured + "\\)" : "") + "$", RegexOptions.IgnoreCase);
                                     FilterResult[] filterResults = mFilterData.Result;
 
                                     double min = 99999, max = 99999;
@@ -939,7 +945,6 @@ namespace PoeTradeSearch
 
                                     foreach (FilterResult filterResult in filterResults)
                                     {
-                                        Regex rgx = new Regex("^" + input + (filterResult.Label == ResStr.Monster ? "\\(" + ResStr.Captured + "\\)" : "") + "$", RegexOptions.IgnoreCase);
                                         FilterResultEntrie[] entries = Array.FindAll(filterResult.Entries, x => rgx.IsMatch(x.Text));
                                         if (entries.Length > 0)
                                         {
@@ -995,63 +1000,63 @@ namespace PoeTradeSearch
                                         }
                                     }
 
-                                    ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Crafted;
-                                    int selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
-
-                                    if (crafted && selidx > -1)
+                                    if (filter != null)
                                     {
-                                        ((TextBox)this.FindName("tbOpt" + k)).BorderBrush = System.Windows.Media.Brushes.Blue;
-                                        ((TextBox)this.FindName("tbOpt" + k + "_0")).BorderBrush = System.Windows.Media.Brushes.Blue;
-                                        ((TextBox)this.FindName("tbOpt" + k + "_1")).BorderBrush = System.Windows.Media.Brushes.Blue;
-                                        ((CheckBox)this.FindName("tbOpt" + k + "_2")).BorderBrush = System.Windows.Media.Brushes.Blue;
-                                        ((CheckBox)this.FindName("tbOpt" + k + "_3")).BorderBrush = System.Windows.Media.Brushes.Blue;
-                                        ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex = selidx;
-                                    }
-                                    else
-                                    {
-                                        ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Pseudo;
-                                        selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
+                                        ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Crafted;
+                                        int selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
 
-                                        if (selidx == -1 && ((ComboBox)this.FindName("cbOpt" + k)).Items.Count > 0)
+                                        if (crafted && selidx > -1)
                                         {
-                                            FilterEntrie filterEntrie = (FilterEntrie)((ComboBox)this.FindName("cbOpt" + k)).Items[0];
-                                            string[] id_split = filterEntrie.ID.Split('.');
-                                            if (id_split.Length == 2 && ResStr.lPseudo.ContainsKey(id_split[1]))
-                                            {
-                                                ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(new FilterEntrie("pseudo." + ResStr.lPseudo[id_split[1]], ResStr.Pseudo));
-                                            }
+                                            ((TextBox)this.FindName("tbOpt" + k)).BorderBrush = System.Windows.Media.Brushes.Blue;
+                                            ((TextBox)this.FindName("tbOpt" + k + "_0")).BorderBrush = System.Windows.Media.Brushes.Blue;
+                                            ((TextBox)this.FindName("tbOpt" + k + "_1")).BorderBrush = System.Windows.Media.Brushes.Blue;
+                                            ((CheckBox)this.FindName("tbOpt" + k + "_2")).BorderBrush = System.Windows.Media.Brushes.Blue;
+                                            ((CheckBox)this.FindName("tbOpt" + k + "_3")).BorderBrush = System.Windows.Media.Brushes.Blue;
+                                            ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex = selidx;
                                         }
-
-                                        selidx = -1;
-
-                                        if (mConfigData.Options.AutoSelectPseudo)
+                                        else
                                         {
                                             ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Pseudo;
                                             selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
+
+                                            if (selidx == -1 && ((ComboBox)this.FindName("cbOpt" + k)).Items.Count > 0)
+                                            {
+                                                FilterEntrie filterEntrie = (FilterEntrie)((ComboBox)this.FindName("cbOpt" + k)).Items[0];
+                                                string[] id_split = filterEntrie.ID.Split('.');
+                                                if (id_split.Length == 2 && ResStr.lPseudo.ContainsKey(id_split[1]))
+                                                {
+                                                    ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(new FilterEntrie("pseudo." + ResStr.lPseudo[id_split[1]], ResStr.Pseudo));
+                                                }
+                                            }
+
+                                            selidx = -1;
+
+                                            if (mConfigData.Options.AutoSelectPseudo)
+                                            {
+                                                ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Pseudo;
+                                                selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
+                                            }
+
+                                            if (selidx == -1)
+                                            {
+                                                ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Explicit;
+                                                selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
+                                            }
+
+                                            if (selidx == -1)
+                                            {
+                                                ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Fractured;
+                                                selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
+                                            }
+
+                                            if (selidx == -1 && ((ComboBox)this.FindName("cbOpt" + k)).Items.Count == 1)
+                                            {
+                                                selidx = 0;
+                                            }
+
+                                            ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex = selidx;
                                         }
 
-                                        if (selidx == -1)
-                                        {
-                                            ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Explicit;
-                                            selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
-                                        }
-
-                                        if (selidx == -1)
-                                        {
-                                            ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Fractured;
-                                            selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
-                                        }
-
-                                        if (selidx == -1 && ((ComboBox)this.FindName("cbOpt" + k)).Items.Count == 1)
-                                        {
-                                            selidx = 0;
-                                        }
-
-                                        ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex = selidx;
-                                    }
-
-                                    if (filter != null)
-                                    {
                                         if (i != baki)
                                         {
                                             baki = i;

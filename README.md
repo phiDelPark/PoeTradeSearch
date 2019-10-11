@@ -37,7 +37,7 @@
         "auto_select_pseudo":true,   // 유사 옵션으로 검색이 가능하면 유사로 자동 선택 [true, false]
         "auto_check_unique":true,    // 유니크 아이템은 기본적으로 옵션 모두 선택 [true, false]
         "check_updates":true,        // 시작시 최신 버전 체크 [true, false]
-        "ctrl_wheel":false           // 창고 Ctrl+Wheel 탭 이동, POE 3.8 이후 기본 지원되어 꺼둠 [true, false]
+        "ctrl_wheel":false           // 창고 Ctrl+Wheel 이동 (전체 위치에서 가능), 기본 지원되어 꺼둠 [true, false]
       },
        // 아래 단축키들과 창고 휠 이동은 관리자 권한으로 실행이 필요합니다.
        // 키코드(keycode) 는 이 링크를 참고 (https://github.com/phiDelPark/PoeTradeSearch/wiki)

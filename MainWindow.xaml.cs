@@ -443,9 +443,11 @@ namespace PoeTradeSearch
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(Application.Current.MainWindow,
-                "버전: " + GetFileVersion() + " (D." + mConfigData.Options.DataVersion + ")" + '\n' +
-                "https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' + '\n' +
-                "리그 선택은 설정 파일에서 설정 가능합니다." + '\n' + '\n' + '\n' +
+                "버전: " + GetFileVersion() + " (D." + mConfigData.Options.DataVersion + ")" + '\n' + '\n' +
+                "프로젝트: https://github.com/phiDelPark/PoeTradeSearch" + '\n' +
+                "도움말 위키: https://github.com/phiDelPark/PoeTradeSearch/wiki" + '\n' + '\n' + '\n' +
+                "리그 선택은 설정 파일에서 설정 가능합니다." + '\n' + '\n' +
+                "소켓 정보는 홈[소][대] 연결[소][대] 로 보면됩니다." + '\n' + '\n' + '\n' +
                 "시세를 좌클릭하면 현재 옵션으로 다시 검색 합니다." + '\n' +
                 "시세를 우클릭하면 시세를 더 상세히 보여줍니다. (토글)" + '\n' + '\n' +
                 "시세정보) 총수. 최소값 ~ 최대값 = 많은[수] 1 ~ 2위" + '\n' + '\n' + '\n' +
