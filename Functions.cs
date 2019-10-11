@@ -905,6 +905,8 @@ namespace PoeTradeSearch
 
                         for (int j = 0; j < asOpt.Length; j++)
                         {
+                            if (asOpt[j].Trim() == "") continue;
+
                             string[] asTmp = asOpt[j].Split(':');
 
                             if (lItemOption.ContainsKey(asTmp[0]))
@@ -929,8 +931,6 @@ namespace PoeTradeSearch
                                 }
                                 else if (lItemOption[ResStr.ItemLv] != "" && k < 10)
                                 {
-                                    if (asOpt[j] == "") break;
-
                                     bool resistance = false;
                                     bool crafted = asOpt[j].IndexOf("(crafted)") > -1;
                                     string input = Regex.Replace(asOpt[j], @" \([a-zA-Z]+\)", "");
@@ -1032,7 +1032,12 @@ namespace PoeTradeSearch
 
                                             selidx = -1;
 
-                                            if (mConfigData.Options.AutoSelectPseudo)
+                                            if(is_captured_beast)
+                                            {
+                                                ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Monster;
+                                                selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
+                                            } 
+                                            else if (mConfigData.Options.AutoSelectPseudo)
                                             {
                                                 ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = ResStr.Pseudo;
                                                 selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
@@ -1786,7 +1791,7 @@ namespace PoeTradeSearch
 
                     JQ.Filters.Trade = new q_Trade_filters();
                     JQ.Filters.Trade.Disabled = mConfigData.Options.SearchBeforeDay == 0;
-                    JQ.Filters.Trade.Filters.Indexed.Option = BeforeDayToString(mConfigData.Options.SearchBeforeDay);
+                    JQ.Filters.Trade.Filters.Indexed.Option = mConfigData.Options.SearchBeforeDay == 0 ? "any" : BeforeDayToString(mConfigData.Options.SearchBeforeDay);
 
                     JQ.Filters.Socket = new q_Socket_filters();
                     JQ.Filters.Socket.Disabled = itemOptions.ChkSocket != true;
