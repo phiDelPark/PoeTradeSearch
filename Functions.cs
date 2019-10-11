@@ -394,7 +394,8 @@ namespace PoeTradeSearch
                         baseResultData.NameKo = oCsvKoList[i][33];
                         baseResultData.Detail = "";
 
-                        datas.Add(baseResultData);
+                        if(datas.Find(x => x.NameEn == baseResultData.NameEn) == null)
+                            datas.Add(baseResultData);
                     }
 
                     rootClass = Json.Deserialize<BaseData>("{\"result\":[{\"data\":[]}]}");
@@ -919,7 +920,7 @@ namespace PoeTradeSearch
                                     is_prophecy = true;
                                 else if (!is_map_fragment && asTmp[0].IndexOf(ResStr.ChkMapFragment) == 0)
                                     is_map_fragment = true;
-                                else if (!is_flask && asTmp[0] == ResStr.ChkFlask)
+                                else if (!is_flask && asTmp.Length > 1 && asTmp[0] == ResStr.ChkFlask)
                                     is_flask = true;
                                 else if (!is_captured_beast && asTmp[0] == ResStr.ChkBeast1)
                                 {
@@ -1285,7 +1286,7 @@ namespace PoeTradeSearch
                     else
                     {
                         bool tmp_is_plague = is_plague;
-                        int Imp_cnt = itemfilters.Count - (itemRarity == ResStr.Normal ? 0 : notImpCnt);
+                        int Imp_cnt = itemfilters.Count - ((itemRarity == ResStr.Normal || is_unIdentify) ? 0 : notImpCnt);
 
                         for (int i = 0; i < itemfilters.Count; i++)
                         {
