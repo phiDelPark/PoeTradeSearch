@@ -861,7 +861,7 @@ namespace PoeTradeSearch
             return dps;
         }
 
-        private void ItemTextParser(string sText, bool isWinShow = true)
+        private void ItemTextParser(string itemText, bool isWinShow = true)
         {
             string itemName = "";
             string itemType = "";
@@ -871,7 +871,7 @@ namespace PoeTradeSearch
 
             try
             {
-                string[] asData = (sText ?? "").Trim().Split(new string[] { "--------" }, StringSplitOptions.None);
+                string[] asData = (itemText ?? "").Trim().Split(new string[] { "--------" }, StringSplitOptions.None);
 
                 if (asData.Length > 1 && asData[0].IndexOf(ResStr.Rarity + ": ") == 0)
                 {
@@ -1469,15 +1469,15 @@ namespace PoeTradeSearch
                     }
 
                     bdDetail.Visibility = is_detail ? Visibility.Visible : Visibility.Hidden;
-                    if (bdDetail.Visibility == Visibility.Visible)
-                    {
+                    /*
                         Thickness thickness = bdDetail.Margin;
                         thickness.Bottom = is_gem ? 145 : 91;
                         bdDetail.Margin = thickness;
-                    }
+                    */
 
                     bool IsExchangeCurrency = inherit == "Currency" && ResStr.lExchangeCurrency.ContainsKey(itemType);
-                    bdExchange.Visibility = is_detail && IsExchangeCurrency ? Visibility.Visible : Visibility.Hidden;
+                    bdExchange.Visibility = !is_gem && (is_detail || IsExchangeCurrency) ? Visibility.Visible : Visibility.Hidden;
+                    bdExchange.IsEnabled = IsExchangeCurrency;
 
                     if (isWinShow || this.Visibility == Visibility.Visible)
                     {
