@@ -25,7 +25,7 @@
 ### 옵션 파일 ( Config.txt ) 설명
 
       "options":{
-        "league":"Standard",         // 리그 선택 ["Blight", "Hardcore Blight", "Standard", "Hardcore"]
+        "league":"Standard",         // 리그 선택 ["Metamorph", "Hardcore Metamorph", "Standard", "Hardcore"]
         "server":"ko",               // 기본 검색 서버 ["ko", "en"]
         "server_timeout":5,          // 서버 접속 대기 시간 (초) 인터넷이 느리면 더 올려 시간 초과를 방지
         "server_redirect":false,     // 일부 환경에서 서버 데이터를 못받아와 거래소 접속이 안되는 경우 사용
@@ -54,4 +54,5 @@
         ],
       "checked":[ 기본적으로 자동 선택될 옵션들 ]                   // 옵션 파일 ( Config.txt ) 문서 참조
 
-옵션 파일 수정 후엔 저장 후 프로그램을 다시 실행해 주셔야 옵션을 새로 읽어 갱신됩니다.
+옵션 파일 수정 후엔 저장 후 프로그램을 다시 실행해 주셔야 옵션을 새로 읽어 갱신됩니다.<br>
+이 프로그램의 버전 확인법: 4자리 숫자중 앞 3자리 숫자는 POE DB 버전 4번째 숫자는 해당 버전의 업데이트 수 입니다.
