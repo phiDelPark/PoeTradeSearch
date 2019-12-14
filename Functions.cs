@@ -359,7 +359,7 @@ namespace PoeTradeSearch
                     }
 
                     //-----------------------------
-
+                    
                     oCsvEnList = new List<string[]>();
                     oCsvKoList = new List<string[]>();
 
@@ -405,7 +405,7 @@ namespace PoeTradeSearch
                     {
                         writer.Write(Json.Serialize<BaseData>(rootClass));
                     }
-
+                    
                     success = true;
                 }
                 catch { }
