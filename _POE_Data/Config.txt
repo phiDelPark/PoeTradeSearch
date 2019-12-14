@@ -1,6 +1,6 @@
 ﻿{
 	"options":{
-			"league":"Blight",
+			"league":"Metamorph",
 			"server":"ko",
 			"server_timeout":5,
 			"server_redirect":false,
