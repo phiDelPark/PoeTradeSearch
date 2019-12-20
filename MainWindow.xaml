@@ -214,6 +214,12 @@
 
         <Border Name="bdPriceOptions" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Margin="0,353,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="385" Height="50" Visibility="Hidden">
             <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
+                <Label Content="최소 값:" HorizontalAlignment="Left" Margin="5,15,0,0" VerticalAlignment="Top" />
+                <TextBox Name="tbPriceFilterMin" HorizontalAlignment="Left" Height="22" Margin="62,15,0,0" Text="" VerticalAlignment="Top" Width="33" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
+                <ComboBox Name="cbPriceFilters" HorizontalAlignment="Left" Margin="100,15,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="126" SelectionChanged="tkPrice_ReSet">
+                    <ComboBoxItem>없음</ComboBoxItem>
+                    <ComboBoxItem>카오스 오브</ComboBoxItem>
+                </ComboBox>
                 <Label Content="목록 수:" HorizontalAlignment="Left" Margin="261,15,0,0" VerticalAlignment="Top" />
                 <ComboBox Name="cbPriceListCount" HorizontalAlignment="Left" Margin="319,15,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="56" SelectionChanged="cbPriceListCount_SelectionChanged">
                     <ComboBoxItem>20</ComboBoxItem>

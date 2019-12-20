@@ -834,6 +834,9 @@ namespace PoeTradeSearch
             cbPriceListCount.SelectedIndex = (int)Math.Ceiling(mConfigData.Options.SearchPriceCount / 20) - 1;
             cbPriceListCount.SelectionChanged += cbPriceListCount_SelectionChanged;
 
+            cbPriceFilters.SelectedIndex = 0;
+            tbPriceFilterMin.Text = "1";
+
             bdPriceOptions.Visibility = Visibility.Hidden;
             liPriceLayout.Visibility = Visibility.Hidden;
             liPrice.Items.Clear();
@@ -1739,6 +1742,7 @@ namespace PoeTradeSearch
             itemOption.LvMin = StrToDouble(tbLvMin.Text, 99999);
             itemOption.LvMax = StrToDouble(tbLvMax.Text, 99999);
 
+            itemOption.PriceMin = bdPriceOptions.Visibility == Visibility.Hidden || cbPriceFilters.SelectedIndex < 1 ? 0 : StrToDouble(tbPriceFilterMin.Text, 99999);
             itemOption.Rarity = (string)cbRarity.SelectedValue;
 
             int total_res_idx = -1;
@@ -1833,6 +1837,14 @@ namespace PoeTradeSearch
                     JQ.Filters.Trade.Disabled = mConfigData.Options.SearchBeforeDay == 0;
                     JQ.Filters.Trade.Filters.Indexed.Option = mConfigData.Options.SearchBeforeDay == 0 ? "any" : BeforeDayToString(mConfigData.Options.SearchBeforeDay);
                     JQ.Filters.Trade.Filters.SaleType.Option = useSaleType ? "priced" : "any";
+                    JQ.Filters.Trade.Filters.Price = new q_Min_And_Max();
+                    JQ.Filters.Trade.Filters.Price.Min = 99999;
+                    JQ.Filters.Trade.Filters.Price.Max = 99999;
+
+                    if (itemOptions.PriceMin > 0)
+                    {
+                        JQ.Filters.Trade.Filters.Price.Min = itemOptions.PriceMin;
+                    }
 
                     JQ.Filters.Socket = new q_Socket_filters();
                     JQ.Filters.Socket.Disabled = itemOptions.ChkSocket != true;
@@ -1853,7 +1865,7 @@ namespace PoeTradeSearch
                     JQ.Filters.Misc.Filters.Ilvl.Max = itemOptions.ChkLv != true || Inherit == "Gems" ? 99999 : itemOptions.LvMax;
                     JQ.Filters.Misc.Filters.Gem_level.Min = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMin : 99999;
                     JQ.Filters.Misc.Filters.Gem_level.Max = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMax : 99999;
-
+                    
                     if (itemOptions.itemfilters.Count > 0)
                     {
                         JQ.Stats = new q_Stats[1];

@@ -35,6 +35,7 @@ namespace PoeTradeSearch
             public double LvMin;
             public double LvMax;
             public string Rarity;
+            public double PriceMin;
             public List<Itemfilter> itemfilters = new List<Itemfilter>();
         }
 
@@ -394,6 +395,9 @@ namespace PoeTradeSearch
 
             [DataMember(Name = "sale_type")]
             internal q_Option SaleType = new q_Option();
+
+            [DataMember(Name = "price")]
+            internal q_Min_And_Max Price;
         }
 
         [DataContract]
