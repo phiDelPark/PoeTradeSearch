@@ -743,7 +743,7 @@ namespace PoeTradeSearch
             priceThread?.Interrupt();
             priceThread?.Abort();
             priceThread = new Thread(() => PriceUpdate(
-                    exchange != null ? exchange : new string[1] { CreateJson(itemOptions) }
+                    exchange != null ? exchange : new string[1] { CreateJson(itemOptions, true) }
                 ));
             priceThread.Start();
         }
@@ -1762,7 +1762,7 @@ namespace PoeTradeSearch
             return itemOption;
         }
 
-        private string CreateJson(ItemOption itemOptions)
+        private string CreateJson(ItemOption itemOptions, bool useSaleType)
         {
             string BeforeDayToString(int day)
             {
@@ -1809,6 +1809,7 @@ namespace PoeTradeSearch
                     JQ.Filters.Trade = new q_Trade_filters();
                     JQ.Filters.Trade.Disabled = mConfigData.Options.SearchBeforeDay == 0;
                     JQ.Filters.Trade.Filters.Indexed.Option = mConfigData.Options.SearchBeforeDay == 0 ? "any" : BeforeDayToString(mConfigData.Options.SearchBeforeDay);
+                    JQ.Filters.Trade.Filters.SaleType.Option = useSaleType ? "priced" : "any";
 
                     JQ.Filters.Socket = new q_Socket_filters();
                     JQ.Filters.Socket.Disabled = itemOptions.ChkSocket != true;
@@ -1976,7 +1977,7 @@ namespace PoeTradeSearch
                     sEntity = sEntity.Replace("{\"max\":99999,", "{");
                     sEntity = sEntity.Replace(",\"min\":99999}", "}");
 
-                    sEntity = Regex.Replace(sEntity, "\"(rarity|category|corrupted|synthesised_item|shaper_item|elder_item|crusader_item|redeemer_item|hunter_item|warlord_item)\":{\"option\":\"any\"},?", "");
+                    sEntity = Regex.Replace(sEntity, "\"(sale_type|rarity|category|corrupted|synthesised_item|shaper_item|elder_item|crusader_item|redeemer_item|hunter_item|warlord_item)\":{\"option\":\"any\"},?", "");
 
                     return sEntity.Replace("},}", "}}");
                 }

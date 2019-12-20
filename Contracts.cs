@@ -381,6 +381,9 @@ namespace PoeTradeSearch
         {
             [DataMember(Name = "indexed")]
             internal q_Option Indexed = new q_Option();
+
+            [DataMember(Name = "sale_type")]
+            internal q_Option SaleType = new q_Option();
         }
 
         [DataContract]
