@@ -256,7 +256,8 @@ namespace PoeTradeSearch
                         baseResultData.NameKo = oCsvKoList[i][5];
                         baseResultData.Detail = "";
 
-                        datas.Add(baseResultData);
+                        if (datas.Find(x => x.NameEn == baseResultData.NameEn) == null)
+                            datas.Add(baseResultData);
                     }
 
                     BaseData rootClass = Json.Deserialize<BaseData>("{\"result\":[{\"data\":[]}]}");
@@ -389,9 +390,9 @@ namespace PoeTradeSearch
                     {
                         BaseResultData baseResultData = new BaseResultData();
                         baseResultData.ID = oCsvEnList[i][1].Replace("Metadata/Monsters/", "");
-                        baseResultData.InheritsFrom = oCsvEnList[i][9].Replace("Metadata/Monsters/", "");
-                        baseResultData.NameEn = oCsvEnList[i][33];
-                        baseResultData.NameKo = oCsvKoList[i][33];
+                        baseResultData.InheritsFrom = oCsvEnList[i][11].Replace("Metadata/Monsters/", "");
+                        baseResultData.NameEn = oCsvEnList[i][35];
+                        baseResultData.NameKo = oCsvKoList[i][35];
                         baseResultData.Detail = "";
 
                         if(datas.Find(x => x.NameEn == baseResultData.NameEn) == null)
@@ -435,7 +436,7 @@ namespace PoeTradeSearch
 
                 //-----------------------------
 
-                if (bCreateDatabase)
+                if (mCreateDatabase)
                 {
                     File.Delete(path + "Bases.txt");
                     File.Delete(path + "Words.txt");
@@ -525,25 +526,23 @@ namespace PoeTradeSearch
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            bool chk_equals = NativeMethods.GetForegroundWindow().Equals(NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
+            if (NativeMethods.GetForegroundWindow().Equals(NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption)))
+            {
+                if (!mIsHotKey) InstallRegisterHotKey();
 
-            if (!mIsHotKey && chk_equals)
-            {
-                InstallRegisterHotKey();
-            }
-            else if (mIsHotKey && !chk_equals)
-            {
-                RemoveRegisterHotKey();
-            }
-
-            if (!mIsPause && chk_equals && mConfigData.Options.CtrlWheel)
-            {
-                TimeSpan dateDiff = Convert.ToDateTime(DateTime.Now) - MouseHookCallbackTime;
-                if (dateDiff.Ticks > 3000000000) // 5분간 마우스 움직임이 없으면 훜이 풀렸을 수 있어 다시...
+                if (!mIsPause && mConfigData.Options.CtrlWheel)
                 {
-                    MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
-                    MouseHook.Start();
+                    TimeSpan dateDiff = Convert.ToDateTime(DateTime.Now) - MouseHookCallbackTime;
+                    if (dateDiff.Ticks > 3000000000) // 5분간 마우스 움직임이 없으면 훜이 풀렸을 수 있어 다시...
+                    {
+                        MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
+                        MouseHook.Start();
+                    }
                 }
+            }
+            else
+            {
+                if (mIsHotKey) RemoveRegisterHotKey();
             }
         }
 
@@ -722,6 +721,7 @@ namespace PoeTradeSearch
                         catch (Exception)
                         {
                             MessageBox.Show(Application.Current.MainWindow, "잘못된 단축키 명령입니다.", "단축키 에러");
+                            NativeMethods.SetForegroundWindow(findHwnd);
                         }
                     }
 
@@ -795,8 +795,7 @@ namespace PoeTradeSearch
             ckLv.IsChecked = false;
             ckQuality.IsChecked = false;
             ckSocket.IsChecked = false;
-            ckElder.IsChecked = false;
-            ckShaper.IsChecked = false;
+            cbInfluence.SelectedIndex = 0;
             cbCorrupt.SelectedIndex = 0;
             cbCorrupt.BorderThickness = new Thickness(1);
 
@@ -896,7 +895,8 @@ namespace PoeTradeSearch
                     {
                         { ResStr.Quality, "" }, { ResStr.Lv, "" }, { ResStr.ItemLv, "" }, { ResStr.CharmLv, "" }, { ResStr.MaTier, "" }, { ResStr.Socket, "" },
                         { ResStr.PhysicalDamage, "" }, { ResStr.ElementalDamage, "" }, { ResStr.ChaosDamage, "" }, { ResStr.AttacksPerSecond, "" },
-                        { ResStr.Shaper, "" }, { ResStr.Elder, "" }, { ResStr.Synthesis, "" }, { ResStr.Corrupt, "" }, { ResStr.Unidentify, "" }, { ResStr.Vaal, "" }
+                        { ResStr.Shaper, "" }, { ResStr.Elder, "" }, { ResStr.Crusader, "" }, { ResStr.Redeemer, "" }, { ResStr.Hunter, "" }, { ResStr.Warlord, "" },
+                        { ResStr.Synthesis, "" }, { ResStr.Corrupt, "" }, { ResStr.Unidentify, "" }, { ResStr.Vaal, "" }
                     };
 
                     for (int i = 1; i < asData.Length; i++)
@@ -1285,6 +1285,7 @@ namespace PoeTradeSearch
                             }
 
                             tkDetail.Text = tkDetail.Text.Replace(ResStr.SClickSplitItem, "");
+                            tkDetail.Text = Regex.Replace(tkDetail.Text, "<(uniqueitem|prophecy|gemitem|magicitem|rareitem|whiteitem|corrupted|default|normal|augmented|size:[0-9]+)>", "");
                         }
                         catch { }
                     }
@@ -1442,10 +1443,21 @@ namespace PoeTradeSearch
                     else if ((string)cbRarity.SelectedValue == ResStr.Normal)
                     {
                         cbRarity.SelectedIndex = 0;
-                    }                        
-                    
-                    ckShaper.IsChecked = lItemOption[ResStr.Shaper] == "_TRUE_";
-                    ckElder.IsChecked = lItemOption[ResStr.Elder] == "_TRUE_";
+                    }
+
+                    if (lItemOption[ResStr.Shaper] == "_TRUE_")
+                        cbInfluence.SelectedIndex = 1;
+                    else if (lItemOption[ResStr.Elder] == "_TRUE_")
+                        cbInfluence.SelectedIndex = 2;
+                    else if (lItemOption[ResStr.Crusader] == "_TRUE_")
+                        cbInfluence.SelectedIndex = 3;
+                    else if (lItemOption[ResStr.Redeemer] == "_TRUE_")
+                        cbInfluence.SelectedIndex = 4;
+                    else if (lItemOption[ResStr.Hunter] == "_TRUE_")
+                        cbInfluence.SelectedIndex = 5;
+                    else if (lItemOption[ResStr.Warlord] == "_TRUE_")
+                        cbInfluence.SelectedIndex = 6;
+
                     Synthesis.IsChecked = lItemOption[ResStr.Synthesis] == "_TRUE_";
 
                     if (lItemOption[ResStr.Corrupt] == "_TRUE_")
@@ -1493,8 +1505,9 @@ namespace PoeTradeSearch
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
                 MessageBox.Show(String.Format("{0} 에러:  {1}\r\n\r\n{2}\r\n\r\n", ex.Source, ex.Message, ex.StackTrace), "에러", MessageBoxButton.OK, MessageBoxImage.Error);
+                NativeMethods.SetForegroundWindow(NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
             }
         }
 
@@ -1691,10 +1704,9 @@ namespace PoeTradeSearch
         {
             ItemOption itemOption = new ItemOption();
 
-            itemOption.Elder = ckElder.IsChecked == true;
-            itemOption.Shaper = ckShaper.IsChecked == true;
-            itemOption.Synthesis = Synthesis.IsChecked == true;
+            itemOption.Influence = (byte)cbInfluence.SelectedIndex;
             itemOption.Corrupt = (byte)cbCorrupt.SelectedIndex;
+            itemOption.Synthesis = Synthesis.IsChecked == true;
             itemOption.ChkSocket = ckSocket.IsChecked == true;
             itemOption.ChkQuality = ckQuality.IsChecked == true;
             itemOption.ChkLv = ckLv.IsChecked == true;
@@ -1784,8 +1796,13 @@ namespace PoeTradeSearch
                     JQ.Filters.Type.Filters.Rarity.Option = "any";
                     JQ.Filters.Type.Filters.Category.Option = "any";
 
-                    JQ.Filters.Misc.Filters.Elder.Option = itemOptions.Elder == true ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Shaper.Option = itemOptions.Shaper == true ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Shaper.Option = itemOptions.Influence == 1 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Elder.Option = itemOptions.Influence == 2 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Crusader.Option = itemOptions.Influence == 3 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Redeemer.Option = itemOptions.Influence == 4 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Hunter.Option = itemOptions.Influence == 5 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Warlord.Option = itemOptions.Influence == 6 ? "true" : "any";
+
                     JQ.Filters.Misc.Filters.Synthesis.Option = itemOptions.Synthesis == true ? "true" : "any";
                     JQ.Filters.Misc.Filters.Corrupted.Option = itemOptions.Corrupt == 1 ? "true" : (itemOptions.Corrupt == 2 ? "false" : "any");
 
@@ -1802,7 +1819,7 @@ namespace PoeTradeSearch
                     JQ.Filters.Socket.Filters.Sockets.Max = itemOptions.SocketMax;
 
                     JQ.Filters.Misc.Disabled = !(
-                        itemOptions.ChkQuality == true || itemOptions.ChkLv == true || itemOptions.Elder == true || itemOptions.Shaper == true || itemOptions.Synthesis == true || itemOptions.Corrupt != 0
+                        itemOptions.ChkQuality == true || itemOptions.ChkLv == true || itemOptions.Synthesis == true || itemOptions.Influence != 0 || itemOptions.Corrupt != 0
                     );
 
                     JQ.Filters.Misc.Filters.Quality.Min = itemOptions.ChkQuality == true ? itemOptions.QualityMin : 99999;
@@ -1959,14 +1976,15 @@ namespace PoeTradeSearch
                     sEntity = sEntity.Replace("{\"max\":99999,", "{");
                     sEntity = sEntity.Replace(",\"min\":99999}", "}");
 
-                    sEntity = Regex.Replace(sEntity, "\"(rarity|category|corrupted|elder_item|shaper_item|synthesised_item)\":{\"option\":\"any\"},?", "");
+                    sEntity = Regex.Replace(sEntity, "\"(rarity|category|corrupted|synthesised_item|shaper_item|elder_item|crusader_item|redeemer_item|hunter_item|warlord_item)\":{\"option\":\"any\"},?", "");
 
                     return sEntity.Replace("},}", "}}");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    //Console.WriteLine(ex.Message);
                     MessageBox.Show(String.Format("{0} 에러:  {1}\r\n\r\n{2}\r\n\r\n", ex.Source, ex.Message, ex.StackTrace), "에러", MessageBoxButton.OK, MessageBoxImage.Error);
+                    NativeMethods.SetForegroundWindow(NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
                     return "";
                 }
             }
@@ -1979,6 +1997,7 @@ namespace PoeTradeSearch
         private void InstallRegisterHotKey()
         {
             mIsHotKey = true;
+
             // 0x0: None, 0x1: Alt, 0x2: Ctrl, 0x3: Shift
             for (int i = 0; i < mConfigData.Shortcuts.Length; i++)
             {
@@ -1991,6 +2010,7 @@ namespace PoeTradeSearch
         private void RemoveRegisterHotKey()
         {
             mIsHotKey = false;
+
             for (int i = 0; i < mConfigData.Shortcuts.Length; i++)
             {
                 ConfigShortcut shortcut = mConfigData.Shortcuts[i];

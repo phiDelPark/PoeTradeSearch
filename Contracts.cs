@@ -19,9 +19,8 @@ namespace PoeTradeSearch
         [DataContract]
         public class ItemOption
         {
-            public bool Elder;
-            public bool Shaper;
             public bool Synthesis;
+            public byte Influence;
             public byte Corrupt;
             public bool ByType;
             public bool ChkSocket;
@@ -345,11 +344,23 @@ namespace PoeTradeSearch
             [DataMember(Name = "corrupted")]
             internal q_Option Corrupted = new q_Option();
 
+            [DataMember(Name = "shaper_item")]
+            internal q_Option Shaper = new q_Option();
+
             [DataMember(Name = "elder_item")]
             internal q_Option Elder = new q_Option();
 
-            [DataMember(Name = "shaper_item")]
-            internal q_Option Shaper = new q_Option();
+            [DataMember(Name = "crusader_item")]
+            internal q_Option Crusader = new q_Option();
+
+            [DataMember(Name = "redeemer_item")]
+            internal q_Option Redeemer = new q_Option();
+
+            [DataMember(Name = "hunter_item")]
+            internal q_Option Hunter = new q_Option();
+
+            [DataMember(Name = "warlord_item")]
+            internal q_Option Warlord = new q_Option();
 
             [DataMember(Name = "synthesised_item")]
             internal q_Option Synthesis = new q_Option();

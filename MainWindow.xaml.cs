@@ -34,14 +34,13 @@ namespace PoeTradeSearch
 
         private bool mTerminate = false;
         private bool mDisableClip = false;
-        private bool mIsAdministrator = false;
+        private bool mAdministrator = false;
+        private bool mCreateDatabase = false;
 
         private static bool mIsHotKey = false;
         public static bool mIsPause = false;
 
-        public static DateTime MouseHookCallbackTime;
-
-        private bool bCreateDatabase = false;
+        public static DateTime MouseHookCallbackTime;    
 
         public MainWindow()
         {
@@ -80,13 +79,13 @@ namespace PoeTradeSearch
                 };
             }
 
-            mIsAdministrator = IsAdministrator();
+            mAdministrator = IsAdministrator();
 
             string[] clArgs = Environment.GetCommandLineArgs();
 
             if (clArgs.Length > 1)
             {
-                bCreateDatabase = clArgs[1].ToLower() == "-createdatabase";
+                mCreateDatabase = clArgs[1].ToLower() == "-createdatabase";
             }
         }
 
@@ -130,7 +129,7 @@ namespace PoeTradeSearch
 
             mMainHwnd = new WindowInteropHelper(this).Handle;
 
-            if (mIsAdministrator)
+            if (mAdministrator)
             {
                 foreach (var item in mConfigData.Shortcuts)
                 {
@@ -147,34 +146,9 @@ namespace PoeTradeSearch
             HwndSource source = HwndSource.FromHwnd(mMainHwnd);
             source.AddHook(new HwndSourceHook(WndProc));
 
-            if (!mDisableClip)
-            {
-                IntPtr mNextClipBoardViewerHWnd = NativeMethods.SetClipboardViewer(new WindowInteropHelper(this).Handle);
-            }
-
-            if (mIsAdministrator)
-            {
-                // InstallRegisterHotKey();
-                // 창 활성화 후킹 사용시 가끔 꼬여서 타이머로 교체 (타이머를 쓰면 다른 목적으로 사용도 가능하고...)
-                //EventHook.EventAction += new EventHandler(WinEvent);
-                //EventHook.Start();
-
-                DispatcherTimer timer = new DispatcherTimer();
-                timer.Interval = TimeSpan.FromMilliseconds(1000);
-                timer.Tick += new EventHandler(Timer_Tick);
-                timer.Start();
-
-                if (mConfigData.Options.CtrlWheel)
-                {
-                    MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
-                    MouseHook.MouseAction += new EventHandler(MouseEvent);
-                    MouseHook.Start();
-                }
-            }
-
             string tmp = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n' +
                     "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
-                    (mIsAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "추가 단축키 기능은 관리자 권한으로 실행해야") + " 작동합니다.";
+                    (mAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "추가 단축키 기능은 관리자 권한으로 실행해야") + " 작동합니다.";
 
             if (mConfigData.Options.CheckUpdates && CheckUpdates())
             {
@@ -193,6 +167,32 @@ namespace PoeTradeSearch
             else
             {
                 MessageBox.Show(Application.Current.MainWindow, tmp + '\n' + "더 자세한 정보를 보시려면 프로그램 상단 (?) 를 눌러 확인하세요.", "POE 거래소 검색");
+            }
+
+            if (!mDisableClip)
+            {
+                IntPtr mNextClipBoardViewerHWnd = NativeMethods.SetClipboardViewer(new WindowInteropHelper(this).Handle);
+            }
+
+            if (mAdministrator)
+            {
+                //InstallRegisterHotKey();
+
+                // 창 활성화 후킹 사용시 가끔 꼬여서 타이머로 교체 (타이머를 쓰면 다른 목적으로 사용도 가능하고...)
+                //EventHook.EventAction += new EventHandler(WinEvent);
+                //EventHook.Start();
+
+                DispatcherTimer timer = new DispatcherTimer();
+                timer.Interval = TimeSpan.FromMilliseconds(1000);
+                timer.Tick += new EventHandler(Timer_Tick);
+                timer.Start();
+
+                if (mConfigData.Options.CtrlWheel)
+                {
+                    MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
+                    MouseHook.MouseAction += new EventHandler(MouseEvent);
+                    MouseHook.Start();
+                }
             }
 
             this.Title += " - " + ResStr.ServerType;
@@ -245,6 +245,7 @@ namespace PoeTradeSearch
                 if (sEntity == null || sEntity == "")
                 {
                     MessageBox.Show(Application.Current.MainWindow, "Json 생성을 실패했습니다.", "에러");
+                    NativeMethods.SetForegroundWindow(NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
                     return;
                 }
 
@@ -283,7 +284,8 @@ namespace PoeTradeSearch
                             "현재 거래소 접속이 원활하지 않을 수 있습니다." + '\n' +
                             "한/영 서버를 바꾸거나 거래소 접속을 확인 하신후 다시 시도하세요.",
                             "검색 실패"
-                       );
+                        );
+                        NativeMethods.SetForegroundWindow(NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
                         return;
                     }
                 }
@@ -295,22 +297,6 @@ namespace PoeTradeSearch
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             this.Close();
-        }
-
-        private void CkElder_Checked(object sender, RoutedEventArgs e)
-        {
-            if (ckElder.IsChecked == true)
-                ckShaper.IsChecked = false;
-
-            tkPrice_ReSet(sender, e);
-        }
-
-        private void CkShaper_Checked(object sender, RoutedEventArgs e)
-        {
-            if (ckShaper.IsChecked == true)
-                ckElder.IsChecked = false;
-
-            tkPrice_ReSet(sender, e);
         }
 
         private void cbAiiCheck_Checked(object sender, RoutedEventArgs e)
@@ -437,6 +423,7 @@ namespace PoeTradeSearch
             catch (Exception)
             {
                 MessageBox.Show(Application.Current.MainWindow, "해당 아이템의 위키 연결에 실패했습니다.", "에러");
+                NativeMethods.SetForegroundWindow(NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
             }
         }
 
@@ -474,7 +461,7 @@ namespace PoeTradeSearch
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            if (mIsAdministrator && mConfigData != null)
+            if (mAdministrator && mConfigData != null)
             {
                 if (mIsHotKey)
                     RemoveRegisterHotKey();

@@ -46,6 +46,11 @@ namespace PoeTradeSearch
 
         internal const string Shaper = "쉐이퍼 아이템";
         internal const string Elder = "엘더 아이템";
+        internal const string Crusader = "십자군 아이템";
+        internal const string Redeemer = "대속자 아이템";
+        internal const string Hunter = "사냥꾼 아이템";
+        internal const string Warlord = "전쟁군주 아이템";
+
         internal const string Synthesis = "결합된 아이템";
         internal const string Synthesised = "결합된";
         internal const string Captured = "포획한 야수";
