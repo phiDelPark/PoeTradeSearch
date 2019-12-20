@@ -363,6 +363,11 @@ namespace PoeTradeSearch
             TkPrice_MouseLeftButtonDown(null, null);
         }
 
+        private void cbPriceListCount_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TkPrice_MouseLeftButtonDown(null, null);
+        }
+
         private void TkPrice_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
             tkPrice1.Foreground = System.Windows.SystemColors.HighlightBrush;
@@ -393,6 +398,7 @@ namespace PoeTradeSearch
         private void Border_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             liPriceLayout.Visibility = liPriceLayout.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
+            bdPriceOptions.Visibility = liPriceLayout.Visibility;
         }
 
         private void tkPrice_ReSet(object sender, RoutedEventArgs e)
@@ -437,7 +443,8 @@ namespace PoeTradeSearch
                 "소켓 정보는 홈[소][대] 연결[소][대] 로 보면됩니다." + '\n' + '\n' + '\n' +
                 "시세를 좌클릭하면 현재 옵션으로 다시 검색 합니다." + '\n' +
                 "시세를 우클릭하면 시세를 더 상세히 보여줍니다. (토글)" + '\n' + '\n' +
-                "시세정보) 총수. 최소값 ~ 최대값 = 많은[수] 1 ~ 2위" + '\n' + '\n' + '\n' +
+                "시세정보) 총수. 최소값 ~ 최대값 = 많은[수] 1 ~ 2위" + '\n' +
+                "            (총수 뒤에 + 가 붙으면 매물이 총수 보다 더 많다는 표시)" + '\n' + '\n' + '\n' +
                 "설정 파일에 설정된 단축키는 관리자 권한으로 실행해야 작동합니다.",
                 "POE 거래소 검색"
                 );

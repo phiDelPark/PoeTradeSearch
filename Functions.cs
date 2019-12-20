@@ -434,6 +434,9 @@ namespace PoeTradeSearch
                     mConfigData = Json.Deserialize<ConfigData>(json);
                 }
 
+                if (mConfigData.Options.SearchPriceCount > 80)
+                    mConfigData.Options.SearchPriceCount = 80;
+
                 //-----------------------------
 
                 if (mCreateDatabase)
@@ -740,10 +743,18 @@ namespace PoeTradeSearch
         {
             tkPrice1.Text = "시세 확인중...";
             tkPriceTotal.Text = "";
+
+            int listCount = (int)Math.Ceiling(mConfigData.Options.SearchPriceCount / 5);
+            if(bdPriceOptions.Visibility == Visibility.Visible)
+            {
+                listCount = (cbPriceListCount.SelectedIndex + 1) * 4;
+            }
+
             priceThread?.Interrupt();
             priceThread?.Abort();
             priceThread = new Thread(() => PriceUpdate(
-                    exchange != null ? exchange : new string[1] { CreateJson(itemOptions, true) }
+                    exchange != null ? exchange : new string[1] { CreateJson(itemOptions, true) },
+                    listCount
                 ));
             priceThread.Start();
         }
@@ -819,6 +830,11 @@ namespace PoeTradeSearch
             cbRarity.Items.Add(ResStr.Rare);
             cbRarity.Items.Add(ResStr.Unique);
 
+            cbPriceListCount.SelectionChanged -= cbPriceListCount_SelectionChanged;
+            cbPriceListCount.SelectedIndex = (int)Math.Ceiling(mConfigData.Options.SearchPriceCount / 20) - 1;
+            cbPriceListCount.SelectionChanged += cbPriceListCount_SelectionChanged;
+
+            bdPriceOptions.Visibility = Visibility.Hidden;
             liPriceLayout.Visibility = Visibility.Hidden;
             liPrice.Items.Clear();
 
@@ -1511,7 +1527,7 @@ namespace PoeTradeSearch
             }
         }
 
-        private void PriceUpdate(string[] entity)
+        private void PriceUpdate(string[] entity, int listCount)
         {
             string result = "정보가 없습니다";
             string result2 = "";
@@ -1542,23 +1558,24 @@ namespace PoeTradeSearch
 
                     if (sResult != null)
                     {
-                        int total = 0;
                         ResultData resultData = Json.Deserialize<ResultData>(sResult);
                         Dictionary<string, int> currencys = new Dictionary<string, int>();
 
+                        int total = 0;
+                        int resultCount = resultData.Result.Length;
+
                         if (resultData.Result.Length > 0)
                         {
-                            int xcnt = (int)Math.Ceiling(mConfigData.Options.SearchPriceCount / 5);
                             string ents0 = "", ents1 = "";
 
                             if (entity.Length > 1)
                             {
-                                xcnt = 6;
+                                listCount = listCount + 2;
                                 ents0 = Regex.Replace(entity[0], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
                                 ents1 = Regex.Replace(entity[1], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
                             }
 
-                            for (int x = 0; x < xcnt; x++)
+                            for (int x = 0; x < listCount; x++)
                             {
                                 string[] tmp = new string[5];
                                 int cnt = x * 5;
@@ -1601,6 +1618,7 @@ namespace PoeTradeSearch
 
                                         if (fetchData.Result[i].Listing.Price != null && fetchData.Result[i].Listing.Price.Amount > 0)
                                         {
+                                            string account = fetchData.Result[i].Listing.Account.Name;
                                             string key = fetchData.Result[i].Listing.Price.Currency;
                                             double amount = fetchData.Result[i].Listing.Price.Amount;
                                             string keyName = ResStr.lExchangeCurrency.ContainsValue(key) ? ResStr.lExchangeCurrency.FirstOrDefault(o => o.Value == key).Key : key;
@@ -1611,10 +1629,10 @@ namespace PoeTradeSearch
                                                 {
                                                     string tName2 = ResStr.lExchangeCurrency.ContainsValue(entity[1])
                                                                     ? ResStr.lExchangeCurrency.FirstOrDefault(o => o.Value == entity[1]).Key : entity[1];
-                                                    liPrice.Items.Add(Math.Round(1 / amount, 4) + " " + tName2 + " <-> " + Math.Round(amount, 4) + " " + keyName);
+                                                    liPrice.Items.Add(Math.Round(1 / amount, 4) + " " + tName2 + " <-> " + Math.Round(amount, 4) + " " + keyName + " [" + account + "]");
                                                 }
                                                 else
-                                                    liPrice.Items.Add(amount + " " + keyName);
+                                                    liPrice.Items.Add(amount + " " + keyName + " [" + account + "]");
                                             }));
 
                                             if (entity.Length > 1)
@@ -1676,7 +1694,7 @@ namespace PoeTradeSearch
                         tkPriceTotal.Dispatcher.BeginInvoke(DispatcherPriority.Background,
                             (ThreadStart)delegate ()
                             {
-                                tkPriceTotal.Text = total > 0 ? total + "." : "";
+                                tkPriceTotal.Text = total > 0 ? total + (resultCount > total ? "+" : ".") : "";
                             }
                         );
 
@@ -1801,7 +1819,12 @@ namespace PoeTradeSearch
                     JQ.Filters.Misc.Filters.Crusader.Option = itemOptions.Influence == 3 ? "true" : "any";
                     JQ.Filters.Misc.Filters.Redeemer.Option = itemOptions.Influence == 4 ? "true" : "any";
                     JQ.Filters.Misc.Filters.Hunter.Option = itemOptions.Influence == 5 ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Warlord.Option = itemOptions.Influence == 6 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Warlord.Option = "any";
+                    // 바보같은 Cylance 란 백신이 이 부분을 오진을 하여 이 코드를 꼬아 사용하기로 함... ;;;
+                    if (itemOptions.Influence != 0 && itemOptions.Influence > 5)
+                    {
+                        JQ.Filters.Misc.Filters.Warlord.Option = "true";
+                    }
 
                     JQ.Filters.Misc.Filters.Synthesis.Option = itemOptions.Synthesis == true ? "true" : "any";
                     JQ.Filters.Misc.Filters.Corrupted.Option = itemOptions.Corrupt == 1 ? "true" : (itemOptions.Corrupt == 2 ? "false" : "any");

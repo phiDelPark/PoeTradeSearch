@@ -223,6 +223,13 @@ namespace PoeTradeSearch
         }
 
         [DataContract]
+        internal class AccountData
+        {
+            [DataMember(Name = "name")]
+            internal string Name = "";
+        }
+
+        [DataContract]
         internal class PriceData
         {
             [DataMember(Name = "type")]
@@ -240,6 +247,9 @@ namespace PoeTradeSearch
         {
             [DataMember(Name = "indexed")]
             internal string Indexed = "";
+
+            [DataMember(Name = "account")]
+            internal AccountData Account = new AccountData();
 
             [DataMember(Name = "price")]
             internal PriceData Price = new PriceData();

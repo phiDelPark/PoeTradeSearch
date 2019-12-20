@@ -31,7 +31,7 @@
         "server_redirect":false,     // 일부 환경에서 서버 데이터를 못받아와 거래소 접속이 안되는 경우 사용
         "search_by_type":false,      // 기본 검색시 이름이 아닌 유형으로 검색 (매직 레어 장비 한정) [true, false]
         "search_before_day":7,       // 검색시 해당일 전 날로 검색 [0, 1, 3, 7, 14] 값 중에서 선택
-        "search_price_count":20,     // 시세 검색 목록 수 (수가 많을수록 느려집니다)
+        "search_price_count":20,     // 시세 검색 목록 수 (최대 80, 수가 많을수록 느려집니다)
         "auto_select_pseudo":true,   // 유사 옵션으로 검색이 가능하면 유사로 자동 선택 [true, false]
         "auto_check_unique":true,    // 유니크 아이템은 기본적으로 옵션 모두 선택 [true, false]
         "check_updates":true,        // 시작시 최신 버전 체크 [true, false]

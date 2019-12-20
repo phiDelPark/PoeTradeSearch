@@ -212,6 +212,18 @@
             </Grid>
         </Border>
 
+        <Border Name="bdPriceOptions" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Margin="0,353,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="385" Height="50" Visibility="Hidden">
+            <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
+                <Label Content="목록 수:" HorizontalAlignment="Left" Margin="261,15,0,0" VerticalAlignment="Top" />
+                <ComboBox Name="cbPriceListCount" HorizontalAlignment="Left" Margin="319,15,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="56" SelectionChanged="cbPriceListCount_SelectionChanged">
+                    <ComboBoxItem>20</ComboBoxItem>
+                    <ComboBoxItem>40</ComboBoxItem>
+                    <ComboBoxItem>60</ComboBoxItem>
+                    <ComboBoxItem>80</ComboBoxItem>
+                </ComboBox>
+            </Grid>
+        </Border>
+
         <Grid Name="liPriceLayout" Margin="0,60,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="385" Height="292" Visibility="Hidden">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
