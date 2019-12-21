@@ -579,7 +579,7 @@ namespace PoeTradeSearch
             {
                 IntPtr findHwnd = NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption);
 
-                if (!mIsPause && !mClipboardBlock && NativeMethods.GetForegroundWindow().Equals(findHwnd))
+                if (!mIsPause && !mClipboardBlock && !NativeMethods.GetForegroundWindow().Equals(findHwnd))
                 {
                     try
                     {
@@ -741,11 +741,11 @@ namespace PoeTradeSearch
 
         protected void PriceUpdateThreadWorker(ItemOption itemOptions, string[] exchange)
         {
-            tkPrice1.Text = "시세 확인중...";
-            tkPriceTotal.Text = "";
+            tkPriceInfo.Text = "시세 확인중...";
+            tkPriceCount.Text = "";
 
             int listCount = (int)Math.Ceiling(mConfigData.Options.SearchPriceCount / 5);
-            if(bdPriceOptions.Visibility == Visibility.Visible)
+            if(tabControl1.SelectedIndex == 1)
             {
                 listCount = (cbPriceListCount.SelectedIndex + 1) * 4;
             }
@@ -830,15 +830,11 @@ namespace PoeTradeSearch
             cbRarity.Items.Add(ResStr.Rare);
             cbRarity.Items.Add(ResStr.Unique);
 
-            cbPriceListCount.SelectionChanged -= cbPriceListCount_SelectionChanged;
             cbPriceListCount.SelectedIndex = (int)Math.Ceiling(mConfigData.Options.SearchPriceCount / 20) - 1;
-            cbPriceListCount.SelectionChanged += cbPriceListCount_SelectionChanged;
 
-            cbPriceFilters.SelectedIndex = 0;
-            tbPriceFilterMin.Text = "1";
+            tabControl1.SelectedIndex = 0;
+            tbPriceFilterMin.Text = "";
 
-            bdPriceOptions.Visibility = Visibility.Hidden;
-            liPriceLayout.Visibility = Visibility.Hidden;
             liPrice.Items.Clear();
 
             for (int i = 0; i < 10; i++)
@@ -1514,8 +1510,8 @@ namespace PoeTradeSearch
                     {
                         PriceUpdateThreadWorker(GetItemOptions(), null);
 
-                        tkPrice1.Foreground = System.Windows.SystemColors.WindowTextBrush;
-                        tkPriceTotal.Foreground = System.Windows.SystemColors.WindowTextBrush;
+                        tkPriceInfo.Foreground = System.Windows.SystemColors.WindowTextBrush;
+                        tkPriceCount.Foreground = System.Windows.SystemColors.WindowTextBrush;
 
                         this.ShowActivated = false;
                         this.Visibility = Visibility.Visible;
@@ -1694,10 +1690,17 @@ namespace PoeTradeSearch
                             }
                         }
 
-                        tkPriceTotal.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                        cbPriceListTotal.Dispatcher.BeginInvoke(DispatcherPriority.Background,
                             (ThreadStart)delegate ()
                             {
-                                tkPriceTotal.Text = total > 0 ? total + (resultCount > total ? "+" : ".") : "";
+                                cbPriceListTotal.Text = total + "/" + resultCount + " 검색";
+                            }
+                        );
+
+                        tkPriceCount.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                            (ThreadStart)delegate ()
+                            {
+                                tkPriceCount.Text = total > 0 ? total + (resultCount > total ? "+" : ".") : "";
                             }
                         );
 
@@ -1713,10 +1716,18 @@ namespace PoeTradeSearch
                 }
             }
 
-            tkPrice1.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+            tkPriceInfo.Dispatcher.BeginInvoke(DispatcherPriority.Background,
                 (ThreadStart)delegate ()
                 {
-                    tkPrice1.Text = result + (result2 != "" ? " = " + result2 : "");
+                    tkPriceInfo.Text = result + (result2 != "" ? " = " + result2 : "");
+                }
+            );
+
+            liPrice.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                (ThreadStart)delegate ()
+                {
+                    if (liPrice.Items.Count == 0)
+                        liPrice.Items.Add(result + (result2 != "" ? " = " + result2 : ""));
                 }
             );
         }
@@ -1742,7 +1753,7 @@ namespace PoeTradeSearch
             itemOption.LvMin = StrToDouble(tbLvMin.Text, 99999);
             itemOption.LvMax = StrToDouble(tbLvMax.Text, 99999);
 
-            itemOption.PriceMin = bdPriceOptions.Visibility == Visibility.Hidden || cbPriceFilters.SelectedIndex < 1 ? 0 : StrToDouble(tbPriceFilterMin.Text, 99999);
+            itemOption.PriceMin = tabControl1.SelectedIndex != 1 ? 0 : StrToDouble(tbPriceFilterMin.Text, 99999);
             itemOption.Rarity = (string)cbRarity.SelectedValue;
 
             int total_res_idx = -1;

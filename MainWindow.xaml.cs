@@ -104,7 +104,7 @@ namespace PoeTradeSearch
             ResStr.ServerType = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(ResStr.ServerType.ToLower()).Replace(" ", "%20");
             ResStr.ServerLang = (byte)(mConfigData.Options.Server == "en" ? 1 : 0);
 
-            ComboBox[] cbs = { cbOrbs, cbSplinters , cbCorrupt, cbPriceFilters, cbPriceListCount, cbInfluence };
+            ComboBox[] cbs = { cbOrbs, cbSplinters , cbCorrupt, cbPriceListCount, cbInfluence };
             foreach(ComboBox cb in cbs)
             {
                 ControlTemplate ct = cb.Template;
@@ -363,21 +363,16 @@ namespace PoeTradeSearch
             TkPrice_MouseLeftButtonDown(null, null);
         }
 
-        private void cbPriceListCount_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            TkPrice_MouseLeftButtonDown(null, null);
-        }
-
         private void TkPrice_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            tkPrice1.Foreground = System.Windows.SystemColors.HighlightBrush;
-            tkPriceTotal.Foreground = System.Windows.SystemColors.HighlightBrush;
+            tkPriceInfo.Foreground = System.Windows.SystemColors.HighlightBrush;
+            tkPriceCount.Foreground = System.Windows.SystemColors.HighlightBrush;
         }
 
         private void TkPrice_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            tkPrice1.Foreground = System.Windows.SystemColors.WindowTextBrush;
-            tkPriceTotal.Foreground = System.Windows.SystemColors.WindowTextBrush;
+            tkPriceInfo.Foreground = System.Windows.SystemColors.WindowTextBrush;
+            tkPriceCount.Foreground = System.Windows.SystemColors.WindowTextBrush;
         }
 
         private void TkPrice_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -395,25 +390,31 @@ namespace PoeTradeSearch
             PriceUpdateThreadWorker(exchange != null ? null : GetItemOptions(), exchange);
         }
 
-        private void Border_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            liPriceLayout.Visibility = liPriceLayout.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
-            bdPriceOptions.Visibility = liPriceLayout.Visibility;
-        }
-
         private void tkPrice_ReSet(object sender, RoutedEventArgs e)
         {
-            tkPrice1.Foreground = System.Windows.Media.Brushes.DeepPink;
-            tkPriceTotal.Foreground = System.Windows.Media.Brushes.DeepPink;
+            tkPriceInfo.Foreground = System.Windows.Media.Brushes.DeepPink;
+            tkPriceCount.Foreground = System.Windows.Media.Brushes.DeepPink;
         }
 
         private void tkPrice_ReSet(object sender, SelectionChangedEventArgs e)
         {
-            if (tkPrice1 != null)
+            if (tkPriceInfo != null)
             {
-                tkPrice1.Foreground = System.Windows.Media.Brushes.DeepPink;
-                tkPriceTotal.Foreground = System.Windows.Media.Brushes.DeepPink;
+                tkPriceInfo.Foreground = System.Windows.Media.Brushes.DeepPink;
+                tkPriceCount.Foreground = System.Windows.Media.Brushes.DeepPink;
             }
+        }
+
+        private void tabControl1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            cbPriceListTotal.Visibility = tabControl1.SelectedIndex == 1 ? Visibility.Visible : Visibility.Hidden;
+            tbHelpText.Text = tabControl1.SelectedIndex == 1 ? "최소 값 단위는 카오스 오브" : "시세 클릭시 재검색";
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+           cbPriceListTotal.Text = "0/0 검색";
+           TkPrice_MouseLeftButtonDown(null, null);
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
