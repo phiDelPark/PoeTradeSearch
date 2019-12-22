@@ -199,6 +199,11 @@ namespace PoeTradeSearch
             this.Visibility = Visibility.Hidden;
         }
 
+        private void Window_Activated(object sender, EventArgs e)
+        {
+
+        }
+
         private void Window_Deactivated(object sender, EventArgs e)
         {
             WindowInteropHelper helper = new WindowInteropHelper(this);
@@ -207,6 +212,8 @@ namespace PoeTradeSearch
                 NativeMethods.GWL_EXSTYLE,
                 NativeMethods.GetWindowLong(helper.Handle, NativeMethods.GWL_EXSTYLE) | NativeMethods.WS_EX_NOACTIVATE
             );
+            btnClose.Background = btnSearch.Background;
+            btnClose.Foreground = btnSearch.Foreground;
         }
 
         private void TbOpt0_0_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -220,6 +227,8 @@ namespace PoeTradeSearch
                     NativeMethods.GetWindowLong(helper.Handle, NativeMethods.GWL_EXSTYLE) & ~NativeMethods.WS_EX_NOACTIVATE
                 );
                 NativeMethods.SetForegroundWindow(helper.Handle);
+                btnClose.Background = System.Windows.SystemColors.HighlightBrush;
+                btnClose.Foreground = System.Windows.SystemColors.HighlightTextBrush;
             }
         }
 

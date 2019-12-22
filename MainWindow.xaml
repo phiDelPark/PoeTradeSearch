@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoeTradeSearch"
         mc:Ignorable="d" ResizeMode="NoResize" Topmost="True" SizeToContent="WidthAndHeight" Left="30" Top="30" FontFamily="Malgun Gothic" FontSize="12"
-        Title="POE 거래소 검색" Loaded="Window_Loaded" Closing="Window_Closing" Closed="Window_Closed" Deactivated="Window_Deactivated" PreviewKeyDown="Window_PreviewKeyDown">
+        Title="POE 거래소 검색" Loaded="Window_Loaded" Closing="Window_Closing" Closed="Window_Closed" Deactivated="Window_Deactivated" PreviewKeyDown="Window_PreviewKeyDown" Activated="Window_Activated">
 
     <Grid Margin="25, 20, 25, 25">
         <ComboBox Name="cbRarity" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
@@ -38,12 +38,12 @@
             </Button.Resources>
         </Button>
 
-        <TextBlock Name="tbHelpText" Text="시세 클릭시 새로고침" HorizontalAlignment="Left" Margin="5,430,0,0" VerticalAlignment="Top" IsEnabled="False" Foreground="Gray" />
+        <TextBlock Name="tbHelpText" Text="시세 클릭시 새로고침" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" HorizontalAlignment="Left" Margin="5,430,0,0" VerticalAlignment="Top" IsEnabled="False" />
 
         <Button Name="btnSearch" Content="거래소에서 찾기 (한글)" HorizontalAlignment="Left" Margin="0,460,0,-5" VerticalAlignment="Top" Width="245" Height="38" Click="Button_Click" />
         <Button Content="한" HorizontalAlignment="Left" Margin="245,460,0,0" VerticalAlignment="Top" Height="19" Width="19" Tag="0" Click="Button_Click_2" />
         <Button Content="영" HorizontalAlignment="Left" Margin="245,479,0,-2" VerticalAlignment="Top" Height="19" Width="19" Tag="1" Click="Button_Click_2" />
-        <Button Name="btnClose" Content="닫기" HorizontalAlignment="Left" Margin="290,460,0,-5" VerticalAlignment="Top" Width="95" Height="38" Click="Button_Click_1" IsDefault="True" />
+        <Button Name="btnClose" Content="닫기" HorizontalAlignment="Left" Margin="290,460,0,-5" VerticalAlignment="Top" Width="95" Height="38" Click="Button_Click_1" IsDefault="True" FontWeight="Bold" />
 
         <TabControl Name="tabControl1" BorderThickness="0 1" HorizontalAlignment="Left" Height="372" Margin="0,77,0,0" VerticalAlignment="Top" Width="385" TabStripPlacement="Bottom" SelectionChanged="tabControl1_SelectionChanged">
             <TabControl.Resources>

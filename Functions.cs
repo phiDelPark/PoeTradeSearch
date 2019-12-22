@@ -1482,7 +1482,6 @@ namespace PoeTradeSearch
                         ckLv.Content = "등급";
                         ckLv.IsChecked = true;
                         Synthesis.Content = ResStr.Blight;
-                        lbSocketBackground.Visibility = Visibility.Visible;
                     } 
                     else if (is_gem)
                     {
@@ -1494,16 +1493,12 @@ namespace PoeTradeSearch
                         ckLv.IsChecked = tbLvMin.Text != "" && int.Parse(tbLvMin.Text) > 82;
                     }
 
-                    bdDetail.Visibility = is_detail ? Visibility.Visible : Visibility.Hidden;
-                    /*
-                        Thickness thickness = bdDetail.Margin;
-                        thickness.Bottom = is_gem ? 145 : 91;
-                        bdDetail.Margin = thickness;
-                    */
-
                     bool IsExchangeCurrency = inherit == "Currency" && ResStr.lExchangeCurrency.ContainsKey(itemType);
                     bdExchange.Visibility = !is_gem && (is_detail || IsExchangeCurrency) ? Visibility.Visible : Visibility.Hidden;
                     bdExchange.IsEnabled = IsExchangeCurrency;
+
+                    bdDetail.Visibility = is_detail ? Visibility.Visible : Visibility.Hidden;
+                    lbSocketBackground.Visibility = is_map || is_detail ? Visibility.Visible : Visibility.Hidden;
 
                     if (isWinShow || this.Visibility == Visibility.Visible)
                     {
@@ -1828,19 +1823,19 @@ namespace PoeTradeSearch
                     JQ.Filters.Type.Filters.Rarity.Option = "any";
                     JQ.Filters.Type.Filters.Category.Option = "any";
 
-                    JQ.Filters.Misc.Filters.Shaper.Option = itemOptions.Influence == 1 ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Elder.Option = itemOptions.Influence == 2 ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Crusader.Option = itemOptions.Influence == 3 ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Redeemer.Option = itemOptions.Influence == 4 ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Hunter.Option = itemOptions.Influence == 5 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Shaper.Option = Inherit != "Maps" && itemOptions.Influence == 1 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Elder.Option = Inherit != "Maps" && itemOptions.Influence == 2 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Crusader.Option = Inherit != "Maps" && itemOptions.Influence == 3 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Redeemer.Option = Inherit != "Maps" && itemOptions.Influence == 4 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Hunter.Option = Inherit != "Maps" && itemOptions.Influence == 5 ? "true" : "any";
                     JQ.Filters.Misc.Filters.Warlord.Option = "any";
                     // 바보같은 Cylance 란 백신이 이 부분을 오진을 하여 이 코드를 꼬아 사용하기로 함... ;;;
-                    if (itemOptions.Influence != 0 && itemOptions.Influence > 5)
+                    if (Inherit != "Maps" && (itemOptions.Influence != 0 && itemOptions.Influence > 5))
                     {
                         JQ.Filters.Misc.Filters.Warlord.Option = "true";
                     }
 
-                    JQ.Filters.Misc.Filters.Synthesis.Option = itemOptions.Synthesis == true ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Synthesis.Option = Inherit != "Maps" && itemOptions.Synthesis == true ? "true" : "any";
                     JQ.Filters.Misc.Filters.Corrupted.Option = itemOptions.Corrupt == 1 ? "true" : (itemOptions.Corrupt == 2 ? "false" : "any");
 
                     JQ.Filters.Trade.Disabled = mConfigData.Options.SearchBeforeDay == 0;
@@ -1862,8 +1857,8 @@ namespace PoeTradeSearch
                     JQ.Filters.Socket.Filters.Sockets.Max = itemOptions.SocketMax;
 
                     JQ.Filters.Misc.Disabled = !(
-                        itemOptions.ChkQuality == true || (Inherit != "Maps" && itemOptions.ChkLv == true) || itemOptions.Synthesis == true 
-                        || itemOptions.Influence != 0 || itemOptions.Corrupt != 0
+                        itemOptions.ChkQuality == true || (Inherit != "Maps" && itemOptions.Influence != 0) || itemOptions.Corrupt != 0
+                        || (Inherit != "Maps" && itemOptions.ChkLv == true) || (Inherit != "Maps" && itemOptions.Synthesis == true)
                     );
 
                     JQ.Filters.Misc.Filters.Quality.Min = itemOptions.ChkQuality == true ? itemOptions.QualityMin : 99999;
@@ -1874,12 +1869,14 @@ namespace PoeTradeSearch
                     JQ.Filters.Misc.Filters.Gem_level.Min = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMin : 99999;
                     JQ.Filters.Misc.Filters.Gem_level.Max = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMax : 99999;
                     
-                    JQ.Filters.Map.Disabled = !(Inherit == "Maps" && itemOptions.ChkLv == true);
+                    JQ.Filters.Map.Disabled = !(
+                        Inherit == "Maps" && (itemOptions.ChkLv == true || itemOptions.Synthesis == true || itemOptions.Influence != 0)
+                    );
                     JQ.Filters.Map.Filters.Tier.Min = itemOptions.ChkLv == true && Inherit == "Maps" ? itemOptions.LvMin : 99999;
                     JQ.Filters.Map.Filters.Tier.Max = itemOptions.ChkLv == true && Inherit == "Maps" ? itemOptions.LvMax : 99999;
-                    JQ.Filters.Map.Filters.Shaper.Option = itemOptions.Influence == 1 ? "true" : "any";
-                    JQ.Filters.Map.Filters.Elder.Option = itemOptions.Influence == 2 ? "true" : "any";
-                    JQ.Filters.Map.Filters.Blight.Option = itemOptions.Synthesis == true ? "true" : "any";
+                    JQ.Filters.Map.Filters.Shaper.Option = Inherit == "Maps" && itemOptions.Influence == 1 ? "true" : "any";
+                    JQ.Filters.Map.Filters.Elder.Option = Inherit == "Maps" && itemOptions.Influence == 2 ? "true" : "any";
+                    JQ.Filters.Map.Filters.Blight.Option = Inherit == "Maps" && itemOptions.Synthesis == true ? "true" : "any";
 
                     if (itemOptions.itemfilters.Count > 0)
                     {
