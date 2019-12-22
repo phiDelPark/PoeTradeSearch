@@ -13,7 +13,7 @@
                 <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
             </ComboBox.Resources>
         </ComboBox>
-        <CheckBox Name="cbName" Content="아이템 이름" HorizontalAlignment="Left" Margin="4,26,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Width="377" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
+        <CheckBox Name="cbName" Content="아이템 이름" HorizontalAlignment="Left" Margin="4,26,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Width="377" Checked="cbName_Checked" Unchecked="cbName_Checked" />
 
         <Label Name="lbDPS" Content="옵션" HorizontalAlignment="Left" Margin="0,54,0,0" VerticalAlignment="Top" />
         <Label Content="최소" HorizontalAlignment="Left" Margin="280,54,0,0" VerticalAlignment="Top" />
@@ -38,7 +38,7 @@
             </Button.Resources>
         </Button>
 
-        <TextBlock Name="tbHelpText" Text="시세 클릭시 새로고침" HorizontalAlignment="Left" Margin="5,430,0,0" VerticalAlignment="Top" IsEnabled="False" Foreground="#FFB6B0B0" />
+        <TextBlock Name="tbHelpText" Text="시세 클릭시 새로고침" HorizontalAlignment="Left" Margin="5,430,0,0" VerticalAlignment="Top" IsEnabled="False" Foreground="Gray" />
 
         <Button Name="btnSearch" Content="거래소에서 찾기 (한글)" HorizontalAlignment="Left" Margin="0,460,0,-5" VerticalAlignment="Top" Width="245" Height="38" Click="Button_Click" />
         <Button Content="한" HorizontalAlignment="Left" Margin="245,460,0,0" VerticalAlignment="Top" Height="19" Width="19" Tag="0" Click="Button_Click_2" />
@@ -173,14 +173,14 @@
                     <TextBox Name="tbQualityMin" HorizontalAlignment="Left" Height="18" Margin="70,294,0,0" Text="" VerticalAlignment="Top" Width="25" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
                     <TextBox Name="tbQualityMax" HorizontalAlignment="Left" Height="18" Margin="99,294,0,0" Text="" VerticalAlignment="Top" Width="25" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
 
-                    <Label Content="&amp;" HorizontalAlignment="Left" Margin="238,270,0,0" VerticalAlignment="Top" Width="22" />
-                    <CheckBox Name="ckSocket" Content="소켓" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" HorizontalAlignment="Left" Margin="148,275,0,0" VerticalAlignment="Top" Width="50" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
-                    <TextBox Name="tbSocketMin" HorizontalAlignment="Left" Height="18" Margin="203,272,0,0" Text="" VerticalAlignment="Top" Width="16" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
-                    <TextBox Name="tbSocketMax" HorizontalAlignment="Left" Height="18" Margin="223,272,0,0" Text="" VerticalAlignment="Top" Width="16" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
-                    <TextBox Name="tbLinksMin" HorizontalAlignment="Left" Height="18" Margin="258,272,0,0" Text="" VerticalAlignment="Top" Width="16" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
-                    <TextBox Name="tbLinksMax" HorizontalAlignment="Left" Height="18" Margin="278,272,0,0" Text="" VerticalAlignment="Top" Width="16" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
+                    <Label Content="&amp;" HorizontalAlignment="Left" Margin="235,270,0,0" VerticalAlignment="Top" Width="22" />
+                    <CheckBox Name="ckSocket" Content="소켓" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" HorizontalAlignment="Left" Margin="145,275,0,0" VerticalAlignment="Top" Width="50" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
+                    <TextBox Name="tbSocketMin" HorizontalAlignment="Left" Height="18" Margin="200,272,0,0" Text="" VerticalAlignment="Top" Width="16" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
+                    <TextBox Name="tbSocketMax" HorizontalAlignment="Left" Height="18" Margin="220,272,0,0" Text="" VerticalAlignment="Top" Width="16" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
+                    <TextBox Name="tbLinksMin" HorizontalAlignment="Left" Height="18" Margin="255,272,0,0" Text="" VerticalAlignment="Top" Width="16" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
+                    <TextBox Name="tbLinksMax" HorizontalAlignment="Left" Height="18" Margin="275,272,0,0" Text="" VerticalAlignment="Top" Width="16" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
 
-                    <CheckBox Name="Synthesis" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Content="결합" HorizontalAlignment="Left" Margin="148,297,0,0" VerticalAlignment="Top" Width="45" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
+                    <CheckBox Name="Synthesis" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Content="결합" HorizontalAlignment="Left" Margin="145,297,0,0" VerticalAlignment="Top" Width="45" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
 
                     <ComboBox Name="cbInfluence" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="317,270,0,0" VerticalAlignment="Top" Width="60" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
                         <ComboBox.Resources>

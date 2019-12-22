@@ -82,6 +82,9 @@ namespace PoeTradeSearch
             [DataMember(Name = "server_useragent")]
             internal string ServerUseragent = null;
 
+            [DataMember(Name = "search_price_min")]
+            internal decimal SearchPriceMin = 0;
+
             [DataMember(Name = "search_price_count")]
             internal decimal SearchPriceCount = 20;
 

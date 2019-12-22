@@ -390,6 +390,12 @@ namespace PoeTradeSearch
             PriceUpdateThreadWorker(exchange != null ? null : GetItemOptions(), exchange);
         }
 
+        private void cbName_Checked(object sender, RoutedEventArgs e)
+        {
+            cbName.Foreground = cbName.IsChecked == true ? lbDPS.Foreground : tbHelpText.Foreground;
+            tkPrice_ReSet(null, null);
+        }
+
         private void tkPrice_ReSet(object sender, RoutedEventArgs e)
         {
             tkPriceInfo.Foreground = System.Windows.Media.Brushes.DeepPink;
@@ -438,15 +444,12 @@ namespace PoeTradeSearch
         {
             MessageBox.Show(Application.Current.MainWindow,
                 "버전: " + GetFileVersion() + " (D." + mConfigData.Options.DataVersion + ")" + '\n' + '\n' +
-                "프로젝트: https://github.com/phiDelPark/PoeTradeSearch" + '\n' +
-                "도움말 위키: https://github.com/phiDelPark/PoeTradeSearch/wiki" + '\n' + '\n' + '\n' +
+                "프로젝트: https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' + '\n' +
                 "리그 선택은 설정 파일에서 설정 가능합니다." + '\n' + '\n' +
-                "소켓 정보는 홈[소][대] 연결[소][대] 로 보면됩니다." + '\n' + '\n' + '\n' +
-                "시세를 좌클릭하면 현재 옵션으로 다시 검색 합니다." + '\n' +
-                "시세를 우클릭하면 시세를 더 상세히 보여줍니다. (토글)" + '\n' + '\n' +
-                "시세정보) 총수. 최소값 ~ 최대값 = 많은[수] 1 ~ 2위" + '\n' +
-                "            (총수 뒤에 + 가 붙으면 매물이 총수 보다 더 많다는 표시)" + '\n' + '\n' + '\n' +
-                "설정 파일에 설정된 단축키는 관리자 권한으로 실행해야 작동합니다.",
+                "소켓 정보는 홈[소][대] 연결[소][대] 로 보면됩니다." + '\n' + '\n' +
+                "시세정보) 총수. 최소값 ~ 최대값 = 많은[수] 1 ~ 2위" + '\n' + '\n' + '\n' +
+                "단축키 또는 창고휠 기능은 관리자 권한으로 실행해야 작동합니다." + '\n' +
+                "프로그램 설정은 데이터 폴더 Config.txt 파일을 열고 설정할 수 있습니다.",
                 "POE 거래소 검색"
                 );
 

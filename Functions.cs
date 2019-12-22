@@ -744,11 +744,7 @@ namespace PoeTradeSearch
             tkPriceInfo.Text = "시세 확인중...";
             tkPriceCount.Text = "";
 
-            int listCount = (int)Math.Ceiling(mConfigData.Options.SearchPriceCount / 5);
-            if(tabControl1.SelectedIndex == 1)
-            {
-                listCount = (cbPriceListCount.SelectedIndex + 1) * 4;
-            }
+            int listCount = (cbPriceListCount.SelectedIndex + 1) * 4;
 
             priceThread?.Interrupt();
             priceThread?.Abort();
@@ -829,11 +825,10 @@ namespace PoeTradeSearch
             cbRarity.Items.Add(ResStr.Magic);
             cbRarity.Items.Add(ResStr.Rare);
             cbRarity.Items.Add(ResStr.Unique);
-
-            cbPriceListCount.SelectedIndex = (int)Math.Ceiling(mConfigData.Options.SearchPriceCount / 20) - 1;
-
+            
             tabControl1.SelectedIndex = 0;
-            tbPriceFilterMin.Text = "";
+            cbPriceListCount.SelectedIndex = (int)Math.Ceiling(mConfigData.Options.SearchPriceCount / 20) - 1;
+            tbPriceFilterMin.Text = mConfigData.Options.SearchPriceMin > 0 ? mConfigData.Options.SearchPriceMin.ToString() : "";
 
             liPrice.Items.Clear();
 
@@ -1447,7 +1442,6 @@ namespace PoeTradeSearch
 
                     cbName.IsChecked = (itemRarity != ResStr.Rare && itemRarity != ResStr.Magic) || !(by_type && mConfigData.Options.SearchByType);
 
-
                     cbRarity.SelectedValue = itemRarity;
                     if (cbRarity.SelectedIndex == -1)
                     {
@@ -1753,7 +1747,7 @@ namespace PoeTradeSearch
             itemOption.LvMin = StrToDouble(tbLvMin.Text, 99999);
             itemOption.LvMax = StrToDouble(tbLvMax.Text, 99999);
 
-            itemOption.PriceMin = tabControl1.SelectedIndex != 1 ? 0 : StrToDouble(tbPriceFilterMin.Text, 99999);
+            itemOption.PriceMin = tbPriceFilterMin.Text == "" ? 0 : StrToDouble(tbPriceFilterMin.Text, 99999);
             itemOption.Rarity = (string)cbRarity.SelectedValue;
 
             int total_res_idx = -1;
