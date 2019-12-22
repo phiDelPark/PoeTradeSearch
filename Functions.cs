@@ -816,9 +816,12 @@ namespace PoeTradeSearch
             cbOrbs.FontWeight = FontWeights.Normal;
             cbSplinters.FontWeight = FontWeights.Normal;
 
-            ckLv.Content = ResStr.Lv;
             lbDPS.Content = "옵션";
             SetSearchButtonText();
+
+            ckLv.Content = ResStr.Lv;
+            Synthesis.Content = ResStr.Synthesis;
+            lbSocketBackground.Visibility = Visibility.Hidden;
 
             cbRarity.Items.Clear();
             cbRarity.Items.Add(ResStr.All);
@@ -1153,7 +1156,7 @@ namespace PoeTradeSearch
                         ckSocket.IsChecked = link > 4;
                     }
 
-                    bool is_plague = false;
+                    bool is_blight = false;
                     bool is_unIdentify = lItemOption[ResStr.Unidentify] == "_TRUE_";
                     bool is_map = lItemOption[ResStr.MaTier] != "";
                     bool is_gem = itemRarity == ResStr.Gem;
@@ -1199,9 +1202,9 @@ namespace PoeTradeSearch
 
                         if (is_map && itemType.Length > 5)
                         {
-                            if (itemType.IndexOf(ResStr.Plagued + " ") == 0)
+                            if (itemType.IndexOf(ResStr.Blighted + " ") == 0)
                             {
-                                is_plague = true;
+                                is_blight = true;
                                 itemType = itemType.Substring(6);
                             }
 
@@ -1302,7 +1305,6 @@ namespace PoeTradeSearch
                     }
                     else
                     {
-                        bool tmp_is_plague = is_plague;
                         int Imp_cnt = itemfilters.Count - ((itemRarity == ResStr.Normal || is_unIdentify) ? 0 : notImpCnt);
 
                         for (int i = 0; i < itemfilters.Count; i++)
@@ -1325,13 +1327,6 @@ namespace PoeTradeSearch
                                 if (((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex == -1)
                                 {
                                     ((ComboBox)this.FindName("cbOpt" + i)).SelectedValue = ResStr.Implicit;
-
-                                    if (tmp_is_plague && is_map && ((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex != -1)
-                                    {
-                                        ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = true;
-                                        itemfilters[i].disabled = false;
-                                        tmp_is_plague = false;
-                                    }
                                 }
                             }
                             else if (inherit != "" && (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue != ResStr.Crafted)
@@ -1455,6 +1450,9 @@ namespace PoeTradeSearch
                         cbRarity.SelectedIndex = 0;
                     }
 
+                    tbLvMin.Text = Regex.Replace(lItemOption[is_gem ? ResStr.Lv : ResStr.ItemLv].Trim(), "[^0-9]", "");
+                    tbQualityMin.Text = item_quality;
+
                     if (lItemOption[ResStr.Shaper] == "_TRUE_")
                         cbInfluence.SelectedIndex = 1;
                     else if (lItemOption[ResStr.Elder] == "_TRUE_")
@@ -1468,8 +1466,6 @@ namespace PoeTradeSearch
                     else if (lItemOption[ResStr.Warlord] == "_TRUE_")
                         cbInfluence.SelectedIndex = 6;
 
-                    Synthesis.IsChecked = lItemOption[ResStr.Synthesis] == "_TRUE_";
-
                     if (lItemOption[ResStr.Corrupt] == "_TRUE_")
                     {
                         cbCorrupt.BorderThickness = new Thickness(2);
@@ -1477,8 +1473,7 @@ namespace PoeTradeSearch
                         //ckCorrupt.Foreground = System.Windows.Media.Brushes.DarkRed;
                     }
 
-                    tbLvMin.Text = Regex.Replace(lItemOption[is_gem ? ResStr.Lv : ResStr.ItemLv].Trim(), "[^0-9]", "");
-                    tbQualityMin.Text = item_quality;
+                    Synthesis.IsChecked = (is_map && is_blight) || lItemOption[ResStr.Synthesis] == "_TRUE_";
 
                     if(is_map)
                     {
@@ -1486,6 +1481,8 @@ namespace PoeTradeSearch
                         tbLvMax.Text = lItemOption[ResStr.MaTier];
                         ckLv.Content = "등급";
                         ckLv.IsChecked = true;
+                        Synthesis.Content = ResStr.Blight;
+                        lbSocketBackground.Visibility = Visibility.Visible;
                     } 
                     else if (is_gem)
                     {
@@ -1880,9 +1877,9 @@ namespace PoeTradeSearch
                     JQ.Filters.Map.Disabled = !(Inherit == "Maps" && itemOptions.ChkLv == true);
                     JQ.Filters.Map.Filters.Tier.Min = itemOptions.ChkLv == true && Inherit == "Maps" ? itemOptions.LvMin : 99999;
                     JQ.Filters.Map.Filters.Tier.Max = itemOptions.ChkLv == true && Inherit == "Maps" ? itemOptions.LvMax : 99999;
-                    JQ.Filters.Map.Filters.Shaper.Option = "any";
-                    JQ.Filters.Map.Filters.Elder.Option = "any";
-                    JQ.Filters.Map.Filters.Blight.Option = "any";
+                    JQ.Filters.Map.Filters.Shaper.Option = itemOptions.Influence == 1 ? "true" : "any";
+                    JQ.Filters.Map.Filters.Elder.Option = itemOptions.Influence == 2 ? "true" : "any";
+                    JQ.Filters.Map.Filters.Blight.Option = itemOptions.Synthesis == true ? "true" : "any";
 
                     if (itemOptions.itemfilters.Count > 0)
                     {

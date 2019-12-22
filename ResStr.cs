@@ -42,7 +42,8 @@ namespace PoeTradeSearch
         internal const string Corrupt = "타락";
         internal const string Vaal = "바알";
         internal const string Unidentify = "미확인";
-        internal const string Plagued = "역병 걸린";
+        internal const string Blight = "역병 걸린 지도";
+        internal const string Blighted = "역병 걸린";
 
         internal const string Shaper = "쉐이퍼 아이템";
         internal const string Elder = "엘더 아이템";
