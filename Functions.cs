@@ -579,7 +579,7 @@ namespace PoeTradeSearch
             {
                 IntPtr findHwnd = NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption);
 
-                if (!mIsPause && !mClipboardBlock && !NativeMethods.GetForegroundWindow().Equals(findHwnd))
+                if (!mIsPause && !mClipboardBlock && NativeMethods.GetForegroundWindow().Equals(findHwnd))
                 {
                     try
                     {
@@ -816,6 +816,7 @@ namespace PoeTradeSearch
             cbOrbs.FontWeight = FontWeights.Normal;
             cbSplinters.FontWeight = FontWeights.Normal;
 
+            ckLv.Content = ResStr.Lv;
             lbDPS.Content = "옵션";
             SetSearchButtonText();
 
@@ -1479,7 +1480,14 @@ namespace PoeTradeSearch
                     tbLvMin.Text = Regex.Replace(lItemOption[is_gem ? ResStr.Lv : ResStr.ItemLv].Trim(), "[^0-9]", "");
                     tbQualityMin.Text = item_quality;
 
-                    if (is_gem)
+                    if(is_map)
+                    {
+                        tbLvMin.Text = lItemOption[ResStr.MaTier];
+                        tbLvMax.Text = lItemOption[ResStr.MaTier];
+                        ckLv.Content = "등급";
+                        ckLv.IsChecked = true;
+                    } 
+                    else if (is_gem)
                     {
                         ckLv.IsChecked = lItemOption[ResStr.Lv].IndexOf(" (" + ResStr.Max) > 0;
                         ckQuality.IsChecked = ckLv.IsChecked == true && item_quality != "" && int.Parse(item_quality) > 19;
@@ -1838,11 +1846,9 @@ namespace PoeTradeSearch
                     JQ.Filters.Misc.Filters.Synthesis.Option = itemOptions.Synthesis == true ? "true" : "any";
                     JQ.Filters.Misc.Filters.Corrupted.Option = itemOptions.Corrupt == 1 ? "true" : (itemOptions.Corrupt == 2 ? "false" : "any");
 
-                    JQ.Filters.Trade = new q_Trade_filters();
                     JQ.Filters.Trade.Disabled = mConfigData.Options.SearchBeforeDay == 0;
                     JQ.Filters.Trade.Filters.Indexed.Option = mConfigData.Options.SearchBeforeDay == 0 ? "any" : BeforeDayToString(mConfigData.Options.SearchBeforeDay);
                     JQ.Filters.Trade.Filters.SaleType.Option = useSaleType ? "priced" : "any";
-                    JQ.Filters.Trade.Filters.Price = new q_Min_And_Max();
                     JQ.Filters.Trade.Filters.Price.Min = 99999;
                     JQ.Filters.Trade.Filters.Price.Max = 99999;
 
@@ -1851,7 +1857,6 @@ namespace PoeTradeSearch
                         JQ.Filters.Trade.Filters.Price.Min = itemOptions.PriceMin;
                     }
 
-                    JQ.Filters.Socket = new q_Socket_filters();
                     JQ.Filters.Socket.Disabled = itemOptions.ChkSocket != true;
 
                     JQ.Filters.Socket.Filters.Links.Min = itemOptions.LinkMin;
@@ -1860,17 +1865,25 @@ namespace PoeTradeSearch
                     JQ.Filters.Socket.Filters.Sockets.Max = itemOptions.SocketMax;
 
                     JQ.Filters.Misc.Disabled = !(
-                        itemOptions.ChkQuality == true || itemOptions.ChkLv == true || itemOptions.Synthesis == true || itemOptions.Influence != 0 || itemOptions.Corrupt != 0
+                        itemOptions.ChkQuality == true || (Inherit != "Maps" && itemOptions.ChkLv == true) || itemOptions.Synthesis == true 
+                        || itemOptions.Influence != 0 || itemOptions.Corrupt != 0
                     );
 
                     JQ.Filters.Misc.Filters.Quality.Min = itemOptions.ChkQuality == true ? itemOptions.QualityMin : 99999;
                     JQ.Filters.Misc.Filters.Quality.Max = itemOptions.ChkQuality == true ? itemOptions.QualityMax : 99999;
 
-                    JQ.Filters.Misc.Filters.Ilvl.Min = itemOptions.ChkLv != true || Inherit == "Gems" ? 99999 : itemOptions.LvMin;
-                    JQ.Filters.Misc.Filters.Ilvl.Max = itemOptions.ChkLv != true || Inherit == "Gems" ? 99999 : itemOptions.LvMax;
+                    JQ.Filters.Misc.Filters.Ilvl.Min = itemOptions.ChkLv != true || Inherit == "Gems" || Inherit == "Maps" ? 99999 : itemOptions.LvMin;
+                    JQ.Filters.Misc.Filters.Ilvl.Max = itemOptions.ChkLv != true || Inherit == "Gems" || Inherit == "Maps" ? 99999 : itemOptions.LvMax;
                     JQ.Filters.Misc.Filters.Gem_level.Min = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMin : 99999;
                     JQ.Filters.Misc.Filters.Gem_level.Max = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMax : 99999;
                     
+                    JQ.Filters.Map.Disabled = !(Inherit == "Maps" && itemOptions.ChkLv == true);
+                    JQ.Filters.Map.Filters.Tier.Min = itemOptions.ChkLv == true && Inherit == "Maps" ? itemOptions.LvMin : 99999;
+                    JQ.Filters.Map.Filters.Tier.Max = itemOptions.ChkLv == true && Inherit == "Maps" ? itemOptions.LvMax : 99999;
+                    JQ.Filters.Map.Filters.Shaper.Option = "any";
+                    JQ.Filters.Map.Filters.Elder.Option = "any";
+                    JQ.Filters.Map.Filters.Blight.Option = "any";
+
                     if (itemOptions.itemfilters.Count > 0)
                     {
                         JQ.Stats = new q_Stats[1];
@@ -2017,7 +2030,7 @@ namespace PoeTradeSearch
                     sEntity = sEntity.Replace("{\"max\":99999,", "{");
                     sEntity = sEntity.Replace(",\"min\":99999}", "}");
 
-                    sEntity = Regex.Replace(sEntity, "\"(sale_type|rarity|category|corrupted|synthesised_item|shaper_item|elder_item|crusader_item|redeemer_item|hunter_item|warlord_item)\":{\"option\":\"any\"},?", "");
+                    sEntity = Regex.Replace(sEntity, "\"(sale_type|rarity|category|corrupted|synthesised_item|shaper_item|elder_item|crusader_item|redeemer_item|hunter_item|warlord_item|map_shaped|map_elder|map_blighted)\":{\"option\":\"any\"},?", "");
 
                     return sEntity.Replace("},}", "}}");
                 }

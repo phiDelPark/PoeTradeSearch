@@ -391,6 +391,32 @@ namespace PoeTradeSearch
         }
 
         [DataContract]
+        internal class q_Map_filters_filters
+        {
+            [DataMember(Name = "map_tier")]
+            internal q_Min_And_Max Tier = new q_Min_And_Max();
+
+            [DataMember(Name = "map_shaped")]
+            internal q_Option Shaper = new q_Option();
+
+            [DataMember(Name = "map_elder")]
+            internal q_Option Elder = new q_Option();
+
+            [DataMember(Name = "map_blighted")]
+            internal q_Option Blight = new q_Option();
+        }
+
+        [DataContract]
+        internal class q_Map_filters
+        {
+            [DataMember(Name = "disabled")]
+            internal bool Disabled = false;
+
+            [DataMember(Name = "filters")]
+            internal q_Map_filters_filters Filters = new q_Map_filters_filters();
+        }
+
+        [DataContract]
         internal class q_Trade_filters_filters
         {
             [DataMember(Name = "indexed")]
@@ -400,7 +426,7 @@ namespace PoeTradeSearch
             internal q_Option SaleType = new q_Option();
 
             [DataMember(Name = "price")]
-            internal q_Min_And_Max Price;
+            internal q_Min_And_Max Price = new q_Min_And_Max();
         }
 
         [DataContract]
@@ -419,14 +445,17 @@ namespace PoeTradeSearch
             [DataMember(Name = "type_filters")]
             internal q_Type_filters Type = new q_Type_filters();
 
+            [DataMember(Name = "socket_filters")]
+            internal q_Socket_filters Socket = new q_Socket_filters();
+
+            [DataMember(Name = "map_filters")]
+            internal q_Map_filters Map = new q_Map_filters();
+
             [DataMember(Name = "misc_filters")]
             internal q_Misc_filters Misc = new q_Misc_filters();
 
-            [DataMember(Name = "socket_filters")]
-            internal q_Socket_filters Socket;
-
             [DataMember(Name = "trade_filters")]
-            internal q_Trade_filters Trade;
+            internal q_Trade_filters Trade = new q_Trade_filters();
         }
 
         [DataContract]
