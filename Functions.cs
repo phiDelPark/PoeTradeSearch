@@ -742,7 +742,9 @@ namespace PoeTradeSearch
         protected void PriceUpdateThreadWorker(ItemOption itemOptions, string[] exchange)
         {
             tkPriceInfo.Text = "시세 확인중...";
+            cbPriceListTotal.Text = "0/0 검색";
             tkPriceCount.Text = "";
+            liPrice.Items.Clear();
 
             int listCount = (cbPriceListCount.SelectedIndex + 1) * 4;
 
@@ -834,8 +836,6 @@ namespace PoeTradeSearch
             cbPriceListCount.SelectedIndex = (int)Math.Ceiling(mConfigData.Options.SearchPriceCount / 20) - 1;
             tbPriceFilterMin.Text = mConfigData.Options.SearchPriceMin > 0 ? mConfigData.Options.SearchPriceMin.ToString() : "";
 
-            liPrice.Items.Clear();
-
             for (int i = 0; i < 10; i++)
             {
                 ((TextBox)this.FindName("tbOpt" + i)).Text = "";
@@ -895,10 +895,10 @@ namespace PoeTradeSearch
 
                     itemRarity = asOpt[0].Split(':')[1].Trim();
                     itemName = Regex.Replace(asOpt[1] ?? "", @"<<set:[A-Z]+>>", "");
-                    itemType = asOpt.Length > 2 && asOpt[2] != "" ? asOpt[2] : itemName;
+                    itemType = asOpt.Length > 2 && asOpt[2] != "" ? Regex.Replace(asOpt[2] ?? "", @"<<set:[A-Z]+>>", "") : itemName;
                     if (asOpt.Length == 2) itemName = "";
 
-                    bool is_flask = false, is_prophecy = false, is_map_fragment = false, is_captured_beast = false;
+                    bool is_flask = false, is_prophecy = false, is_map_fragment = false, is_met_entrails = false, is_captured_beast = false;
 
                     int k = 0, baki = 0, notImpCnt = 0;
                     double attackSpeedIncr = 0;
@@ -936,6 +936,8 @@ namespace PoeTradeSearch
                                     is_prophecy = true;
                                 else if (!is_map_fragment && asTmp[0].IndexOf(ResStr.ChkMapFragment) == 0)
                                     is_map_fragment = true;
+                                else if (!is_met_entrails && asTmp[0].IndexOf(ResStr.ChkMetEntrails) == 0)
+                                    is_met_entrails = true;
                                 else if (!is_flask && asTmp.Length > 1 && asTmp[0] == ResStr.ChkFlask)
                                     is_flask = true;
                                 else if (!is_captured_beast && asTmp[0] == ResStr.ChkBeast1)
@@ -1166,7 +1168,13 @@ namespace PoeTradeSearch
                     if (is_map || is_currency) is_map_fragment = false;
                     bool is_detail = is_gem || is_currency || is_divinationCard || is_prophecy || is_map_fragment;
 
-                    if (is_prophecy)
+                    if (is_met_entrails)
+                    {
+                        itemID = itemInherits = "Entrailles/Entrails";
+                        string[] tmp = itemType.Split(' ');
+                        itemType = "변형 " + tmp[tmp.Length - 1];
+                    }
+                    else if (is_prophecy)
                     {
                         itemRarity = ResStr.Prophecy;
                         BaseResultData tmpBaseType = mProphecyDatas.Find(x => x.NameKo == itemType);
@@ -1251,9 +1259,9 @@ namespace PoeTradeSearch
                         }
                     }
 
-                    string item_quality = Regex.Replace(lItemOption[ResStr.Quality].Trim(), "[^0-9]", "");
+                    mItemBaseName.Inherits = itemInherits.Split('/');
 
-                    mItemBaseName.Inherits = (is_prophecy ? "Prophecies/Prophecy" : itemInherits).Split('/');
+                    string item_quality = Regex.Replace(lItemOption[ResStr.Quality].Trim(), "[^0-9]", "");
 
                     string inherit = mItemBaseName.Inherits[0];
                     string sub_inherit = mItemBaseName.Inherits.Length > 1 ? mItemBaseName.Inherits[1] : "";
@@ -1299,7 +1307,7 @@ namespace PoeTradeSearch
                             }
 
                             tkDetail.Text = tkDetail.Text.Replace(ResStr.SClickSplitItem, "");
-                            tkDetail.Text = Regex.Replace(tkDetail.Text, "<(uniqueitem|prophecy|gemitem|magicitem|rareitem|whiteitem|corrupted|default|normal|augmented|size:[0-9]+)>", "");
+                            tkDetail.Text = Regex.Replace(tkDetail.Text, "<(uniqueitem|prophecy|divination|gemitem|magicitem|rareitem|whiteitem|corrupted|default|normal|augmented|size:[0-9]+)>", "");
                         }
                         catch { }
                     }
@@ -1498,7 +1506,7 @@ namespace PoeTradeSearch
                     bdExchange.IsEnabled = IsExchangeCurrency;
 
                     bdDetail.Visibility = is_detail ? Visibility.Visible : Visibility.Hidden;
-                    lbSocketBackground.Visibility = is_map || is_detail ? Visibility.Visible : Visibility.Hidden;
+                    lbSocketBackground.Visibility = by_type ? Visibility.Hidden : Visibility.Visible;
 
                     if (isWinShow || this.Visibility == Visibility.Visible)
                     {
@@ -1823,21 +1831,6 @@ namespace PoeTradeSearch
                     JQ.Filters.Type.Filters.Rarity.Option = "any";
                     JQ.Filters.Type.Filters.Category.Option = "any";
 
-                    JQ.Filters.Misc.Filters.Shaper.Option = Inherit != "Maps" && itemOptions.Influence == 1 ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Elder.Option = Inherit != "Maps" && itemOptions.Influence == 2 ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Crusader.Option = Inherit != "Maps" && itemOptions.Influence == 3 ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Redeemer.Option = Inherit != "Maps" && itemOptions.Influence == 4 ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Hunter.Option = Inherit != "Maps" && itemOptions.Influence == 5 ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Warlord.Option = "any";
-                    // 바보같은 Cylance 란 백신이 이 부분을 오진을 하여 이 코드를 꼬아 사용하기로 함... ;;;
-                    if (Inherit != "Maps" && (itemOptions.Influence != 0 && itemOptions.Influence > 5))
-                    {
-                        JQ.Filters.Misc.Filters.Warlord.Option = "true";
-                    }
-
-                    JQ.Filters.Misc.Filters.Synthesis.Option = Inherit != "Maps" && itemOptions.Synthesis == true ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Corrupted.Option = itemOptions.Corrupt == 1 ? "true" : (itemOptions.Corrupt == 2 ? "false" : "any");
-
                     JQ.Filters.Trade.Disabled = mConfigData.Options.SearchBeforeDay == 0;
                     JQ.Filters.Trade.Filters.Indexed.Option = mConfigData.Options.SearchBeforeDay == 0 ? "any" : BeforeDayToString(mConfigData.Options.SearchBeforeDay);
                     JQ.Filters.Trade.Filters.SaleType.Option = useSaleType ? "priced" : "any";
@@ -1856,11 +1849,6 @@ namespace PoeTradeSearch
                     JQ.Filters.Socket.Filters.Sockets.Min = itemOptions.SocketMin;
                     JQ.Filters.Socket.Filters.Sockets.Max = itemOptions.SocketMax;
 
-                    JQ.Filters.Misc.Disabled = !(
-                        itemOptions.ChkQuality == true || (Inherit != "Maps" && itemOptions.Influence != 0) || itemOptions.Corrupt != 0
-                        || (Inherit != "Maps" && itemOptions.ChkLv == true) || (Inherit != "Maps" && itemOptions.Synthesis == true)
-                    );
-
                     JQ.Filters.Misc.Filters.Quality.Min = itemOptions.ChkQuality == true ? itemOptions.QualityMin : 99999;
                     JQ.Filters.Misc.Filters.Quality.Max = itemOptions.ChkQuality == true ? itemOptions.QualityMax : 99999;
 
@@ -1868,10 +1856,26 @@ namespace PoeTradeSearch
                     JQ.Filters.Misc.Filters.Ilvl.Max = itemOptions.ChkLv != true || Inherit == "Gems" || Inherit == "Maps" ? 99999 : itemOptions.LvMax;
                     JQ.Filters.Misc.Filters.Gem_level.Min = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMin : 99999;
                     JQ.Filters.Misc.Filters.Gem_level.Max = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMax : 99999;
-                    
+
+                    JQ.Filters.Misc.Filters.Shaper.Option = Inherit != "Maps" && itemOptions.Influence == 1 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Elder.Option = Inherit != "Maps" && itemOptions.Influence == 2 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Crusader.Option = Inherit != "Maps" && itemOptions.Influence == 3 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Redeemer.Option = Inherit != "Maps" && itemOptions.Influence == 4 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Hunter.Option = Inherit != "Maps" && itemOptions.Influence == 5 ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Warlord.Option = Inherit != "Maps" && itemOptions.Influence == 6 ? "true" : "any";
+
+                    JQ.Filters.Misc.Filters.Synthesis.Option = Inherit != "Maps" && itemOptions.Synthesis == true ? "true" : "any";
+                    JQ.Filters.Misc.Filters.Corrupted.Option = itemOptions.Corrupt == 1 ? "true" : (itemOptions.Corrupt == 2 ? "false" : "any");
+
+                    JQ.Filters.Misc.Disabled = !(
+                        itemOptions.ChkQuality == true || (Inherit != "Maps" && itemOptions.Influence != 0) || itemOptions.Corrupt != 0
+                        || (Inherit != "Maps" && itemOptions.ChkLv == true) || (Inherit != "Maps" && itemOptions.Synthesis == true)
+                    );
+
                     JQ.Filters.Map.Disabled = !(
                         Inherit == "Maps" && (itemOptions.ChkLv == true || itemOptions.Synthesis == true || itemOptions.Influence != 0)
                     );
+
                     JQ.Filters.Map.Filters.Tier.Min = itemOptions.ChkLv == true && Inherit == "Maps" ? itemOptions.LvMin : 99999;
                     JQ.Filters.Map.Filters.Tier.Max = itemOptions.ChkLv == true && Inherit == "Maps" ? itemOptions.LvMax : 99999;
                     JQ.Filters.Map.Filters.Shaper.Option = Inherit == "Maps" && itemOptions.Influence == 1 ? "true" : "any";

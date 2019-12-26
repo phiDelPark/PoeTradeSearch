@@ -58,6 +58,7 @@ namespace PoeTradeSearch
 
         internal const string ChkProphecy = "우클릭으로 이 예언을 캐릭터에 추가하십시오.";
         internal const string ChkMapFragment = "템플러의 실험실이나 전용 지도 장치에서";
+        internal const string ChkMetEntrails = "테인의 연구실에서 이 아이템을 다른 샘플과";        
         internal const string ChkFlask = "현재 용량";
         internal const string ChkBeast1 = "종";
         internal const string ChkBeast2 = "속";
@@ -150,7 +151,7 @@ namespace PoeTradeSearch
             { "쥬얼러 오브", "jew"}, { "지평의 오브", "orb-of-horizons"}, { "진화의 오브", "tra"},  { "제왕의 오브", "regal"},  { "축복의 오브", "blessed"},
             { "카오스 오브", "chaos"}, { "칼란드라의 거울", "mir"}, { "확장의 오브", "aug"}, { "후회의 오브", "regret"}, { "세공사의 프리즘", "gcp"}, 
             { "유리직공의 방울", "ba"}, { "실버 코인", "silver"}, { "카드 묶음", "stacked-deck"}, { "감정 주문서", "wis"}, { "포탈 주문서", "port"}, { "지도제작자의 끌", "chisel"},
-            { "수습 지도제작자의 육분의", "apprentice-sextant"}, { "숙련 지도제작자의 육분의", "journeyman-sextant"}, { "대가 지도제작자의 육분의", "master-sextant"},
+            { "단순한 육분의", "apprentice-sextant"}, { "최종형 육분의", "journeyman-sextant"}, { "각성한 육분의", "master-sextant"},
             { "공허의 화석", "hollow-fossil"}, { "그을린 화석", "scorched-fossil"}, { "금속성 화석", "metallic-fossil"}, { "도금된 화석", "gilded-fossil"}, { "뒤덮인 화석", "encrusted-fossil"},
             { "부식된 화석", "corroded-fossil"}, { "분광 화석", "prismatic-fossil"}, { "분열된 화석", "fractured-fossil"},{ "뾰족한 화석", "jagged-fossil"}, { "빛나는 화석", "lucent-fossil"},
             { "상형 문자 화석", "glyphic-fossil"}, { "속박의 화석", "bound-fossil"}, { "얽혀든 화석", "tangled-fossil"},   { "연마한 화석", "faceted-fossil"}, { "온전한 화석", "pristine-fossil"},

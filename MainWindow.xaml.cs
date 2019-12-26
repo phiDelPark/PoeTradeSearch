@@ -310,17 +310,11 @@ namespace PoeTradeSearch
 
         private void cbAiiCheck_Checked(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < 10; i++)
-            {
-                ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = true;
-            }
-        }
+            bool is_checked = e.RoutedEvent.Name == "Checked";
 
-        private void cbAiiCheck_Unchecked(object sender, RoutedEventArgs e)
-        {
             for (int i = 0; i < 10; i++)
             {
-                ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
+                ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = is_checked;
             }
         }
 
@@ -372,16 +366,10 @@ namespace PoeTradeSearch
             TkPrice_MouseLeftButtonDown(null, null);
         }
 
-        private void TkPrice_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        private void TkPrice_Mouse_EnterOrLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            tkPriceInfo.Foreground = System.Windows.SystemColors.HighlightBrush;
-            tkPriceCount.Foreground = System.Windows.SystemColors.HighlightBrush;
-        }
-
-        private void TkPrice_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            tkPriceInfo.Foreground = System.Windows.SystemColors.WindowTextBrush;
-            tkPriceCount.Foreground = System.Windows.SystemColors.WindowTextBrush;
+            tkPriceInfo.Foreground = e.RoutedEvent.Name == "MouseEnter" ? System.Windows.SystemColors.HighlightBrush : System.Windows.SystemColors.WindowTextBrush;
+            tkPriceCount.Foreground = e.RoutedEvent.Name == "MouseEnter" ? System.Windows.SystemColors.HighlightBrush : System.Windows.SystemColors.WindowTextBrush;
         }
 
         private void TkPrice_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -395,7 +383,6 @@ namespace PoeTradeSearch
                 exchange[1] = ResStr.lExchangeCurrency[(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
             }
 
-            liPrice.Items.Clear();
             PriceUpdateThreadWorker(exchange != null ? null : GetItemOptions(), exchange);
         }
 
@@ -407,16 +394,13 @@ namespace PoeTradeSearch
 
         private void tkPrice_ReSet(object sender, RoutedEventArgs e)
         {
-            tkPriceInfo.Foreground = System.Windows.Media.Brushes.DeepPink;
-            tkPriceCount.Foreground = System.Windows.Media.Brushes.DeepPink;
-        }
-
-        private void tkPrice_ReSet(object sender, SelectionChangedEventArgs e)
-        {
-            if (tkPriceInfo != null)
+            try
             {
                 tkPriceInfo.Foreground = System.Windows.Media.Brushes.DeepPink;
                 tkPriceCount.Foreground = System.Windows.Media.Brushes.DeepPink;
+            }
+            catch (Exception)
+            {
             }
         }
 
@@ -428,7 +412,6 @@ namespace PoeTradeSearch
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
-           cbPriceListTotal.Text = "0/0 검색";
            TkPrice_MouseLeftButtonDown(null, null);
         }
 
