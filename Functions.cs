@@ -497,6 +497,19 @@ namespace PoeTradeSearch
                     fs = null;
                     string json = reader.ReadToEnd();
                     mFilterData = Json.Deserialize<FilterData>(json);
+
+                    foreach (KeyValuePair<string, byte> itm in ResStr.lParticular)
+                    {
+                        for (int i = 0; i < mFilterData.Result.Length; i++)
+                        {
+                            int index = Array.FindIndex(mFilterData.Result[i].Entries, x => x.ID.IndexOf("." + itm.Key) > 0);
+                            if (index > -1 && mFilterData.Result[i].Entries[index].Text.IndexOf("(" + ResStr.Local + ")") > 0)
+                            {
+                                mFilterData.Result[i].Entries[index].Text = mFilterData.Result[i].Entries[index].Text.Replace("(" + ResStr.Local + ")", "");
+                                mFilterData.Result[i].Entries[index].Part = itm.Value == 1 ? "Weapons" : "Armours";
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -741,9 +754,9 @@ namespace PoeTradeSearch
 
         protected void PriceUpdateThreadWorker(ItemOption itemOptions, string[] exchange)
         {
-            tkPriceInfo.Text = "시세 확인중...";
+            tkPriceInfo1.Text = tkPriceInfo2.Text = "시세 확인중...";
+            tkPriceCount1.Text = tkPriceCount2.Text = "";
             cbPriceListTotal.Text = "0/0 검색";
-            tkPriceCount.Text = "";
             liPrice.Items.Clear();
 
             int listCount = (cbPriceListCount.SelectedIndex + 1) * 4;
@@ -947,20 +960,19 @@ namespace PoeTradeSearch
                                 }
                                 else if (lItemOption[ResStr.ItemLv] != "" && k < 10)
                                 {
+                                    double min = 99999, max = 99999;
                                     bool resistance = false;
                                     bool crafted = asOpt[j].IndexOf("(crafted)") > -1;
+
                                     string input = Regex.Replace(asOpt[j], @" \([a-zA-Z]+\)", "");
                                     input = Regex.Escape(Regex.Replace(input, @"[+-]?[0-9]+\.[0-9]+|[+-]?[0-9]+", "#"));
                                     input = Regex.Replace(input, @"\\#", "[+-]?([0-9]+\\.[0-9]+|[0-9]+|\\#)");
-                                    //input = Regex.Replace(input, @"\+#", "(+|)#");
+                                    input = input + (is_captured_beast ? "\\(" + ResStr.Captured + "\\)" : "");
 
-                                    Regex rgx = new Regex("^" + input + (is_captured_beast ? "\\(" + ResStr.Captured + "\\)" : "") + "$", RegexOptions.IgnoreCase);
-                                    FilterResult[] filterResults = mFilterData.Result;
-
-                                    double min = 99999, max = 99999;
                                     FilterResultEntrie filter = null;
+                                    Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
 
-                                    foreach (FilterResult filterResult in filterResults)
+                                    foreach (FilterResult filterResult in mFilterData.Result)
                                     {
                                         FilterResultEntrie[] entries = Array.FindAll(filterResult.Entries, x => rgx.IsMatch(x.Text));
                                         if (entries.Length > 0)
@@ -1512,8 +1524,8 @@ namespace PoeTradeSearch
                     {
                         PriceUpdateThreadWorker(GetItemOptions(), null);
 
-                        tkPriceInfo.Foreground = System.Windows.SystemColors.WindowTextBrush;
-                        tkPriceCount.Foreground = System.Windows.SystemColors.WindowTextBrush;
+                        tkPriceInfo1.Foreground = tkPriceInfo2.Foreground = System.Windows.SystemColors.WindowTextBrush;
+                        tkPriceCount1.Foreground = tkPriceCount2.Foreground = System.Windows.SystemColors.WindowTextBrush;
 
                         this.ShowActivated = false;
                         this.Visibility = Visibility.Visible;
@@ -1624,17 +1636,19 @@ namespace PoeTradeSearch
                                             double amount = fetchData.Result[i].Listing.Price.Amount;
                                             string keyName = ResStr.lExchangeCurrency.ContainsValue(key) ? ResStr.lExchangeCurrency.FirstOrDefault(o => o.Value == key).Key : key;
 
-                                            liPrice.Dispatcher.Invoke(new Action(delegate ()
-                                            {
-                                                if (entity.Length > 1)
+                                            liPrice.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                                                (ThreadStart)delegate ()
                                                 {
-                                                    string tName2 = ResStr.lExchangeCurrency.ContainsValue(entity[1])
-                                                                    ? ResStr.lExchangeCurrency.FirstOrDefault(o => o.Value == entity[1]).Key : entity[1];
-                                                    liPrice.Items.Add(Math.Round(1 / amount, 4) + " " + tName2 + " <-> " + Math.Round(amount, 4) + " " + keyName + " [" + account + "]");
+                                                    if (entity.Length > 1)
+                                                    {
+                                                        string tName2 = ResStr.lExchangeCurrency.ContainsValue(entity[1])
+                                                                        ? ResStr.lExchangeCurrency.FirstOrDefault(o => o.Value == entity[1]).Key : entity[1];
+                                                        liPrice.Items.Add(Math.Round(1 / amount, 4) + " " + tName2 + " <-> " + Math.Round(amount, 4) + " " + keyName + " [" + account + "]");
+                                                    }
+                                                    else
+                                                        liPrice.Items.Add(amount + " " + keyName + " [" + account + "]");
                                                 }
-                                                else
-                                                    liPrice.Items.Add(amount + " " + keyName + " [" + account + "]");
-                                            }));
+                                            );
 
                                             if (entity.Length > 1)
                                                 key = amount < 1 ? Math.Round(1 / amount, 1) + " " + ents1 : Math.Round(amount, 1) + " " + ents0;
@@ -1699,10 +1713,17 @@ namespace PoeTradeSearch
                             }
                         );
 
-                        tkPriceCount.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                        tkPriceCount1.Dispatcher.BeginInvoke(DispatcherPriority.Background,
                             (ThreadStart)delegate ()
                             {
-                                tkPriceCount.Text = total > 0 ? total + (resultCount > total ? "+" : ".") : "";
+                                tkPriceCount1.Text = total > 0 ? total + (resultCount > total ? "+" : ".") : "";
+                            }
+                        );
+
+                        tkPriceCount2.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                            (ThreadStart)delegate ()
+                            {
+                                tkPriceCount2.Text = total > 0 ? total + (resultCount > total ? "+" : ".") : "";
                             }
                         );
 
@@ -1718,10 +1739,17 @@ namespace PoeTradeSearch
                 }
             }
 
-            tkPriceInfo.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+            tkPriceInfo1.Dispatcher.BeginInvoke(DispatcherPriority.Background,
                 (ThreadStart)delegate ()
                 {
-                    tkPriceInfo.Text = result + (result2 != "" ? " = " + result2 : "");
+                    tkPriceInfo1.Text = result + (result2 != "" ? " = " + result2 : "");
+                }
+            );
+
+            tkPriceInfo2.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                (ThreadStart)delegate ()
+                {
+                    tkPriceInfo2.Text = result + (result2 != "" ? " = " + result2 : "");
                 }
             );
 
@@ -1905,34 +1933,15 @@ namespace PoeTradeSearch
 
                                 input = Regex.Escape(input).Replace("\\+\\#", "[+]?\\#");
 
-                                if (type_name == ResStr.Pseudo && Inherit == "Weapons")
+                                if (type_name == ResStr.Pseudo && Inherit == "Weapons" && Regex.IsMatch(id, @"^pseudo.pseudo_adds_[a-z]+_damage$"))
                                 {
-                                    if (Regex.IsMatch(id, @"^pseudo.pseudo_adds_[a-z]+_damage$"))
-                                    {
-                                        id = id + "_to_attacks";
-                                    }
+                                    id = id + "_to_attacks";
                                 }
                                 else if (type_name != ResStr.Pseudo && (Inherit == "Weapons" || Inherit == "Armours"))
                                 {
-                                    Regex rgx = new Regex("^" + input + "(\\(" + ResStr.Local + "\\))?$", RegexOptions.IgnoreCase);
-                                    FilterResultEntrie[] tmp_filters = Array.FindAll(filterResult.Entries, x => rgx.IsMatch(x.Text) && x.Type == type);
-                                    if (tmp_filters.Length > 1)
-                                    {
-                                        foreach (FilterResultEntrie tmp_filter in tmp_filters)
-                                        {
-                                            string[] tmp_split = tmp_filter.ID.Split('.');
-
-                                            if (tmp_split.Length == 2 && ResStr.lParticular.ContainsKey(tmp_split[1]))
-                                            {
-                                                if ((Inherit == "Weapons" && ResStr.lParticular[tmp_split[1]] == 1) || (Inherit == "Armours" && ResStr.lParticular[tmp_split[1]] == 2))
-                                                {
-                                                    filter = tmp_filter;
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else if (tmp_filters.Length == 1)
+                                    Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
+                                    FilterResultEntrie[] tmp_filters = Array.FindAll(filterResult.Entries, x => rgx.IsMatch(x.Text) && x.Type == type && x.Part == Inherit);
+                                    if (tmp_filters.Length > 0)
                                     {
                                         filter = tmp_filters[0];
                                     }
@@ -1940,9 +1949,6 @@ namespace PoeTradeSearch
 
                                 if (filter == null)
                                 {
-                                    //Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
-                                    //filter = Array.Find(filterResult.Entries, x => rgx.IsMatch(x.Text) && x.Type == type);
-
                                     filter = Array.Find(filterResult.Entries, x => x.ID == id && x.Type == type);
                                 }
 

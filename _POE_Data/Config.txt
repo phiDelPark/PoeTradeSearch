@@ -38,6 +38,7 @@
 			{"id":"Jewels/Amulets/Rings/Belts/Quivers/Armours/","text":"최대 생명력 #% 증가"},
 			{"id":"Jewels/Amulets/Rings/Belts/Quivers/Armours/","text":"생명력 최대치 #"},
 			{"id":"Jewels/Amulets/Rings/Belts/Quivers/Armours/","text":"에너지 보호막 #% 증가"},
+			{"id":"Jewels/Amulets/Rings/Belts/Quivers/Armours/","text":"에너지 보호막 최대치 #% 증가"},
 			{"id":"Jewels/Amulets/Rings/Belts/Quivers/Armours/","text":"에너지 보호막 최대치 #"},
 			{"id":"Jewels/Amulets/Rings/Belts/Quivers/Weapons/","text":"화염 피해 #% 증가"},
 			{"id":"Jewels/Amulets/Rings/Belts/Quivers/Weapons/","text":"냉기 피해 #% 증가"},

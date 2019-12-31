@@ -224,6 +224,9 @@ namespace PoeTradeSearch
 
             [DataMember(Name = "type")]
             internal string Type = "";
+
+            [DataMember(Name = "part")]
+            internal string Part = "";
         }
 
         [DataContract]
