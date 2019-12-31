@@ -368,8 +368,8 @@ namespace PoeTradeSearch
 
         private void TkPrice_Mouse_EnterOrLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            tkPriceInfo.Foreground = e.RoutedEvent.Name == "MouseEnter" ? System.Windows.SystemColors.HighlightBrush : System.Windows.SystemColors.WindowTextBrush;
-            tkPriceCount.Foreground = e.RoutedEvent.Name == "MouseEnter" ? System.Windows.SystemColors.HighlightBrush : System.Windows.SystemColors.WindowTextBrush;
+            tkPriceInfo1.Foreground = tkPriceInfo2.Foreground = e.RoutedEvent.Name == "MouseEnter" ? System.Windows.SystemColors.HighlightBrush : System.Windows.SystemColors.WindowTextBrush;
+            tkPriceCount1.Foreground = tkPriceCount2.Foreground = e.RoutedEvent.Name == "MouseEnter" ? System.Windows.SystemColors.HighlightBrush : System.Windows.SystemColors.WindowTextBrush;
         }
 
         private void TkPrice_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -386,6 +386,11 @@ namespace PoeTradeSearch
             PriceUpdateThreadWorker(exchange != null ? null : GetItemOptions(), exchange);
         }
 
+        private void tkPriceInfo_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+             tabControl1.SelectedIndex = tabControl1.SelectedIndex == 0 ? 1 : 0;
+        }
+
         private void cbName_Checked(object sender, RoutedEventArgs e)
         {
             cbName.Foreground = cbName.IsChecked == true ? lbDPS.Foreground : tbHelpText.Foreground;
@@ -396,8 +401,8 @@ namespace PoeTradeSearch
         {
             try
             {
-                tkPriceInfo.Foreground = System.Windows.Media.Brushes.DeepPink;
-                tkPriceCount.Foreground = System.Windows.Media.Brushes.DeepPink;
+                tkPriceInfo1.Foreground = tkPriceInfo2.Foreground = System.Windows.Media.Brushes.DeepPink;
+                tkPriceCount1.Foreground = tkPriceCount2.Foreground = System.Windows.Media.Brushes.DeepPink;
             }
             catch (Exception)
             {
@@ -408,11 +413,6 @@ namespace PoeTradeSearch
         {
             cbPriceListTotal.Visibility = tabControl1.SelectedIndex == 1 ? Visibility.Visible : Visibility.Hidden;
             tbHelpText.Text = tabControl1.SelectedIndex == 1 ? "최소 값 단위는 카오스 오브" : "시세 클릭시 재검색";
-        }
-
-        private void Button_Click_5(object sender, RoutedEventArgs e)
-        {
-           TkPrice_MouseLeftButtonDown(null, null);
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)

@@ -207,8 +207,8 @@
 
                     <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" HorizontalAlignment="Left" Height="1" Margin="0,319,0,0" VerticalAlignment="Top" Width="385" RenderTransformOrigin="0.5,0.5" />
 
-                    <TextBlock Name="tkPriceCount" Text="0" HorizontalAlignment="Left" Margin="4,325,0,0" VerticalAlignment="Top" />
-                    <TextBlock Name="tkPriceInfo" TextAlignment="Right" Margin="5,325,5,0" Text="TextBlock" MouseEnter="TkPrice_Mouse_EnterOrLeave" MouseLeave="TkPrice_Mouse_EnterOrLeave" Cursor="Hand" MouseLeftButtonDown="TkPrice_MouseLeftButtonDown" />
+                    <TextBlock Name="tkPriceCount1" Text="0" HorizontalAlignment="Left" Margin="4,325,0,0" VerticalAlignment="Top" />
+                    <TextBlock Name="tkPriceInfo1" TextAlignment="Right" Margin="5,325,5,0" Text="TextBlock" MouseEnter="TkPrice_Mouse_EnterOrLeave" MouseLeave="TkPrice_Mouse_EnterOrLeave" Cursor="Hand" MouseLeftButtonDown="TkPrice_MouseLeftButtonDown" MouseRightButtonDown="tkPriceInfo_MouseRightButtonDown" />
 
                     <Border Name="bdDetail" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" BorderThickness="0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="380" Height="262" Visibility="Hidden">
                         <TextBlock Name="tkDetail" TextWrapping="Wrap" Text="TextBlock" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Padding="5" />
@@ -226,25 +226,28 @@
             </TabItem>
             <TabItem Header="자세히">
                 <Grid>
-                    <Grid Name="grPriceLayout" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="380" Height="308">
+                    <Grid Name="grPriceLayout" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="380" Height="283">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="1*"/>
                         </Grid.RowDefinitions>
                         <ListBox Name="liPrice" Grid.IsSharedSizeScope="True" Height="{Binding ElementName=grPriceLayout, Path=ActualHeight}" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="0,0,0,1" />
                     </Grid>
 
-                    <Label Content="최소 값:" HorizontalAlignment="Left" Margin="0,314,0,0" VerticalAlignment="Top" />
-                    <TextBox Name="tbPriceFilterMin" HorizontalAlignment="Left" Height="22" Margin="55,316,0,0" Text="" VerticalAlignment="Top" Width="33" BorderThickness="0,0,0,1" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
+                    <Label Content="최소 값:" HorizontalAlignment="Left" Margin="163,288,0,0" VerticalAlignment="Top" />
+                    <TextBox Name="tbPriceFilterMin" HorizontalAlignment="Left" Height="22" Margin="221,290,0,0" Text="" VerticalAlignment="Top" Width="33" BorderThickness="0,0,0,1" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
 
-                    <Label Content="- 목록 수:" HorizontalAlignment="Left" Margin="90,314,0,0" VerticalAlignment="Top" />
-                    <ComboBox Name="cbPriceListCount" HorizontalAlignment="Left" Margin="157,316,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="50">
+                    <Label Content="- 목록 수:" HorizontalAlignment="Left" Margin="259,288,0,0" VerticalAlignment="Top" />
+                    <ComboBox Name="cbPriceListCount" HorizontalAlignment="Left" Margin="326,290,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="50">
                         <ComboBoxItem>20</ComboBoxItem>
                         <ComboBoxItem>40</ComboBoxItem>
                         <ComboBoxItem>60</ComboBoxItem>
                         <ComboBoxItem>80</ComboBoxItem>
                     </ComboBox>
+                    
+                    <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" HorizontalAlignment="Left" Height="1" Margin="0,319,0,0" VerticalAlignment="Top" Width="385" RenderTransformOrigin="0.5,0.5" />
 
-                    <Button Content="시세 재검색" HorizontalAlignment="Left" Margin="265,316,0,0" VerticalAlignment="Top" Width="110" Height="22" Click="Button_Click_5"/>
+                    <TextBlock Name="tkPriceCount2" Text="0" HorizontalAlignment="Left" Margin="4,325,0,0" VerticalAlignment="Top" />
+                    <TextBlock Name="tkPriceInfo2" TextAlignment="Right" Margin="5,325,5,0" Text="TextBlock" MouseEnter="TkPrice_Mouse_EnterOrLeave" MouseLeave="TkPrice_Mouse_EnterOrLeave" Cursor="Hand" MouseLeftButtonDown="TkPrice_MouseLeftButtonDown" MouseRightButtonDown="tkPriceInfo_MouseRightButtonDown" />
                 </Grid>
             </TabItem>
         </TabControl>
