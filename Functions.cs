@@ -980,6 +980,8 @@ namespace PoeTradeSearch
                                             MatchCollection matches1 = Regex.Matches(asOpt[j], @"[-]?[0-9]+\.[0-9]+|[-]?[0-9]+");
                                             foreach (FilterResultEntrie entrie in entries)
                                             {
+                                                if (entries.Length > 1 && entrie.Part != null) continue;
+
                                                 int idxMin = 0, idxMax = 0;
                                                 bool isMin = false, isMax = false;
                                                 bool isBreak = true;
@@ -1949,7 +1951,7 @@ namespace PoeTradeSearch
 
                                 if (filter == null)
                                 {
-                                    filter = Array.Find(filterResult.Entries, x => x.ID == id && x.Type == type);
+                                    filter = Array.Find(filterResult.Entries, x => x.ID == id && x.Type == type && x.Part == null);
                                 }
 
                                 if (filter != null)
