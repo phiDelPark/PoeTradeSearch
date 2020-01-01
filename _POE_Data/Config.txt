@@ -12,7 +12,7 @@
 			"auto_check_unique":true,
 			"ctrl_wheel":false,
 			"check_updates":true,
-			"data_version":"3.9.1"
+			"data_version":"3.9.1b"
 		},
 	"shortcuts":[
 			{"keycode":113,"value":"{Enter}/hideout{Enter}","Detail":"은신처 이동 (F2)"},
