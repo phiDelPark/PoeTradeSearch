@@ -1973,6 +1973,13 @@ namespace PoeTradeSearch
                                 else
                                 {
                                     error_filter = true;
+                                    itemOptions.itemfilters[i].isNull = true;
+
+                                    // 오류 방지를 위해 널값시 아무거나 추가 
+                                    JQ.Stats[0].Filters[idx].Disabled = true;
+                                    JQ.Stats[0].Filters[idx].Value.Min = 99999;
+                                    JQ.Stats[0].Filters[idx].Value.Max = 99999;
+                                    JQ.Stats[0].Filters[idx++].Id = "temp_ids";
                                 }
                             }
                         }
@@ -2053,6 +2060,23 @@ namespace PoeTradeSearch
 
                     if (error_filter)
                     {
+                        Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                            (ThreadStart)delegate ()
+                            {
+                                for (int i = 0; i < itemOptions.itemfilters.Count; i++)
+                                {
+                                    if (itemOptions.itemfilters[i].isNull)
+                                    {
+                                        ((TextBox)this.FindName("tbOpt" + i)).Background = System.Windows.Media.Brushes.Red;
+                                        ((TextBox)this.FindName("tbOpt" + i + "_0")).Text = "error";
+                                        ((TextBox)this.FindName("tbOpt" + i + "_1")).Text = "error";
+                                        ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
+                                        ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsEnabled = false;
+                                        ((CheckBox)this.FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
+                                    }
+                                }
+                            }
+                        );
                     }
 
                     return sEntity;
