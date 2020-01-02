@@ -203,6 +203,19 @@ namespace PoeTradeSearch
                         }
                     }
 
+                    foreach (KeyValuePair<string, bool> itm in ResStr.lDisable)
+                    {
+                        for (int i = 0; i < rootClass.Result.Length; i++)
+                        {
+                            int index = Array.FindIndex(rootClass.Result[i].Entries, x => x.ID.IndexOf("." + itm.Key) > 0);
+                            if (index > -1)
+                            {
+                                rootClass.Result[i].Entries[index].Text = "__DISABLE__";
+                                rootClass.Result[i].Entries[index].Part = "Disable";
+                            }
+                        }
+                    }
+
                     using (StreamWriter writer = new StreamWriter(path + "Filters.txt", false, Encoding.UTF8))
                     {
                         writer.Write(Json.Serialize<FilterData>(rootClass));
