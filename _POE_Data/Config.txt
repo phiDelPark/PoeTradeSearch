@@ -8,8 +8,9 @@
 			"search_before_day":7,
 			"search_price_min":0,
 			"search_price_count":20,
-			"auto_select_pseudo":true,
 			"auto_check_unique":true,
+			"auto_select_pseudo":true,
+			"auto_select_corrupt":"no or yes",
 			"ctrl_wheel":false,
 			"check_updates":true,
 			"data_version":"3.9.1b"

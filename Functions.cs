@@ -832,7 +832,7 @@ namespace PoeTradeSearch
             ckSocket.IsChecked = false;
             cbInfluence1.SelectedIndex = 0;
             cbInfluence2.SelectedIndex = 0;
-            cbCorrupt.SelectedIndex = 0;
+            cbCorrupt.SelectedIndex = mConfigData.Options.AutoSelectCorrupt == "no" ? 2 : (mConfigData.Options.AutoSelectCorrupt == "yes" ? 1 : 0);
             cbCorrupt.BorderThickness = new Thickness(1);
 
             cbOrbs.SelectionChanged -= CbOrbs_SelectionChanged;

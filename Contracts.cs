@@ -96,11 +96,14 @@ namespace PoeTradeSearch
             [DataMember(Name = "search_by_type")]
             internal bool SearchByType = false;
 
+            [DataMember(Name = "auto_check_unique")]
+            internal bool AutoCheckUnique = false;
+
             [DataMember(Name = "auto_select_pseudo")]
             internal bool AutoSelectPseudo = false;
 
-            [DataMember(Name = "auto_check_unique")]
-            internal bool AutoCheckUnique = false;
+            [DataMember(Name = "auto_select_corrupt")]
+            internal string AutoSelectCorrupt = "";
 
             [DataMember(Name = "ctrl_wheel")]
             internal bool CtrlWheel = false;
