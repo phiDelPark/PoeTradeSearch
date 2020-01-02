@@ -14,6 +14,7 @@ namespace PoeTradeSearch
             public double max;
             public double min;
             public bool disabled;
+            public bool isNull = false;
         }
 
         [DataContract]

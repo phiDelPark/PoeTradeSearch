@@ -190,6 +190,19 @@ namespace PoeTradeSearch
                         }
                     }
 
+                    foreach (KeyValuePair<string, byte> itm in ResStr.lParticular)
+                    {
+                        for (int i = 0; i < rootClass.Result.Length; i++)
+                        {
+                            int index = Array.FindIndex(rootClass.Result[i].Entries, x => x.ID.IndexOf("." + itm.Key) > 0);
+                            if (index > -1 && rootClass.Result[i].Entries[index].Text.IndexOf("(" + ResStr.Local + ")") > 0)
+                            {
+                                rootClass.Result[i].Entries[index].Text = rootClass.Result[i].Entries[index].Text.Replace("(" + ResStr.Local + ")", "");
+                                rootClass.Result[i].Entries[index].Part = itm.Value == 1 ? "Weapons" : "Armours";
+                            }
+                        }
+                    }
+
                     using (StreamWriter writer = new StreamWriter(path + "Filters.txt", false, Encoding.UTF8))
                     {
                         writer.Write(Json.Serialize<FilterData>(rootClass));
@@ -497,19 +510,6 @@ namespace PoeTradeSearch
                     fs = null;
                     string json = reader.ReadToEnd();
                     mFilterData = Json.Deserialize<FilterData>(json);
-
-                    foreach (KeyValuePair<string, byte> itm in ResStr.lParticular)
-                    {
-                        for (int i = 0; i < mFilterData.Result.Length; i++)
-                        {
-                            int index = Array.FindIndex(mFilterData.Result[i].Entries, x => x.ID.IndexOf("." + itm.Key) > 0);
-                            if (index > -1 && mFilterData.Result[i].Entries[index].Text.IndexOf("(" + ResStr.Local + ")") > 0)
-                            {
-                                mFilterData.Result[i].Entries[index].Text = mFilterData.Result[i].Entries[index].Text.Replace("(" + ResStr.Local + ")", "");
-                                mFilterData.Result[i].Entries[index].Part = itm.Value == 1 ? "Weapons" : "Armours";
-                            }
-                        }
-                    }
                 }
             }
             catch (Exception ex)
@@ -852,8 +852,10 @@ namespace PoeTradeSearch
             for (int i = 0; i < 10; i++)
             {
                 ((TextBox)this.FindName("tbOpt" + i)).Text = "";
+                ((TextBox)this.FindName("tbOpt" + i)).Background = SystemColors.WindowBrush;
                 ((TextBox)this.FindName("tbOpt" + i + "_0")).Text = "";
                 ((TextBox)this.FindName("tbOpt" + i + "_1")).Text = "";
+                ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsEnabled = true;
                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
                 ((CheckBox)this.FindName("tbOpt" + i + "_3")).IsChecked = false;
                 ((CheckBox)this.FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
@@ -980,7 +982,9 @@ namespace PoeTradeSearch
                                             MatchCollection matches1 = Regex.Matches(asOpt[j], @"[-]?[0-9]+\.[0-9]+|[-]?[0-9]+");
                                             foreach (FilterResultEntrie entrie in entries)
                                             {
-                                                if (entries.Length > 1 && entrie.Part != null) continue;
+                                                // 장비 옵션 (특정) 이 겹칠경우 (특정) 대신 일반 옵션 값 사용 (후에 json 만들때 다시 검사함)
+                                                if (entries.Length > 1 && entrie.Part != null) 
+                                                    continue;
 
                                                 int idxMin = 0, idxMax = 0;
                                                 bool isMin = false, isMax = false;
@@ -1912,6 +1916,8 @@ namespace PoeTradeSearch
                     JQ.Filters.Map.Filters.Elder.Option = Inherit == "Maps" && itemOptions.Influence == 2 ? "true" : "any";
                     JQ.Filters.Map.Filters.Blight.Option = Inherit == "Maps" && itemOptions.Synthesis == true ? "true" : "any";
 
+                    bool error_filter = false;
+
                     if (itemOptions.itemfilters.Count > 0)
                     {
                         JQ.Stats = new q_Stats[1];
@@ -1920,6 +1926,7 @@ namespace PoeTradeSearch
                         JQ.Stats[0].Filters = new q_Stats_filters[itemOptions.itemfilters.Count];
 
                         int idx = 0;
+
                         for (int i = 0; i < itemOptions.itemfilters.Count; i++)
                         {
                             string input = itemOptions.itemfilters[i].text;
@@ -1935,18 +1942,17 @@ namespace PoeTradeSearch
 
                                 input = Regex.Escape(input).Replace("\\+\\#", "[+]?\\#");
 
+                                // 무기에 경우 pseudo_adds_[a-z]+_damage 옵션은 공격 시 가 붙음
                                 if (type_name == ResStr.Pseudo && Inherit == "Weapons" && Regex.IsMatch(id, @"^pseudo.pseudo_adds_[a-z]+_damage$"))
                                 {
                                     id = id + "_to_attacks";
                                 }
                                 else if (type_name != ResStr.Pseudo && (Inherit == "Weapons" || Inherit == "Armours"))
                                 {
+                                    // 장비 전용 옵션 (특정) 인 것인가 검사
                                     Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
                                     FilterResultEntrie[] tmp_filters = Array.FindAll(filterResult.Entries, x => rgx.IsMatch(x.Text) && x.Type == type && x.Part == Inherit);
-                                    if (tmp_filters.Length > 0)
-                                    {
-                                        filter = tmp_filters[0];
-                                    }
+                                    if (tmp_filters.Length > 0) filter = tmp_filters[0];
                                 }
 
                                 if (filter == null)
@@ -1954,17 +1960,19 @@ namespace PoeTradeSearch
                                     filter = Array.Find(filterResult.Entries, x => x.ID == id && x.Type == type && x.Part == null);
                                 }
 
-                                if (filter != null)
+                                JQ.Stats[0].Filters[idx] = new q_Stats_filters();
+                                JQ.Stats[0].Filters[idx].Value = new q_Min_And_Max();
+
+                                if (filter != null && filter.ID != null && filter.ID.Trim() != "")
                                 {
-                                    if (filter.ID != null && filter.ID.Trim() != "")
-                                    {
-                                        JQ.Stats[0].Filters[idx] = new q_Stats_filters();
-                                        JQ.Stats[0].Filters[idx].Value = new q_Min_And_Max();
-                                        JQ.Stats[0].Filters[idx].Disabled = itemOptions.itemfilters[i].disabled == true;
-                                        JQ.Stats[0].Filters[idx].Value.Min = itemOptions.itemfilters[i].min;
-                                        JQ.Stats[0].Filters[idx].Value.Max = itemOptions.itemfilters[i].max;
-                                        JQ.Stats[0].Filters[idx++].Id = filter.ID;
-                                    }
+                                    JQ.Stats[0].Filters[idx].Disabled = itemOptions.itemfilters[i].disabled == true;
+                                    JQ.Stats[0].Filters[idx].Value.Min = itemOptions.itemfilters[i].min;
+                                    JQ.Stats[0].Filters[idx].Value.Max = itemOptions.itemfilters[i].max;
+                                    JQ.Stats[0].Filters[idx++].Id = filter.ID;
+                                }
+                                else
+                                {
+                                    error_filter = true;
                                 }
                             }
                         }
@@ -2036,9 +2044,18 @@ namespace PoeTradeSearch
                     sEntity = sEntity.Replace("{\"max\":99999,", "{");
                     sEntity = sEntity.Replace(",\"min\":99999}", "}");
 
-                    sEntity = Regex.Replace(sEntity, "\"(sale_type|rarity|category|corrupted|synthesised_item|shaper_item|elder_item|crusader_item|redeemer_item|hunter_item|warlord_item|map_shaped|map_elder|map_blighted)\":{\"option\":\"any\"},?", "");
+                    sEntity = sEntity.Replace(",{\"disabled\":true,\"id\":\"temp_ids\",\"value\":{}}", "");
+                    sEntity = sEntity.Replace("[{\"disabled\":true,\"id\":\"temp_ids\",\"value\":{}}", "[");
+                    sEntity = sEntity.Replace("[,", "[");
 
-                    return sEntity.Replace("},}", "}}");
+                    sEntity = Regex.Replace(sEntity, "\"(sale_type|rarity|category|corrupted|synthesised_item|shaper_item|elder_item|crusader_item|redeemer_item|hunter_item|warlord_item|map_shaped|map_elder|map_blighted)\":{\"option\":\"any\"},?", "");
+                    sEntity = sEntity.Replace("},}", "}}");
+
+                    if (error_filter)
+                    {
+                    }
+
+                    return sEntity;
                 }
                 catch (Exception ex)
                 {
