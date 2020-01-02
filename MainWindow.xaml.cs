@@ -104,7 +104,7 @@ namespace PoeTradeSearch
             ResStr.ServerType = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(ResStr.ServerType.ToLower()).Replace(" ", "%20");
             ResStr.ServerLang = (byte)(mConfigData.Options.Server == "en" ? 1 : 0);
 
-            ComboBox[] cbs = { cbOrbs, cbSplinters , cbCorrupt, cbPriceListCount, cbInfluence };
+            ComboBox[] cbs = { cbOrbs, cbSplinters , cbCorrupt, cbPriceListCount, cbInfluence1, cbInfluence2 };
             foreach(ComboBox cb in cbs)
             {
                 ControlTemplate ct = cb.Template;

@@ -21,7 +21,8 @@ namespace PoeTradeSearch
         public class ItemOption
         {
             public bool Synthesis;
-            public byte Influence;
+            public byte Influence1;
+            public byte Influence2;
             public byte Corrupt;
             public bool ByType;
             public bool ChkSocket;
