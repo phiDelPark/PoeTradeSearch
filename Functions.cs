@@ -1788,6 +1788,14 @@ namespace PoeTradeSearch
 
             itemOption.Influence1 = (byte)cbInfluence1.SelectedIndex;
             itemOption.Influence2 = (byte)cbInfluence2.SelectedIndex;
+
+            // 영향은 첫번째 값이 우선 순위여야 함
+            if(itemOption.Influence1 == 0 && itemOption.Influence2 != 0)
+            {
+                itemOption.Influence1 = itemOption.Influence2;
+                itemOption.Influence2 = 0;
+            }
+
             itemOption.Corrupt = (byte)cbCorrupt.SelectedIndex;
             itemOption.Synthesis = Synthesis.IsChecked == true;
             itemOption.ChkSocket = ckSocket.IsChecked == true;
