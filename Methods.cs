@@ -784,52 +784,55 @@ namespace PoeTradeSearch
                         cbRarity.SelectedIndex = 0;
                     }
 
-                    tbLvMin.Text = Regex.Replace(lItemOption[is_gem ? Restr.Lv : Restr.ItemLv].Trim(), "[^0-9]", "");
-                    tbQualityMin.Text = item_quality;
-
-                    string[] Influences = { Restr.Shaper, Restr.Elder, Restr.Crusader, Restr.Redeemer, Restr.Hunter, Restr.Warlord };
-                    for (int i = 0; i < Influences.Length; i++)
-                    {
-                        if (lItemOption[Influences[i]] == "_TRUE_")
-                            cbInfluence1.SelectedIndex = i + 1;
-                    }
-
-                    for (int i = 0; i < Influences.Length; i++)
-                    {
-                        if (cbInfluence1.SelectedIndex != (i + 1) && lItemOption[Influences[i]] == "_TRUE_")
-                            cbInfluence2.SelectedIndex = i + 1;
-                    }
-
-                    if (lItemOption[Restr.Corrupt] == "_TRUE_")
-                    {
-                        cbCorrupt.BorderThickness = new Thickness(2);
-                        //ckCorrupt.FontWeight = FontWeights.Bold;
-                        //ckCorrupt.Foreground = System.Windows.Media.Brushes.DarkRed;
-                    }
-
-                    Synthesis.IsChecked = (is_map && is_blight) || lItemOption[Restr.Synthesis] == "_TRUE_";
-
-                    if (is_map)
-                    {
-                        tbLvMin.Text = lItemOption[Restr.MaTier];
-                        tbLvMax.Text = lItemOption[Restr.MaTier];
-                        ckLv.Content = "등급";
-                        ckLv.IsChecked = true;
-                        Synthesis.Content = "역병";
-                    }
-                    else if (is_gem)
-                    {
-                        ckLv.IsChecked = lItemOption[Restr.Lv].IndexOf(" (" + Restr.Max) > 0;
-                        ckQuality.IsChecked = ckLv.IsChecked == true && item_quality != "" && int.Parse(item_quality) > 19;
-                    }
-                    else if (by_type && itemRarity == Restr.Normal)
-                    {
-                        ckLv.IsChecked = tbLvMin.Text != "" && int.Parse(tbLvMin.Text) > 82;
-                    }
-
                     bool IsExchangeCurrency = inherit == "Currency" && Restr.lExchangeCurrency.ContainsKey(itemType);
                     bdExchange.Visibility = !is_gem && (is_detail || IsExchangeCurrency) ? Visibility.Visible : Visibility.Hidden;
                     bdExchange.IsEnabled = IsExchangeCurrency;
+
+                    if (bdExchange.Visibility == Visibility.Hidden)
+                    {
+                        tbLvMin.Text = Regex.Replace(lItemOption[is_gem ? Restr.Lv : Restr.ItemLv].Trim(), "[^0-9]", "");
+                        tbQualityMin.Text = item_quality;
+
+                        string[] Influences = { Restr.Shaper, Restr.Elder, Restr.Crusader, Restr.Redeemer, Restr.Hunter, Restr.Warlord };
+                        for (int i = 0; i < Influences.Length; i++)
+                        {
+                            if (lItemOption[Influences[i]] == "_TRUE_")
+                                cbInfluence1.SelectedIndex = i + 1;
+                        }
+
+                        for (int i = 0; i < Influences.Length; i++)
+                        {
+                            if (cbInfluence1.SelectedIndex != (i + 1) && lItemOption[Influences[i]] == "_TRUE_")
+                                cbInfluence2.SelectedIndex = i + 1;
+                        }
+
+                        if (lItemOption[Restr.Corrupt] == "_TRUE_")
+                        {
+                            cbCorrupt.BorderThickness = new Thickness(2);
+                            //ckCorrupt.FontWeight = FontWeights.Bold;
+                            //ckCorrupt.Foreground = System.Windows.Media.Brushes.DarkRed;
+                        }
+
+                        Synthesis.IsChecked = (is_map && is_blight) || lItemOption[Restr.Synthesis] == "_TRUE_";
+
+                        if (is_map)
+                        {
+                            tbLvMin.Text = lItemOption[Restr.MaTier];
+                            tbLvMax.Text = lItemOption[Restr.MaTier];
+                            ckLv.Content = "등급";
+                            ckLv.IsChecked = true;
+                            Synthesis.Content = "역병";
+                        }
+                        else if (is_gem)
+                        {
+                            ckLv.IsChecked = lItemOption[Restr.Lv].IndexOf(" (" + Restr.Max) > 0;
+                            ckQuality.IsChecked = ckLv.IsChecked == true && item_quality != "" && int.Parse(item_quality) > 19;
+                        }
+                        else if (by_type && itemRarity == Restr.Normal)
+                        {
+                            ckLv.IsChecked = tbLvMin.Text != "" && int.Parse(tbLvMin.Text) > 82;
+                        }
+                    }
 
                     bdDetail.Visibility = is_detail ? Visibility.Visible : Visibility.Hidden;
                     lbSocketBackground.Visibility = by_type ? Visibility.Hidden : Visibility.Visible;
