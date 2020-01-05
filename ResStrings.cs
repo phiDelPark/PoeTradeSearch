@@ -2,7 +2,7 @@
 
 namespace PoeTradeSearch
 {
-    internal static class ResStr
+    internal static class Restr
     {
         internal static string PoeClass = "POEWindowClass";
         internal static string PoeCaption = "Path of Exile";

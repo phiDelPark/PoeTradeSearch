@@ -100,9 +100,9 @@ namespace PoeTradeSearch
                 return;
             }
 
-            ResStr.ServerType = ResStr.ServerType == "" ? mConfigData.Options.League : ResStr.ServerType;
-            ResStr.ServerType = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(ResStr.ServerType.ToLower()).Replace(" ", "%20");
-            ResStr.ServerLang = (byte)(mConfigData.Options.Server == "en" ? 1 : 0);
+            Restr.ServerType = Restr.ServerType == "" ? mConfigData.Options.League : Restr.ServerType;
+            Restr.ServerType = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Restr.ServerType.ToLower()).Replace(" ", "%20");
+            Restr.ServerLang = (byte)(mConfigData.Options.Server == "en" ? 1 : 0);
 
             ComboBox[] cbs = { cbOrbs, cbSplinters , cbCorrupt, cbPriceListCount, cbInfluence1, cbInfluence2 };
             foreach(ComboBox cb in cbs)
@@ -116,7 +116,7 @@ namespace PoeTradeSearch
             int cnt = 0;
             cbOrbs.Items.Add("교환을 원하는 오브 선택");
             cbSplinters.Items.Add("원하는 화석, 파편 선택");
-            foreach (KeyValuePair<string, string> item in ResStr.lExchangeCurrency)
+            foreach (KeyValuePair<string, string> item in Restr.lExchangeCurrency)
             {
                 if (item.Key == "대장장이의 숫돌")
                     break;
@@ -171,7 +171,7 @@ namespace PoeTradeSearch
 
             if (!mDisableClip)
             {
-                IntPtr mNextClipBoardViewerHWnd = NativeMethods.SetClipboardViewer(new WindowInteropHelper(this).Handle);
+                IntPtr mNextClipBoardViewerHWnd = Native.SetClipboardViewer(new WindowInteropHelper(this).Handle);
             }
 
             if (mAdministrator)
@@ -195,7 +195,7 @@ namespace PoeTradeSearch
                 }
             }
 
-            this.Title += " - " + ResStr.ServerType;
+            this.Title += " - " + Restr.ServerType;
             this.Visibility = Visibility.Hidden;
         }
 
@@ -207,10 +207,10 @@ namespace PoeTradeSearch
         private void Window_Deactivated(object sender, EventArgs e)
         {
             WindowInteropHelper helper = new WindowInteropHelper(this);
-            long ip = NativeMethods.SetWindowLong(
+            long ip = Native.SetWindowLong(
                 helper.Handle,
-                NativeMethods.GWL_EXSTYLE,
-                NativeMethods.GetWindowLong(helper.Handle, NativeMethods.GWL_EXSTYLE) | NativeMethods.WS_EX_NOACTIVATE
+                Native.GWL_EXSTYLE,
+                Native.GetWindowLong(helper.Handle, Native.GWL_EXSTYLE) | Native.WS_EX_NOACTIVATE
             );
             btnClose.Background = btnSearch.Background;
             btnClose.Foreground = btnSearch.Foreground;
@@ -221,12 +221,12 @@ namespace PoeTradeSearch
             if (!this.IsFocused)
             {
                 WindowInteropHelper helper = new WindowInteropHelper(this);
-                long ip = NativeMethods.SetWindowLong(
+                long ip = Native.SetWindowLong(
                     helper.Handle,
-                    NativeMethods.GWL_EXSTYLE,
-                    NativeMethods.GetWindowLong(helper.Handle, NativeMethods.GWL_EXSTYLE) & ~NativeMethods.WS_EX_NOACTIVATE
+                    Native.GWL_EXSTYLE,
+                    Native.GetWindowLong(helper.Handle, Native.GWL_EXSTYLE) & ~Native.WS_EX_NOACTIVATE
                 );
-                NativeMethods.SetForegroundWindow(helper.Handle);
+                Native.SetForegroundWindow(helper.Handle);
                 btnClose.Background = System.Windows.SystemColors.HighlightBrush;
                 btnClose.Foreground = System.Windows.SystemColors.HighlightTextBrush;
             }
@@ -241,9 +241,9 @@ namespace PoeTradeSearch
             if (bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0))
             {
                 exchange = new string[2];
-                exchange[0] = ResStr.lExchangeCurrency[mItemBaseName.TypeKR];
-                exchange[1] = ResStr.lExchangeCurrency[(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
-                url = ResStr.ExchangeApi[ResStr.ServerLang] + ResStr.ServerType + "/?redirect&source=";
+                exchange[0] = Restr.lExchangeCurrency[mItemBaseName.TypeKR];
+                exchange[1] = Restr.lExchangeCurrency[(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
+                url = Restr.ExchangeApi[Restr.ServerLang] + Restr.ServerType + "/?redirect&source=";
                 url += Uri.EscapeDataString("{\"exchange\":{\"status\":{\"option\":\"online\"},\"have\":[\"" + exchange[0] + "\"],\"want\":[\"" + exchange[1] + "\"]}}");
                 Process.Start(url);
             }
@@ -253,14 +253,13 @@ namespace PoeTradeSearch
 
                 if (sEntity == null || sEntity == "")
                 {
-                    MessageBox.Show(Application.Current.MainWindow, "Json 생성을 실패했습니다.", "에러");
-                    NativeMethods.SetForegroundWindow(NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
+                    ForegroundMessage("Json 생성을 실패했습니다.", "에러", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
                 if (mConfigData.Options.ServerRedirect)
                 {
-                    url = ResStr.TradeApi[ResStr.ServerLang] + ResStr.ServerType + "/?redirect&source=";
+                    url = Restr.TradeApi[Restr.ServerLang] + Restr.ServerType + "/?redirect&source=";
                     url += Uri.EscapeDataString(sEntity);
                     Process.Start(url);
                 }
@@ -271,13 +270,13 @@ namespace PoeTradeSearch
                     // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
                     Thread thread = new Thread(() =>
                     {
-                        sResult = SendHTTP(sEntity, ResStr.TradeApi[ResStr.ServerLang] + ResStr.ServerType);
+                        sResult = SendHTTP(sEntity, Restr.TradeApi[Restr.ServerLang] + Restr.ServerType, mConfigData.Options.ServerTimeout);
                         if ((sResult ?? "") != "")
                         {
                             try
                             {
                                 ResultData resultData = Json.Deserialize<ResultData>(sResult);
-                                url = ResStr.TradeUrl[ResStr.ServerLang] + ResStr.ServerType + "/" + resultData.ID;
+                                url = Restr.TradeUrl[Restr.ServerLang] + Restr.ServerType + "/" + resultData.ID;
                                 Process.Start(url);
                             }
                             catch { }
@@ -289,12 +288,12 @@ namespace PoeTradeSearch
 
                     if ((sResult ?? "") == "")
                     {
-                        MessageBox.Show(Application.Current.MainWindow,
+                        ForegroundMessage(
                             "현재 거래소 접속이 원활하지 않을 수 있습니다." + '\n' +
-                            "한/영 서버를 바꾸거나 거래소 접속을 확인 하신후 다시 시도하세요.",
-                            "검색 실패"
+                            "한/영 서버의 거래소 접속을 확인 하신후 다시 시도하세요.",
+                            "검색 실패",
+                            MessageBoxButton.OK, MessageBoxImage.Information
                         );
-                        NativeMethods.SetForegroundWindow(NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
                         return;
                     }
                 }
@@ -323,7 +322,7 @@ namespace PoeTradeSearch
         {
             string idx = (string)((CheckBox)sender).Tag;
             ((TextBox)this.FindName("tbOpt" + idx)).Tag = ((TextBox)this.FindName("tbOpt" + idx)).Text;
-            ((TextBox)this.FindName("tbOpt" + idx)).Text = ResStr.TotalResistance;
+            ((TextBox)this.FindName("tbOpt" + idx)).Text = Restr.TotalResistance;
         }
 
         private void TbOpt0_3_Unchecked(object sender, RoutedEventArgs e)
@@ -334,9 +333,9 @@ namespace PoeTradeSearch
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            ResStr.ServerLang = byte.Parse((string)((Button)sender).Tag);
+            Restr.ServerLang = byte.Parse((string)((Button)sender).Tag);
 
-            if (ResStr.ServerLang == 0)
+            if (Restr.ServerLang == 0)
                 cbName.Content = (Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "")).Trim();
             else
                 cbName.Content = (mItemBaseName.NameEN + " " + mItemBaseName.TypeEN).Trim();
@@ -380,8 +379,8 @@ namespace PoeTradeSearch
             if (bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0))
             {
                 exchange = new string[2];
-                exchange[0] = ResStr.lExchangeCurrency[mItemBaseName.TypeKR];
-                exchange[1] = ResStr.lExchangeCurrency[(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
+                exchange[0] = Restr.lExchangeCurrency[mItemBaseName.TypeKR];
+                exchange[1] = Restr.lExchangeCurrency[(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
             }
 
             PriceUpdateThreadWorker(exchange != null ? null : GetItemOptions(), exchange);
@@ -422,14 +421,13 @@ namespace PoeTradeSearch
             {
                 Process.Start(
                     "https://pathofexile.gamepedia.com/" +
-                    ((string)cbRarity.SelectedValue == ResStr.Unique && mItemBaseName.NameEN != ""
+                    ((string)cbRarity.SelectedValue == Restr.Unique && mItemBaseName.NameEN != ""
                     ? mItemBaseName.NameEN : mItemBaseName.TypeEN).Replace(' ', '_')
                 );
             }
             catch (Exception)
             {
-                MessageBox.Show(Application.Current.MainWindow, "해당 아이템의 위키 연결에 실패했습니다.", "에러");
-                NativeMethods.SetForegroundWindow(NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
+                ForegroundMessage("해당 아이템의 위키 연결에 실패했습니다.", "에러", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -446,7 +444,7 @@ namespace PoeTradeSearch
                 "POE 거래소 검색"
                 );
 
-            NativeMethods.SetForegroundWindow(NativeMethods.FindWindow(ResStr.PoeClass, ResStr.PoeCaption));
+            Native.SetForegroundWindow(Native.FindWindow(Restr.PoeClass, Restr.PoeCaption));
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)

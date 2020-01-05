@@ -81,9 +81,6 @@ namespace PoeTradeSearch
             [DataMember(Name = "server_redirect")]
             internal bool ServerRedirect = false;
 
-            [DataMember(Name = "server_useragent")]
-            internal string ServerUseragent = null;
-
             [DataMember(Name = "search_price_min")]
             internal decimal SearchPriceMin = 0;
 

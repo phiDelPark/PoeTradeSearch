@@ -177,7 +177,7 @@
 
                     <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" HorizontalAlignment="Left" Height="30" Margin="132,283,0,0" VerticalAlignment="Top" Width="1" RenderTransformOrigin="0.5,0.5" />
 
-                    <Label Content="&amp;" HorizontalAlignment="Left" Margin="175,290,0,0" VerticalAlignment="Top" Width="22" />
+                    <Label Content="&amp;" HorizontalAlignment="Left" Margin="175,293,0,0" VerticalAlignment="Top" Width="22" />
                     <CheckBox Name="ckSocket" Content="소켓" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" HorizontalAlignment="Left" Margin="138,275,0,0" VerticalAlignment="Top" Width="50" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
                     <TextBox Name="tbSocketMin" HorizontalAlignment="Left" Height="18" Margin="139,294,0,0" Text="" VerticalAlignment="Top" Width="16" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
                     <TextBox Name="tbSocketMax" HorizontalAlignment="Left" Height="18" Margin="159,294,0,0" Text="" VerticalAlignment="Top" Width="16" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />

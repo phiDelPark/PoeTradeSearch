@@ -102,7 +102,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Contracts.cs" />
-    <Compile Include="ResStr.cs" />
+    <Compile Include="Methods.cs" />
+    <Compile Include="ResStrings.cs" />
+    <Compile Include="Updates.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
