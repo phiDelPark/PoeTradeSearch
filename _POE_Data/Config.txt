@@ -10,7 +10,7 @@
 			"search_price_count":20,
 			"auto_check_unique":true,
 			"auto_select_pseudo":true,
-			"auto_select_corrupt":"no or yes",
+			"auto_select_corrupt":"yes",
 			"ctrl_wheel":false,
 			"check_updates":true,
 			"data_version":"3.9.1b"

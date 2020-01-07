@@ -34,7 +34,7 @@
         "search_price_count":20,     // 시세 검색 목록 수 (20의 배수이고 최대 80, 수가 많을수록 느려짐)
         "auto_check_unique":true,    // 유니크 아이템은 기본적으로 옵션 모두 선택 [true, false]
         "auto_select_pseudo":true,   // 유사 옵션으로 검색이 가능하면 유사로 자동 선택 [true, false]
-        "auto_select_corrupt":"",    // 기본 검색시 선택한 타락 옵션으로 검색 ["all", "no", "yes"]
+        "auto_select_corrupt":"",    // 기본 검색시 선택한 타락 옵션으로 검색 (장비 한정) ["all", "no", "yes"]
         "check_updates":true,        // 시작시 최신 버전 체크 [true, false]
         "ctrl_wheel":false           // 창고 Ctrl+Wheel 이동 (전체 위치에서 가능), 기본 지원되어 꺼둠 [true, false]
       },

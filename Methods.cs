@@ -143,7 +143,7 @@ namespace PoeTradeSearch
             ckSocket.IsChecked = false;
             cbInfluence1.SelectedIndex = 0;
             cbInfluence2.SelectedIndex = 0;
-            cbCorrupt.SelectedIndex = mConfigData.Options.AutoSelectCorrupt == "no" ? 2 : (mConfigData.Options.AutoSelectCorrupt == "yes" ? 1 : 0);
+            cbCorrupt.SelectedIndex = 0;
             cbCorrupt.BorderThickness = new Thickness(1);
 
             cbOrbs.SelectionChanged -= CbOrbs_SelectionChanged;
@@ -828,9 +828,10 @@ namespace PoeTradeSearch
                             ckLv.IsChecked = lItemOption[Restr.Lv].IndexOf(" (" + Restr.Max) > 0;
                             ckQuality.IsChecked = ckLv.IsChecked == true && item_quality != "" && int.Parse(item_quality) > 19;
                         }
-                        else if (by_type && itemRarity == Restr.Normal)
+                        else if (by_type)
                         {
                             ckLv.IsChecked = tbLvMin.Text != "" && int.Parse(tbLvMin.Text) > 82;
+                            cbCorrupt.SelectedIndex = mConfigData.Options.AutoSelectCorrupt == "no" ? 2 : (mConfigData.Options.AutoSelectCorrupt == "yes" ? 1 : 0);
                         }
                     }
 
@@ -1330,20 +1331,7 @@ namespace PoeTradeSearch
                                         return -1 * firstPair.Value.CompareTo(nextPair.Value);
                                     }
                                 );
-
-                                KeyValuePair<string, int> firstKey = myList[myList.Count - 1];
-                                if (myList.Count > 1 && (firstKey.Value == 1 || (firstKey.Value == 2 && first == firstKey.Key)))
-                                {
-                                    int idx = myList.Count - 2;
-
-                                    if (firstKey.Value == 1 || myList[idx].Value == 1)
-                                        idx = (int)Math.Truncate((double)myList.Count / 2);
-
-                                    firstKey = myList[idx];
-                                }
-
-                                result = Regex.Replace(first + " ~ " + last, @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
-
+                                
                                 for (int i = 0; i < myList.Count; i++)
                                 {
                                     if (i == 2) break;
@@ -1351,7 +1339,9 @@ namespace PoeTradeSearch
                                     result2 += myList[i].Key + "[" + myList[i].Value + "], ";
                                 }
 
+                                result = Regex.Replace(first + " ~ " + last, @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
                                 result2 = Regex.Replace(result2.TrimEnd(',', ' '), @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
+
                                 if (result2 == "")
                                     result2 = "가장 많은 수 없음";
                             }
