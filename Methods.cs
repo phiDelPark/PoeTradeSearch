@@ -141,10 +141,16 @@ namespace PoeTradeSearch
             ckLv.IsChecked = false;
             ckQuality.IsChecked = false;
             ckSocket.IsChecked = false;
+
             cbInfluence1.SelectedIndex = 0;
             cbInfluence2.SelectedIndex = 0;
+            cbInfluence1.BorderThickness = new Thickness(1);
+            cbInfluence2.BorderThickness = new Thickness(1);
+
             cbCorrupt.SelectedIndex = 0;
             cbCorrupt.BorderThickness = new Thickness(1);
+            cbCorrupt.FontWeight = FontWeights.Normal;
+            cbCorrupt.Foreground = cbInfluence1.Foreground;
 
             cbOrbs.SelectionChanged -= CbOrbs_SelectionChanged;
             cbSplinters.SelectionChanged -= CbOrbs_SelectionChanged;
@@ -154,14 +160,20 @@ namespace PoeTradeSearch
             cbSplinters.SelectionChanged += CbOrbs_SelectionChanged;
 
             cbOrbs.FontWeight = FontWeights.Normal;
-            cbSplinters.FontWeight = FontWeights.Normal;
+            cbSplinters.FontWeight = FontWeights.Normal; 
+
+            ckLv.Content = Restr.Lv;
+            ckLv.FontWeight = FontWeights.Normal;
+            ckLv.Foreground = Synthesis.Foreground;
+            ckLv.BorderBrush = Synthesis.BorderBrush;
+            ckQuality.FontWeight = FontWeights.Normal;
+            ckQuality.Foreground = Synthesis.Foreground;
+            ckQuality.BorderBrush = Synthesis.BorderBrush;
+            Synthesis.Content = "결합";
+            lbSocketBackground.Visibility = Visibility.Hidden;
 
             lbDPS.Content = "옵션";
             SetSearchButtonText();
-
-            ckLv.Content = Restr.Lv;
-            Synthesis.Content = "결합";
-            lbSocketBackground.Visibility = Visibility.Hidden;
 
             cbRarity.Items.Clear();
             cbRarity.Items.Add(Restr.All);
@@ -809,11 +821,14 @@ namespace PoeTradeSearch
                         if (lItemOption[Restr.Corrupt] == "_TRUE_")
                         {
                             cbCorrupt.BorderThickness = new Thickness(2);
-                            //ckCorrupt.FontWeight = FontWeights.Bold;
-                            //ckCorrupt.Foreground = System.Windows.Media.Brushes.DarkRed;
+                            cbCorrupt.FontWeight = FontWeights.Bold;
+                            cbCorrupt.Foreground = System.Windows.Media.Brushes.DarkRed;
                         }
 
                         Synthesis.IsChecked = (is_map && is_blight) || lItemOption[Restr.Synthesis] == "_TRUE_";
+
+                        if (cbInfluence1.SelectedIndex > 0) cbInfluence1.BorderThickness = new Thickness(2);
+                        if (cbInfluence2.SelectedIndex > 0) cbInfluence2.BorderThickness = new Thickness(2);
 
                         if (is_map)
                         {
@@ -828,10 +843,26 @@ namespace PoeTradeSearch
                             ckLv.IsChecked = lItemOption[Restr.Lv].IndexOf(" (" + Restr.Max) > 0;
                             ckQuality.IsChecked = ckLv.IsChecked == true && item_quality != "" && int.Parse(item_quality) > 19;
                         }
-                        else if (by_type)
+                        else if (by_type || is_flask)
                         {
-                            ckLv.IsChecked = tbLvMin.Text != "" && int.Parse(tbLvMin.Text) > 82;
-                            cbCorrupt.SelectedIndex = mConfigData.Options.AutoSelectCorrupt == "no" ? 2 : (mConfigData.Options.AutoSelectCorrupt == "yes" ? 1 : 0);
+                            if (tbQualityMin.Text != "" && int.Parse(tbQualityMin.Text) > 20)
+                            {
+                                ckQuality.FontWeight = FontWeights.Bold;
+                                ckQuality.Foreground = System.Windows.Media.Brushes.DarkRed;
+                                ckQuality.BorderBrush = System.Windows.Media.Brushes.DarkRed;
+                            }
+
+                            if (by_type)
+                            {
+                                if (tbLvMin.Text != "" && int.Parse(tbLvMin.Text) > 82)
+                                {
+                                    ckLv.FontWeight = FontWeights.Bold;
+                                    ckLv.Foreground = System.Windows.Media.Brushes.DarkRed;
+                                    ckLv.BorderBrush = System.Windows.Media.Brushes.DarkRed;
+                                }
+
+                                cbCorrupt.SelectedIndex = mConfigData.Options.AutoSelectCorrupt == "no" ? 2 : (mConfigData.Options.AutoSelectCorrupt == "yes" ? 1 : 0);
+                            }
                         }
                     }
 
