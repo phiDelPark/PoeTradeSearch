@@ -38,55 +38,62 @@ namespace PoeTradeSearch
             // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
             Thread thread = new Thread(() =>
             {
-                string u = "https://poe.game.daum.net/api/trade/data/stats";
-                string sResult = SendHTTP(null, u, 5);
-                if ((sResult ?? "") != "")
+                bool isKR = false;
+                string[] urls = { "https://poe.game.daum.net/api/trade/data/stats", "https://www.pathofexile.com/api/trade/data/stats" };
+                foreach (string u in urls)
                 {
-                    FilterData rootClass = Json.Deserialize<FilterData>(sResult);
-
-                    for (int i = 0; i < rootClass.Result.Length; i++)
+                    isKR = !isKR;
+                    string sResult = SendHTTP(null, u, 5);
+                    if ((sResult ?? "") != "")
                     {
-                        if (
-                            rootClass.Result[i].Entries.Length > 0
-                            && Restr.lFilterTypeName.ContainsKey(rootClass.Result[i].Entries[0].Type)
-                        )
-                        {
-                            rootClass.Result[i].Label = Restr.lFilterTypeName[rootClass.Result[i].Entries[0].Type];
-                        }
-                    }
+                        FilterData rootClass = Json.Deserialize<FilterData>(sResult);
 
-                    foreach (KeyValuePair<string, byte> itm in Restr.lParticular)
-                    {
                         for (int i = 0; i < rootClass.Result.Length; i++)
                         {
-                            int index = Array.FindIndex(rootClass.Result[i].Entries, x => x.ID.Substring(x.ID.IndexOf(".") + 1) == itm.Key);
-                            if (index > -1 && rootClass.Result[i].Entries[index].Text.IndexOf("(" + Restr.Local + ")") > 0)
+                            if (
+                                rootClass.Result[i].Entries.Length > 0
+                                && RS.lFilterTypeName.ContainsKey(rootClass.Result[i].Entries[0].Type)
+                            )
                             {
-                                rootClass.Result[i].Entries[index].Text = rootClass.Result[i].Entries[index].Text.Replace("(" + Restr.Local + ")", "");
-                                rootClass.Result[i].Entries[index].Part = itm.Value == 1 ? "Weapons" : "Armours";
+                                rootClass.Result[i].Label = RS.lFilterTypeName[rootClass.Result[i].Entries[0].Type];
                             }
                         }
-                    }
 
-                    foreach (KeyValuePair<string, bool> itm in Restr.lDisable)
-                    {
-                        for (int i = 0; i < rootClass.Result.Length; i++)
+                        string local = isKR ? "(특정)" : " (Local)";
+
+                        foreach (KeyValuePair<string, byte> itm in RS.lParticular)
                         {
-                            int index = Array.FindIndex(rootClass.Result[i].Entries, x => x.ID.Substring(x.ID.IndexOf(".") + 1) == itm.Key);
-                            if (index > -1)
+                            for (int i = 0; i < rootClass.Result.Length; i++)
                             {
-                                rootClass.Result[i].Entries[index].Text = "__DISABLE__";
-                                rootClass.Result[i].Entries[index].Part = "Disable";
+                                int index = Array.FindIndex(rootClass.Result[i].Entries, x => x.ID.Substring(x.ID.IndexOf(".") + 1) == itm.Key);
+                                if (index > -1)
+                                {
+                                    rootClass.Result[i].Entries[index].Text = rootClass.Result[i].Entries[index].Text.Replace(local, "");
+                                    rootClass.Result[i].Entries[index].Part = itm.Value == 1 ? "Weapons" : "Armours";
+                                }
                             }
                         }
-                    }
 
-                    using (StreamWriter writer = new StreamWriter(path + "Filters.txt", false, Encoding.UTF8))
-                    {
-                        writer.Write(Json.Serialize<FilterData>(rootClass));
-                    }
+                        foreach (KeyValuePair<string, bool> itm in RS.lDisable)
+                        {
+                            for (int i = 0; i < rootClass.Result.Length; i++)
+                            {
+                                int index = Array.FindIndex(rootClass.Result[i].Entries, x => x.ID.Substring(x.ID.IndexOf(".") + 1) == itm.Key);
+                                if (index > -1)
+                                {
+                                    rootClass.Result[i].Entries[index].Text = "__DISABLE__";
+                                    rootClass.Result[i].Entries[index].Part = "Disable";
+                                }
+                            }
+                        }
 
-                    success = true;
+                        using (StreamWriter writer = new StreamWriter(path + (isKR ? "FiltersKO.txt" : "FiltersEN.txt"), false, Encoding.UTF8))
+                        {
+                            writer.Write(Json.Serialize<FilterData>(rootClass));
+                        }
+
+                        success = true;
+                    }
                 }
             });
 

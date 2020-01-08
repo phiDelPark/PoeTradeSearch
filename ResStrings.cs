@@ -2,7 +2,7 @@
 
 namespace PoeTradeSearch
 {
-    internal static class Restr
+    internal static class RS
     {
         internal static string PoeClass = "POEWindowClass";
         internal static string PoeCaption = "Path of Exile";
@@ -14,75 +14,83 @@ namespace PoeTradeSearch
 
         internal static byte ServerLang = 0;
         internal static string ServerType = "";
+        
+        internal static readonly string Pseudo = "유사";
+        internal static readonly string Explicit = "일반";
+        internal static readonly string Fractured = "분열";
+        internal static readonly string Crafted = "제작";
+        internal static readonly string Implicit = "고정";
+        internal static readonly string Enchant = "인챈";
+        internal static readonly string Veiled = "장막";
+        internal static readonly string Monster = "야수";
+        internal static readonly string Delve = "탐광";
+        internal static readonly string TotalResistance = "총 저항 +#%";
 
-        internal const string All = "모두";
-        internal const string Max = "최대";
+        //internal static readonly string[] Local = { "특정", "Local" };
 
-        internal const string Rarity = "아이템 희귀도";
-        internal const string Unique = "고유";
-        internal const string Rare = "희귀";
-        internal const string Magic = "마법";
-        internal const string Normal = "일반";
+        internal static readonly string[] All = { "모두", "All" };
+        internal static readonly string[] Max = { "최대", "Max" };
 
-        internal const string Prophecy = "예언";
-        internal const string Currency = "화폐";
-        internal const string DivinationCard = "점술 카드";
-        internal const string Gem = "젬";
+        internal static readonly string[] Rarity = { "아이템 희귀도", "Rarity" };
+        internal static readonly string[] Unique = { "고유", "Unique" };
+        internal static readonly string[] Rare = { "희귀", "Rare" };
+        internal static readonly string[] Magic = { "마법", "Magic" };
+        internal static readonly string[] Normal = { "일반", "Normal" };
 
-        internal const string Higher = "상급";
-        internal const string formed = "형성된";
+        internal static readonly string[] Prophecy = { "예언", "Prophecy" };
+        internal static readonly string[] Currency = { "화폐", "Currency" };
+        internal static readonly string[] DivinationCard = { "점술 카드", "Divination Card" };
+        internal static readonly string[] Gem = { "젬", "Gem" };
 
-        internal const string Lv = "레벨";
-        internal const string ItemLv = "아이템 레벨";
-        internal const string CharmLv = "부적 등급";
-        internal const string MaTier = "지도 등급";
-        internal const string Quality = "퀄리티";
-        internal const string Socket = "홈";
+        internal static readonly string[] Higher = { "상급", "Superior" };
+        internal static readonly string[] Formed = { "형성된", "Formed" };
 
-        internal const string Corrupt = "타락";
-        internal const string Vaal = "바알";
-        internal const string Unidentify = "미확인";
-        internal const string Blight = "역병 걸린 지도";
-        internal const string Blighted = "역병 걸린";
+        internal static readonly string[] Lv = { "레벨", "Level" };
+        internal static readonly string[] ItemLv = { "아이템 레벨", "Item Level" };
+        internal static readonly string[] CharmLv = { "부적 등급", "Talisman Tier" };
+        internal static readonly string[] MaTier = { "지도 등급", "Map Tier" };
+        internal static readonly string[] Quality = { "퀄리티", "Quality" };
+        internal static readonly string[] Socket = { "홈", "Sockets" };
 
-        internal const string Shaper = "쉐이퍼 아이템";
-        internal const string Elder = "엘더 아이템";
-        internal const string Crusader = "십자군 아이템";
-        internal const string Redeemer = "대속자 아이템";
-        internal const string Hunter = "사냥꾼 아이템";
-        internal const string Warlord = "전쟁군주 아이템";
+        internal static readonly string[] Corrupt = { "타락", "Corrupted" };
+        internal static readonly string[] Metamorph = { "변형", "Metamorph" };
+        internal static readonly string[] Vaal = { "바알", "Vaal" };
+        internal static readonly string[] Unidentify = { "미확인", "Unidentified" };
+        internal static readonly string[] Blight = { "역병 걸린 지도", "Blighted Map" };
+        internal static readonly string[] Blighted = { "역병 걸린", "Blighted" };
 
-        internal const string Synthesis = "결합된 아이템";
-        internal const string Synthesised = "결합된";
-        internal const string Captured = "포획한 야수";
+        internal static readonly string[] Shaper = { "쉐이퍼 아이템", "Shaper Item" };
+        internal static readonly string[] Elder = { "엘더 아이템", "Elder Item" };
+        internal static readonly string[] Crusader = { "십자군 아이템", "Crusader Item" };
+        internal static readonly string[] Redeemer = { "대속자 아이템", "Redeemer Item" };
+        internal static readonly string[] Hunter = { "사냥꾼 아이템", "Hunter Item" };
+        internal static readonly string[] Warlord = { "전쟁군주 아이템", "Warlord Item" };
 
-        internal const string ChkProphecy = "우클릭으로 이 예언을 캐릭터에 추가하십시오.";
-        internal const string ChkMapFragment = "템플러의 실험실이나 전용 지도 장치에서";
-        internal const string ChkMetEntrails = "테인의 연구실에서 이 아이템을 다른 샘플과";        
-        internal const string ChkFlask = "현재 용량";
-        internal const string ChkBeast1 = "종";
-        internal const string ChkBeast2 = "속";
+        internal static readonly string[] Synthesis = { "결합된 아이템", "Synthesised Item" };
+        internal static readonly string[] Synthesised = { "결합된", "Synthesised" };
+        internal static readonly string[] Captured = { "포획한 야수", "" };
 
-        internal const string SClickSplitItem = "Shift + 클릭으로 아이템 나누기";    
+        internal static readonly string[] ChkProphecy = { "우클릭으로 이 예언을 캐릭터에 추가하십시오.", "Right-click to add this prophecy to your character." };
+        internal static readonly string[] ChkMapFragment = { "템플러의 실험실이나 전용 지도 장치에서", "Can be used in a personal Map Device" };
+        internal static readonly string[] ChkMetEntrails = { "테인의 연구실에서 이 아이템을 다른 샘플과", "Combine this with four other different samples in Tane's" };        
+        internal static readonly string[] ChkFlask = { "현재 용량", "Currently has # Charges" };
+        internal static readonly string[] ChkBeast1 = { "종", "Genus" };
+        internal static readonly string[] ChkBeast2 = { "속", "Group" };
 
-        internal const string Pseudo = "유사";
-        internal const string Explicit = "일반";
-        internal const string Fractured = "분열";
-        internal const string Crafted = "제작";
-        internal const string Implicit = "고정";
-        internal const string Enchant = "인챈";
-        internal const string Veiled = "장막";
-        internal const string Monster = "야수";
-        internal const string Delve = "탐광";
-        internal const string Local = "특정";
+        internal static readonly string[] SClickSplitItem = { "Shift + 클릭으로 아이템 나누기", "Shift click to unstack" };    
 
-        internal const string PhysicalDamage = "물리 피해";
-        internal const string ElementalDamage = "원소 피해";
-        internal const string ChaosDamage = "카오스 피해";
-        internal const string AttacksPerSecond = "초당 공격 횟수";
-        internal const string AttackSpeedIncr = "공격 속도 #% 증가";
-        internal const string PhysicalDamageIncr = "물리 피해 #% 증가";
-        internal const string TotalResistance = "총 저항 +#%";
+        internal static readonly string[] PhysicalDamage = { "물리 피해", "Physical Damage" };
+        internal static readonly string[] ElementalDamage = { "원소 피해", "Elemental Damage" };
+        internal static readonly string[] ChaosDamage = { "카오스 피해", "Chaos Damage" };
+        internal static readonly string[] AttacksPerSecond = { "초당 공격 횟수", "Attacks per Second" };
+        internal static readonly string[] AttackSpeedIncr = { "공격 속도 #% 증가", "#% increased Attack Speed" };
+        internal static readonly string[] PhysicalDamageIncr = { "물리 피해 #% 증가", "#% increased Physical Damage" };
+
+
+        internal static Dictionary<string, string> lRarity = new Dictionary<string, string>()
+        {
+            { Unique[0], "unique"}, { Rare[0], "rare"}, { Magic[0], "magic"}, { Normal[0], "normal"}
+        };
 
         internal static Dictionary<string, string> lFilterTypeName = new Dictionary<string, string>()
         {
@@ -141,11 +149,6 @@ namespace PoeTradeSearch
             { "Amulets","accessory.amulet" }, { "Rings","accessory.ring" }, { "Belts","accessory.belt" }, /* accessory */
             { "Jewels","jewel" }, { "Flasks","flask" }, { "DivinationCards","card" }, { "Prophecies","prophecy" }, { "Gems","gem" },
             { "Currency","currency" },  { "Maps","map" }, { "MapFragments","map" }
-        };
-
-        internal static Dictionary<string, string> lRarity = new Dictionary<string, string>()
-        {
-            { Unique, "unique"}, { Rare, "rare"}, { Magic, "magic"}, { Normal, "normal"}
         };
 
         internal static Dictionary<string, string> lExchangeCurrency = new Dictionary<string, string>()

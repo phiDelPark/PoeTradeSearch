@@ -213,7 +213,7 @@ namespace PoeTradeSearch
             {
                 if (MouseMessages.WM_MOUSEWHEEL == (MouseMessages)wParam && (Native.GetKeyState(VK_CONTROL) & 0x100) != 0)
                 {
-                    if (Native.GetForegroundWindow().Equals(Native.FindWindow(Restr.PoeClass, Restr.PoeCaption)))
+                    if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
                     {
                         try
                         {
