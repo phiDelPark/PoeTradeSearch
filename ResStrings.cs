@@ -43,7 +43,8 @@ namespace PoeTradeSearch
         internal static readonly string[] Gem = { "젬", "Gem" };
 
         internal static readonly string[] Higher = { "상급", "Superior" };
-        internal static readonly string[] Formed = { "형성된", "Formed" };
+        internal static readonly string[] Shaped = { "형성된", "Shaped" };
+        internal static readonly string[] Unidentify = { "미확인", "Unidentified" };
 
         internal static readonly string[] Lv = { "레벨", "Level" };
         internal static readonly string[] ItemLv = { "아이템 레벨", "Item Level" };
@@ -52,10 +53,9 @@ namespace PoeTradeSearch
         internal static readonly string[] Quality = { "퀄리티", "Quality" };
         internal static readonly string[] Socket = { "홈", "Sockets" };
 
+        internal static readonly string[] Vaal = { "바알", "Vaal" };
         internal static readonly string[] Corrupt = { "타락", "Corrupted" };
         internal static readonly string[] Metamorph = { "변형", "Metamorph" };
-        internal static readonly string[] Vaal = { "바알", "Vaal" };
-        internal static readonly string[] Unidentify = { "미확인", "Unidentified" };
         internal static readonly string[] Blight = { "역병 걸린 지도", "Blighted Map" };
         internal static readonly string[] Blighted = { "역병 걸린", "Blighted" };
 

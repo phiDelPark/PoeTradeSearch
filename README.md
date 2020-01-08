@@ -1,14 +1,14 @@
 [![release](https://img.shields.io/badge/release-Download-brightgreen.svg)](https://github.com/phiDelPark/PoeTradeSearch/releases)
 [![License](https://img.shields.io/badge/license-GPL-blue.svg)](https://github.com/phiDelPark/PoeTradeSearch/blob/master/LICENSE)
 
-한글 POE 거래소 검색
+POE 거래소 검색 (한글/영문)
 -------------
 
-**한글 POE 전용** 거래소 검색 프로그램입니다.<br>
+한글/영문 POE 거래소 검색 프로그램입니다.<br>
 선택한 아이템을 POE 거래소에서 검색하며 한글 거래소와 영문 거래소 두곳에서 모두 검색이 가능합니다.
 
 ### 개발환경:
-* 한글 윈도우 10, 한글 POE 전체 창 또는 창 모드<br>
+* 윈도우 10, POE 창 모드<br>
 * 윈도우 7 은 프레임워크 버전 4.6 이상 필요, [설치법 보러가기↗](https://github.com/phiDelPark/PoeTradeSearch/wiki/Windows-7)
 
 ### 사용:
@@ -25,7 +25,7 @@
 
       "options":{
         "league":"Standard",         // 리그 선택 ["Metamorph", "Hardcore Metamorph", "Standard", "Hardcore"]
-        "server":"ko",               // 기본 검색 서버 ["ko", "en"]
+        "server":"ko",               // 기본 검색 서버 ["ko", "en", "auto"]
         "server_timeout":5,          // 서버 접속 대기 시간 (초) 인터넷이 느리면 더 올려 시간 초과를 방지
         "server_redirect":false,     // 일부 환경에서 서버 데이터를 못받아와 거래소 접속이 안되는 경우 사용
         "search_by_type":false,      // 기본 검색시 이름이 아닌 유형으로 검색 (매직 레어 장비 한정) [true, false]

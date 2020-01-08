@@ -184,6 +184,7 @@ namespace PoeTradeSearch
             lbDPS.Content = "옵션";
 
             cbRarity.Items.Clear();
+            cbRarity.Width = cbOpt0.Width;
             cbRarity.Items.Add(RS.All[0]);
             cbRarity.Items.Add(RS.Normal[0]);
             cbRarity.Items.Add(RS.Magic[0]);
@@ -553,7 +554,7 @@ namespace PoeTradeSearch
                     {
                         if (is_gem && lItemOption[RS.Corrupt[z]] == "_TRUE_" && lItemOption[RS.Vaal[z]] == "_TRUE_")
                         {
-                            tmpBaseType = mBaseDatas.Find(x => (z == 1 ? x.NameEn : x.NameKo) == RS.Vaal[0] + " " + itemType);
+                            tmpBaseType = mBaseDatas.Find(x => (z == 1 ? x.NameEn : x.NameKo) == RS.Vaal[z] + " " + itemType);
                             if (tmpBaseType != null)
                                 itemType = z == 1 ? tmpBaseType.NameEn : tmpBaseType.NameKo;
                         }
@@ -562,23 +563,23 @@ namespace PoeTradeSearch
                             itemType = itemType.Split('-')[0].Trim();
 
                         if ((is_unIdentify || itemRarity == RS.Normal[0]) && itemType.Length > 4 && itemType.IndexOf(RS.Higher[z] + " ") == 0)
-                            itemType = itemType.Substring(3);
+                            itemType = itemType.Substring(z == 1 ? 9 : 3);
 
                         if (is_map && itemType.Length > 5)
                         {
                             if (itemType.IndexOf(RS.Blighted[z] + " ") == 0)
                             {
                                 is_blight = true;
-                                itemType = itemType.Substring(6);
+                                itemType = itemType.Substring(z == 1 ? 9 : 6);
                             }
 
-                            if (itemType.Substring(0, 4) == RS.Formed[z] + " ")
-                                itemType = itemType.Substring(4);
+                            if (itemType.Substring(0, z == 1 ? 7 : 4) == RS.Shaped[z] + " ")
+                                itemType = itemType.Substring(z == 1 ? 7 : 4);
                         }
                         else if (lItemOption[RS.Synthesis[z]] == "_TRUE_")
                         {
-                            if (itemType.Substring(0, 4) == RS.Synthesised[z] + " ")
-                                itemType = itemType.Substring(4);
+                            if (itemType.Substring(0, z == 1 ? 12 : 4) == RS.Synthesised[z] + " ")
+                                itemType = itemType.Substring(z == 1 ? 12 : 4);
                         }
 
                         if (!is_unIdentify && itemRarity == RS.Magic[0])
@@ -806,6 +807,7 @@ namespace PoeTradeSearch
                         cbRarity.Items.Clear();
                         cbRarity.Items.Add(itemRarity);
                         cbRarity.SelectedIndex = cbRarity.Items.Count - 1;
+                        if (z == 1) cbRarity.Width = 100;
                     }
                     else if ((string)cbRarity.SelectedValue == RS.Normal[0])
                     {
