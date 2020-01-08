@@ -49,6 +49,7 @@ namespace PoeTradeSearch
             public string NameEN;
             public string TypeEN;
 
+            public byte LangType;
             //public string Rarity;
             public string[] Inherits;
         }

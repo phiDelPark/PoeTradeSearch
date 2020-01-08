@@ -26,7 +26,7 @@ namespace PoeTradeSearch
         private List<BaseResultData> mMonsterDatas = null;
         
         private ConfigData mConfigData;
-        private FilterData mFilterData;
+        private FilterData[] mFilterData = new FilterData[2];
 
         private ItemBaseName mItemBaseName;
 
@@ -116,7 +116,7 @@ namespace PoeTradeSearch
             int cnt = 0;
             cbOrbs.Items.Add("교환을 원하는 오브 선택");
             cbSplinters.Items.Add("원하는 화석, 파편 선택");
-            foreach (KeyValuePair<string, string> item in RS.lExchangeCurrency)
+            foreach (KeyValuePair<string, string> item in RS.lExchangeCurrency[0])
             {
                 if (item.Key == "대장장이의 숫돌")
                     break;
@@ -241,8 +241,8 @@ namespace PoeTradeSearch
             if (bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0))
             {
                 exchange = new string[2];
-                exchange[0] = RS.lExchangeCurrency[mItemBaseName.TypeKR];
-                exchange[1] = RS.lExchangeCurrency[(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
+                exchange[0] = RS.lExchangeCurrency[0][mItemBaseName.TypeKR];
+                exchange[1] = RS.lExchangeCurrency[0][(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
                 url = RS.ExchangeApi[RS.ServerLang] + RS.ServerType + "/?redirect&source=";
                 url += Uri.EscapeDataString("{\"exchange\":{\"status\":{\"option\":\"online\"},\"have\":[\"" + exchange[0] + "\"],\"want\":[\"" + exchange[1] + "\"]}}");
                 Process.Start(url);
@@ -335,10 +335,10 @@ namespace PoeTradeSearch
         {
             RS.ServerLang = byte.Parse((string)((Button)sender).Tag);
 
-            if (RS.ServerLang == 0)
-                cbName.Content = (Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "")).Trim();
-            else
+            if (RS.ServerLang == 1)
                 cbName.Content = (mItemBaseName.NameEN + " " + mItemBaseName.TypeEN).Trim();
+            else
+                cbName.Content = (Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "")).Trim();
 
             SetSearchButtonText(RS.ServerLang == 0);
         }
@@ -379,8 +379,8 @@ namespace PoeTradeSearch
             if (bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0))
             {
                 exchange = new string[2];
-                exchange[0] = RS.lExchangeCurrency[mItemBaseName.TypeKR];
-                exchange[1] = RS.lExchangeCurrency[(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
+                exchange[0] = RS.lExchangeCurrency[0][mItemBaseName.TypeKR];
+                exchange[1] = RS.lExchangeCurrency[0][(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
             }
 
             PriceUpdateThreadWorker(exchange != null ? null : GetItemOptions(), exchange);
