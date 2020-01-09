@@ -58,7 +58,7 @@ namespace PoeTradeSearch
                                 rootClass.Result[i].Label = RS.lFilterType[rootClass.Result[i].Entries[0].Type];
                             }
                         }
-
+                        //TODO 장기 필터 적용하기
                         string local = isKR ? "(특정)" : " (Local)";
 
                         foreach (KeyValuePair<string, byte> itm in RS.lParticular)

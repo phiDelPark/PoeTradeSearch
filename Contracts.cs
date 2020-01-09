@@ -462,6 +462,20 @@ namespace PoeTradeSearch
 
             [DataMember(Name = "trade_filters")]
             internal q_Trade_filters Trade = new q_Trade_filters();
+
+            [DataMember(Name = "weapon_filters")]
+            internal q_Disabled_filters Weapon = new q_Disabled_filters();
+            [DataMember(Name = "armour_filters")]
+            internal q_Disabled_filters Armour = new q_Disabled_filters();
+            [DataMember(Name = "req_filters")]
+            internal q_Disabled_filters Req = new q_Disabled_filters();
+        }
+
+        [DataContract]
+        internal class q_Disabled_filters
+        {
+            [DataMember(Name = "disabled")]
+            internal bool Disabled = true;
         }
 
         [DataContract]
