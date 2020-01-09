@@ -421,8 +421,10 @@ namespace PoeTradeSearch
             {
                 Process.Start(
                     "https://pathofexile.gamepedia.com/" +
-                    ((string)cbRarity.SelectedValue == RS.Unique[0] && mItemBaseName.NameEN != ""
-                    ? mItemBaseName.NameEN : mItemBaseName.TypeEN).Replace(' ', '_')
+                    (
+                        (string)cbRarity.SelectedValue == RS.lRarity["Unique"]
+                        && mItemBaseName.NameEN != "" ? mItemBaseName.NameEN : mItemBaseName.TypeEN
+                    ).Replace(' ', '_')
                 );
             }
             catch (Exception)

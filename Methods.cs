@@ -178,18 +178,17 @@ namespace PoeTradeSearch
             ckQuality.FontWeight = FontWeights.Normal;
             ckQuality.Foreground = Synthesis.Foreground;
             ckQuality.BorderBrush = Synthesis.BorderBrush;
-            Synthesis.Content = "결합";
             lbSocketBackground.Visibility = Visibility.Hidden;
 
             lbDPS.Content = "옵션";
+            Synthesis.Content = "결합";
 
             cbRarity.Items.Clear();
-            cbRarity.Width = cbOpt0.Width;
             cbRarity.Items.Add(RS.All[0]);
-            cbRarity.Items.Add(RS.Normal[0]);
-            cbRarity.Items.Add(RS.Magic[0]);
-            cbRarity.Items.Add(RS.Rare[0]);
-            cbRarity.Items.Add(RS.Unique[0]);
+            cbRarity.Items.Add(RS.lRarity["Normal"]);
+            cbRarity.Items.Add(RS.lRarity["Magic"]);
+            cbRarity.Items.Add(RS.lRarity["Rare"]);
+            cbRarity.Items.Add(RS.lRarity["Unique"]);
 
             tabControl1.SelectedIndex = 0;
             cbPriceListCount.SelectedIndex = (int)Math.Ceiling(mConfigData.Options.SearchPriceCount / 20) - 1;
@@ -246,17 +245,12 @@ namespace PoeTradeSearch
                     itemType = asOpt.Length > 2 && asOpt[2] != "" ? Regex.Replace(asOpt[2] ?? "", @"<<set:[A-Z]+>>", "") : itemName;
 
                     if (asOpt.Length == 2) itemName = "";
-                    if (z == 1 && RS.lRarity.ContainsValue(itemRarity.ToLower()))
-                    {
-                        itemRarity = itemRarity.ToLower();
-                        itemRarity = RS.lRarity.FirstOrDefault(x => x.Value == itemRarity).Key;
-                    }
-
-                    bool is_prophecy = false, is_map_fragment = false, is_met_entrails = false, is_captured_beast = false;
+                    if (z == 1 && RS.lRarity.ContainsKey(itemRarity)) itemRarity = RS.lRarity[itemRarity];
 
                     int k = 0, baki = 0, notImpCnt = 0;
-                    double attackSpeedIncr = 0;
-                    double PhysicalDamageIncr = 0;
+                    double attackSpeedIncr = 0, PhysicalDamageIncr = 0;
+                    bool is_prophecy = false, is_map_fragment = false, is_met_entrails = false, is_captured_beast = false;
+
                     List<Itemfilter> itemfilters = new List<Itemfilter>();
 
                     Dictionary<string, string> lItemOption = new Dictionary<string, string>()
@@ -284,7 +278,7 @@ namespace PoeTradeSearch
                             }
                             else
                             {
-                                if (itemRarity == RS.Gem[z] && (RS.Vaal[z] + " " + itemType) == asTmp[0])
+                                if (itemRarity == RS.lRarity["Gem"] && (RS.Vaal[z] + " " + itemType) == asTmp[0])
                                     lItemOption[RS.Vaal[z]] = "_TRUE_";
                                 else if (!is_prophecy && asTmp[0].IndexOf(RS.ChkProphecy[z]) == 0)
                                     is_prophecy = true;
@@ -374,7 +368,7 @@ namespace PoeTradeSearch
 
                                     if (filter != null)
                                     {
-                                        ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.Crafted;
+                                        ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.lFilterType["crafted"];
                                         int selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
 
                                         if (crafted && selidx > -1)
@@ -388,7 +382,7 @@ namespace PoeTradeSearch
                                         }
                                         else
                                         {
-                                            ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.Pseudo;
+                                            ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.lFilterType["pseudo"];
                                             selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
 
                                             if (selidx == -1 && ((ComboBox)this.FindName("cbOpt" + k)).Items.Count > 0)
@@ -397,7 +391,7 @@ namespace PoeTradeSearch
                                                 string[] id_split = filterEntrie.ID.Split('.');
                                                 if (id_split.Length == 2 && RS.lPseudo.ContainsKey(id_split[1]))
                                                 {
-                                                    ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(new FilterEntrie("pseudo." + RS.lPseudo[id_split[1]], RS.Pseudo));
+                                                    ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(new FilterEntrie("pseudo." + RS.lPseudo[id_split[1]], RS.lFilterType["pseudo"]));
                                                 }
                                             }
 
@@ -405,24 +399,24 @@ namespace PoeTradeSearch
 
                                             if (is_captured_beast)
                                             {
-                                                ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.Monster;
+                                                ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.lFilterType["monster"];
                                                 selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
                                             }
                                             else if (mConfigData.Options.AutoSelectPseudo)
                                             {
-                                                ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.Pseudo;
+                                                ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.lFilterType["pseudo"];
                                                 selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
                                             }
 
                                             if (selidx == -1)
                                             {
-                                                ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.Explicit;
+                                                ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.lFilterType["explicit"];
                                                 selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
                                             }
 
                                             if (selidx == -1)
                                             {
-                                                ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.Fractured;
+                                                ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.lFilterType["fractured"];
                                                 selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
                                             }
 
@@ -497,9 +491,9 @@ namespace PoeTradeSearch
                     bool is_blight = false;
                     bool is_unIdentify = lItemOption[RS.Unidentify[z]] == "_TRUE_";
                     bool is_map = lItemOption[RS.MaTier[z]] != "";
-                    bool is_gem = itemRarity == RS.Gem[z];
-                    bool is_currency = itemRarity == RS.Currency[z];
-                    bool is_divinationCard = itemRarity == RS.DivinationCard[z];
+                    bool is_gem = itemRarity == RS.lRarity["Gem"];
+                    bool is_currency = itemRarity == RS.lRarity["Currency"];
+                    bool is_divinationCard = itemRarity == RS.lRarity["Divination Card"];
 
                     if (is_map || is_currency) is_map_fragment = false;
                     bool is_detail = is_gem || is_currency || is_divinationCard || is_prophecy || is_map_fragment;
@@ -533,7 +527,7 @@ namespace PoeTradeSearch
                     }
                     else if (is_prophecy)
                     {
-                        itemRarity = RS.Prophecy[0];
+                        itemRarity = RS.lRarity["Prophecy"];
                         tmpBaseType = mProphecyDatas.Find(x => (z == 1 ? x.NameEn : x.NameKo) == itemType);
                         if (tmpBaseType != null)
                         {
@@ -559,10 +553,10 @@ namespace PoeTradeSearch
                                 itemType = z == 1 ? tmpBaseType.NameEn : tmpBaseType.NameKo;
                         }
 
-                        if (!is_unIdentify && itemRarity == RS.Magic[0])
+                        if (!is_unIdentify && itemRarity == RS.lRarity["Magic"])
                             itemType = itemType.Split(new string[] { z == 1 ? " of " : " - " }, StringSplitOptions.None)[0].Trim();
 
-                        if ((is_unIdentify || itemRarity == RS.Normal[0]) && itemType.Length > 4 && itemType.IndexOf(RS.Higher[z] + " ") == 0)
+                        if ((is_unIdentify || itemRarity == RS.lRarity["Normal"]) && itemType.Length > 4 && itemType.IndexOf(RS.Higher[z] + " ") == 0)
                             itemType = itemType.Substring(z == 1 ? 9 : 3);
 
                         if (is_map && itemType.Length > 5)
@@ -582,7 +576,7 @@ namespace PoeTradeSearch
                                 itemType = itemType.Substring(z == 1 ? 12 : 4);
                         }
 
-                        if (!is_unIdentify && itemRarity == RS.Magic[0])
+                        if (!is_unIdentify && itemRarity == RS.lRarity["Magic"])
                         {
                             string[] tmp = itemType.Split(' ');
 
@@ -651,7 +645,7 @@ namespace PoeTradeSearch
                             mItemBaseName.NameEN = wordData == null ? itemName : wordData.NameEn;
                             mItemBaseName.NameKR = wordData == null ? itemName : wordData.NameKo;
 
-                            if (wordData == null && itemRarity == RS.Rare[0])
+                            if (wordData == null && itemRarity == RS.lRarity["Rare"])
                             {
                                 string[] tmp = itemName.Split(' ');
                                 if (tmp.Length > 1)
@@ -692,10 +686,9 @@ namespace PoeTradeSearch
 
                     if (is_detail)
                     {
-
                         try
                         {
-                            if (inherit == "Gems" || is_essences || is_incubations || inherit == "UniqueFragments" || inherit == "Labyrinth")
+                            if (is_essences || is_incubations || inherit == "Gems" || inherit == "UniqueFragments" || inherit == "Labyrinth")
                             {
                                 int i = inherit == "Gems" ? 3 : 1;
                                 tkDetail.Text = asData.Length > 2 ? ((inherit == "Gems" || inherit == "Labyrinth" ? asData[i] : "") + asData[i + 1]) : "";
@@ -707,25 +700,27 @@ namespace PoeTradeSearch
                                 else
                                 {
                                     int i = inherit == "Delve" ? 3 : (is_divinationCard || inherit == "Currency" ? 2 : 1);
-
                                     tkDetail.Text = asData.Length > (i + 1) ? asData[i] + asData[i + 1] : asData[asData.Length - 1];
 
                                     if (asData.Length > (i + 1))
                                     {
-                                        int v = asData[i - 1].TrimStart().IndexOf("적용: ");
+                                        int v = asData[i - 1].TrimStart().IndexOf(z == 1 ? "Apply: " : "적용: ");
                                         tkDetail.Text += v > -1 ? "" + '\n' + '\n' + (asData[i - 1].TrimStart().Split('\n')[v == 0 ? 0 : 1].TrimEnd()) : "";
                                     }
                                 }
                             }
 
-                            tkDetail.Text = tkDetail.Text.Replace(RS.SClickSplitItem[z], "");
-                            tkDetail.Text = Regex.Replace(tkDetail.Text, "<(uniqueitem|prophecy|divination|gemitem|magicitem|rareitem|whiteitem|corrupted|default|normal|augmented|size:[0-9]+)>", "");
+                            tkDetail.Text = Regex.Replace(
+                                tkDetail.Text.Replace(RS.SClickSplitItem[z], ""), 
+                                "<(uniqueitem|prophecy|divination|gemitem|magicitem|rareitem|whiteitem|corrupted|default|normal|augmented|size:[0-9]+)>", 
+                                ""
+                            );
                         }
                         catch { }
                     }
                     else
                     {
-                        int Imp_cnt = itemfilters.Count - ((itemRarity == RS.Normal[0] || is_unIdentify) ? 0 : notImpCnt);
+                        int Imp_cnt = itemfilters.Count - ((itemRarity == RS.lRarity["Normal"] || is_unIdentify) ? 0 : notImpCnt);
 
                         for (int i = 0; i < itemfilters.Count; i++)
                         {
@@ -742,17 +737,14 @@ namespace PoeTradeSearch
 
                                 itemfilters[i].disabled = true;
 
-                                ((ComboBox)this.FindName("cbOpt" + i)).SelectedValue = RS.Enchant;
-
+                                ((ComboBox)this.FindName("cbOpt" + i)).SelectedValue = RS.lFilterType["enchant"];
                                 if (((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex == -1)
-                                {
-                                    ((ComboBox)this.FindName("cbOpt" + i)).SelectedValue = RS.Implicit;
-                                }
+                                    ((ComboBox)this.FindName("cbOpt" + i)).SelectedValue = RS.lFilterType["implicit"];
                             }
-                            else if (inherit != "" && (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue != RS.Crafted)
+                            else if (inherit != "" && (string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue != RS.lFilterType["crafted"])
                             {
                                 if (
-                                    (mConfigData.Options.AutoCheckUnique && itemRarity == RS.Unique[0])
+                                    (mConfigData.Options.AutoCheckUnique && itemRarity == RS.lRarity["Unique"])
                                     || (Array.Find(mConfigData.Checked, x => x.Text == ifilter.text && x.ID.IndexOf(inherit + "/") > -1) != null)
                                 )
                                 {
@@ -799,17 +791,16 @@ namespace PoeTradeSearch
                     else
                         cbName.Content = (Regex.Replace(itemName, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(itemType, @"\([a-zA-Z\s']+\)$", "")).Trim();
 
-                    cbName.IsChecked = (itemRarity != RS.Rare[0] && itemRarity != RS.Magic[0]) || !(by_type && mConfigData.Options.SearchByType);
+                    cbName.IsChecked = (itemRarity != RS.lRarity["Magic"] && itemRarity != RS.lRarity["Rare"]) || !(by_type && mConfigData.Options.SearchByType);
 
                     cbRarity.SelectedValue = itemRarity;
                     if (cbRarity.SelectedIndex == -1)
                     {
                         cbRarity.Items.Clear();
                         cbRarity.Items.Add(itemRarity);
-                        cbRarity.SelectedIndex = cbRarity.Items.Count - 1;
-                        if (z == 1) cbRarity.Width = 100;
+                        cbRarity.SelectedIndex = 0;
                     }
-                    else if ((string)cbRarity.SelectedValue == RS.Normal[0])
+                    else if ((string)cbRarity.SelectedValue == RS.lRarity["Normal"])
                     {
                         cbRarity.SelectedIndex = 0;
                     }
@@ -850,8 +841,7 @@ namespace PoeTradeSearch
 
                         if (is_map)
                         {
-                            tbLvMin.Text = lItemOption[RS.MaTier[z]];
-                            tbLvMax.Text = lItemOption[RS.MaTier[z]];
+                            tbLvMin.Text = tbLvMax.Text = lItemOption[RS.MaTier[z]];
                             ckLv.Content = "등급";
                             ckLv.IsChecked = true;
                             Synthesis.Content = "역병";
@@ -938,7 +928,7 @@ namespace PoeTradeSearch
             itemOption.LvMax = StrToDouble(tbLvMax.Text, 99999);
 
             itemOption.PriceMin = tbPriceFilterMin.Text == "" ? 0 : StrToDouble(tbPriceFilterMin.Text, 99999);
-            itemOption.Rarity = (string)cbRarity.SelectedValue;
+            itemOption.RarityAt = (byte)(cbRarity.Items.Count > 1 ? cbRarity.SelectedIndex : 0);
 
             int total_res_idx = -1;
 
@@ -992,254 +982,241 @@ namespace PoeTradeSearch
                 return "2weeks";
             }
 
-            if (itemOptions.Rarity != null && itemOptions.Rarity != "")
+            try
             {
-                try
+                JsonData jsonData = new JsonData();
+                jsonData.Query = new q_Query();
+                q_Query JQ = jsonData.Query;
+
+                JQ.Name = RS.ServerLang == 1 ? mItemBaseName.NameEN : mItemBaseName.NameKR;
+                JQ.Type = RS.ServerLang == 1 ? mItemBaseName.TypeEN : mItemBaseName.TypeKR;
+
+                byte lang_type = mItemBaseName.LangType;
+                string Inherit = mItemBaseName.Inherits.Length > 0 ? mItemBaseName.Inherits[0] : "";
+
+                JQ.Stats = new q_Stats[0];
+                JQ.Status.Option = "online";
+
+                jsonData.Sort.Price = "asc";
+
+                JQ.Filters.Type.Filters.Category.Option = "any";
+                JQ.Filters.Type.Filters.Rarity.Option = itemOptions.RarityAt > 0 ? RS.lRarity.ElementAt(itemOptions.RarityAt - 1).Key.ToLower() : "any";
+
+                JQ.Filters.Trade.Disabled = mConfigData.Options.SearchBeforeDay == 0;
+                JQ.Filters.Trade.Filters.Indexed.Option = mConfigData.Options.SearchBeforeDay == 0 ? "any" : BeforeDayToString(mConfigData.Options.SearchBeforeDay);
+                JQ.Filters.Trade.Filters.SaleType.Option = useSaleType ? "priced" : "any";
+                JQ.Filters.Trade.Filters.Price.Min = 99999;
+                JQ.Filters.Trade.Filters.Price.Max = 99999;
+
+                if (itemOptions.PriceMin > 0)
                 {
-                    JsonData jsonData = new JsonData();
-                    jsonData.Query = new q_Query();
-                    q_Query JQ = jsonData.Query;
+                    JQ.Filters.Trade.Filters.Price.Min = itemOptions.PriceMin;
+                }
 
-                    JQ.Name = RS.ServerLang == 1 ? mItemBaseName.NameEN : mItemBaseName.NameKR;
-                    JQ.Type = RS.ServerLang == 1 ? mItemBaseName.TypeEN : mItemBaseName.TypeKR;
+                JQ.Filters.Socket.Disabled = itemOptions.ChkSocket != true;
 
-                    byte lang_type = mItemBaseName.LangType;
-                    string Inherit = mItemBaseName.Inherits.Length > 0 ? mItemBaseName.Inherits[0] : "";
+                JQ.Filters.Socket.Filters.Links.Min = itemOptions.LinkMin;
+                JQ.Filters.Socket.Filters.Links.Max = itemOptions.LinkMax;
+                JQ.Filters.Socket.Filters.Sockets.Min = itemOptions.SocketMin;
+                JQ.Filters.Socket.Filters.Sockets.Max = itemOptions.SocketMax;
 
-                    JQ.Stats = new q_Stats[0];
-                    JQ.Status.Option = "online";
+                JQ.Filters.Misc.Filters.Quality.Min = itemOptions.ChkQuality == true ? itemOptions.QualityMin : 99999;
+                JQ.Filters.Misc.Filters.Quality.Max = itemOptions.ChkQuality == true ? itemOptions.QualityMax : 99999;
 
-                    jsonData.Sort.Price = "asc";
+                JQ.Filters.Misc.Filters.Ilvl.Min = itemOptions.ChkLv != true || Inherit == "Gems" || Inherit == "Maps" ? 99999 : itemOptions.LvMin;
+                JQ.Filters.Misc.Filters.Ilvl.Max = itemOptions.ChkLv != true || Inherit == "Gems" || Inherit == "Maps" ? 99999 : itemOptions.LvMax;
+                JQ.Filters.Misc.Filters.Gem_level.Min = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMin : 99999;
+                JQ.Filters.Misc.Filters.Gem_level.Max = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMax : 99999;
 
-                    JQ.Filters.Type.Filters.Rarity.Option = "any";
-                    JQ.Filters.Type.Filters.Category.Option = "any";
+                JQ.Filters.Misc.Filters.Shaper.Option = Inherit != "Maps" && (itemOptions.Influence1 == 1 || itemOptions.Influence2 == 1) ? "true" : "any";
+                JQ.Filters.Misc.Filters.Elder.Option = Inherit != "Maps" && (itemOptions.Influence1 == 2 || itemOptions.Influence2 == 2) ? "true" : "any";
+                JQ.Filters.Misc.Filters.Crusader.Option = Inherit != "Maps" && (itemOptions.Influence1 == 3 || itemOptions.Influence2 == 3) ? "true" : "any";
+                JQ.Filters.Misc.Filters.Redeemer.Option = Inherit != "Maps" && (itemOptions.Influence1 == 4 || itemOptions.Influence2 == 4) ? "true" : "any";
+                JQ.Filters.Misc.Filters.Hunter.Option = Inherit != "Maps" && (itemOptions.Influence1 == 5 || itemOptions.Influence2 == 5) ? "true" : "any";
+                JQ.Filters.Misc.Filters.Warlord.Option = Inherit != "Maps" && (itemOptions.Influence1 == 6 || itemOptions.Influence2 == 6) ? "true" : "any";
 
-                    JQ.Filters.Trade.Disabled = mConfigData.Options.SearchBeforeDay == 0;
-                    JQ.Filters.Trade.Filters.Indexed.Option = mConfigData.Options.SearchBeforeDay == 0 ? "any" : BeforeDayToString(mConfigData.Options.SearchBeforeDay);
-                    JQ.Filters.Trade.Filters.SaleType.Option = useSaleType ? "priced" : "any";
-                    JQ.Filters.Trade.Filters.Price.Min = 99999;
-                    JQ.Filters.Trade.Filters.Price.Max = 99999;
+                JQ.Filters.Misc.Filters.Synthesis.Option = Inherit != "Maps" && itemOptions.Synthesis == true ? "true" : "any";
+                JQ.Filters.Misc.Filters.Corrupted.Option = itemOptions.Corrupt == 1 ? "true" : (itemOptions.Corrupt == 2 ? "false" : "any");
 
-                    if (itemOptions.PriceMin > 0)
+                JQ.Filters.Misc.Disabled = !(
+                    itemOptions.ChkQuality == true || (Inherit != "Maps" && itemOptions.Influence1 != 0) || itemOptions.Corrupt != 0
+                    || (Inherit != "Maps" && itemOptions.ChkLv == true) || (Inherit != "Maps" && itemOptions.Synthesis == true)
+                );
+
+                JQ.Filters.Map.Disabled = !(
+                    Inherit == "Maps" && (itemOptions.ChkLv == true || itemOptions.Synthesis == true || itemOptions.Influence1 != 0)
+                );
+
+                JQ.Filters.Map.Filters.Tier.Min = itemOptions.ChkLv == true && Inherit == "Maps" ? itemOptions.LvMin : 99999;
+                JQ.Filters.Map.Filters.Tier.Max = itemOptions.ChkLv == true && Inherit == "Maps" ? itemOptions.LvMax : 99999;
+                JQ.Filters.Map.Filters.Shaper.Option = Inherit == "Maps" && itemOptions.Influence1 == 1 ? "true" : "any";
+                JQ.Filters.Map.Filters.Elder.Option = Inherit == "Maps" && itemOptions.Influence1 == 2 ? "true" : "any";
+                JQ.Filters.Map.Filters.Blight.Option = Inherit == "Maps" && itemOptions.Synthesis == true ? "true" : "any";
+
+                bool error_filter = false;
+
+                if (itemOptions.itemfilters.Count > 0)
+                {
+                    JQ.Stats = new q_Stats[1];
+                    JQ.Stats[0] = new q_Stats();
+                    JQ.Stats[0].Type = "and";
+                    JQ.Stats[0].Filters = new q_Stats_filters[itemOptions.itemfilters.Count];
+
+                    int idx = 0;
+
+                    for (int i = 0; i < itemOptions.itemfilters.Count; i++)
                     {
-                        JQ.Filters.Trade.Filters.Price.Min = itemOptions.PriceMin;
-                    }
+                        string input = itemOptions.itemfilters[i].text;
+                        string id = itemOptions.itemfilters[i].id;
+                        string type = itemOptions.itemfilters[i].id.Split('.')[0];
 
-                    JQ.Filters.Socket.Disabled = itemOptions.ChkSocket != true;
-
-                    JQ.Filters.Socket.Filters.Links.Min = itemOptions.LinkMin;
-                    JQ.Filters.Socket.Filters.Links.Max = itemOptions.LinkMax;
-                    JQ.Filters.Socket.Filters.Sockets.Min = itemOptions.SocketMin;
-                    JQ.Filters.Socket.Filters.Sockets.Max = itemOptions.SocketMax;
-
-                    JQ.Filters.Misc.Filters.Quality.Min = itemOptions.ChkQuality == true ? itemOptions.QualityMin : 99999;
-                    JQ.Filters.Misc.Filters.Quality.Max = itemOptions.ChkQuality == true ? itemOptions.QualityMax : 99999;
-
-                    JQ.Filters.Misc.Filters.Ilvl.Min = itemOptions.ChkLv != true || Inherit == "Gems" || Inherit == "Maps" ? 99999 : itemOptions.LvMin;
-                    JQ.Filters.Misc.Filters.Ilvl.Max = itemOptions.ChkLv != true || Inherit == "Gems" || Inherit == "Maps" ? 99999 : itemOptions.LvMax;
-                    JQ.Filters.Misc.Filters.Gem_level.Min = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMin : 99999;
-                    JQ.Filters.Misc.Filters.Gem_level.Max = itemOptions.ChkLv == true && Inherit == "Gems" ? itemOptions.LvMax : 99999;
-
-                    JQ.Filters.Misc.Filters.Shaper.Option = Inherit != "Maps" && (itemOptions.Influence1 == 1 || itemOptions.Influence2 == 1) ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Elder.Option = Inherit != "Maps" && (itemOptions.Influence1 == 2 || itemOptions.Influence2 == 2) ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Crusader.Option = Inherit != "Maps" && (itemOptions.Influence1 == 3 || itemOptions.Influence2 == 3) ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Redeemer.Option = Inherit != "Maps" && (itemOptions.Influence1 == 4 || itemOptions.Influence2 == 4) ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Hunter.Option = Inherit != "Maps" && (itemOptions.Influence1 == 5 || itemOptions.Influence2 == 5) ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Warlord.Option = Inherit != "Maps" && (itemOptions.Influence1 == 6 || itemOptions.Influence2 == 6) ? "true" : "any";
-
-                    JQ.Filters.Misc.Filters.Synthesis.Option = Inherit != "Maps" && itemOptions.Synthesis == true ? "true" : "any";
-                    JQ.Filters.Misc.Filters.Corrupted.Option = itemOptions.Corrupt == 1 ? "true" : (itemOptions.Corrupt == 2 ? "false" : "any");
-
-                    JQ.Filters.Misc.Disabled = !(
-                        itemOptions.ChkQuality == true || (Inherit != "Maps" && itemOptions.Influence1 != 0) || itemOptions.Corrupt != 0
-                        || (Inherit != "Maps" && itemOptions.ChkLv == true) || (Inherit != "Maps" && itemOptions.Synthesis == true)
-                    );
-
-                    JQ.Filters.Map.Disabled = !(
-                        Inherit == "Maps" && (itemOptions.ChkLv == true || itemOptions.Synthesis == true || itemOptions.Influence1 != 0)
-                    );
-
-                    JQ.Filters.Map.Filters.Tier.Min = itemOptions.ChkLv == true && Inherit == "Maps" ? itemOptions.LvMin : 99999;
-                    JQ.Filters.Map.Filters.Tier.Max = itemOptions.ChkLv == true && Inherit == "Maps" ? itemOptions.LvMax : 99999;
-                    JQ.Filters.Map.Filters.Shaper.Option = Inherit == "Maps" && itemOptions.Influence1 == 1 ? "true" : "any";
-                    JQ.Filters.Map.Filters.Elder.Option = Inherit == "Maps" && itemOptions.Influence1 == 2 ? "true" : "any";
-                    JQ.Filters.Map.Filters.Blight.Option = Inherit == "Maps" && itemOptions.Synthesis == true ? "true" : "any";
-
-                    bool error_filter = false;
-
-                    if (itemOptions.itemfilters.Count > 0)
-                    {
-                        JQ.Stats = new q_Stats[1];
-                        JQ.Stats[0] = new q_Stats();
-                        JQ.Stats[0].Type = "and";
-                        JQ.Stats[0].Filters = new q_Stats_filters[itemOptions.itemfilters.Count];
-
-                        int idx = 0;
-
-                        for (int i = 0; i < itemOptions.itemfilters.Count; i++)
+                        if (input.Trim() != "")
                         {
-                            string input = itemOptions.itemfilters[i].text;
-                            string id = itemOptions.itemfilters[i].id;
-                            string type = itemOptions.itemfilters[i].id.Split('.')[0];
+                            string type_name = RS.lFilterType[type];
+                            bool isPseudo = type_name == RS.lFilterType["pseudo"];
 
-                            if (input.Trim() != "")
+                            FilterResultEntrie filter = null;
+                            FilterResult filterResult = Array.Find(mFilterData[lang_type].Result, x => x.Label == type_name);
+
+                            input = Regex.Escape(input).Replace("\\+\\#", "[+]?\\#");
+
+                            // 무기에 경우 pseudo_adds_[a-z]+_damage 옵션은 공격 시 가 붙음
+                            if (isPseudo && Inherit == "Weapons" && Regex.IsMatch(id, @"^pseudo.pseudo_adds_[a-z]+_damage$"))
                             {
-                                string type_name = RS.lFilterTypeName[type];
-                                bool isPseudo = type_name == RS.Pseudo;
+                                id = id + "_to_attacks";
+                            }
+                            else if (!isPseudo && (Inherit == "Weapons" || Inherit == "Armours"))
+                            {
+                                // 장비 전용 옵션 (특정) 인 것인가 검사
+                                Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
+                                FilterResultEntrie[] tmp_filters = Array.FindAll(filterResult.Entries, x => rgx.IsMatch(x.Text) && x.Type == type && x.Part == Inherit);
+                                if (tmp_filters.Length > 0) filter = tmp_filters[0];
+                            }
 
-                                FilterResultEntrie filter = null;
-                                FilterResult filterResult = Array.Find(mFilterData[lang_type].Result, x => x.Label == type_name);
+                            if (filter == null)
+                            {
+                                filter = Array.Find(filterResult.Entries, x => x.ID == id && x.Type == type && x.Part == null);
+                            }
 
-                                input = Regex.Escape(input).Replace("\\+\\#", "[+]?\\#");
+                            JQ.Stats[0].Filters[idx] = new q_Stats_filters();
+                            JQ.Stats[0].Filters[idx].Value = new q_Min_And_Max();
 
-                                // 무기에 경우 pseudo_adds_[a-z]+_damage 옵션은 공격 시 가 붙음
-                                if (isPseudo && Inherit == "Weapons" && Regex.IsMatch(id, @"^pseudo.pseudo_adds_[a-z]+_damage$"))
+                            if (filter != null && filter.ID != null && filter.ID.Trim() != "")
+                            {
+                                JQ.Stats[0].Filters[idx].Disabled = itemOptions.itemfilters[i].disabled == true;
+                                JQ.Stats[0].Filters[idx].Value.Min = itemOptions.itemfilters[i].min;
+                                JQ.Stats[0].Filters[idx].Value.Max = itemOptions.itemfilters[i].max;
+                                JQ.Stats[0].Filters[idx++].Id = filter.ID;
+                            }
+                            else
+                            {
+                                error_filter = true;
+                                itemOptions.itemfilters[i].isNull = true;
+
+                                // 오류 방지를 위해 널값시 아무거나 추가 
+                                JQ.Stats[0].Filters[idx].Disabled = true;
+                                JQ.Stats[0].Filters[idx].Value.Min = 99999;
+                                JQ.Stats[0].Filters[idx].Value.Max = 99999;
+                                JQ.Stats[0].Filters[idx++].Id = "temp_ids";
+                            }
+                        }
+                    }
+                }
+
+                /*
+                if (!ckSocket.Dispatcher.CheckAccess())
+                else if (ckSocket.Dispatcher.CheckAccess())
+                */
+
+                if (RS.lInherit.ContainsKey(Inherit))
+                {
+                    string option = RS.lInherit[Inherit];
+
+                    if (itemOptions.ByType && Inherit == "Weapons" || Inherit == "Armours")
+                    {
+                        string[] tmp = mItemBaseName.Inherits;
+
+                        if (tmp.Length > 2)
+                        {
+                            string tmp2 = tmp[Inherit == "Armours" ? 1 : 2].ToLower();
+
+                            if (Inherit == "Weapons")
+                            {
+                                tmp2 = tmp2.Replace("hand", "");
+                                tmp2 = tmp2.Remove(tmp2.Length - 1);
+                                if (tmp2 == "stave" && tmp.Length == 4)
                                 {
-                                    id = id + "_to_attacks";
+                                    if (tmp[3] == "AbstractWarstaff")
+                                        tmp2 = "warstaff";
+                                    else if (tmp[3] == "AbstractStaff")
+                                        tmp2 = "staff";
                                 }
-                                else if (!isPseudo && (Inherit == "Weapons" || Inherit == "Armours"))
-                                {
-                                    // 장비 전용 옵션 (특정) 인 것인가 검사
-                                    Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
-                                    FilterResultEntrie[] tmp_filters = Array.FindAll(filterResult.Entries, x => rgx.IsMatch(x.Text) && x.Type == type && x.Part == Inherit);
-                                    if (tmp_filters.Length > 0) filter = tmp_filters[0];
-                                }
-
-                                if (filter == null)
-                                {
-                                    filter = Array.Find(filterResult.Entries, x => x.ID == id && x.Type == type && x.Part == null);
-                                }
-
-                                JQ.Stats[0].Filters[idx] = new q_Stats_filters();
-                                JQ.Stats[0].Filters[idx].Value = new q_Min_And_Max();
-
-                                if (filter != null && filter.ID != null && filter.ID.Trim() != "")
-                                {
-                                    JQ.Stats[0].Filters[idx].Disabled = itemOptions.itemfilters[i].disabled == true;
-                                    JQ.Stats[0].Filters[idx].Value.Min = itemOptions.itemfilters[i].min;
-                                    JQ.Stats[0].Filters[idx].Value.Max = itemOptions.itemfilters[i].max;
-                                    JQ.Stats[0].Filters[idx++].Id = filter.ID;
-                                }
+                            }
+                            else if (Inherit == "Armours" && (tmp2 == "shields" || tmp2 == "helmets" || tmp2 == "bodyarmours"))
+                            {
+                                if (tmp2 == "bodyarmours")
+                                    tmp2 = "chest";
                                 else
-                                {
-                                    error_filter = true;
-                                    itemOptions.itemfilters[i].isNull = true;
-
-                                    // 오류 방지를 위해 널값시 아무거나 추가 
-                                    JQ.Stats[0].Filters[idx].Disabled = true;
-                                    JQ.Stats[0].Filters[idx].Value.Min = 99999;
-                                    JQ.Stats[0].Filters[idx].Value.Max = 99999;
-                                    JQ.Stats[0].Filters[idx++].Id = "temp_ids";
-                                }
-                            }
-                        }
-                    }
-
-                    /*
-                    if (!ckSocket.Dispatcher.CheckAccess())
-                    else if (ckSocket.Dispatcher.CheckAccess())
-                    */
-
-                    if (RS.lInherit.ContainsKey(Inherit))
-                    {
-                        string option = RS.lInherit[Inherit];
-
-                        if (itemOptions.ByType && Inherit == "Weapons" || Inherit == "Armours")
-                        {
-                            string[] tmp = mItemBaseName.Inherits;
-
-                            if (tmp.Length > 2)
-                            {
-                                string tmp2 = tmp[Inherit == "Armours" ? 1 : 2].ToLower();
-
-                                if (Inherit == "Weapons")
-                                {
-                                    tmp2 = tmp2.Replace("hand", "");
                                     tmp2 = tmp2.Remove(tmp2.Length - 1);
-                                    if (tmp2 == "stave" && tmp.Length == 4)
-                                    {
-                                        if (tmp[3] == "AbstractWarstaff")
-                                            tmp2 = "warstaff";
-                                        else if (tmp[3] == "AbstractStaff")
-                                            tmp2 = "staff";
-                                    }
-                                }
-                                else if (Inherit == "Armours" && (tmp2 == "shields" || tmp2 == "helmets" || tmp2 == "bodyarmours"))
-                                {
-                                    if (tmp2 == "bodyarmours")
-                                        tmp2 = "chest";
-                                    else
-                                        tmp2 = tmp2.Remove(tmp2.Length - 1);
-                                }
+                            }
 
-                                option += "." + tmp2;
+                            option += "." + tmp2;
+                        }
+                    }
+
+                    JQ.Filters.Type.Filters.Category.Option = option;
+                }
+
+                string sEntity = Json.Serialize<JsonData>(jsonData);
+
+                if (itemOptions.ByType || JQ.Name == "" || JQ.Filters.Type.Filters.Rarity.Option != "unique")
+                {
+                    sEntity = sEntity.Replace("\"name\":\"" + JQ.Name + "\",", "");
+
+                    if (Inherit == "Jewels" || itemOptions.ByType)
+                        sEntity = sEntity.Replace("\"type\":\"" + JQ.Type + "\",", "");
+                    else if (Inherit == "Prophecies")
+                        sEntity = sEntity.Replace("\"type\":\"" + JQ.Type + "\",", "\"name\":\"" + JQ.Type + "\",");
+                }
+
+                sEntity = sEntity.Replace("{\"max\":99999,\"min\":99999}", "{}");
+                sEntity = sEntity.Replace("{\"max\":99999,", "{");
+                sEntity = sEntity.Replace(",\"min\":99999}", "}");
+
+                sEntity = sEntity.Replace(",{\"disabled\":true,\"id\":\"temp_ids\",\"value\":{}}", "");
+                sEntity = sEntity.Replace("[{\"disabled\":true,\"id\":\"temp_ids\",\"value\":{}}", "[");
+                sEntity = sEntity.Replace("[,", "[");
+
+                sEntity = Regex.Replace(sEntity, "\"(sale_type|rarity|category|corrupted|synthesised_item|shaper_item|elder_item|crusader_item|redeemer_item|hunter_item|warlord_item|map_shaped|map_elder|map_blighted)\":{\"option\":\"any\"},?", "");
+                sEntity = sEntity.Replace("},}", "}}");
+
+                if (error_filter)
+                {
+                    Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                        (ThreadStart)delegate ()
+                        {
+                            for (int i = 0; i < itemOptions.itemfilters.Count; i++)
+                            {
+                                if (itemOptions.itemfilters[i].isNull)
+                                {
+                                    ((TextBox)this.FindName("tbOpt" + i)).Background = System.Windows.Media.Brushes.Red;
+                                    ((TextBox)this.FindName("tbOpt" + i + "_0")).Text = "error";
+                                    ((TextBox)this.FindName("tbOpt" + i + "_1")).Text = "error";
+                                    ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
+                                    ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsEnabled = false;
+                                    ((CheckBox)this.FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
+                                }
                             }
                         }
-
-                        JQ.Filters.Type.Filters.Category.Option = option;
-                    }
-
-                    JQ.Filters.Type.Filters.Rarity.Option = "any";
-                    if (RS.lRarity.ContainsKey(itemOptions.Rarity))
-                    {
-                        JQ.Filters.Type.Filters.Rarity.Option = RS.lRarity[itemOptions.Rarity];
-                    }
-
-                    string sEntity = Json.Serialize<JsonData>(jsonData);
-
-                    if (itemOptions.ByType || JQ.Name == "" || itemOptions.Rarity != RS.Unique[0])
-                    {
-                        sEntity = sEntity.Replace("\"name\":\"" + JQ.Name + "\",", "");
-
-                        if (Inherit == "Jewels" || itemOptions.ByType)
-                            sEntity = sEntity.Replace("\"type\":\"" + JQ.Type + "\",", "");
-                        else if (Inherit == "Prophecies")
-                            sEntity = sEntity.Replace("\"type\":\"" + JQ.Type + "\",", "\"name\":\"" + JQ.Type + "\",");
-                    }
-
-                    sEntity = sEntity.Replace("{\"max\":99999,\"min\":99999}", "{}");
-                    sEntity = sEntity.Replace("{\"max\":99999,", "{");
-                    sEntity = sEntity.Replace(",\"min\":99999}", "}");
-
-                    sEntity = sEntity.Replace(",{\"disabled\":true,\"id\":\"temp_ids\",\"value\":{}}", "");
-                    sEntity = sEntity.Replace("[{\"disabled\":true,\"id\":\"temp_ids\",\"value\":{}}", "[");
-                    sEntity = sEntity.Replace("[,", "[");
-
-                    sEntity = Regex.Replace(sEntity, "\"(sale_type|rarity|category|corrupted|synthesised_item|shaper_item|elder_item|crusader_item|redeemer_item|hunter_item|warlord_item|map_shaped|map_elder|map_blighted)\":{\"option\":\"any\"},?", "");
-                    sEntity = sEntity.Replace("},}", "}}");
-
-                    if (error_filter)
-                    {
-                        Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-                            (ThreadStart)delegate ()
-                            {
-                                for (int i = 0; i < itemOptions.itemfilters.Count; i++)
-                                {
-                                    if (itemOptions.itemfilters[i].isNull)
-                                    {
-                                        ((TextBox)this.FindName("tbOpt" + i)).Background = System.Windows.Media.Brushes.Red;
-                                        ((TextBox)this.FindName("tbOpt" + i + "_0")).Text = "error";
-                                        ((TextBox)this.FindName("tbOpt" + i + "_1")).Text = "error";
-                                        ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
-                                        ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsEnabled = false;
-                                        ((CheckBox)this.FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
-                                    }
-                                }
-                            }
-                        );
-                    }
-
-                    return sEntity;
+                    );
                 }
-                catch (Exception ex)
-                {
-                    //Console.WriteLine(ex.Message);
-                    ForegroundMessage(String.Format("{0} 에러:  {1}\r\n\r\n{2}\r\n\r\n", ex.Source, ex.Message, ex.StackTrace), "에러", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return "";
-                }
+
+                return sEntity;
             }
-            else
+            catch (Exception ex)
             {
+                //Console.WriteLine(ex.Message);
+                ForegroundMessage(String.Format("{0} 에러:  {1}\r\n\r\n{2}\r\n\r\n", ex.Source, ex.Message, ex.StackTrace), "에러", MessageBoxButton.OK, MessageBoxImage.Error);
                 return "";
             }
         }

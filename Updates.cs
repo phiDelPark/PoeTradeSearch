@@ -52,10 +52,10 @@ namespace PoeTradeSearch
                         {
                             if (
                                 rootClass.Result[i].Entries.Length > 0
-                                && RS.lFilterTypeName.ContainsKey(rootClass.Result[i].Entries[0].Type)
+                                && RS.lFilterType.ContainsKey(rootClass.Result[i].Entries[0].Type)
                             )
                             {
-                                rootClass.Result[i].Label = RS.lFilterTypeName[rootClass.Result[i].Entries[0].Type];
+                                rootClass.Result[i].Label = RS.lFilterType[rootClass.Result[i].Entries[0].Type];
                             }
                         }
 

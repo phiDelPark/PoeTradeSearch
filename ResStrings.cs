@@ -14,33 +14,11 @@ namespace PoeTradeSearch
 
         internal static byte ServerLang = 0;
         internal static string ServerType = "";
-        
-        internal static readonly string Pseudo = "유사";
-        internal static readonly string Explicit = "일반";
-        internal static readonly string Fractured = "분열";
-        internal static readonly string Crafted = "제작";
-        internal static readonly string Implicit = "고정";
-        internal static readonly string Enchant = "인챈";
-        internal static readonly string Veiled = "장막";
-        internal static readonly string Monster = "야수";
-        internal static readonly string Delve = "탐광";
-        internal static readonly string TotalResistance = "총 저항 +#%";
-
-        //internal static readonly string[] Local = { "특정", "Local" };
 
         internal static readonly string[] All = { "모두", "All" };
         internal static readonly string[] Max = { "최대", "Max" };
 
         internal static readonly string[] Rarity = { "아이템 희귀도", "Rarity" };
-        internal static readonly string[] Unique = { "고유", "Unique" };
-        internal static readonly string[] Rare = { "희귀", "Rare" };
-        internal static readonly string[] Magic = { "마법", "Magic" };
-        internal static readonly string[] Normal = { "일반", "Normal" };
-
-        internal static readonly string[] Prophecy = { "예언", "Prophecy" };
-        internal static readonly string[] Currency = { "화폐", "Currency" };
-        internal static readonly string[] DivinationCard = { "점술 카드", "Divination Card" };
-        internal static readonly string[] Gem = { "젬", "Gem" };
 
         internal static readonly string[] Higher = { "상급", "Superior" };
         internal static readonly string[] Shaped = { "형성된", "Shaped" };
@@ -77,7 +55,6 @@ namespace PoeTradeSearch
         internal static readonly string[] ChkBeast1 = { "종", "Genus" };
         internal static readonly string[] ChkBeast2 = { "속", "Group" };
 
-        internal static readonly string[] SClickSplitItem = { "Shift + 클릭으로 아이템 나누기", "Shift click to unstack" };    
 
         internal static readonly string[] PhysicalDamage = { "물리 피해", "Physical Damage" };
         internal static readonly string[] ElementalDamage = { "원소 피해", "Elemental Damage" };
@@ -86,16 +63,20 @@ namespace PoeTradeSearch
         internal static readonly string[] AttackSpeedIncr = { "공격 속도 #% 증가", "#% increased Attack Speed" };
         internal static readonly string[] PhysicalDamageIncr = { "물리 피해 #% 증가", "#% increased Physical Damage" };
 
+        internal static readonly string TotalResistance = "총 저항 +#%";
+        //internal static readonly string[] Local = { "특정", "Local" };
+        internal static readonly string[] SClickSplitItem = { "Shift + 클릭으로 아이템 나누기", "Shift click to unstack" };    
 
         internal static Dictionary<string, string> lRarity = new Dictionary<string, string>()
         {
-            { Unique[0], "unique"}, { Rare[0], "rare"}, { Magic[0], "magic"}, { Normal[0], "normal"}
+            { "Normal", "일반" }, { "Magic", "마법" }, { "Rare", "희귀" }, { "Unique", "고유" },
+            { "Currency", "화폐" }, { "Gem", "젬" }, { "Divination Card", "점술 카드" }, { "Prophecy", "예언" }
         };
 
-        internal static Dictionary<string, string> lFilterTypeName = new Dictionary<string, string>()
+        internal static Dictionary<string, string> lFilterType = new Dictionary<string, string>()
         {
-            { "pseudo", Pseudo}, { "explicit", Explicit}, { "fractured", Fractured}, { "crafted", Crafted}, { "implicit", Implicit},
-            { "enchant", Enchant}, { "veiled", Veiled}, { "monster", Monster}, { "delve", Delve}
+            { "pseudo", "유사"}, { "explicit", "일반"}, { "implicit", "고정"}, { "fractured", "분열"},
+            { "enchant", "인챈"},  { "crafted", "제작"}, { "veiled", "장막"}, { "monster", "야수"}, { "delve", "탐광"}
         };
 
         internal static Dictionary<string, bool> lDefaultPosition = new Dictionary<string, bool>()

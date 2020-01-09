@@ -20,14 +20,15 @@ namespace PoeTradeSearch
         [DataContract]
         public class ItemOption
         {
-            public bool Synthesis;
+            public byte RarityAt;
+            public byte Corrupt;
             public byte Influence1;
             public byte Influence2;
-            public byte Corrupt;
             public bool ByType;
+            public bool ChkLv;
             public bool ChkSocket;
             public bool ChkQuality;
-            public bool ChkLv;
+            public bool Synthesis;
             public double SocketMin;
             public double SocketMax;
             public double LinkMin;
@@ -36,7 +37,6 @@ namespace PoeTradeSearch
             public double QualityMax;
             public double LvMin;
             public double LvMax;
-            public string Rarity;
             public double PriceMin;
             public List<Itemfilter> itemfilters = new List<Itemfilter>();
         }
