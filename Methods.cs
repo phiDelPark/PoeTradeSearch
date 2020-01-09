@@ -269,7 +269,7 @@ namespace PoeTradeSearch
                         {
                             if (asOpt[j].Trim() == "") continue;
 
-                            string[] asTmp = asOpt[j].Split(':');
+                            string[] asTmp = Regex.Replace(asOpt[j], @" \([\w\s]+\)\: ", ": ").Split(':');
 
                             if (lItemOption.ContainsKey(asTmp[0]))
                             {
@@ -615,6 +615,7 @@ namespace PoeTradeSearch
 
                     bool is_essences = inherit == "Currency" && itemID.IndexOf("Currency/CurrencyEssence") == 0;
                     bool is_incubations = inherit == "Legion" && sub_inherit == "Incubator";
+                    bool is_accessories = inherit == "Amulets" || inherit == "Rings" || inherit == "Belts";
                     bool by_type = inherit == "Weapons" || inherit == "Quivers" || inherit == "Armours" || inherit == "Amulets" || inherit == "Rings" || inherit == "Belts";
                     is_detail = is_detail || is_incubations || (!is_detail && (inherit == "MapFragments" || inherit == "UniqueFragments" || inherit == "Labyrinth"));
 
@@ -851,7 +852,7 @@ namespace PoeTradeSearch
                         }
                         else if (by_type || inherit == "Flasks")
                         {
-                            if (tbQualityMin.Text != "" && int.Parse(tbQualityMin.Text) > 20)
+                            if (tbQualityMin.Text != "" && int.Parse(tbQualityMin.Text) > (is_accessories ? 4 : 20))
                             {
                                 ckQuality.FontWeight = FontWeights.Bold;
                                 ckQuality.Foreground = System.Windows.Media.Brushes.DarkRed;
@@ -1552,7 +1553,7 @@ namespace PoeTradeSearch
             {
                 IntPtr findHwnd = Native.FindWindow(RS.PoeClass, RS.PoeCaption);
 
-                if (!mIsPause && !mClipboardBlock && !Native.GetForegroundWindow().Equals(findHwnd))
+                if (!mIsPause && !mClipboardBlock && Native.GetForegroundWindow().Equals(findHwnd))
                 {
                     try
                     {
