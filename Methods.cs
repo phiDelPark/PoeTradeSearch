@@ -249,7 +249,7 @@ namespace PoeTradeSearch
 
                     int k = 0, baki = 0, notImpCnt = 0;
                     double attackSpeedIncr = 0, PhysicalDamageIncr = 0;
-                    bool is_prophecy = false, is_map_fragment = false, is_met_entrails = false, is_captured_beast = false;
+                    bool is_prophecy = false, is_map_fragment = false, is_met_entrails = false;
 
                     List<Itemfilter> itemfilters = new List<Itemfilter>();
 
@@ -258,7 +258,7 @@ namespace PoeTradeSearch
                         { RS.Quality[z], "" }, { RS.Lv[z], "" }, { RS.ItemLv[z], "" }, { RS.CharmLv[z], "" }, { RS.MaTier[z], "" }, { RS.Socket[z], "" },
                         { RS.PhysicalDamage[z], "" }, { RS.ElementalDamage[z], "" }, { RS.ChaosDamage[z], "" }, { RS.AttacksPerSecond[z], "" },
                         { RS.Shaper[z], "" }, { RS.Elder[z], "" }, { RS.Crusader[z], "" }, { RS.Redeemer[z], "" }, { RS.Hunter[z], "" }, { RS.Warlord[z], "" },
-                        { RS.Synthesis[z], "" }, { RS.Corrupt[z], "" }, { RS.Unidentify[z], "" }, { RS.Vaal[z], "" }
+                        { RS.Synthesis[z], "" }, { RS.Corrupt[z], "" }, { RS.Unidentify[z], "" }, { RS.Vaal[z], "" }, { RS.Genus[z], "" }, { RS.Group[z], "" }
                     };
 
                     for (int i = 1; i < asData.Length; i++)
@@ -286,11 +286,6 @@ namespace PoeTradeSearch
                                     is_map_fragment = true;
                                 else if (!is_met_entrails && asTmp[0].IndexOf(RS.ChkMetEntrails[z]) == 0)
                                     is_met_entrails = true;
-                                else if (!is_captured_beast && asTmp[0] == RS.ChkBeast1[z])
-                                {
-                                    string[] asTmp22 = asOpt[j + 1].Split(':');
-                                    is_captured_beast = asTmp22.Length > 1 && asTmp22[0] == RS.ChkBeast2[z];
-                                }
                                 else if (lItemOption[RS.ItemLv[z]] != "" && k < 10)
                                 {
                                     double min = 99999, max = 99999;
@@ -300,7 +295,7 @@ namespace PoeTradeSearch
                                     string input = Regex.Replace(asOpt[j], @" \([a-zA-Z]+\)", "");
                                     input = Regex.Escape(Regex.Replace(input, @"[+-]?[0-9]+\.[0-9]+|[+-]?[0-9]+", "#"));
                                     input = Regex.Replace(input, @"\\#", "[+-]?([0-9]+\\.[0-9]+|[0-9]+|\\#)");
-                                    input = input + (is_captured_beast ? "\\(" + RS.Captured[z] + "\\)" : "");
+                                    //input = input + (is_captured_beast ? "\\(" + RS.Captured[z] + "\\)" : "");
 
                                     FilterResultEntrie filter = null;
                                     Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
@@ -397,12 +392,14 @@ namespace PoeTradeSearch
 
                                             selidx = -1;
 
-                                            if (is_captured_beast)
+                                            /* if (is_captured_beast)
                                             {
                                                 ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.lFilterType["monster"];
                                                 selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
                                             }
-                                            else if (mConfigData.Options.AutoSelectPseudo)
+                                            else */
+                                            
+                                            if (mConfigData.Options.AutoSelectPseudo)
                                             {
                                                 ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.lFilterType["pseudo"];
                                                 selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
@@ -494,6 +491,7 @@ namespace PoeTradeSearch
                     bool is_gem = itemRarity == RS.lRarity["Gem"];
                     bool is_currency = itemRarity == RS.lRarity["Currency"];
                     bool is_divinationCard = itemRarity == RS.lRarity["Divination Card"];
+                    bool is_captured_beast = lItemOption[RS.Genus[z]] != "" && lItemOption[RS.Group[z]] != "";
 
                     if (is_map || is_currency) is_map_fragment = false;
                     bool is_detail = is_gem || is_currency || is_divinationCard || is_prophecy || is_map_fragment;
@@ -1554,7 +1552,7 @@ namespace PoeTradeSearch
             {
                 IntPtr findHwnd = Native.FindWindow(RS.PoeClass, RS.PoeCaption);
 
-                if (!mIsPause && !mClipboardBlock && Native.GetForegroundWindow().Equals(findHwnd))
+                if (!mIsPause && !mClipboardBlock && !Native.GetForegroundWindow().Equals(findHwnd))
                 {
                     try
                     {

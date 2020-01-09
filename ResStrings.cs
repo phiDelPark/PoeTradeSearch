@@ -46,15 +46,11 @@ namespace PoeTradeSearch
 
         internal static readonly string[] Synthesis = { "결합된 아이템", "Synthesised Item" };
         internal static readonly string[] Synthesised = { "결합된", "Synthesised" };
-        internal static readonly string[] Captured = { "포획한 야수", "" };
+        //internal static readonly string[] Captured = { "포획한 야수", "" };
 
         internal static readonly string[] ChkProphecy = { "우클릭으로 이 예언을 캐릭터에 추가하십시오.", "Right-click to add this prophecy to your character." };
         internal static readonly string[] ChkMapFragment = { "템플러의 실험실이나 전용 지도 장치에서", "Can be used in a personal Map Device" };
-        internal static readonly string[] ChkMetEntrails = { "테인의 연구실에서 이 아이템을 다른 샘플과", "Combine this with four other different samples in Tane's" };        
-        internal static readonly string[] ChkFlask = { "현재 용량", "Currently has # Charges" };
-        internal static readonly string[] ChkBeast1 = { "종", "Genus" };
-        internal static readonly string[] ChkBeast2 = { "속", "Group" };
-
+        internal static readonly string[] ChkMetEntrails = { "테인의 연구실에서 이 아이템을 다른 샘플과", "Combine this with four other different samples in Tane's" };
 
         internal static readonly string[] PhysicalDamage = { "물리 피해", "Physical Damage" };
         internal static readonly string[] ElementalDamage = { "원소 피해", "Elemental Damage" };
@@ -62,10 +58,14 @@ namespace PoeTradeSearch
         internal static readonly string[] AttacksPerSecond = { "초당 공격 횟수", "Attacks per Second" };
         internal static readonly string[] AttackSpeedIncr = { "공격 속도 #% 증가", "#% increased Attack Speed" };
         internal static readonly string[] PhysicalDamageIncr = { "물리 피해 #% 증가", "#% increased Physical Damage" };
+       
+        internal static readonly string[] Genus = { "종", "Genus" };
+        internal static readonly string[] Group = { "속", "Group" };
+
+        //internal static readonly string[] Local = { "특정", "Local" };
+        internal static readonly string[] SClickSplitItem = { "Shift + 클릭으로 아이템 나누기", "Shift click to unstack" };
 
         internal static readonly string TotalResistance = "총 저항 +#%";
-        //internal static readonly string[] Local = { "특정", "Local" };
-        internal static readonly string[] SClickSplitItem = { "Shift + 클릭으로 아이템 나누기", "Shift click to unstack" };    
 
         internal static Dictionary<string, string> lRarity = new Dictionary<string, string>()
         {
