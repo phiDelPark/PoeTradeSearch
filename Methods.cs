@@ -560,7 +560,7 @@ namespace PoeTradeSearch
                         }
 
                         if (!is_unIdentify && itemRarity == RS.Magic[0])
-                            itemType = itemType.Split('-')[0].Trim();
+                            itemType = itemType.Split(new string[] { z == 1 ? " of " : " - " }, StringSplitOptions.None)[0].Trim();
 
                         if ((is_unIdentify || itemRarity == RS.Normal[0]) && itemType.Length > 4 && itemType.IndexOf(RS.Higher[z] + " ") == 0)
                             itemType = itemType.Substring(z == 1 ? 9 : 3);
