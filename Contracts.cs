@@ -97,6 +97,9 @@ namespace PoeTradeSearch
             [DataMember(Name = "auto_check_unique")]
             internal bool AutoCheckUnique = false;
 
+            [DataMember(Name = "auto_check_totalres")]
+            internal bool AutoCheckTotalres = false;
+
             [DataMember(Name = "auto_select_pseudo")]
             internal bool AutoSelectPseudo = false;
 

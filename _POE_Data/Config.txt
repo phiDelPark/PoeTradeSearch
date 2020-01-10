@@ -9,6 +9,7 @@
 			"search_price_min":0,
 			"search_price_count":20,
 			"auto_check_unique":true,
+			"auto_check_totalres":true,
 			"auto_select_pseudo":true,
 			"auto_select_corrupt":"no or yes",
 			"ctrl_wheel":false,

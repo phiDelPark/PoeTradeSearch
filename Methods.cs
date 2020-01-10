@@ -422,6 +422,8 @@ namespace PoeTradeSearch
 
                                         ((TextBox)this.FindName("tbOpt" + k)).Text = filter.Text;
                                         ((CheckBox)this.FindName("tbOpt" + k + "_3")).Visibility = resistance ? Visibility.Visible : Visibility.Hidden;
+                                        if (((CheckBox)this.FindName("tbOpt" + k + "_3")).Visibility == Visibility.Visible && mConfigData.Options.AutoCheckTotalres)
+                                            ((CheckBox)this.FindName("tbOpt" + k + "_3")).IsChecked = true;
 
                                         if (min != 99999 && max != 99999)
                                         {
@@ -781,7 +783,7 @@ namespace PoeTradeSearch
 
                     cbName.SelectionChanged -= cbName_SelectionChanged;
                     cbName.Items.Clear();
-                    cbName.Items.Add((Regex.Replace(itemName, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(itemType, @"\([a-zA-Z\s']+\)$", "")).Trim());
+                    cbName.Items.Add((Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "")).Trim());
                     cbName.Items.Add((mItemBaseName.NameEN + " " + mItemBaseName.TypeEN).Trim());
                     cbName.Items.Add((RS.ServerLang == 1 ? "영국 - " : "한국 - ") + "아이템 유형으로 검색합니다");
                     cbName.SelectedIndex = RS.ServerLang == 1 ? 1 : 0;
@@ -939,7 +941,7 @@ namespace PoeTradeSearch
                     itemfilter.min = StrToDouble(((TextBox)this.FindName("tbOpt" + i + "_0")).Text, 99999);
                     itemfilter.max = StrToDouble(((TextBox)this.FindName("tbOpt" + i + "_1")).Text, 99999);
 
-                    if (itemfilter.text == RS.TotalResistance)
+                    if (itemfilter.disabled == false && ((CheckBox)this.FindName("tbOpt" + i + "_3")).IsChecked == true)
                     {
                         if (total_res_idx == -1)
                             total_res_idx = itemOption.itemfilters.Count;

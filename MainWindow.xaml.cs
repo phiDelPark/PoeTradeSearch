@@ -10,7 +10,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace PoeTradeSearch
@@ -334,19 +333,6 @@ namespace PoeTradeSearch
             }
         }
 
-        private void TbOpt0_3_Checked(object sender, RoutedEventArgs e)
-        {
-            string idx = (string)((CheckBox)sender).Tag;
-            ((TextBox)this.FindName("tbOpt" + idx)).Tag = ((TextBox)this.FindName("tbOpt" + idx)).Text;
-            ((TextBox)this.FindName("tbOpt" + idx)).Text = RS.TotalResistance;
-        }
-
-        private void TbOpt0_3_Unchecked(object sender, RoutedEventArgs e)
-        {
-            string idx = (string)((CheckBox)sender).Tag;
-            ((TextBox)this.FindName("tbOpt" + idx)).Text = (string)((TextBox)this.FindName("tbOpt" + idx)).Tag;
-        }
-
         private void CbOrbs_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (((ComboBox)sender).Name == "cbOrbs")
@@ -411,6 +397,11 @@ namespace PoeTradeSearch
         {
             cbPriceListTotal.Visibility = tabControl1.SelectedIndex == 1 ? Visibility.Visible : Visibility.Hidden;
             tbHelpText.Text = tabControl1.SelectedIndex == 1 ? "최소 값 단위는 카오스 오브" : "시세 클릭시 재검색";
+            if (tabControl1.SelectedIndex == 0)
+            {
+                Random r = new Random();
+                if (r.Next(2) == 1) tbHelpText.Text = "저항 옆 체크시 총 합산 검색";
+            }
         }
 
         private void cbName_SelectionChanged(object sender, SelectionChangedEventArgs e)
