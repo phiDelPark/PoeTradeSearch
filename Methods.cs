@@ -715,7 +715,7 @@ namespace PoeTradeSearch
                                 if (((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex == -1)
                                     ((ComboBox)this.FindName("cbOpt" + i)).SelectedValue = RS.lFilterType["implicit"];
                             }
-                            else if (inherit != "" && inherit != "Entrailles" && ((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex > -1)
+                            else if (inherit != "" && ((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex > -1)
                             {
                                 if ((string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue != RS.lFilterType["crafted"]
                                     && ((mConfigData.Options.AutoCheckUnique && itemRarity == RS.lRarity["Unique"])
@@ -723,6 +723,26 @@ namespace PoeTradeSearch
                                 {
                                     ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = true;
                                     itemfilters[i].disabled = false;
+                                }
+                            }
+                        }
+
+                        // 장기는 중복 옵션 제거
+                        if (is_met_entrails)
+                        {
+                            for (int i = 0; i < itemfilters.Count; i++)
+                            {
+                                string txt = ((TextBox)this.FindName("tbOpt" + i)).Text;
+                                if (((CheckBox)this.FindName("tbOpt" + i + "_2")).IsEnabled == false) continue;
+                                for (int j = 0; j < itemfilters.Count; j++)
+                                {
+                                   if (i == j) continue;
+                                   if( ((TextBox)this.FindName("tbOpt" + j)).Text == txt)
+                                    {
+                                        ((CheckBox)this.FindName("tbOpt" + j + "_2")).IsChecked = false;
+                                        ((CheckBox)this.FindName("tbOpt" + j + "_2")).IsEnabled = false;
+                                        itemfilters[j].disabled = true;
+                                    }
                                 }
                             }
                         }
