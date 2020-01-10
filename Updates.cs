@@ -154,12 +154,12 @@ namespace PoeTradeSearch
                             || oCsvEnList[i][6] == "Metadata/Items/HideoutDoodads/AbstractHideoutDoodad"
                         )
                             continue;
-
+                        
                         BaseResultData baseResultData = new BaseResultData();
                         baseResultData.ID = oCsvEnList[i][1].Replace("Metadata/Items/", "");
                         baseResultData.InheritsFrom = oCsvEnList[i][6].Replace("Metadata/Items/", "");
-                        baseResultData.NameEn = oCsvEnList[i][5];
-                        baseResultData.NameKo = oCsvKoList[i][5];
+                        baseResultData.NameEn = Regex.Replace(oCsvEnList[i][5], "^\"(.+)\"$", "$1");
+                        baseResultData.NameKo = Regex.Replace(oCsvKoList[i][5], "^\"(.+)\"$", "$1");
                         baseResultData.Detail = "";
 
                         if (datas.Find(x => x.NameEn == baseResultData.NameEn) == null)
@@ -205,8 +205,8 @@ namespace PoeTradeSearch
                     {
                         WordeResultData wordeResultData = new WordeResultData();
                         wordeResultData.Key = oCsvEnList[i][1];
-                        wordeResultData.NameEn = oCsvEnList[i][6];
-                        wordeResultData.NameKo = oCsvKoList[i][6];
+                        wordeResultData.NameEn = Regex.Replace(oCsvEnList[i][6], "^\"(.+)\"$", "$1");
+                        wordeResultData.NameKo = Regex.Replace(oCsvKoList[i][6], "^\"(.+)\"$", "$1");
                         wdatas.Add(wordeResultData);
                     }
 
@@ -250,8 +250,8 @@ namespace PoeTradeSearch
                         BaseResultData baseResultData = new BaseResultData();
                         baseResultData.ID = "Prophecies/" + oCsvEnList[i][1];
                         baseResultData.InheritsFrom = "Prophecies/Prophecy";
-                        baseResultData.NameEn = oCsvEnList[i][4];
-                        baseResultData.NameKo = oCsvKoList[i][4];
+                        baseResultData.NameEn = Regex.Replace(oCsvEnList[i][4], "^\"(.+)\"$", "$1");
+                        baseResultData.NameKo = Regex.Replace(oCsvKoList[i][4], "^\"(.+)\"$", "$1");
                         baseResultData.Detail = "";
 
                         datas.Add(baseResultData);
@@ -297,8 +297,8 @@ namespace PoeTradeSearch
                         BaseResultData baseResultData = new BaseResultData();
                         baseResultData.ID = oCsvEnList[i][1].Replace("Metadata/Monsters/", "");
                         baseResultData.InheritsFrom = oCsvEnList[i][11].Replace("Metadata/Monsters/", "");
-                        baseResultData.NameEn = oCsvEnList[i][35];
-                        baseResultData.NameKo = oCsvKoList[i][35];
+                        baseResultData.NameEn = Regex.Replace(oCsvEnList[i][35], "^\"(.+)\"$", "$1");
+                        baseResultData.NameKo = Regex.Replace(oCsvKoList[i][35], "^\"(.+)\"$", "$1");
                         baseResultData.Detail = "";
 
                         if (datas.Find(x => x.NameEn == baseResultData.NameEn) == null)
