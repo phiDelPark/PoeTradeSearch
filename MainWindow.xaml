@@ -13,7 +13,8 @@
                 <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
             </ComboBox.Resources>
         </ComboBox>
-        <CheckBox Name="cbName" Content="아이템 이름" HorizontalAlignment="Left" Margin="4,26,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Width="377" Checked="cbName_Checked" Unchecked="cbName_Checked" />
+
+        <ComboBox Name="cbName" HorizontalAlignment="Left" Margin="0,24,0,0" VerticalAlignment="Top" Width="385" FontWeight="Bold" SelectionChanged="cbName_SelectionChanged" />
 
         <Label Name="lbDPS" Content="옵션" HorizontalAlignment="Left" Margin="0,54,0,0" VerticalAlignment="Top" />
         <Label Content="최소" HorizontalAlignment="Left" Margin="280,54,0,0" VerticalAlignment="Top" />
@@ -40,10 +41,8 @@
 
         <TextBlock Name="tbHelpText" Text="시세 클릭시 새로고침" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" HorizontalAlignment="Left" Margin="5,430,0,0" VerticalAlignment="Top" IsEnabled="False" />
 
-        <Button Name="btnSearch" Content="거래소에서 찾기 (한글)" HorizontalAlignment="Left" Margin="0,460,0,-5" VerticalAlignment="Top" Width="245" Height="38" Click="Button_Click" />
-        <Button Content="한" HorizontalAlignment="Left" Margin="245,460,0,0" VerticalAlignment="Top" Height="19" Width="19" Tag="0" Click="Button_Click_2" />
-        <Button Content="영" HorizontalAlignment="Left" Margin="245,479,0,-2" VerticalAlignment="Top" Height="19" Width="19" Tag="1" Click="Button_Click_2" />
-        <Button Name="btnClose" Content="닫기" HorizontalAlignment="Left" Margin="290,460,0,-5" VerticalAlignment="Top" Width="95" Height="38" Click="Button_Click_1" IsDefault="True" FontWeight="Bold" />
+        <Button Name="btnSearch" Content="거래소에서 찾기 (한국)" HorizontalAlignment="Left" Margin="0,460,0,-5" VerticalAlignment="Top" Width="260" Height="38" Click="Button_Click" />
+        <Button Name="btnClose" Content="닫기" HorizontalAlignment="Left" Margin="285,460,0,-5" VerticalAlignment="Top" Width="100" Height="38" Click="Button_Click_1" IsDefault="True" FontWeight="Bold" />
 
         <TabControl Name="tabControl1" BorderThickness="0 1" HorizontalAlignment="Left" Height="372" Margin="0,77,0,0" VerticalAlignment="Top" Width="385" TabStripPlacement="Bottom" SelectionChanged="tabControl1_SelectionChanged">
             <TabControl.Resources>
@@ -254,7 +253,7 @@
                     <TextBox Name="tbPriceFilterMin" HorizontalAlignment="Left" Height="22" Margin="221,290,0,0" Text="" VerticalAlignment="Top" Width="33" BorderThickness="0,0,0,1" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
 
                     <Label Content="- 목록 수:" HorizontalAlignment="Left" Margin="259,288,0,0" VerticalAlignment="Top" />
-                    <ComboBox Name="cbPriceListCount" HorizontalAlignment="Left" Margin="326,290,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="50" DropDownOpened="cbPriceListCount_DropDownOpened">
+                    <ComboBox Name="cbPriceListCount" HorizontalAlignment="Left" Margin="326,290,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="50" DropDownOpened="cbPriceListCount_DropDownOpened" SelectionChanged="tkPrice_ReSet">
                         <ComboBoxItem>20</ComboBoxItem>
                         <ComboBoxItem>40</ComboBoxItem>
                         <ComboBoxItem>60</ComboBoxItem>

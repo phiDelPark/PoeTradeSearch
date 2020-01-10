@@ -66,7 +66,7 @@ namespace PoeTradeSearch
                                 }
                             }
                         }
-                        //TODO 장기 필터 적용하기
+
                         string local = isKR ? "(특정)" : " (Local)";
 
                         foreach (KeyValuePair<string, byte> itm in RS.lParticular)

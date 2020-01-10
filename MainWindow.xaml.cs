@@ -4,13 +4,13 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace PoeTradeSearch
@@ -112,6 +112,22 @@ namespace PoeTradeSearch
                 if (popup != null)
                     popup.Placement = PlacementMode.Top;
             }
+
+            Grid input = cbName.Template.FindName("templateRoot", cbName) as Grid;
+            if (input != null)
+            {
+                ToggleButton toggleButton = input.FindName("toggleButton") as ToggleButton;
+                if (toggleButton != null)
+                {
+                    Border border = toggleButton.Template.FindName("templateRoot", toggleButton) as Border;
+                    if (border != null)
+                    {
+                        border.BorderThickness = new Thickness(0, 0, 0, 1);
+                        border.Background = System.Windows.Media.Brushes.Transparent;
+                    }
+                }
+            }
+            cbName.FontSize = cbOrbs.FontSize + 2;
 
             int cnt = 0;
             cbOrbs.Items.Add("교환을 원하는 오브 선택");
@@ -331,18 +347,6 @@ namespace PoeTradeSearch
             ((TextBox)this.FindName("tbOpt" + idx)).Text = (string)((TextBox)this.FindName("tbOpt" + idx)).Tag;
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            RS.ServerLang = byte.Parse((string)((Button)sender).Tag);
-
-            if (RS.ServerLang == 1)
-                cbName.Content = (mItemBaseName.NameEN + " " + mItemBaseName.TypeEN).Trim();
-            else
-                cbName.Content = (Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\s']+\)$", "")).Trim();
-
-            SetSearchButtonText(RS.ServerLang == 0);
-        }
-
         private void CbOrbs_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (((ComboBox)sender).Name == "cbOrbs")
@@ -391,12 +395,6 @@ namespace PoeTradeSearch
              tabControl1.SelectedIndex = tabControl1.SelectedIndex == 0 ? 1 : 0;
         }
 
-        private void cbName_Checked(object sender, RoutedEventArgs e)
-        {
-            cbName.Foreground = cbName.IsChecked == true ? lbDPS.Foreground : tbHelpText.Foreground;
-            tkPrice_ReSet(null, null);
-        }
-
         private void tkPrice_ReSet(object sender, RoutedEventArgs e)
         {
             try
@@ -413,6 +411,17 @@ namespace PoeTradeSearch
         {
             cbPriceListTotal.Visibility = tabControl1.SelectedIndex == 1 ? Visibility.Visible : Visibility.Hidden;
             tbHelpText.Text = tabControl1.SelectedIndex == 1 ? "최소 값 단위는 카오스 오브" : "시세 클릭시 재검색";
+        }
+
+        private void cbName_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cbName.SelectedIndex < 2)
+            {
+                RS.ServerLang = (byte)cbName.SelectedIndex;
+                cbName.Items[2] = (RS.ServerLang == 1 ? "영국 - " : "한국 - ") + "아이템 유형으로 검색합니다";
+            }
+
+            SetSearchButtonText(RS.ServerLang == 0);
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)

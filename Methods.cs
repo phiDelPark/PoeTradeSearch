@@ -131,7 +131,7 @@ namespace PoeTradeSearch
         private void SetSearchButtonText(bool is_kor)
         {
             bool isExchange = bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0);
-            btnSearch.Content = "거래소에서 " + (isExchange ? "대량 " : "") + "찾기 (" + (is_kor ? "한글" : "영어") + ")";
+            btnSearch.Content = "거래소에서 " + (isExchange ? "대량 " : "") + "찾기 (" + (is_kor ? "한국" : "영국") + ")";
         }
 
         private void ResetControls()
@@ -778,13 +778,15 @@ namespace PoeTradeSearch
                                             " = T." + Math.Round(PhysicalDPS + ElementalDPS + ChaosDPS, 2).ToString();
                         }
                     }
-                    
-                    if (RS.ServerLang == 1)
-                        cbName.Content = (mItemBaseName.NameEN + " " + mItemBaseName.TypeEN).Trim();
-                    else
-                        cbName.Content = (Regex.Replace(itemName, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(itemType, @"\([a-zA-Z\s']+\)$", "")).Trim();
 
-                    cbName.IsChecked = (itemRarity != RS.lRarity["Magic"] && itemRarity != RS.lRarity["Rare"]) || !(by_type && mConfigData.Options.SearchByType);
+                    cbName.SelectionChanged -= cbName_SelectionChanged;
+                    cbName.Items.Clear();
+                    cbName.Items.Add((Regex.Replace(itemName, @"\([a-zA-Z\s']+\)$", "") + " " + Regex.Replace(itemType, @"\([a-zA-Z\s']+\)$", "")).Trim());
+                    cbName.Items.Add((mItemBaseName.NameEN + " " + mItemBaseName.TypeEN).Trim());
+                    cbName.Items.Add((RS.ServerLang == 1 ? "영국 - " : "한국 - ") + "아이템 유형으로 검색합니다");
+                    cbName.SelectedIndex = RS.ServerLang == 1 ? 1 : 0;
+                    if (by_type && mConfigData.Options.SearchByType && (itemRarity == RS.lRarity["Magic"] || itemRarity == RS.lRarity["Rare"])) cbName.SelectedIndex = 2;
+                    cbName.SelectionChanged += cbName_SelectionChanged;
 
                     cbRarity.SelectedValue = itemRarity;
                     if (cbRarity.SelectedIndex == -1)
@@ -909,7 +911,7 @@ namespace PoeTradeSearch
             itemOption.ChkSocket = ckSocket.IsChecked == true;
             itemOption.ChkQuality = ckQuality.IsChecked == true;
             itemOption.ChkLv = ckLv.IsChecked == true;
-            itemOption.ByType = cbName.IsChecked != true;
+            itemOption.ByType = cbName.SelectedIndex == 2;
 
             itemOption.SocketMin = StrToDouble(tbSocketMin.Text, 99999);
             itemOption.SocketMax = StrToDouble(tbSocketMax.Text, 99999);
