@@ -104,7 +104,7 @@ namespace PoeTradeSearch
             RS.ServerType = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(RS.ServerType.ToLower()).Replace(" ", "%20");
             RS.ServerLang = (byte)(mConfigData.Options.Server == "en" ? 1 : 0);
 
-            ComboBox[] cbs = { cbOrbs, cbSplinters , cbCorrupt, cbPriceListCount, cbInfluence1, cbInfluence2 };
+            ComboBox[] cbs = { cbOrbs, cbSplinters , cbCorrupt, cbInfluence1, cbInfluence2 };
             foreach(ComboBox cb in cbs)
             {
                 ControlTemplate ct = cb.Template;
@@ -458,6 +458,19 @@ namespace PoeTradeSearch
                 );
 
             Native.SetForegroundWindow(Native.FindWindow(RS.PoeClass, RS.PoeCaption));
+        }
+
+        private void cbPriceListCount_DropDownOpened(object sender, EventArgs e)
+        {
+            // 탭 컨트로 뒤에 있어서 Window_Loaded 에서 작동안해 여기서 처리
+            if (cbPriceListCount.Tag == null)
+            {
+                ControlTemplate ct = cbPriceListCount.Template;
+                Popup popup = ct.FindName("PART_Popup", cbPriceListCount) as Popup;
+                if (popup != null)
+                    popup.Placement = PlacementMode.Top;
+                cbPriceListCount.Tag = 1;
+            }
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)

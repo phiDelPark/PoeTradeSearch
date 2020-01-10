@@ -715,7 +715,7 @@ namespace PoeTradeSearch
                                 if (((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex == -1)
                                     ((ComboBox)this.FindName("cbOpt" + i)).SelectedValue = RS.lFilterType["implicit"];
                             }
-                            else if (inherit != "" && ((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex > -1)
+                            else if (inherit != "" && inherit != "Entrailles" && ((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex > -1)
                             {
                                 if ((string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue != RS.lFilterType["crafted"]
                                     && ((mConfigData.Options.AutoCheckUnique && itemRarity == RS.lRarity["Unique"])
@@ -1527,7 +1527,7 @@ namespace PoeTradeSearch
             {
                 IntPtr findHwnd = Native.FindWindow(RS.PoeClass, RS.PoeCaption);
 
-                if (!mIsPause && !mClipboardBlock && !Native.GetForegroundWindow().Equals(findHwnd))
+                if (!mIsPause && !mClipboardBlock && Native.GetForegroundWindow().Equals(findHwnd))
                 {
                     try
                     {

@@ -254,7 +254,7 @@
                     <TextBox Name="tbPriceFilterMin" HorizontalAlignment="Left" Height="22" Margin="221,290,0,0" Text="" VerticalAlignment="Top" Width="33" BorderThickness="0,0,0,1" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
 
                     <Label Content="- 목록 수:" HorizontalAlignment="Left" Margin="259,288,0,0" VerticalAlignment="Top" />
-                    <ComboBox Name="cbPriceListCount" HorizontalAlignment="Left" Margin="326,290,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="50">
+                    <ComboBox Name="cbPriceListCount" HorizontalAlignment="Left" Margin="326,290,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="50" DropDownOpened="cbPriceListCount_DropDownOpened">
                         <ComboBoxItem>20</ComboBoxItem>
                         <ComboBoxItem>40</ComboBoxItem>
                         <ComboBoxItem>60</ComboBoxItem>
