@@ -5,7 +5,7 @@ POE 거래소 검색 (한글/영문)
 -------------
 
 한글/영문 POE 거래소 검색 프로그램입니다.<br>
-선택한 아이템을 POE 거래소에서 검색하며 한글 거래소와 영문 거래소 두곳에서 모두 검색이 가능합니다.
+선택한 아이템을 POE 거래소에서 검색하며 아이템 이름이 한글이면 한국서버 영문이면 영국서버에서 검색합니다.
 
 ### 개발환경:
 * 윈도우 10, POE 창 모드<br>
@@ -25,7 +25,7 @@ POE 거래소 검색 (한글/영문)
 
       "options":{
         "league":"Standard",         // 리그 선택 ["Metamorph", "Hardcore Metamorph", "Standard", "Hardcore"]
-        "server":"ko",               // 기본 검색 서버 ["ko", "en", "auto"]
+        "server":"ko",               // 기본 검색 서버 (이름도 이 설정에 따름) ["ko", "en", "auto"]
         "server_timeout":5,          // 서버 접속 대기 시간 (초) 인터넷이 느리면 더 올려 시간 초과를 방지
         "server_redirect":false,     // 일부 환경에서 서버 데이터를 못받아와 거래소 접속이 안되는 경우 사용
         "search_by_type":false,      // 기본 검색시 이름이 아닌 유형으로 검색 (매직 레어 장비 한정) [true, false]
@@ -33,6 +33,7 @@ POE 거래소 검색 (한글/영문)
         "search_price_min":0,        // 시세 검색 최소 값 (단위는 카오스 오브입니다, 0 은 모두 검색)
         "search_price_count":20,     // 시세 검색 목록 수 (20의 배수이고 최대 80, 수가 많을수록 느려짐)
         "auto_check_unique":true,    // 유니크 아이템은 기본적으로 옵션 모두 선택 [true, false]
+        "auto_check_totalres":true,  // 저항 옵션의 경우 총 저항 합산 검색 자동 체크 [true, false]
         "auto_select_pseudo":true,   // 유사 옵션으로 검색이 가능하면 유사로 자동 선택 [true, false]
         "auto_select_corrupt":"",    // 기본 검색시 선택한 타락 옵션으로 검색 (장비 한정) ["all", "no", "yes"]
         "check_updates":true,        // 시작시 최신 버전 체크 [true, false]
