@@ -67,6 +67,7 @@ namespace PoeTradeSearch
 
         //internal static readonly string TotalResistance = "총 저항 +#%";
 
+        // 일반, 마법, 희귀, 고유 이 순서 매우 중요함 바뀌면 에러 날 수 있음
         internal static Dictionary<string, string> lRarity = new Dictionary<string, string>()
         {
             { "Normal", "일반" }, { "Magic", "마법" }, { "Rare", "희귀" }, { "Unique", "고유" },
@@ -133,7 +134,7 @@ namespace PoeTradeSearch
         };
 
         internal static Dictionary<string, string>[] lExchangeCurrency = new Dictionary<string, string>[] {
-            new Dictionary<string, string> {            
+            new Dictionary<string, string> {
                 { "고대의 오브", "ancient-orb"}, { "기술자의 오브", "engineers-orb"}, { "기회의 오브", "chance"}, { "바알 오브", "vaal"}, { "변화의 오브", "alt"},
                 { "선구자의 오브", "harbingers-orb"}, { "소멸의 오브", "orb-of-annulment"}, { "속박의 오브", "orb-of-binding"}, { "신성한 오브", "divine"}, { "색채의 오브", "chrom"},
                 { "연결의 오브", "fuse"}, { "연금술의 오브", "alch"}, { "영원의 오브", "ete"}, { "엑잘티드 오브", "exa"}, { "정제의 오브", "scour"},
@@ -146,13 +147,14 @@ namespace PoeTradeSearch
                 { "상형 문자 화석", "glyphic-fossil"}, { "속박의 화석", "bound-fossil"}, { "얽혀든 화석", "tangled-fossil"},   { "연마한 화석", "faceted-fossil"}, { "온전한 화석", "pristine-fossil"},
                 { "완벽한 화석", "perfect-fossil"},  { "인챈트된 화석", "enchanted-fossil"}, { "에테르 화석", "aetheric-fossil"}, { "전율의 화석", "shuddering-fossil"}, { "조밀한 화석", "dense-fossil"},
                 { "차디찬 화석", "frigid-fossil"}, { "축성된 화석", "sanctified-fossil"}, { "톱니 화석", "serrated-fossil"}, { "특이한 화석", "aberrant-fossil"},{ "피얼룩 화석", "bloodstained-fossil"},
-                { "울네톨의 파편", "splinter-uul"}, { "에쉬의 파편", "splinter-esh"}, { "조프의 파편", "splinter-xoph"}, { "차율라의 파편", "splinter-chayula"}, { "툴의 파편", "splinter-tul"},
+                { "격동의 기폭제", "turbulent-catalyst" }, { "부여의 기폭제", "imbued-catalyst" }, { "연마의 기폭제", "abrasive-catalyst" }, { "완화의 기폭제", "tempering-catalyst" }, { "풍요의 기폭제", "fertile-catalyst" }, { "분광의 기폭제", "prismatic-catalyst" }, { "본질의 기폭제", "intrinsic-catalyst" },
+                /*{ "울네톨의 파편", "splinter-uul"}, { "에쉬의 파편", "splinter-esh"}, { "조프의 파편", "splinter-xoph"}, { "차율라의 파편", "splinter-chayula"}, { "툴의 파편", "splinter-tul"},*/
                 { "울네톨의 축복", "blessing-uul-netol"}, { "에쉬의 축복", "blessing-esh"}, { "조프의 축복", "blessing-xoph"}, { "차율라의 축복", "blessing-chayula"}, { "툴의 축복", "blessing-tul"},
-                { "무궁한 바알 파편", "timeless-vaal-splinter"}, { "무궁한 영원한 제국 파편", "timeless-eternal-empire-splinter"}, { "무궁한 카루이 파편", "timeless-karui-splinter"}, { "무궁한 템플러 파편", "timeless-templar-splinter"}, { "무궁한 마라케스 파편", "timeless-maraketh-splinter"},
+                /*{ "무궁한 바알 파편", "timeless-vaal-splinter"}, { "무궁한 영원한 제국 파편", "timeless-eternal-empire-splinter"}, { "무궁한 카루이 파편", "timeless-karui-splinter"}, { "무궁한 템플러 파편", "timeless-templar-splinter"}, { "무궁한 마라케스 파편", "timeless-maraketh-splinter"},*/
                 { "무궁한 바알 상징", "timeless-vaal-emblem"}, { "무궁한 영원의 상징", "timeless-eternal-emblem"}, { "무궁한 카루이 상징", "timeless-karui-emblem"}, { "무궁한 템플러 상징", "timeless-templar-emblem"}, { "무궁한 마라케스 상징", "timeless-maraketh-emblem"},
-                { "대장장이의 숫돌", "whe"}, { "방어구 장인의 고철", "scr"}, { "소멸의 파편", "annulment-shard"}, { "거울 파편", "mirror-shard"}, { "엑잘티드 파편", "exalted-shard"},
+                /*{ "대장장이의 숫돌", "whe"}, { "방어구 장인의 고철", "scr"}, { "소멸의 파편", "annulment-shard"}, { "거울 파편", "mirror-shard"}, { "엑잘티드 파편", "exalted-shard"},
                 { "속박의 파편", "binding-shard"},{ "지평의 파편", "horizon-shard"}, { "선구자의 파편", "harbingers-shard"}, { "기술자의 파편", "engineers-shard"}, { "고대의 파편", "ancient-shard"},
-                { "카오스 파편", "chaos-shard"},{ "제왕의 파편", "regal-shard"}, { "페란두스 코인", "p"}
+                { "카오스 파편", "chaos-shard"},{ "제왕의 파편", "regal-shard"},*/ { "페란두스 코인", "p"}
             },
             new Dictionary<string, string> {
                 { "Ancient Orb", "ancient-orb"}, { "Engineer's Orb", "engineers-orb"}, { "Orb of Chance", "chance"}, { "Vaal Orb", "vaal"}, { "Orb of Alteration", "alt"},
@@ -166,14 +168,15 @@ namespace PoeTradeSearch
                 { "Corroded Fossil", "corroded-fossil"}, { "Prismatic Fossil", "prismatic-fossil"}, { "Fractured Fossil", "fractured-fossil"},{ "Jagged Fossil", "jagged-fossil"}, { "Lucent Fossil", "lucent-fossil"},
                 { "Glyphic Fossil", "glyphic-fossil"}, { "Bound Fossil", "bound-fossil"}, { "Tangled Fossil", "tangled-fossil"},   { "Faceted Fossil", "faceted-fossil"}, { "Pristine Fossil", "pristine-fossil"},
                 { "Perfect Fossil", "perfect-fossil"},  { "Enchanted Fossil", "enchanted-fossil"}, { "Aetheric Fossil", "aetheric-fossil"}, { "Shuddering Fossil", "shuddering-fossil"}, { "Dense Fossil", "dense-fossil"},
-                { "Frigid Fossil", "frigid-fossil"}, { "Sanctified Fossil", "sanctified-fossil"}, { "Serrated Fossil", "serrated-fossil"}, { "Aberrant Fossil", "aberrant-fossil"},{ "Bloodstained Fossil", "bloodstained-fossil"},    
-                { "Splinter of Uul-Netol", "splinter-uul"}, { "Splinter of Esh", "splinter-esh"}, { "Splinter of Xoph", "splinter-xoph"}, { "Splinter of Chayula", "splinter-chayula"}, { "Splinter of Tul", "splinter-tul"},
+                { "Frigid Fossil", "frigid-fossil"}, { "Sanctified Fossil", "sanctified-fossil"}, { "Serrated Fossil", "serrated-fossil"}, { "Aberrant Fossil", "aberrant-fossil"},{ "Bloodstained Fossil", "bloodstained-fossil"},
+                { "Turbulent Catalyst", "turbulent-catalyst" }, { "Imbued Catalyst", "imbued-catalyst" }, { "Abrasive Catalyst", "abrasive-catalyst" }, { "Tempering Catalyst", "tempering-catalyst" }, { "Fertile Catalyst", "fertile-catalyst" }, { "Prismatic Catalyst", "prismatic-catalyst" }, { "Intrinsic Catalyst", "intrinsic-catalyst" },
+                /*{ "Splinter of Uul-Netol", "splinter-uul"}, { "Splinter of Esh", "splinter-esh"}, { "Splinter of Xoph", "splinter-xoph"}, { "Splinter of Chayula", "splinter-chayula"}, { "Splinter of Tul", "splinter-tul"},*/
                 { "Blessing of Uul-Netol", "blessing-uul-netol"}, { "Blessing of Esh", "blessing-esh"}, { "Blessing of Xoph", "blessing-xoph"}, { "Blessing of Chayula", "blessing-chayula"}, { "Blessing of Tul", "blessing-tul"},
-                { "Timeless Vaal Splinter", "timeless-vaal-splinter"}, { "Timeless Eternal Empire Splinter", "timeless-eternal-empire-splinter"}, { "Timeless Karui Splinter", "timeless-karui-splinter"}, { "Timeless Templar Splinter", "timeless-templar-splinter"}, { "Timeless Maraketh Splinter", "timeless-maraketh-splinter"},
+                /*{ "Timeless Vaal Splinter", "timeless-vaal-splinter"}, { "Timeless Eternal Empire Splinter", "timeless-eternal-empire-splinter"}, { "Timeless Karui Splinter", "timeless-karui-splinter"}, { "Timeless Templar Splinter", "timeless-templar-splinter"}, { "Timeless Maraketh Splinter", "timeless-maraketh-splinter"},*/
                 { "Timeless Vaal Emblem", "timeless-vaal-emblem"}, { "Timeless Eternal Emblem", "timeless-eternal-emblem"}, { "Timeless Karui Emblem", "timeless-karui-emblem"}, { "Timeless Templar Emblem", "timeless-templar-emblem"}, { "Timeless Maraketh Emblem", "timeless-maraketh-emblem"},
-                { "Blacksmith's Whetstone", "whe"}, { "Armourer's Scrap", "scr"}, { "Annulment Shard", "annulment-shard"}, { "Mirror Shard", "mirror-shard"}, { "Exalted Shard", "exalted-shard"},
+                /*{ "Blacksmith's Whetstone", "whe"}, { "Armourer's Scrap", "scr"}, { "Annulment Shard", "annulment-shard"}, { "Mirror Shard", "mirror-shard"}, { "Exalted Shard", "exalted-shard"},
                 { "Binding Shard", "binding-shard"},{ "Horizon Shard", "horizon-shard"}, { "Harbinger's Shard", "harbingers-shard"}, { "Engineer's Shard", "engineers-shard"}, { "Ancient Shard", "ancient-shard"},
-                { "Chaos Shard", "chaos-shard"},{ "Regal Shard", "regal-shard"}, { "Perandus Coin", "p"}
+                { "Chaos Shard", "chaos-shard"},{ "Regal Shard", "regal-shard"},*/ { "Perandus Coin", "p"}
             } 
         };
     }
