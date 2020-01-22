@@ -62,9 +62,6 @@ namespace PoeTradeSearch
 
             [DataMember(Name = "shortcuts")]
             internal ConfigShortcut[] Shortcuts = null;
-
-            [DataMember(Name = "checked")]
-            internal ConfigChecked[] Checked = null;
         }
 
         [DataContract(Name = "options")]
@@ -132,14 +129,125 @@ namespace PoeTradeSearch
             internal bool Ctrl = false;
         }
 
-        [DataContract(Name = "checked")]
-        internal class ConfigChecked
+        [DataContract()]
+        internal class ParserData
+        {
+            [DataMember(Name = "rarity")]
+            internal string[] Rarity = null;
+            [DataMember(Name = "quality")]
+            internal string[] Quality = null;
+            [DataMember(Name = "sockets")]
+            internal string[] Sockets = null;
+            [DataMember(Name = "unidentified")]
+            internal string[] Unidentified = null;
+            [DataMember(Name = "max")]
+            internal string[] Max = null;
+            [DataMember(Name = "level")]
+            internal string[] Level = null;
+            [DataMember(Name = "item_level")]
+            internal string[] ItemLevel = null;
+            [DataMember(Name = "talisman_tier")]
+            internal string[] TalismanTier = null;
+            [DataMember(Name = "map_tier")]
+            internal string[] MapTier = null;
+            [DataMember(Name = "superior")]
+            internal string[] Superior = null;
+            [DataMember(Name = "vaal")]
+            internal string[] Vaal = null;
+            [DataMember(Name = "corrupted")]
+            internal string[] Corrupted = null;
+            [DataMember(Name = "metamorph")]
+            internal string[] Metamorph = null;
+            [DataMember(Name = "shaper_item")]
+            internal string[] ShaperItem = null;
+            [DataMember(Name = "elder_item")]
+            internal string[] ElderItem = null;
+            [DataMember(Name = "crusader_item")]
+            internal string[] CrusaderItem = null;
+            [DataMember(Name = "redeemer_item")]
+            internal string[] RedeemerItem = null;
+            [DataMember(Name = "hunter_item")]
+            internal string[] HunterItem = null;
+            [DataMember(Name = "warlord_item")]
+            internal string[] WarlordItem = null;
+            [DataMember(Name = "synthesised_item")]
+            internal string[] SynthesisedItem = null;
+            [DataMember(Name = "synthesised")]
+            internal string[] Synthesised = null;
+            [DataMember(Name = "shaped")]
+            internal string[] Shaped = null;
+            [DataMember(Name = "blighted")]
+            internal string[] Blighted = null;
+            [DataMember(Name = "monster_genus")]
+            internal string[] MonsterGenus = null;
+            [DataMember(Name = "monster_group")]
+            internal string[] MonsterGroup = null;
+            [DataMember(Name = "physical_damage")]
+            internal string[] PhysicalDamage = null;
+            [DataMember(Name = "elemental_damage")]
+            internal string[] ElementalDamage = null;
+            [DataMember(Name = "chaos_damage")]
+            internal string[] ChaosDamage = null;
+            [DataMember(Name = "attacks_per_second")]
+            internal string[] AttacksPerSecond = null;
+            [DataMember(Name = "attack_speed_incr")]
+            internal string[] AttackSpeedIncr = null;
+            [DataMember(Name = "physical_damage_incr")]
+            internal string[] PhysicalDamageIncr = null;
+            [DataMember(Name = "prophecy_item")]
+            internal string[] ProphecyItem = null;
+            [DataMember(Name = "entrails_item")]
+            internal string[] EntrailsItem = null;
+
+            [DataMember(Name = "checked")]
+            internal ParserChecked[] Checked = null;
+        }
+
+        [DataContract]
+        internal class ParserStrings
+        {
+            /*
+            internal string[] Quality = null;
+            internal string[] Sockets = null;
+            internal string[] Unidentified = null;
+            internal string[] Max = null;
+            internal string[] Level = null;
+            internal string[] ItemLevel = null;
+            internal string[] TalismanTier = null;
+            internal string[] MapTier = null;
+            internal string[] Superior = null;
+            internal string[] Vaal = null;
+            internal string[] Corrupted = null;
+            internal string[] Metamorph = null;            
+            internal string[] ShaperItem = null;
+            internal string[] ElderItem = null;
+            internal string[] CrusaderItem = null;
+            internal string[] RedeemerItem = null;
+            internal string[] HunterItem = null;
+            internal string[] WarlordItem = null;
+            internal string[] SynthesisedItem = null;
+            internal string[] Synthesised = null;
+            internal string[] Shaped = null;
+            internal string[] Blighted = null;
+            internal string[] MonsterGenus = null;
+            internal string[] MonsterGroup = null;
+            internal string[] PhysicalDamage = null;
+            internal string[] ElementalDamage = null;
+            internal string[] ChaosDamage = null;
+            internal string[] AttacksPerSecond = null;
+            internal string[] AttackSpeedIncr = null;
+            internal string[] PhysicalDamageIncr = null;
+            */
+        }
+
+        [DataContract]
+        internal class ParserChecked
         {
             [DataMember(Name = "id")]
             internal string ID = null;
 
             [DataMember(Name = "text")]
-            internal string Text = null;
+            internal string[] Text = null;
         }
 
         [DataContract]

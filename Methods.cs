@@ -37,6 +37,14 @@ namespace PoeTradeSearch
                 if (mConfigData.Options.SearchPriceCount > 80)
                     mConfigData.Options.SearchPriceCount = 80;
 
+                fs = new FileStream(path + "Parser.txt", FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    mParserData = Json.Deserialize<ParserData>(json);
+                }
+
                 //-----------------------------
 
                 if (mCreateDatabase)
@@ -171,7 +179,7 @@ namespace PoeTradeSearch
             cbOrbs.FontWeight = FontWeights.Normal;
             cbSplinters.FontWeight = FontWeights.Normal; 
 
-            ckLv.Content = RS.Lv[0];
+            ckLv.Content = mParserData.Level[0];
             ckLv.FontWeight = FontWeights.Normal;
             ckLv.Foreground = Synthesis.Foreground;
             ckLv.BorderBrush = Synthesis.BorderBrush;
@@ -184,7 +192,7 @@ namespace PoeTradeSearch
             Synthesis.Content = "결합";
 
             cbRarity.Items.Clear();
-            cbRarity.Items.Add(RS.All[0]);
+            cbRarity.Items.Add("모두");
             cbRarity.Items.Add(RS.lRarity["Normal"]);
             cbRarity.Items.Add(RS.lRarity["Magic"]);
             cbRarity.Items.Add(RS.lRarity["Rare"]);
@@ -224,14 +232,15 @@ namespace PoeTradeSearch
             string itemRarity = "";
             string itemInherits = "";
             string itemID = "";
+            ParserData PS = mParserData;
 
             try
             {
                 string[] asData = (itemText ?? "").Trim().Split(new string[] { "--------" }, StringSplitOptions.None);
 
-                if (asData.Length > 1 && (asData[0].IndexOf(RS.Rarity[0] + ": ") == 0 || asData[0].IndexOf(RS.Rarity[1] + ": ") == 0))
+                if (asData.Length > 1 && (asData[0].IndexOf(PS.Rarity[0] + ": ") == 0 || asData[0].IndexOf(PS.Rarity[1] + ": ") == 0))
                 {
-                    byte z = (byte)(asData[0].IndexOf(RS.Rarity[0] + ": ") == 0 ? 0 : 1);
+                    byte z = (byte)(asData[0].IndexOf(PS.Rarity[0] + ": ") == 0 ? 0 : 1);
                     if (mConfigData.Options.Server != "en" && mConfigData.Options.Server != "ko") RS.ServerLang = z;
 
                     ResetControls();
@@ -249,16 +258,17 @@ namespace PoeTradeSearch
 
                     int k = 0, baki = 0, notImpCnt = 0;
                     double attackSpeedIncr = 0, PhysicalDamageIncr = 0;
-                    bool is_prophecy = false, is_map_fragment = false, is_met_entrails = false;
+                    bool is_prophecy = false, is_met_entrails = false;
 
                     List<Itemfilter> itemfilters = new List<Itemfilter>();
 
                     Dictionary<string, string> lItemOption = new Dictionary<string, string>()
                     {
-                        { RS.Quality[z], "" }, { RS.Lv[z], "" }, { RS.ItemLv[z], "" }, { RS.CharmLv[z], "" }, { RS.MaTier[z], "" }, { RS.Socket[z], "" },
-                        { RS.PhysicalDamage[z], "" }, { RS.ElementalDamage[z], "" }, { RS.ChaosDamage[z], "" }, { RS.AttacksPerSecond[z], "" },
-                        { RS.Shaper[z], "" }, { RS.Elder[z], "" }, { RS.Crusader[z], "" }, { RS.Redeemer[z], "" }, { RS.Hunter[z], "" }, { RS.Warlord[z], "" },
-                        { RS.Synthesis[z], "" }, { RS.Corrupt[z], "" }, { RS.Unidentify[z], "" }, { RS.Vaal[z], "" }, { RS.Genus[z], "" }, { RS.Group[z], "" }
+                        { PS.Quality[z], "" }, { PS.Level[z], "" }, { PS.ItemLevel[z], "" }, { PS.TalismanTier[z], "" }, { PS.MapTier[z], "" }, { PS.Sockets[z], "" },
+                        { PS.PhysicalDamage[z], "" }, { PS.ElementalDamage[z], "" }, { PS.ChaosDamage[z], "" }, { PS.AttacksPerSecond[z], "" },
+                        { PS.ShaperItem[z], "" }, { PS.ElderItem[z], "" }, { PS.CrusaderItem[z], "" }, { PS.RedeemerItem[z], "" }, { PS.HunterItem[z], "" }, { PS.WarlordItem[z], "" },
+                        { PS.SynthesisedItem[z], "" }, { PS.Corrupted[z], "" }, { PS.Unidentified[z], "" }, { PS.MonsterGenus[z], "" }, { PS.MonsterGroup[z], "" },
+                        { PS.Vaal[z] + " " + itemType, "" }
                     };
 
                     for (int i = 1; i < asData.Length; i++)
@@ -278,15 +288,11 @@ namespace PoeTradeSearch
                             }
                             else
                             {
-                                if (itemRarity == RS.lRarity["Gem"] && (RS.Vaal[z] + " " + itemType) == asTmp[0])
-                                    lItemOption[RS.Vaal[z]] = "_TRUE_";
-                                else if (!is_prophecy && asTmp[0].IndexOf(RS.ChkProphecy[z]) == 0)
+                                if (!is_prophecy && asTmp[0].IndexOf(PS.ProphecyItem[z]) == 0)
                                     is_prophecy = true;
-                                else if (!is_map_fragment && asTmp[0].IndexOf(RS.ChkMapFragment[z]) == 0)
-                                    is_map_fragment = true;
-                                else if (!is_met_entrails && asTmp[0].IndexOf(RS.ChkMetEntrails[z]) == 0)
+                                else if (!is_met_entrails && asTmp[0].IndexOf(PS.EntrailsItem[z]) == 0)
                                     is_met_entrails = true;
-                                else if (lItemOption[RS.ItemLv[z]] != "" && k < 10)
+                                else if (lItemOption[PS.ItemLevel[z]] != "" && k < 10)
                                 {
                                     double min = 99999, max = 99999;
                                     bool resistance = false;
@@ -459,11 +465,11 @@ namespace PoeTradeSearch
 
                                         itemfilters.Add(itemfilter);
 
-                                        if (filter.Text == RS.AttackSpeedIncr[z] && min > 0 && min < 999)
+                                        if (filter.Text == PS.AttackSpeedIncr[z] && min > 0 && min < 999)
                                         {
                                             attackSpeedIncr += min;
                                         }
-                                        else if (filter.Text == RS.PhysicalDamageIncr[z] && min > 0 && min < 9999)
+                                        else if (filter.Text == PS.PhysicalDamageIncr[z] && min > 0 && min < 9999)
                                         {
                                             PhysicalDamageIncr += min;
                                         }
@@ -477,19 +483,20 @@ namespace PoeTradeSearch
                     }
 
                     bool is_blight = false;
-                    bool is_unIdentify = lItemOption[RS.Unidentify[z]] == "_TRUE_";
-                    bool is_map = lItemOption[RS.MaTier[z]] != "";
-                    bool is_gem = itemRarity == RS.lRarity["Gem"];
                     bool is_currency = itemRarity == RS.lRarity["Currency"];
                     bool is_divinationCard = itemRarity == RS.lRarity["Divination Card"];
-                    bool is_captured_beast = lItemOption[RS.Genus[z]] != "" && lItemOption[RS.Group[z]] != "";
+                    bool is_gem = itemRarity == RS.lRarity["Gem"];
+                    bool is_vaal = is_gem && lItemOption[PS.Vaal[z] + " " + itemType] == "_TRUE_";
+                    bool is_map = lItemOption[PS.MapTier[z]] != "";
+                    bool is_captured_beast = lItemOption[PS.MonsterGenus[z]] != "" && lItemOption[PS.MonsterGroup[z]] != "";
+                    bool is_unIdentify = lItemOption[PS.Unidentified[z]] == "_TRUE_";
 
-                    if (is_map || is_currency) is_map_fragment = false;
-                    bool is_detail = is_gem || is_currency || is_divinationCard || is_prophecy || is_map_fragment;
+                    //if (is_map || is_currency) is_map_fragment = false;
+                    bool is_detail = is_gem || is_currency || is_divinationCard || is_prophecy;
 
-                    if (lItemOption[RS.Socket[z]] != "")
+                    if (lItemOption[PS.Sockets[z]] != "")
                     {
-                        string socket = lItemOption[RS.Socket[z]];
+                        string socket = lItemOption[PS.Sockets[z]];
                         int sckcnt = socket.Replace(" ", "-").Split('-').Length;
                         string[] scklinks = socket.Split(' ');
 
@@ -512,7 +519,7 @@ namespace PoeTradeSearch
                     {
                         itemID = itemInherits = "Entrailles/Entrails";
                         string[] tmp = itemType.Split(' ');
-                        itemType = RS.Metamorph[z] + " " + tmp[tmp.Length - 1];
+                        itemType = PS.Metamorph[z] + " " + tmp[tmp.Length - 1];
                     }
                     else if (is_prophecy || is_captured_beast)
                     {
@@ -527,9 +534,9 @@ namespace PoeTradeSearch
                     }
                     else
                     {
-                        if (is_gem && lItemOption[RS.Corrupt[z]] == "_TRUE_" && lItemOption[RS.Vaal[z]] == "_TRUE_")
+                        if (is_gem && is_vaal && lItemOption[PS.Corrupted[z]] == "_TRUE_")
                         {
-                            tmpBaseType = mBaseDatas.Find(x => (z == 1 ? x.NameEn : x.NameKo) == RS.Vaal[z] + " " + itemType);
+                            tmpBaseType = mBaseDatas.Find(x => (z == 1 ? x.NameEn : x.NameKo) == PS.Vaal[z] + " " + itemType);
                             if (tmpBaseType != null)
                                 itemType = z == 1 ? tmpBaseType.NameEn : tmpBaseType.NameKo;
                         }
@@ -537,23 +544,23 @@ namespace PoeTradeSearch
                         if (!is_unIdentify && itemRarity == RS.lRarity["Magic"])
                             itemType = itemType.Split(new string[] { z == 1 ? " of " : " - " }, StringSplitOptions.None)[0].Trim();
 
-                        if ((is_unIdentify || itemRarity == RS.lRarity["Normal"]) && itemType.Length > 4 && itemType.IndexOf(RS.Higher[z] + " ") == 0)
+                        if ((is_unIdentify || itemRarity == RS.lRarity["Normal"]) && itemType.Length > 4 && itemType.IndexOf(PS.Superior[z] + " ") == 0)
                             itemType = itemType.Substring(z == 1 ? 9 : 3);
 
                         if (is_map && itemType.Length > 5)
                         {
-                            if (itemType.IndexOf(RS.Blighted[z] + " ") == 0)
+                            if (itemType.IndexOf(PS.Blighted[z] + " ") == 0)
                             {
                                 is_blight = true;
                                 itemType = itemType.Substring(z == 1 ? 9 : 6);
                             }
 
-                            if (itemType.Substring(0, z == 1 ? 7 : 4) == RS.Shaped[z] + " ")
+                            if (itemType.Substring(0, z == 1 ? 7 : 4) == PS.Shaped[z] + " ")
                                 itemType = itemType.Substring(z == 1 ? 7 : 4);
                         }
-                        else if (lItemOption[RS.Synthesis[z]] == "_TRUE_")
+                        else if (lItemOption[PS.SynthesisedItem[z]] == "_TRUE_")
                         {
-                            if (itemType.Substring(0, z == 1 ? 12 : 4) == RS.Synthesised[z] + " ")
+                            if (itemType.Substring(0, z == 1 ? 12 : 4) == PS.Synthesised[z] + " ")
                                 itemType = itemType.Substring(z == 1 ? 12 : 4);
                         }
 
@@ -594,7 +601,7 @@ namespace PoeTradeSearch
                     mItemBaseName.Inherits = itemInherits.Split('/');
                     string inherit = mItemBaseName.Inherits[0];
                     string sub_inherit = mItemBaseName.Inherits.Length > 1 ? mItemBaseName.Inherits[1] : "";
-                    string item_quality = Regex.Replace(lItemOption[RS.Quality[z]], "[^0-9]", "");
+                    string item_quality = Regex.Replace(lItemOption[PS.Quality[z]], "[^0-9]", "");
 
                     bool is_essences = inherit == "Currency" && itemID.IndexOf("Currency/CurrencyEssence") == 0;
                     bool is_incubations = inherit == "Legion" && sub_inherit == "Incubator";
@@ -721,7 +728,7 @@ namespace PoeTradeSearch
                             {
                                 if ((string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue != RS.lFilterType["crafted"]
                                     && ((mConfigData.Options.AutoCheckUnique && itemRarity == RS.lRarity["Unique"])
-                                    || (Array.Find(mConfigData.Checked, x => x.Text == ifilter.text && x.ID.IndexOf(inherit + "/") > -1) != null)))
+                                    || (Array.Find(mParserData.Checked, x => x.Text[z] == ifilter.text && x.ID.IndexOf(inherit + "/") > -1) != null)))
                                 {
                                     ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = true;
                                     itemfilters[i].disabled = false;
@@ -752,12 +759,12 @@ namespace PoeTradeSearch
                         // DPS 계산 POE-TradeMacro 참고
                         if (!is_unIdentify && inherit == "Weapons")
                         {
-                            double PhysicalDPS = DamageToDPS(lItemOption[RS.PhysicalDamage[z]]);
-                            double ElementalDPS = DamageToDPS(lItemOption[RS.ElementalDamage[z]]);
-                            double ChaosDPS = DamageToDPS(lItemOption[RS.ChaosDamage[z]]);
+                            double PhysicalDPS = DamageToDPS(lItemOption[PS.PhysicalDamage[z]]);
+                            double ElementalDPS = DamageToDPS(lItemOption[PS.ElementalDamage[z]]);
+                            double ChaosDPS = DamageToDPS(lItemOption[PS.ChaosDamage[z]]);
 
                             double quality20Dps = item_quality == "" ? 0 : StrToDouble(item_quality, 0);
-                            double attacksPerSecond = StrToDouble(Regex.Replace(lItemOption[RS.AttacksPerSecond[z]], "[^0-9.]", ""), 0);
+                            double attacksPerSecond = StrToDouble(Regex.Replace(lItemOption[PS.AttacksPerSecond[z]], "[^0-9.]", ""), 0);
 
                             if (attackSpeedIncr > 0)
                             {
@@ -808,10 +815,10 @@ namespace PoeTradeSearch
 
                     if (bdExchange.Visibility == Visibility.Hidden)
                     {
-                        tbLvMin.Text = Regex.Replace(lItemOption[is_gem ? RS.Lv[z] : RS.ItemLv[z]], "[^0-9]", "");
+                        tbLvMin.Text = Regex.Replace(lItemOption[is_gem ? PS.Level[z] : PS.ItemLevel[z]], "[^0-9]", "");
                         tbQualityMin.Text = item_quality;
 
-                        string[] Influences = { RS.Shaper[z], RS.Elder[z], RS.Crusader[z], RS.Redeemer[z], RS.Hunter[z], RS.Warlord[z] };
+                        string[] Influences = { PS.ShaperItem[z], PS.ElderItem[z], PS.CrusaderItem[z], PS.RedeemerItem[z], PS.HunterItem[z], PS.WarlordItem[z] };
                         for (int i = 0; i < Influences.Length; i++)
                         {
                             if (lItemOption[Influences[i]] == "_TRUE_")
@@ -824,28 +831,28 @@ namespace PoeTradeSearch
                                 cbInfluence2.SelectedIndex = i + 1;
                         }
 
-                        if (lItemOption[RS.Corrupt[z]] == "_TRUE_")
+                        if (lItemOption[PS.Corrupted[z]] == "_TRUE_")
                         {
                             cbCorrupt.BorderThickness = new Thickness(2);
                             cbCorrupt.FontWeight = FontWeights.Bold;
                             cbCorrupt.Foreground = System.Windows.Media.Brushes.DarkRed;
                         }
 
-                        Synthesis.IsChecked = (is_map && is_blight) || lItemOption[RS.Synthesis[z]] == "_TRUE_";
+                        Synthesis.IsChecked = (is_map && is_blight) || lItemOption[PS.SynthesisedItem[z]] == "_TRUE_";
 
                         if (cbInfluence1.SelectedIndex > 0) cbInfluence1.BorderThickness = new Thickness(2);
                         if (cbInfluence2.SelectedIndex > 0) cbInfluence2.BorderThickness = new Thickness(2);
 
                         if (is_map)
                         {
-                            tbLvMin.Text = tbLvMax.Text = lItemOption[RS.MaTier[z]];
+                            tbLvMin.Text = tbLvMax.Text = lItemOption[PS.MapTier[z]];
                             ckLv.Content = "등급";
                             ckLv.IsChecked = true;
                             Synthesis.Content = "역병";
                         }
                         else if (is_gem)
                         {
-                            ckLv.IsChecked = lItemOption[RS.Lv[z]].IndexOf(" (" + RS.Max[z]) > 0;
+                            ckLv.IsChecked = lItemOption[PS.Level[z]].IndexOf(" (" + PS.Max[z]) > 0;
                             ckQuality.IsChecked = ckLv.IsChecked == true && item_quality != "" && int.Parse(item_quality) > 19;
                         }
                         else if (by_type || inherit == "Flasks")
@@ -1482,10 +1489,10 @@ namespace PoeTradeSearch
 
                 if (!mIsPause && mConfigData.Options.CtrlWheel)
                 {
-                    TimeSpan dateDiff = Convert.ToDateTime(DateTime.Now) - MouseHookCallbackTime;
+                    TimeSpan dateDiff = Convert.ToDateTime(DateTime.Now) - mMouseHookCallbackTime;
                     if (dateDiff.Ticks > 3000000000) // 5분간 마우스 움직임이 없으면 훜이 풀렸을 수 있어 다시...
                     {
-                        MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
+                        mMouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
                         MouseHook.Start();
                     }
                 }

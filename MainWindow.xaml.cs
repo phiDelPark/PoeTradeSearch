@@ -25,6 +25,7 @@ namespace PoeTradeSearch
         private List<BaseResultData> mMonsterDatas = null;
         
         private ConfigData mConfigData;
+        private ParserData mParserData;        
         private FilterData[] mFilterData = new FilterData[2];
 
         private ItemBaseName mItemBaseName;
@@ -39,7 +40,7 @@ namespace PoeTradeSearch
         private static bool mIsHotKey = false;
         public static bool mIsPause = false;
 
-        public static DateTime MouseHookCallbackTime;    
+        public static DateTime mMouseHookCallbackTime;    
 
         public MainWindow()
         {
@@ -204,7 +205,7 @@ namespace PoeTradeSearch
 
                 if (mConfigData.Options.CtrlWheel)
                 {
-                    MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
+                    mMouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
                     MouseHook.MouseAction += new EventHandler(MouseEvent);
                     MouseHook.Start();
                 }

@@ -296,9 +296,9 @@ namespace PoeTradeSearch
                     {
                         BaseResultData baseResultData = new BaseResultData();
                         baseResultData.ID = oCsvEnList[i][1].Replace("Metadata/Monsters/", "");
-                        baseResultData.InheritsFrom = oCsvEnList[i][11].Replace("Metadata/Monsters/", "");
-                        baseResultData.NameEn = Regex.Replace(oCsvEnList[i][35], "^\"(.+)\"$", "$1");
-                        baseResultData.NameKo = Regex.Replace(oCsvKoList[i][35], "^\"(.+)\"$", "$1");
+                        baseResultData.InheritsFrom = oCsvEnList[i][9].Replace("Metadata/Monsters/", "");
+                        baseResultData.NameEn = Regex.Replace(oCsvEnList[i][33], "^\"(.+)\"$", "$1");
+                        baseResultData.NameKo = Regex.Replace(oCsvKoList[i][33], "^\"(.+)\"$", "$1");
                         baseResultData.Detail = "";
 
                         if (datas.Find(x => x.NameEn == baseResultData.NameEn) == null)

@@ -230,7 +230,7 @@ namespace PoeTradeSearch
                     }
                 }
 
-                MainWindow.MouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
+                MainWindow.mMouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
             }
             return Native.CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
