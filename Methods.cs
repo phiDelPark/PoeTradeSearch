@@ -785,7 +785,7 @@ namespace PoeTradeSearch
                     cbName.Items.Clear();
                     cbName.Items.Add((Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\,\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\,\s']+\)$", "")).Trim());
                     cbName.Items.Add((mItemBaseName.NameEN + " " + mItemBaseName.TypeEN).Trim());
-                    cbName.Items.Add((RS.ServerLang == 1 ? "영국 - " : "한국 - ") + "아이템 유형으로 검색합니다");
+                    cbName.Items.Add((RS.ServerLang == 1 ? "영국서버 - " : "한국서버 - ") + "아이템 유형으로 검색합니다");
                     cbName.SelectedIndex = RS.ServerLang == 1 ? 1 : 0;
                     if (by_type && mConfigData.Options.SearchByType && (itemRarity == RS.lRarity["Magic"] || itemRarity == RS.lRarity["Rare"])) cbName.SelectedIndex = 2;
                     cbName.SelectionChanged += cbName_SelectionChanged;

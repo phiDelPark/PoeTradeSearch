@@ -400,7 +400,10 @@ namespace PoeTradeSearch
             if (tabControl1.SelectedIndex == 0)
             {
                 Random r = new Random();
-                if (r.Next(2) == 1) tbHelpText.Text = "저항 옆 체크시 총 합산 검색";
+                if (r.Next(2) == 1)
+                {
+                    tbHelpText.Text = r.Next(2) == 1 ? "저항 옆 체크시 총 합산 검색" : "이름 클릭시 한/영 서버 선택 가능";
+                }
             }
         }
 
@@ -409,7 +412,8 @@ namespace PoeTradeSearch
             if (cbName.SelectedIndex < 2)
             {
                 RS.ServerLang = (byte)cbName.SelectedIndex;
-                cbName.Items[2] = (RS.ServerLang == 1 ? "영국 - " : "한국 - ") + "아이템 유형으로 검색합니다";
+                mConfigData.Options.Server = RS.ServerLang == 1 ? "en" : "ko";
+                cbName.Items[2] = (RS.ServerLang == 1 ? "영국서버 - " : "한국서버 - ") + "아이템 유형으로 검색합니다";
             }
 
             SetSearchButtonText(RS.ServerLang == 0);
@@ -439,8 +443,8 @@ namespace PoeTradeSearch
                 "버전: " + GetFileVersion() + " (D." + mConfigData.Options.DataVersion + ")" + '\n' + '\n' +
                 "프로젝트: https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' + '\n' +
                 "리그 선택은 설정 파일에서 설정 가능합니다." + '\n' + '\n' +
-                "소켓 정보는 홈[소][대] 연결[소][대] 로 보면됩니다." + '\n' + '\n' +
-                "시세정보) 총수. 최소값 ~ 최대값 = 많은[수] 1 ~ 2위" + '\n' + '\n' + 
+                "검색 서버는 아이템 이름 클릭시 한/영 선택이 가능합니다." + '\n' + '\n' +
+                "시세 보는법: 검색수[.+] 최소값 ~ 최대값 = 많은[수] 1 ~ 2위" + '\n' + '\n' + 
                 "단축키 또는 창고휠 기능은 관리자 권한으로 실행해야 작동합니다." + '\n' +
                 "{" + '\n' +
                 "   F2) 은신처 이동" + '\n' +

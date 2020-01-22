@@ -1,7 +1,7 @@
 ﻿{
 	"options":{
 			"league":"Metamorph",
-			"server":"ko",
+			"server":"ko or en",
 			"server_timeout":5,
 			"server_redirect":false,
 			"search_by_type":false,
@@ -14,7 +14,7 @@
 			"auto_select_corrupt":"no or yes",
 			"ctrl_wheel":false,
 			"check_updates":true,
-			"data_version":"3.9.2"
+			"data_version":"3.9.2b"
 		},
 	"shortcuts":[
 			{"keycode":113,"value":"{Enter}/hideout{Enter}","Detail":"은신처 이동 (F2)"},
