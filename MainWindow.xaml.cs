@@ -129,18 +129,18 @@ namespace PoeTradeSearch
             }
             cbName.FontSize = cbOrbs.FontSize + 2;
 
-            int cnt = 0;
             cbOrbs.Items.Add("교환을 원하는 오브 선택");
-            cbSplinters.Items.Add("원하는 화석, 기폭제 선택");
-            foreach (KeyValuePair<string, string> item in RS.lExchangeCurrency[0])
+            foreach(ParserDictionary item in mParserData.Currency)
             {
-                if (item.Key == "대장장이의 숫돌")
-                    break;
+                if(item.Hidden == false)
+                    cbOrbs.Items.Add(item.Text[0]);
+            }
 
-                if (cnt++ > 33)
-                    cbSplinters.Items.Add(item.Key);
-                else
-                    cbOrbs.Items.Add(item.Key);
+            cbSplinters.Items.Add("기폭제, 화석, 조각등등");
+            foreach (ParserDictionary item in mParserData.Exchange)
+            {
+                if (item.Hidden == false)
+                    cbSplinters.Items.Add(item.Text[0]);
             }
 
             mMainHwnd = new WindowInteropHelper(this).Handle;
@@ -257,10 +257,22 @@ namespace PoeTradeSearch
             if (bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0))
             {
                 exchange = new string[2];
-                exchange[0] = RS.lExchangeCurrency[0][mItemBaseName.TypeKR];
-                exchange[1] = RS.lExchangeCurrency[0][(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
+
+                ParserDictionary exchange_item1 = GetExchangeItem(0, mItemBaseName.TypeKR);
+                ParserDictionary exchange_item2 = GetExchangeItem(0, (string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue));
+
+                if (exchange_item1 == null || exchange_item2 == null)
+                {
+                    ForegroundMessage("선택한 교환 아이템 코드가 잘못되었습니다.", "에러", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                exchange[0] = exchange_item1.ID;
+                exchange[1] = exchange_item2.ID;
+
                 url = RS.ExchangeApi[RS.ServerLang] + RS.ServerType + "/?redirect&source=";
                 url += Uri.EscapeDataString("{\"exchange\":{\"status\":{\"option\":\"online\"},\"have\":[\"" + exchange[0] + "\"],\"want\":[\"" + exchange[1] + "\"]}}");
+
                 Process.Start(url);
             }
             else
@@ -370,8 +382,21 @@ namespace PoeTradeSearch
             if (bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0))
             {
                 exchange = new string[2];
-                exchange[0] = RS.lExchangeCurrency[0][mItemBaseName.TypeKR];
-                exchange[1] = RS.lExchangeCurrency[0][(string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue)];
+
+                ParserDictionary exchange_item1 = GetExchangeItem(0, mItemBaseName.TypeKR);
+                ParserDictionary exchange_item2 = GetExchangeItem(0, (string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue));
+
+                if (exchange_item1 == null || exchange_item2 == null)
+                {
+                    tkPriceInfo1.Text = tkPriceInfo2.Text = "선택한 교환 아이템 코드가 잘못되었습니다.";
+                    tkPriceCount1.Text = tkPriceCount2.Text = "";
+                    cbPriceListTotal.Text = "0/0 검색";
+                    liPrice.Items.Clear();
+                    return;
+                }
+
+                exchange[0] = exchange_item1.ID;
+                exchange[1] = exchange_item2.ID;
             }
 
             PriceUpdateThreadWorker(exchange != null ? null : GetItemOptions(), exchange);
@@ -441,7 +466,7 @@ namespace PoeTradeSearch
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(Application.Current.MainWindow,
-                "버전: " + GetFileVersion() + " (D." + mConfigData.Options.DataVersion + ")" + '\n' + '\n' +
+                "버전: " + GetFileVersion() + " (POE." + mParserData.Version[0] + ")" + '\n' + '\n' +
                 "프로젝트: https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' + '\n' +
                 "리그 선택은 설정 파일에서 설정 가능합니다." + '\n' + '\n' +
                 "검색 서버는 아이템 이름 클릭시 한/영 선택이 가능합니다." + '\n' + '\n' +

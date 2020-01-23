@@ -809,7 +809,7 @@ namespace PoeTradeSearch
                         cbRarity.SelectedIndex = 0;
                     }
 
-                    bool IsExchangeCurrency = inherit == "Currency" && RS.lExchangeCurrency[z].ContainsKey(itemType);
+                    bool IsExchangeCurrency = inherit == "Currency" && GetExchangeItem(z, itemType) != null;
                     bdExchange.Visibility = !is_gem && (is_detail || IsExchangeCurrency) ? Visibility.Visible : Visibility.Hidden;
                     bdExchange.IsEnabled = IsExchangeCurrency;
 
@@ -1316,18 +1316,21 @@ namespace PoeTradeSearch
 
                                         if (fetchData.Result[i].Listing.Price != null && fetchData.Result[i].Listing.Price.Amount > 0)
                                         {
+                                            string key = "";
                                             string account = fetchData.Result[i].Listing.Account.Name;
-                                            string key = fetchData.Result[i].Listing.Price.Currency;
+                                            string currency = fetchData.Result[i].Listing.Price.Currency;
                                             double amount = fetchData.Result[i].Listing.Price.Amount;
-                                            string keyName = RS.lExchangeCurrency[0].ContainsValue(key) ? RS.lExchangeCurrency[0].FirstOrDefault(o => o.Value == key).Key : key;
 
                                             liPrice.Dispatcher.BeginInvoke(DispatcherPriority.Background,
                                                 (ThreadStart)delegate ()
                                                 {
+                                                    ParserDictionary item = GetExchangeItem(currency);
+                                                    string keyName = item != null ? item.Text[0] : currency;
+
                                                     if (entity.Length > 1)
                                                     {
-                                                        string tName2 = RS.lExchangeCurrency[0].ContainsValue(entity[1])
-                                                                        ? RS.lExchangeCurrency[0].FirstOrDefault(o => o.Value == entity[1]).Key : entity[1];
+                                                        item = GetExchangeItem(entity[1]);
+                                                        string tName2 = item != null ? item.Text[0] : entity[1];
                                                         liPrice.Items.Add(Math.Round(1 / amount, 4) + " " + tName2 + " <-> " + Math.Round(amount, 4) + " " + keyName + " [" + account + "]");
                                                     }
                                                     else
@@ -1338,7 +1341,7 @@ namespace PoeTradeSearch
                                             if (entity.Length > 1)
                                                 key = amount < 1 ? Math.Round(1 / amount, 1) + " " + ents1 : Math.Round(amount, 1) + " " + ents0;
                                             else
-                                                key = Math.Round(amount - 0.1) + " " + key;
+                                                key = Math.Round(amount - 0.1) + " " + currency;
 
                                             if (currencys.ContainsKey(key))
                                                 currencys[key]++;
@@ -1454,6 +1457,24 @@ namespace PoeTradeSearch
                     listCount
                 ));
             priceThread.Start();
+        }
+
+        private ParserDictionary GetExchangeItem(string id)
+        {
+            ParserDictionary item = Array.Find(mParserData.Currency, x => x.ID == id);
+            if (item == null)
+                item = Array.Find(mParserData.Exchange, x => x.ID == id);
+
+            return item;
+        }
+
+        private ParserDictionary GetExchangeItem(int index, string text)
+        {
+            ParserDictionary item = Array.Find(mParserData.Currency, x => x.Text[index] == text);
+            if (item == null)
+                item = Array.Find(mParserData.Exchange, x => x.Text[index] == text);
+
+            return item;
         }
 
         private string GetClipText(bool isUnicode)

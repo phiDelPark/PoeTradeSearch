@@ -108,9 +108,6 @@ namespace PoeTradeSearch
 
             [DataMember(Name = "check_updates")]
             internal bool CheckUpdates = false;
-
-            [DataMember(Name = "data_version")]
-            internal string DataVersion = null;
         }
 
         [DataContract(Name = "shortcuts")]
@@ -199,55 +196,29 @@ namespace PoeTradeSearch
             [DataMember(Name = "entrails_item")]
             internal string[] EntrailsItem = null;
 
+            [DataMember(Name = "currency")]
+            internal ParserDictionary[] Currency = null;
+            [DataMember(Name = "exchange")]
+            internal ParserDictionary[] Exchange = null;
+
             [DataMember(Name = "checked")]
-            internal ParserChecked[] Checked = null;
+            internal ParserDictionary[] Checked = null;
+
+            [DataMember(Name = "version")]
+            internal string[] Version = null;
         }
 
         [DataContract]
-        internal class ParserStrings
-        {
-            /*
-            internal string[] Quality = null;
-            internal string[] Sockets = null;
-            internal string[] Unidentified = null;
-            internal string[] Max = null;
-            internal string[] Level = null;
-            internal string[] ItemLevel = null;
-            internal string[] TalismanTier = null;
-            internal string[] MapTier = null;
-            internal string[] Superior = null;
-            internal string[] Vaal = null;
-            internal string[] Corrupted = null;
-            internal string[] Metamorph = null;            
-            internal string[] ShaperItem = null;
-            internal string[] ElderItem = null;
-            internal string[] CrusaderItem = null;
-            internal string[] RedeemerItem = null;
-            internal string[] HunterItem = null;
-            internal string[] WarlordItem = null;
-            internal string[] SynthesisedItem = null;
-            internal string[] Synthesised = null;
-            internal string[] Shaped = null;
-            internal string[] Blighted = null;
-            internal string[] MonsterGenus = null;
-            internal string[] MonsterGroup = null;
-            internal string[] PhysicalDamage = null;
-            internal string[] ElementalDamage = null;
-            internal string[] ChaosDamage = null;
-            internal string[] AttacksPerSecond = null;
-            internal string[] AttackSpeedIncr = null;
-            internal string[] PhysicalDamageIncr = null;
-            */
-        }
-
-        [DataContract]
-        internal class ParserChecked
+        internal class ParserDictionary
         {
             [DataMember(Name = "id")]
             internal string ID = null;
 
             [DataMember(Name = "text")]
             internal string[] Text = null;
+
+            [DataMember(Name = "hidden")]
+            internal bool Hidden = false;
         }
 
         [DataContract]
