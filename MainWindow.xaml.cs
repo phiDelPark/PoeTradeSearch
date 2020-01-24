@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -30,9 +29,6 @@ namespace PoeTradeSearch
 
         private ItemBaseName mItemBaseName;
 
-        private System.Windows.Forms.NotifyIcon TrayIcon;
-
-        private bool mTerminate = false;
         private bool mDisableClip = false;
         private bool mAdministrator = false;
         private bool mCreateDatabase = false;
@@ -45,39 +41,6 @@ namespace PoeTradeSearch
         public MainWindow()
         {
             InitializeComponent();
-
-            Uri uri = new Uri("pack://application:,,,/PoeTradeSearch;component/Icon1.ico");
-            using (Stream iconStream = Application.GetResourceStream(uri).Stream)
-            {
-                TrayIcon = new System.Windows.Forms.NotifyIcon
-                {
-                    Icon = new Icon(iconStream),
-                    Visible = true
-                };
-
-                TrayIcon.MouseClick += (sender, args) =>
-                {
-                    switch (args.Button)
-                    {
-                        case System.Windows.Forms.MouseButtons.Left:
-                            break;
-
-                        case System.Windows.Forms.MouseButtons.Right:
-                            if (
-                                MessageBox.Show(
-                                    "프로그램을 종료하시겠습니까?", "POE 거래소 검색",
-                                    MessageBoxButton.YesNo, MessageBoxImage.Question
-                                ) == MessageBoxResult.Yes
-                            )
-                            {
-                                //Application.Current.Shutdown();
-                                mTerminate = true;
-                                Close();
-                            }
-                            break;
-                    }
-                };
-            }
 
             mAdministrator = IsAdministrator();
 
@@ -96,16 +59,62 @@ namespace PoeTradeSearch
         {
             if (!Setting())
             {
-                Application.Current.Shutdown();
+                Application.Current.Shutdown(0xD); //ERROR_INVALID_DATA
                 return;
             }
 
+            string outString = "";
+            int update_type = mConfigData.Options.CheckUpdates ? CheckUpdates() : 0;
+
+            string tmp = "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
+                         (mAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "추가 단축키 기능은 관리자 권한으로 실행해야") + " 작동합니다.";
+
+            if (update_type == 1)
+            {
+                MessageBoxResult result = MessageBox.Show(
+                            Application.Current.MainWindow,
+                            tmp + '\n' + '\n' + "이 프로그램의 최신 버전이 발견 되었습니다." + '\n' + "지금 새 버전을 받으러 가시겠습니까?",
+                            "POE 거래소 검색", 
+                            MessageBoxButton.YesNo, MessageBoxImage.Question
+                    );
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    Process.Start("https://github.com/phiDelPark/PoeTradeSearch/releases");
+                    Application.Current.Shutdown();
+                    return;
+                }
+            }
+            else
+            {
+                if (update_type == 2)
+                {
+                    PopWindow popWindow = new PopWindow(null);
+                    Task.Factory.StartNew(() =>
+                    {
+                        PoeDataUpdates();
+                        this.Dispatcher.Invoke(() =>{popWindow.Close();});
+                    });
+                    popWindow.ShowDialog();
+                }
+
+                MessageBox.Show(Application.Current.MainWindow, tmp + '\n' + "더 자세한 정보를 보시려면 프로그램 상단 (?) 를 눌러 확인하세요.", "POE 거래소 검색");
+            }
+
+            if (!LoadData(out outString))
+            {
+                this.Visibility = Visibility.Hidden;
+                Application.Current.Shutdown(0xD); //ERROR_INVALID_DATA
+                return;
+            }
+
+            /////////////
             RS.ServerType = RS.ServerType == "" ? mConfigData.Options.League : RS.ServerType;
             RS.ServerType = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(RS.ServerType.ToLower()).Replace(" ", "%20");
             RS.ServerLang = (byte)(mConfigData.Options.Server == "en" ? 1 : 0);
 
-            ComboBox[] cbs = { cbOrbs, cbSplinters , cbCorrupt, cbInfluence1, cbInfluence2 };
-            foreach(ComboBox cb in cbs)
+            ComboBox[] cbs = { cbOrbs, cbSplinters, cbCorrupt, cbInfluence1, cbInfluence2 };
+            foreach (ComboBox cb in cbs)
             {
                 ControlTemplate ct = cb.Template;
                 Popup popup = ct.FindName("PART_Popup", cb) as Popup;
@@ -127,12 +136,13 @@ namespace PoeTradeSearch
                     }
                 }
             }
+
             cbName.FontSize = cbOrbs.FontSize + 2;
 
             cbOrbs.Items.Add("교환을 원하는 오브 선택");
-            foreach(ParserDictionary item in mParserData.Currency)
+            foreach (ParserDictionary item in mParserData.Currency)
             {
-                if(item.Hidden == false)
+                if (item.Hidden == false)
                     cbOrbs.Items.Add(item.Text[0]);
             }
 
@@ -143,7 +153,13 @@ namespace PoeTradeSearch
                     cbSplinters.Items.Add(item.Text[0]);
             }
 
+            this.Title += " - " + RS.ServerType;
+            this.Visibility = Visibility.Hidden;
+            
+            /////////////////
             mMainHwnd = new WindowInteropHelper(this).Handle;
+            HwndSource source = HwndSource.FromHwnd(mMainHwnd);
+            source.AddHook(new HwndSourceHook(WndProc));
 
             if (mAdministrator)
             {
@@ -157,51 +173,11 @@ namespace PoeTradeSearch
                             closeKeyCode = item.Keycode;
                     }
                 }
-            }
 
-            HwndSource source = HwndSource.FromHwnd(mMainHwnd);
-            source.AddHook(new HwndSourceHook(WndProc));
-
-            string tmp = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n' +
-                    "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
-                    (mAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "추가 단축키 기능은 관리자 권한으로 실행해야") + " 작동합니다.";
-
-            if (mConfigData.Options.CheckUpdates && CheckUpdates())
-            {
-                MessageBoxResult result = MessageBox.Show(Application.Current.MainWindow,
-                        tmp + '\n' + '\n' + "이 프로그램의 최신 버전이 발견 되었습니다." + '\n' + "지금 새 버전을 받으러 가시겠습니까?",
-                        "POE 거래소 검색", MessageBoxButton.YesNo, MessageBoxImage.Question
-                    );
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    Process.Start("https://github.com/phiDelPark/PoeTradeSearch/releases");
-                    mTerminate = true;
-                    Close();
-                }
-            }
-            else
-            {
-                MessageBox.Show(Application.Current.MainWindow, tmp + '\n' + "더 자세한 정보를 보시려면 프로그램 상단 (?) 를 눌러 확인하세요.", "POE 거래소 검색");
-            }
-
-            if (!mDisableClip)
-            {
-                IntPtr mNextClipBoardViewerHWnd = Native.SetClipboardViewer(new WindowInteropHelper(this).Handle);
-            }
-
-            if (mAdministrator)
-            {
+                // 창 활성화 후킹 사용시 가끔 꼬여서 타이머로 교체
                 //InstallRegisterHotKey();
-
-                // 창 활성화 후킹 사용시 가끔 꼬여서 타이머로 교체 (타이머를 쓰면 다른 목적으로 사용도 가능하고...)
                 //EventHook.EventAction += new EventHandler(WinEvent);
                 //EventHook.Start();
-
-                DispatcherTimer timer = new DispatcherTimer();
-                timer.Interval = TimeSpan.FromMilliseconds(1000);
-                timer.Tick += new EventHandler(Timer_Tick);
-                timer.Start();
 
                 if (mConfigData.Options.CtrlWheel)
                 {
@@ -209,10 +185,17 @@ namespace PoeTradeSearch
                     MouseHook.MouseAction += new EventHandler(MouseEvent);
                     MouseHook.Start();
                 }
+
+                DispatcherTimer timer = new DispatcherTimer();
+                timer.Interval = TimeSpan.FromMilliseconds(1000);
+                timer.Tick += new EventHandler(Timer_Tick);
+                timer.Start();
             }
 
-            this.Title += " - " + RS.ServerType;
-            this.Visibility = Visibility.Hidden;
+            if (!mDisableClip)
+            {
+                IntPtr mNextClipBoardViewerHWnd = Native.SetClipboardViewer(mMainHwnd);
+            }
         }
 
         private void Window_Activated(object sender, EventArgs e)
@@ -511,8 +494,7 @@ namespace PoeTradeSearch
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            e.Cancel = !mTerminate;
-
+            e.Cancel = true;
             Keyboard.ClearFocus();
             this.Visibility = Visibility.Hidden;
         }
@@ -527,9 +509,6 @@ namespace PoeTradeSearch
                 if (mConfigData.Options.CtrlWheel)
                     MouseHook.Stop();
             }
-
-            TrayIcon.Visible = false;
-            TrayIcon.Dispose();
         }
     }
 }

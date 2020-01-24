@@ -17,9 +17,12 @@ namespace PoeTradeSearch
         {
             InitializeComponent();
 
-            string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            path = path.Remove(path.Length - 4) + "Data\\";
-            JpgPath = path + jpgPath;
+            if (jpgPath != null)
+            {
+                string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                path = path.Remove(path.Length - 4) + "Data\\";
+                JpgPath = path + jpgPath;
+            }
         }
 
         public static BitmapSource ConvertBitmapToDPI(BitmapImage bitmapImage, int dpi)
@@ -37,13 +40,24 @@ namespace PoeTradeSearch
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            imJpg.Source = ConvertBitmapToDPI(new BitmapImage(new Uri(JpgPath)), 96);
+            if (JpgPath != "")
+            {
+                imJpg.Source = ConvertBitmapToDPI(new BitmapImage(new Uri(JpgPath)), 96);
+            }
+            else
+            {
+                this.WindowStyle = WindowStyle.None;
+                ProgressBar1.Visibility = Visibility.Visible;
+                Label1.Visibility = Visibility.Visible;
+            }
+
             Window_Deactivated(null, new EventArgs());
         }
 
         private void Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Close();
+            if(ProgressBar1.Visibility != Visibility.Visible)
+                Close();
         }
 
         private void Window_Deactivated(object sender, EventArgs e)

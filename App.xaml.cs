@@ -1,10 +1,8 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Diagnostics;
+﻿using System;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Runtime.Versioning;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
@@ -17,6 +15,8 @@ namespace PoeTradeSearch
     public partial class App : Application, IDisposable
     {
         private string logFilePath;
+
+        private System.Windows.Forms.NotifyIcon TrayIcon;
 
         private void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
@@ -35,7 +35,7 @@ namespace PoeTradeSearch
             if (ex.InnerException != null)
                 RunException(ex.InnerException);
             else
-                Application.Current.Shutdown();
+                Application.Current.Shutdown(ex.HResult);
         }
 
         private Mutex m_Mutex = null;
@@ -52,6 +52,9 @@ namespace PoeTradeSearch
 
         public void Dispose()
         {
+            TrayIcon.Visible = false;
+            TrayIcon.Dispose();
+
             Dispose(true);
             GC.SuppressFinalize(this);
         }
@@ -71,47 +74,44 @@ namespace PoeTradeSearch
                 return;
             }
 
-            int v4FullRegistryBuildNumber = 0;
-            const string subkey = @"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\";
-
-            using (RegistryKey ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(subkey))
-            {
-                try
-                {
-                    v4FullRegistryBuildNumber = (int)(ndpKey != null && ndpKey.GetValue("Release") != null ? ndpKey.GetValue("Release") : 0);
-                }
-                catch (Exception)
-                {
-                    v4FullRegistryBuildNumber = 0;
-                }
-            }
-
-            string frameworkDisplayName = Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkDisplayName;
-            int frameworkBuildNumber = 393295; /* FW_4.6 */ // frameworkDisplayName == ".NET Framework 4.5.2" ? 379893 : 461808;
-
-            if (v4FullRegistryBuildNumber < frameworkBuildNumber)
-            {
-                MessageBoxResult result = MessageBox.Show(
-                        "설치된 Runtime 버전이 낮습니다." + '\n' + frameworkDisplayName + " 이상 버전을 설치해 주십시요."
-                        + '\n' + '\n' + "최신 .NET Framework Runtime 을 다운로드 하시겠습니까?",
-                        "버전 에러", MessageBoxButton.YesNo, MessageBoxImage.Warning
-                    );
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    Process.Start("https://dotnet.microsoft.com/download/dotnet-framework");
-                }
-
-                Environment.Exit(-1);
-                return;
-            }
-
             logFilePath = Assembly.GetExecutingAssembly().Location;
             logFilePath = logFilePath.Remove(logFilePath.Length - 4) + ".log";
 
             if (File.Exists(logFilePath)) File.Delete(logFilePath);
 
             Application.Current.DispatcherUnhandledException += AppDispatcherUnhandledException;
+
+            Uri uri = new Uri("pack://application:,,,/PoeTradeSearch;component/Icon1.ico");
+            using (Stream iconStream = Application.GetResourceStream(uri).Stream)
+            {
+                TrayIcon = new System.Windows.Forms.NotifyIcon
+                {
+                    Icon = new Icon(iconStream),
+                    Visible = true
+                };
+
+                TrayIcon.MouseClick += (sender, args) =>
+                {
+                    switch (args.Button)
+                    {
+                        case System.Windows.Forms.MouseButtons.Left:
+                            break;
+
+                        case System.Windows.Forms.MouseButtons.Right:
+                            if (
+                                MessageBox.Show(
+                                    "프로그램을 종료하시겠습니까?", "POE 거래소 검색",
+                                    MessageBoxButton.YesNo, MessageBoxImage.Question
+                                ) == MessageBoxResult.Yes
+                            )
+                            {
+                                Application.Current.Shutdown();
+                            }
+                            break;
+                    }
+                };
+            }
+
             base.OnStartup(e);
         }
 

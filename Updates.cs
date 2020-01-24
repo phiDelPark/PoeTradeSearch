@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -10,19 +11,62 @@ namespace PoeTradeSearch
 {
     public partial class MainWindow : Window
     {
-        private bool CheckUpdates()
+        private int CheckUpdates()
         {
-            bool isUpdates = false;
+            int isUpdates = 0;
 
             // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
             Thread thread = new Thread(() =>
             {
-                string u = "https://raw.githubusercontent.com/phiDelPark/PoeTradeSearch/master/VERSION";
-                string version = SendHTTP(null, u, 3);
-                if ((version ?? "") != "")
+                string u = "https://raw.githubusercontent.com/phiDelPark/PoeTradeSearch/master/VERSIONS";
+                string ver_string = "3.9.2.0"+'\n'+"3.9.2.4";//SendHTTP(null, u, 3);
+                if ((ver_string ?? "") != "")
                 {
-                    Version version1 = new Version(GetFileVersion());
-                    isUpdates = version1.CompareTo(new Version(version)) < 0;
+                    string[] versions = ver_string.Split('\n');
+                    if (versions.Length > 1)
+                    {
+                        Version version = new Version(GetFileVersion());
+                        isUpdates = version.CompareTo(new Version(versions[0])) < 0 ? 1 : 0;
+                        if (isUpdates == 0)
+                        {
+                            // POE 데이터 버전 검사
+                            version = new Version(mParserData.Version[1]);
+                            isUpdates = version.CompareTo(new Version(versions[1])) < 0 ? 2 : 0;
+                        }
+                    }
+                }
+            });
+            thread.Start();
+            thread.Join();
+
+            return isUpdates;
+        }
+
+        private bool PoeDataUpdates()
+        {
+            bool isUpdates = false;
+#if DEBUG
+            string path = System.IO.Path.GetFullPath(@"..\..\") + "_POE_Data\\";
+#else
+            string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            path = path.Remove(path.Length - 4) + "Data\\";
+#endif
+
+            // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
+            Thread thread = new Thread(() =>
+            {
+                using (var client = new WebClient())
+                {
+                    try
+                    {
+                        client.DownloadFile("https://raw.githubusercontent.com/phiDelPark/PoeTradeSearch/_POE_Data/master/_POE_Data.zip", path + "poe_data.zip");
+                    }
+                    catch { }
+                }
+
+                if (File.Exists(path + "poe_data.zip"))
+                {
+                    isUpdates = true;
                 }
             });
             thread.Start();

@@ -44,77 +44,6 @@ namespace PoeTradeSearch
                     string json = reader.ReadToEnd();
                     mParserData = Json.Deserialize<ParserData>(json);
                 }
-
-                //-----------------------------
-
-                if (mCreateDatabase)
-                {
-                    File.Delete(path + "Bases.txt");
-                    File.Delete(path + "Words.txt");
-                    File.Delete(path + "Prophecies.txt"); ;
-                    File.Delete(path + "Monsters.txt");
-                    File.Delete(path + "FiltersKO.txt");
-                    File.Delete(path + "FiltersEN.txt");
-
-                    if (!BaseDataUpdates(path) || !FilterDataUpdates(path))
-                        throw new UnauthorizedAccessException("failed to create database");
-                }
-
-                fs = new FileStream(path + "Bases.txt", FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    BaseData data = Json.Deserialize<BaseData>(json);
-                    mBaseDatas = new List<BaseResultData>();
-                    mBaseDatas.AddRange(data.Result[0].Data);
-                }
-
-                fs = new FileStream(path + "Words.txt", FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    WordData data = Json.Deserialize<WordData>(json);
-                    mWordDatas = new List<WordeResultData>();
-                    mWordDatas.AddRange(data.Result[0].Data);
-                }
-
-                fs = new FileStream(path + "Prophecies.txt", FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    BaseData data = Json.Deserialize<BaseData>(json);
-                    mProphecyDatas = new List<BaseResultData>();
-                    mProphecyDatas.AddRange(data.Result[0].Data);
-                }
-
-                fs = new FileStream(path + "Monsters.txt", FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    BaseData data = Json.Deserialize<BaseData>(json);
-                    mMonsterDatas = new List<BaseResultData>();
-                    mMonsterDatas.AddRange(data.Result[0].Data);
-                }
-
-                fs = new FileStream(path + "FiltersKO.txt", FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    mFilterData[0] = Json.Deserialize<FilterData>(json);
-                }
-
-                fs = new FileStream(path + "FiltersEN.txt", FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    mFilterData[1] = Json.Deserialize<FilterData>(json);
-                }
             }
             catch (Exception ex)
             {
@@ -127,6 +56,112 @@ namespace PoeTradeSearch
                     fs.Dispose();
             }
 
+            return true;
+        }
+
+        private bool LoadData(out string outString)
+        {
+#if DEBUG
+            string path = System.IO.Path.GetFullPath(@"..\..\") + "_POE_Data\\";
+#else
+            string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            path = path.Remove(path.Length - 4) + "Data\\";
+#endif
+            FileStream fs = null;
+            string s = "";
+            try
+            {
+                if (mCreateDatabase)
+                {
+                    File.Delete(path + "Bases.txt");
+                    File.Delete(path + "Words.txt");
+                    File.Delete(path + "Prophecies.txt"); ;
+                    File.Delete(path + "Monsters.txt");
+                    File.Delete(path + "FiltersKO.txt");
+                    File.Delete(path + "FiltersEN.txt");
+
+                    if (!BaseDataUpdates(path) || !FilterDataUpdates(path))
+                    {
+                        s = "생성 실패";
+                        throw new UnauthorizedAccessException("failed to create database");
+                    }
+                }
+
+                s = "Bases.txt";
+                fs = new FileStream(path + s, FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    BaseData data = Json.Deserialize<BaseData>(json);
+                    mBaseDatas = new List<BaseResultData>();
+                    mBaseDatas.AddRange(data.Result[0].Data);
+                }
+
+                s = "Words.txt";
+                fs = new FileStream(path + s, FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    WordData data = Json.Deserialize<WordData>(json);
+                    mWordDatas = new List<WordeResultData>();
+                    mWordDatas.AddRange(data.Result[0].Data);
+                }
+
+                s = "Prophecies.txt";
+                fs = new FileStream(path + s, FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    BaseData data = Json.Deserialize<BaseData>(json);
+                    mProphecyDatas = new List<BaseResultData>();
+                    mProphecyDatas.AddRange(data.Result[0].Data);
+                }
+
+                s = "Monsters.txt";
+                fs = new FileStream(path + s, FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    BaseData data = Json.Deserialize<BaseData>(json);
+                    mMonsterDatas = new List<BaseResultData>();
+                    mMonsterDatas.AddRange(data.Result[0].Data);
+                }
+
+                s = "FiltersKO.txt";
+                fs = new FileStream(path + s, FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    mFilterData[0] = Json.Deserialize<FilterData>(json);
+                }
+
+                s = "FiltersEN.txt";
+                fs = new FileStream(path + s, FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    mFilterData[1] = Json.Deserialize<FilterData>(json);
+                }
+            }
+            catch (Exception ex)
+            {
+                outString = s;
+                MessageBox.Show(Application.Current.MainWindow, ex.Message, "에러");
+                return false;
+            }
+            finally
+            {
+                if (fs != null)
+                    fs.Dispose();
+            }
+
+            outString = s;
             return true;
         }
 

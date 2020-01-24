@@ -7,6 +7,8 @@
         mc:Ignorable="d"
         ResizeMode="NoResize" Topmost="True" WindowStartupLocation="CenterScreen" ShowActivated="False" Loaded="Window_Loaded" SizeToContent="WidthAndHeight" Deactivated="Window_Deactivated">
     <Grid>
-        <Image Name="imJpg" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" MinHeight="100" MinWidth="100" MouseDown="Image_MouseDown" />
+        <Image Name="imJpg" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" MinHeight="100" MinWidth="130" MouseDown="Image_MouseDown" />
+        <ProgressBar Name="ProgressBar1" HorizontalAlignment="Left" Height="34" Margin="10,10,0,0" VerticalAlignment="Top" Width="110" IsIndeterminate="True" Visibility="Hidden"/>
+        <Label Name="Label1" Content="최신 POE DATA&#10;업데이트 하는중..." HorizontalAlignment="Left" Margin="10,52,0,0" VerticalAlignment="Top" Width="110" Visibility="Hidden"/>
     </Grid>
 </Window>
