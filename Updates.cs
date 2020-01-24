@@ -20,7 +20,7 @@ namespace PoeTradeSearch
             Thread thread = new Thread(() =>
             {
                 string u = "https://raw.githubusercontent.com/phiDelPark/PoeTradeSearch/master/VERSIONS";
-                string ver_string = "3.9.2.0"+'\n'+"3.9.2.4";//SendHTTP(null, u, 3);
+                string ver_string = SendHTTP(null, u, 3);
                 if ((ver_string ?? "") != "")
                 {
                     string[] versions = ver_string.Split('\n');

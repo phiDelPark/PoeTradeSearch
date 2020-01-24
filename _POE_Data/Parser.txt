@@ -1,5 +1,5 @@
 ﻿{
-	"version":[ "3.9.2b", "3.9.2.2" ],
+	"version":[ "3.9.2c", "3.9.2.3" ],
 
 	"checked":[
 			{"id":"Jewels/Amulets/Rings/Belts/Quivers/Armours/","text":[ "화염 저항 #%", "#% to Fire Resistance" ]},
