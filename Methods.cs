@@ -37,12 +37,16 @@ namespace PoeTradeSearch
                 if (mConfigData.Options.SearchPriceCount > 80)
                     mConfigData.Options.SearchPriceCount = 80;
 
-                fs = new FileStream(path + "Parser.txt", FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
+                // 업데이트를 하기위해 Parser.txt 는 존재여부 체크
+                if (File.Exists(path + "Parser.txt"))
                 {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    mParserData = Json.Deserialize<ParserData>(json);
+                    fs = new FileStream(path + "Parser.txt", FileMode.Open);
+                    using (StreamReader reader = new StreamReader(fs))
+                    {
+                        fs = null;
+                        string json = reader.ReadToEnd();
+                        mParserData = Json.Deserialize<ParserData>(json);
+                    }
                 }
             }
             catch (Exception ex)
@@ -84,6 +88,19 @@ namespace PoeTradeSearch
                     {
                         s = "생성 실패";
                         throw new UnauthorizedAccessException("failed to create database");
+                    }
+                }
+
+                // 업데이트 오류로 mParserData = null 일때 다시 체크
+                if (mParserData == null)
+                {
+                    s = "Parser.txt";
+                    fs = new FileStream(path + s, FileMode.Open);
+                    using (StreamReader reader = new StreamReader(fs))
+                    {
+                        fs = null;
+                        string json = reader.ReadToEnd();
+                        mParserData = Json.Deserialize<ParserData>(json);
                     }
                 }
 

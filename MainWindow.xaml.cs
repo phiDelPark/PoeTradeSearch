@@ -64,7 +64,7 @@ namespace PoeTradeSearch
             }
 
             string outString = "";
-            int update_type = mConfigData.Options.CheckUpdates ? CheckUpdates() : 0;
+            int update_type = mConfigData.Options.CheckUpdates ? CheckUpdates(mParserData == null ? "0.0.0.0" : mParserData.Version[1]) : 0;
 
             string tmp = "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
                          (mAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "추가 단축키 기능은 관리자 권한으로 실행해야") + " 작동합니다.";

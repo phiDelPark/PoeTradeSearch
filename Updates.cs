@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -11,7 +12,7 @@ namespace PoeTradeSearch
 {
     public partial class MainWindow : Window
     {
-        private int CheckUpdates()
+        private int CheckUpdates(string poe_version)
         {
             int isUpdates = 0;
 
@@ -30,7 +31,7 @@ namespace PoeTradeSearch
                         if (isUpdates == 0)
                         {
                             // POE 데이터 버전 검사
-                            version = new Version(mParserData.Version[1]);
+                            version = new Version(poe_version);
                             isUpdates = version.CompareTo(new Version(versions[1])) < 0 ? 2 : 0;
                         }
                     }
@@ -55,17 +56,30 @@ namespace PoeTradeSearch
             // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
             Thread thread = new Thread(() =>
             {
+                File.Delete(path + "poe_data.zip");
+
                 using (var client = new WebClient())
                 {
                     try
                     {
-                        client.DownloadFile("https://raw.githubusercontent.com/phiDelPark/PoeTradeSearch/_POE_Data/master/_POE_Data.zip", path + "poe_data.zip");
+                        client.DownloadFile("https://raw.githubusercontent.com/phiDelPark/PoeTradeSearch/master/_POE_Data/_POE_Data.zip", path + "poe_data.zip");
                     }
                     catch { }
                 }
 
                 if (File.Exists(path + "poe_data.zip"))
                 {
+                    File.Delete(path + "Bases.txt");
+                    File.Delete(path + "Words.txt");
+                    File.Delete(path + "Prophecies.txt"); ;
+                    File.Delete(path + "Monsters.txt");
+                    File.Delete(path + "FiltersKO.txt");
+                    File.Delete(path + "FiltersEN.txt");
+                    File.Delete(path + "Parser.txt");
+
+                    ZipFile.ExtractToDirectory(path + "poe_data.zip", path);
+                    File.Delete(path + "poe_data.zip");
+
                     isUpdates = true;
                 }
             });
