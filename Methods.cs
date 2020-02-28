@@ -41,6 +41,7 @@ namespace PoeTradeSearch
             ckLv.IsChecked = false;
             ckQuality.IsChecked = false;
             ckSocket.IsChecked = false;
+            Synthesis.IsChecked = false;
 
             cbInfluence1.SelectedIndex = 0;
             cbInfluence2.SelectedIndex = 0;
