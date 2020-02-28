@@ -7,120 +7,13 @@ using System.Runtime.Serialization.Json;
 using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Markup;
 
 namespace PoeTradeSearch
 {
-    public partial class MainWindow : Window
-    {
-        internal static bool IsAdministrator()
-        {
-            var identity = WindowsIdentity.GetCurrent();
-            var principal = new WindowsPrincipal(identity);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-
-        private string GetFileVersion()
-        {
-            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-            return fvi.FileVersion;
-        }
-
-        private double StrToDouble(string s, double def = 0)
-        {
-            if ((s ?? "") != "")
-            {
-                try
-                {
-                    def = double.Parse(s);
-                }
-                catch { }
-            }
-
-            return def;
-        }
-
-        private double DamageToDPS(string damage)
-        {
-            double dps = 0;
-            try
-            {
-                string[] stmps = Regex.Replace(damage, @"\([a-zA-Z]+\)", "").Split(',');
-                for (int t = 0; t < stmps.Length; t++)
-                {
-                    string[] maidps = (stmps[t] ?? "").Trim().Split('-');
-                    if (maidps.Length == 2)
-                        dps += double.Parse(maidps[0].Trim()) + double.Parse(maidps[1].Trim());
-                }
-            }
-            catch { }
-            return dps;
-        }
-
-        private string SendHTTP(string entity, string urlString, int timeout = 5)
-        {
-            string result = "";
-
-            try
-            {
-                // WebClient 코드는 테스트할게 있어 만들어둔 코드...
-                if (timeout == 0)
-                {
-                    using (WebClient webClient = new WebClient())
-                    {
-                        webClient.Encoding = UTF8Encoding.UTF8;
-
-                        if (entity == null)
-                        {
-                            result = webClient.DownloadString(urlString);
-                        }
-                        else
-                        {
-                            webClient.Headers[HttpRequestHeader.ContentType] = "application/json";
-                            result = webClient.UploadString(urlString, entity);
-                        }
-                    }
-                }
-                else
-                {
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(urlString));
-                    request.Timeout = timeout * 1000;
-                    request.UserAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2"; // SGS Galaxy
-
-                    if (entity == null)
-                    {
-                        request.Method = WebRequestMethods.Http.Get;
-                    }
-                    else
-                    {
-                        request.Accept = "application/json";
-                        request.ContentType = "application/json";
-                        request.Headers.Add("Content-Encoding", "utf-8");
-                        request.Method = WebRequestMethods.Http.Post;
-
-                        byte[] data = Encoding.UTF8.GetBytes(entity);
-                        request.ContentLength = data.Length;
-                        request.GetRequestStream().Write(data, 0, data.Length);
-                    }
-
-                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                    using (StreamReader streamReader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
-                    {
-                        result = streamReader.ReadToEnd();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return null;
-            }
-
-            return result;
-        }
-    }
-
     internal static class Native
     {
         [DllImport("user32.dll")] internal static extern IntPtr SetClipboardViewer(IntPtr hWnd);
@@ -230,7 +123,7 @@ namespace PoeTradeSearch
                     }
                 }
 
-                MainWindow.mMouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
+                WinMain.mMouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
             }
             return Native.CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
@@ -292,6 +185,147 @@ namespace PoeTradeSearch
             T tRet = dcsJson.ReadObject(mS) as T;
             mS.Dispose();
             return (tRet);
+        }
+    }
+
+    public partial class WinMain : Window
+    {
+        internal bool IsAdministrator()
+        {
+            var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
+        private string GetFileVersion()
+        {
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            return fvi.FileVersion;
+        }
+
+        private double StrToDouble(string s, double def = 0)
+        {
+            if ((s ?? "") != "")
+            {
+                try
+                {
+                    def = double.Parse(s);
+                }
+                catch { }
+            }
+
+            return def;
+        }
+
+        private double DamageToDPS(string damage)
+        {
+            double dps = 0;
+            try
+            {
+                string[] stmps = Regex.Replace(damage, @"\([a-zA-Z]+\)", "").Split(',');
+                for (int t = 0; t < stmps.Length; t++)
+                {
+                    string[] maidps = (stmps[t] ?? "").Trim().Split('-');
+                    if (maidps.Length == 2)
+                        dps += double.Parse(maidps[0].Trim()) + double.Parse(maidps[1].Trim());
+                }
+            }
+            catch { }
+            return dps;
+        }
+
+        private string SendHTTP(string entity, string urlString, int timeout = 5)
+        {
+            string result = "";
+
+            try
+            {
+                // WebClient 코드는 테스트할게 있어 만들어둔 코드...
+                if (timeout == 0)
+                {
+                    using (WebClient webClient = new WebClient())
+                    {
+                        webClient.Encoding = UTF8Encoding.UTF8;
+
+                        if (entity == null)
+                        {
+                            result = webClient.DownloadString(urlString);
+                        }
+                        else
+                        {
+                            webClient.Headers[HttpRequestHeader.ContentType] = "application/json";
+                            result = webClient.UploadString(urlString, entity);
+                        }
+                    }
+                }
+                else
+                {
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(urlString));
+                    request.Timeout = timeout * 1000;
+                    request.UserAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2"; // SGS Galaxy
+
+                    if (entity == null)
+                    {
+                        request.Method = WebRequestMethods.Http.Get;
+                    }
+                    else
+                    {
+                        request.Accept = "application/json";
+                        request.ContentType = "application/json";
+                        request.Headers.Add("Content-Encoding", "utf-8");
+                        request.Method = WebRequestMethods.Http.Post;
+
+                        byte[] data = Encoding.UTF8.GetBytes(entity);
+                        request.ContentLength = data.Length;
+                        request.GetRequestStream().Write(data, 0, data.Length);
+                    }
+
+                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                    using (StreamReader streamReader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        result = streamReader.ReadToEnd();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+
+            return result;
+        }
+
+        private string GetClipText(bool isUnicode)
+        {
+            return Clipboard.GetText(isUnicode ? TextDataFormat.UnicodeText : TextDataFormat.Text);
+        }
+
+        private void SetClipText(string text, TextDataFormat textDataFormat)
+        {
+            var ClipboardThread = new Thread(() =>
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    try
+                    {
+                        Clipboard.SetText(text, textDataFormat);
+                        return;
+                    }
+                    catch { }
+                    Thread.Sleep(10);
+                }
+            });
+            ClipboardThread.SetApartmentState(ApartmentState.STA);
+            ClipboardThread.IsBackground = false;
+            ClipboardThread.Start();
+        }
+
+        private void ForegroundMessage(string message, string caption, MessageBoxButton button, MessageBoxImage icon)
+        {
+            MessageBox.Show(Application.Current.MainWindow, message, caption, button, icon);
+            Native.SetForegroundWindow(Native.FindWindow(RS.PoeClass, RS.PoeCaption));
         }
     }
 }

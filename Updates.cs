@@ -10,7 +10,7 @@ using System.Windows;
 
 namespace PoeTradeSearch
 {
-    public partial class MainWindow : Window
+    public partial class WinMain : Window
     {
         private int CheckUpdates(string poe_version)
         {
@@ -62,20 +62,21 @@ namespace PoeTradeSearch
                 {
                     try
                     {
-                        client.DownloadFile("https://raw.githubusercontent.com/phiDelPark/PoeTradeSearch/master/_POE_Data/_POE_Data.zip", path + "poe_data.zip");
+                        client.DownloadFile(
+                            "https://raw.githubusercontent.com/phiDelPark/PoeTradeSearch/master/_POE_Data/_POE_Data.zip", 
+                            path + "poe_data.zip"
+                        );
                     }
                     catch { }
                 }
 
                 if (File.Exists(path + "poe_data.zip"))
                 {
-                    File.Delete(path + "Bases.txt");
-                    File.Delete(path + "Words.txt");
-                    File.Delete(path + "Prophecies.txt"); ;
-                    File.Delete(path + "Monsters.txt");
-                    File.Delete(path + "FiltersKO.txt");
-                    File.Delete(path + "FiltersEN.txt");
-                    File.Delete(path + "Parser.txt");
+                    string[] items = { "Bases", "Words", "Prophecies", "Monsters", "FiltersKO", "FiltersEN", "Parser" };
+                    foreach (string item in items)
+                    {
+                        File.Delete(path + item + ".txt");
+                    }
 
                     ZipFile.ExtractToDirectory(path + "poe_data.zip", path);
                     File.Delete(path + "poe_data.zip");

@@ -14,31 +14,20 @@ using System.Windows.Threading;
 namespace PoeTradeSearch
 {
     /// <summary>
-    /// MainWindow.xaml에 대한 상호 작용 논리
+    /// WinMain.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class WinMain : Window
     {
-        private List<BaseResultData> mBaseDatas = null;
-        private List<WordeResultData> mWordDatas = null;
-        private List<BaseResultData> mProphecyDatas = null;
-        private List<BaseResultData> mMonsterDatas = null;
-        
-        private ConfigData mConfigData;
-        private ParserData mParserData;        
-        private FilterData[] mFilterData = new FilterData[2];
+        private static IntPtr mMainHwnd;
+        public static DateTime mMouseHookCallbackTime;
 
-        private ItemBaseName mItemBaseName;
+        private static bool mInstalledHotKey = false;
+        public static bool mPausedHotKey = false;
 
-        private bool mDisableClip = false;
-        private bool mAdministrator = false;
-        private bool mCreateDatabase = false;
+        private bool mHotkeyProcBlock = false;
+        private bool mClipboardBlock = false;
 
-        private static bool mIsHotKey = false;
-        public static bool mIsPause = false;
-
-        public static DateTime mMouseHookCallbackTime;    
-
-        public MainWindow()
+        public WinMain()
         {
             InitializeComponent();
 
@@ -52,9 +41,6 @@ namespace PoeTradeSearch
             }
         }
 
-        private static IntPtr mMainHwnd;
-        private static int closeKeyCode = 0;
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             if (!Setting())
@@ -66,14 +52,18 @@ namespace PoeTradeSearch
             string outString = "";
             int update_type = mConfigData.Options.CheckUpdates ? CheckUpdates(mParserData == null ? "0.0.0.0" : mParserData.Version[1]) : 0;
 
-            string tmp = "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n' + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n' +
-                         (mAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "추가 단축키 기능은 관리자 권한으로 실행해야") + " 작동합니다.";
+            string start_msg = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n'
+                             + "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n'
+                             + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n'
+                             + (mAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "추가 단축키 기능은 관리자 권한으로 실행해야")
+                             + " 작동합니다.";
 
             if (update_type == 1)
             {
                 MessageBoxResult result = MessageBox.Show(
                             Application.Current.MainWindow,
-                            tmp + '\n' + '\n' + "이 프로그램의 최신 버전이 발견 되었습니다." + '\n' + "지금 새 버전을 받으러 가시겠습니까?",
+                            start_msg + '\n' + '\n' + "이 프로그램의 최신 버전이 발견 되었습니다." 
+                                      + '\n' + "지금 새 버전을 받으러 가시겠습니까?",
                             "POE 거래소 검색", 
                             MessageBoxButton.YesNo, MessageBoxImage.Question
                     );
@@ -89,16 +79,33 @@ namespace PoeTradeSearch
             {
                 if (update_type == 2)
                 {
-                    PopWindow popWindow = new PopWindow(null);
+                    WinPopup winPopup = new WinPopup(null);
                     Task.Factory.StartNew(() =>
                     {
-                        PoeDataUpdates();
-                        this.Dispatcher.Invoke(() =>{popWindow.Close();});
+                        if (PoeDataUpdates())
+                        {
+                            if (!Setting())
+                            {
+                                Application.Current.Shutdown(0xD); //ERROR_INVALID_DATA
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            start_msg = start_msg + '\n' + '\n' + "최신 POE 데이터 업데이트를 실패하였습니다." 
+                                      + '\n' + "접속이 원할하지 않을 수 있으므로 다음 실행시 다시 시도합니다." + '\n';
+                        }
+
+                        this.Dispatcher.Invoke(() =>{ winPopup.Close();});
                     });
-                    popWindow.ShowDialog();
+                    winPopup.ShowDialog();
                 }
 
-                MessageBox.Show(Application.Current.MainWindow, tmp + '\n' + "더 자세한 정보를 보시려면 프로그램 상단 (?) 를 눌러 확인하세요.", "POE 거래소 검색");
+                MessageBox.Show(
+                        Application.Current.MainWindow, 
+                        start_msg + '\n' + "더 자세한 정보를 보시려면 프로그램 상단 (?) 를 눌러 확인하세요.", 
+                        "POE 거래소 검색"
+                    );
             }
 
             if (!LoadData(out outString))
@@ -234,7 +241,6 @@ namespace PoeTradeSearch
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             string sEntity;
-            string url = "";
             string[] exchange = null;
 
             if (bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0))
@@ -253,10 +259,12 @@ namespace PoeTradeSearch
                 exchange[0] = exchange_item1.ID;
                 exchange[1] = exchange_item2.ID;
 
-                url = RS.ExchangeApi[RS.ServerLang] + RS.ServerType + "/?redirect&source=";
-                url += Uri.EscapeDataString("{\"exchange\":{\"status\":{\"option\":\"online\"},\"have\":[\"" + exchange[0] + "\"],\"want\":[\"" + exchange[1] + "\"]}}");
-
-                Process.Start(url);
+                Process.Start(
+                        RS.ExchangeApi[RS.ServerLang] + RS.ServerType + "/?redirect&source="
+                        + Uri.EscapeDataString(
+                            "{\"exchange\":{\"status\":{\"option\":\"online\"},\"have\":[\"" + exchange[0] + "\"],\"want\":[\"" + exchange[1] + "\"]}}"
+                        )
+                    );
             }
             else
             {
@@ -270,9 +278,7 @@ namespace PoeTradeSearch
 
                 if (mConfigData.Options.ServerRedirect)
                 {
-                    url = RS.TradeApi[RS.ServerLang] + RS.ServerType + "/?redirect&source=";
-                    url += Uri.EscapeDataString(sEntity);
-                    Process.Start(url);
+                    Process.Start(RS.TradeApi[RS.ServerLang] + RS.ServerType + "/?redirect&source=" + Uri.EscapeDataString(sEntity));
                 }
                 else
                 {
@@ -287,8 +293,7 @@ namespace PoeTradeSearch
                             try
                             {
                                 ResultData resultData = Json.Deserialize<ResultData>(sResult);
-                                url = RS.TradeUrl[RS.ServerLang] + RS.ServerType + "/" + resultData.ID;
-                                Process.Start(url);
+                                Process.Start(RS.TradeUrl[RS.ServerLang] + RS.ServerType + "/" + resultData.ID);
                             }
                             catch { }
                         }
@@ -300,8 +305,8 @@ namespace PoeTradeSearch
                     if ((sResult ?? "") == "")
                     {
                         ForegroundMessage(
-                            "현재 거래소 접속이 원활하지 않을 수 있습니다." + '\n' +
-                            "한/영 서버의 거래소 접속을 확인 하신후 다시 시도하세요.",
+                            "현재 거래소 접속이 원활하지 않을 수 있습니다." + '\n'
+                            + "한/영 서버의 거래소 접속을 확인 하신후 다시 시도하세요.",
                             "검색 실패",
                             MessageBoxButton.OK, MessageBoxImage.Information
                         );
@@ -310,12 +315,12 @@ namespace PoeTradeSearch
                 }
             }
 
-            Hide();
+            Close();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void cbAiiCheck_Checked(object sender, RoutedEventArgs e)
@@ -354,8 +359,8 @@ namespace PoeTradeSearch
 
         private void TkPrice_Mouse_EnterOrLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            tkPriceInfo1.Foreground = tkPriceInfo2.Foreground = e.RoutedEvent.Name == "MouseEnter" ? System.Windows.SystemColors.HighlightBrush : System.Windows.SystemColors.WindowTextBrush;
-            tkPriceCount1.Foreground = tkPriceCount2.Foreground = e.RoutedEvent.Name == "MouseEnter" ? System.Windows.SystemColors.HighlightBrush : System.Windows.SystemColors.WindowTextBrush;
+            tkPriceInfo.Foreground = tkPriceCount.Foreground = 
+                e.RoutedEvent.Name == "MouseEnter" ? System.Windows.SystemColors.HighlightBrush : System.Windows.SystemColors.WindowTextBrush;
         }
 
         private void TkPrice_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -371,10 +376,10 @@ namespace PoeTradeSearch
 
                 if (exchange_item1 == null || exchange_item2 == null)
                 {
-                    tkPriceInfo1.Text = tkPriceInfo2.Text = "선택한 교환 아이템 코드가 잘못되었습니다.";
-                    tkPriceCount1.Text = tkPriceCount2.Text = "";
-                    cbPriceListTotal.Text = "0/0 검색";
                     liPrice.Items.Clear();
+                    tkPriceCount.Text = "";
+                    tkPriceInfo.Text = "선택한 교환 아이템 코드가 잘못되었습니다.";
+                    cbPriceListTotal.Text = "0/0 검색";
                     return;
                 }
 
@@ -394,24 +399,43 @@ namespace PoeTradeSearch
         {
             try
             {
-                tkPriceInfo1.Foreground = tkPriceInfo2.Foreground = System.Windows.Media.Brushes.DeepPink;
-                tkPriceCount1.Foreground = tkPriceCount2.Foreground = System.Windows.Media.Brushes.DeepPink;
+                tkPriceInfo.Foreground = tkPriceCount.Foreground = System.Windows.Media.Brushes.DeepPink;
             }
-            catch (Exception)
-            {
-            }
+            catch{ }
         }
 
         private void tabControl1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            cbPriceListTotal.Visibility = tabControl1.SelectedIndex == 1 ? Visibility.Visible : Visibility.Hidden;
-            tbHelpText.Text = tabControl1.SelectedIndex == 1 ? "최소 값 단위는 카오스 오브" : "시세 클릭시 재검색";
-            if (tabControl1.SelectedIndex == 0)
+            if (tabControl1.SelectedIndex == 1)
             {
+                cbPriceListTotal.Visibility = Visibility.Visible;
+                if (tkPriceInfo != null && ((Grid)tkPriceInfo.Parent).Name == "gdTabItem1")
+                {
+                    gdTabItem1.Children.Remove(tkPriceInfo);
+                    gdTabItem1.Children.Remove(tkPriceCount);
+                    gdTabItem2.Children.Add(tkPriceInfo);
+                    gdTabItem2.Children.Add(tkPriceCount);
+                }
+                tbHelpText.Text = "최소 값 단위는 카오스 오브";
+            }
+            else
+            {
+                cbPriceListTotal.Visibility = Visibility.Hidden;
+                if (tkPriceInfo != null && ((Grid)tkPriceInfo.Parent).Name == "gdTabItem2")
+                {
+                    gdTabItem2.Children.Remove(tkPriceInfo);
+                    gdTabItem2.Children.Remove(tkPriceCount);
+                    gdTabItem1.Children.Add(tkPriceInfo);
+                    gdTabItem1.Children.Add(tkPriceCount);
+                }
                 Random r = new Random();
                 if (r.Next(2) == 1)
                 {
-                    tbHelpText.Text = r.Next(2) == 1 ? "저항 옆 체크시 총 합산 검색" : "이름 클릭시 한/영 서버 선택 가능";
+                    tbHelpText.Text = r.Next(2) == 1 ? "저항 옆 체크시 합산 검색" : "이름 한/영으로 검색서버 선택";
+                }
+                else
+                {
+                    tbHelpText.Text = "시세 좌클릭은 재검색";
                 }
             }
         }
@@ -449,24 +473,24 @@ namespace PoeTradeSearch
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(Application.Current.MainWindow,
-                "버전: " + GetFileVersion() + " (POE." + mParserData.Version[0] + ")" + '\n' + '\n' +
-                "프로젝트: https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' + '\n' +
-                "리그 선택은 설정 파일에서 설정 가능합니다." + '\n' + '\n' +
-                "검색 서버는 아이템 이름 클릭시 한/영 선택이 가능합니다." + '\n' + '\n' +
-                "시세 보는법: 검색수[.+] 최소값 ~ 최대값 = 많은[수] 1 ~ 2위" + '\n' + '\n' + 
-                "단축키 또는 창고휠 기능은 관리자 권한으로 실행해야 작동합니다." + '\n' +
-                "{" + '\n' +
-                "   F2) 은신처 이동" + '\n' +
-                "   F4) 나가기" + '\n' +
-                "   F5) 남은 몬스터 수" + '\n' +
-                "   F9) 이미지 출력" + '\n' +
-                "   F10) 이미지 출력" + '\n' +
-                "   F11) 일시 중지" + '\n' +
-                "   ESC) 창 닫기" + '\n' +
-                "   Ctrl+N) 링크 열기" + '\n' +
-                "   Ctrl+H) 선택한 아이템 위키" + '\n' +
-                "}" + '\n' + '\n' + 
-                "프로그램 설정은 데이터 폴더 Config.txt 파일을 열고 설정할 수 있습니다.",
+                "버전: " + GetFileVersion() + " (POE." + mParserData.Version[0] + ")" + '\n' + '\n'
+                + "프로젝트: https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' + '\n'
+                + "리그 선택은 설정 파일에서 설정 가능합니다." + '\n' + '\n'
+                + "검색 서버는 아이템 이름 클릭시 한/영 선택이 가능합니다." + '\n' + '\n'
+                + "시세 보는법: 검색수[.+] 최소값 ~ 최대값 = 많은[수] 1 ~ 2위" + '\n' + '\n'
+                + "단축키 또는 창고휠 기능은 관리자 권한으로 실행해야 작동합니다." + '\n'
+                + "{" + '\n'
+                + "   F2) 은신처 이동" + '\n'
+                + "   F4) 나가기" + '\n'
+                + "   F5) 남은 몬스터 수" + '\n'
+                + "   F9) 이미지 출력" + '\n'
+                + "   F10) 이미지 출력" + '\n'
+                + "   F11) 일시 중지" + '\n'
+                + "   ESC) 창 닫기" + '\n'
+                + "   Ctrl+N) 링크 열기" + '\n'
+                + "   Ctrl+H) 선택한 아이템 위키" + '\n'
+                + "}" + '\n' + '\n'
+                + "프로그램 설정은 데이터 폴더 Config.txt 파일을 열고 설정할 수 있습니다.",
                 "POE 거래소 검색"
                 );
 
@@ -503,7 +527,7 @@ namespace PoeTradeSearch
         {
             if (mAdministrator && mConfigData != null)
             {
-                if (mIsHotKey)
+                if (mInstalledHotKey)
                     RemoveRegisterHotKey();
 
                 if (mConfigData.Options.CtrlWheel)

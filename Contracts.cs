@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace PoeTradeSearch
 {
-    public partial class MainWindow : Window
+    public partial class WinMain : Window
     {
         [DataContract]
         public class Itemfilter

@@ -13,187 +13,8 @@ using System.Windows.Threading;
 
 namespace PoeTradeSearch
 {
-    public partial class MainWindow : Window
+    public partial class WinMain : Window
     {
-        private bool Setting()
-        {
-#if DEBUG
-            string path = System.IO.Path.GetFullPath(@"..\..\") + "_POE_Data\\";
-#else
-            string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            path = path.Remove(path.Length - 4) + "Data\\";
-#endif
-            FileStream fs = null;
-            try
-            {
-                fs = new FileStream(path + "Config.txt", FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    mConfigData = Json.Deserialize<ConfigData>(json);
-                }
-
-                if (mConfigData.Options.SearchPriceCount > 80)
-                    mConfigData.Options.SearchPriceCount = 80;
-
-                // 업데이트를 하기위해 Parser.txt 는 존재여부 체크
-                if (File.Exists(path + "Parser.txt"))
-                {
-                    fs = new FileStream(path + "Parser.txt", FileMode.Open);
-                    using (StreamReader reader = new StreamReader(fs))
-                    {
-                        fs = null;
-                        string json = reader.ReadToEnd();
-                        mParserData = Json.Deserialize<ParserData>(json);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(Application.Current.MainWindow, ex.Message, "에러");
-                return false;
-            }
-            finally
-            {
-                if (fs != null)
-                    fs.Dispose();
-            }
-
-            return true;
-        }
-
-        private bool LoadData(out string outString)
-        {
-#if DEBUG
-            string path = System.IO.Path.GetFullPath(@"..\..\") + "_POE_Data\\";
-#else
-            string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            path = path.Remove(path.Length - 4) + "Data\\";
-#endif
-            FileStream fs = null;
-            string s = "";
-            try
-            {
-                if (mCreateDatabase)
-                {
-                    File.Delete(path + "Bases.txt");
-                    File.Delete(path + "Words.txt");
-                    File.Delete(path + "Prophecies.txt"); ;
-                    File.Delete(path + "Monsters.txt");
-                    File.Delete(path + "FiltersKO.txt");
-                    File.Delete(path + "FiltersEN.txt");
-
-                    if (!BaseDataUpdates(path) || !FilterDataUpdates(path))
-                    {
-                        s = "생성 실패";
-                        throw new UnauthorizedAccessException("failed to create database");
-                    }
-                }
-
-                // 업데이트 오류로 mParserData = null 일때 다시 체크
-                if (mParserData == null)
-                {
-                    s = "Parser.txt";
-                    fs = new FileStream(path + s, FileMode.Open);
-                    using (StreamReader reader = new StreamReader(fs))
-                    {
-                        fs = null;
-                        string json = reader.ReadToEnd();
-                        mParserData = Json.Deserialize<ParserData>(json);
-                    }
-                }
-
-                s = "Bases.txt";
-                fs = new FileStream(path + s, FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    BaseData data = Json.Deserialize<BaseData>(json);
-                    mBaseDatas = new List<BaseResultData>();
-                    mBaseDatas.AddRange(data.Result[0].Data);
-                }
-
-                s = "Words.txt";
-                fs = new FileStream(path + s, FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    WordData data = Json.Deserialize<WordData>(json);
-                    mWordDatas = new List<WordeResultData>();
-                    mWordDatas.AddRange(data.Result[0].Data);
-                }
-
-                s = "Prophecies.txt";
-                fs = new FileStream(path + s, FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    BaseData data = Json.Deserialize<BaseData>(json);
-                    mProphecyDatas = new List<BaseResultData>();
-                    mProphecyDatas.AddRange(data.Result[0].Data);
-                }
-
-                s = "Monsters.txt";
-                fs = new FileStream(path + s, FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    BaseData data = Json.Deserialize<BaseData>(json);
-                    mMonsterDatas = new List<BaseResultData>();
-                    mMonsterDatas.AddRange(data.Result[0].Data);
-                }
-
-                s = "FiltersKO.txt";
-                fs = new FileStream(path + s, FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    mFilterData[0] = Json.Deserialize<FilterData>(json);
-                }
-
-                s = "FiltersEN.txt";
-                fs = new FileStream(path + s, FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    mFilterData[1] = Json.Deserialize<FilterData>(json);
-                }
-            }
-            catch (Exception ex)
-            {
-                outString = s;
-                MessageBox.Show(Application.Current.MainWindow, ex.Message, "에러");
-                return false;
-            }
-            finally
-            {
-                if (fs != null)
-                    fs.Dispose();
-            }
-
-            outString = s;
-            return true;
-        }
-
-        private void ForegroundMessage(string message, string caption, MessageBoxButton button, MessageBoxImage icon)
-        {
-            MessageBox.Show(Application.Current.MainWindow, message, caption, button, icon);
-            Native.SetForegroundWindow(Native.FindWindow(RS.PoeClass, RS.PoeCaption));
-        }
-
-        private void SetSearchButtonText(bool is_kor)
-        {
-            bool isExchange = bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0);
-            btnSearch.Content = "거래소에서 " + (isExchange ? "대량 " : "") + "찾기 (" + (is_kor ? "한국" : "영국") + ")";
-        }
-
         private void ResetControls()
         {
             tbLinksMin.Text = "";
@@ -205,6 +26,16 @@ namespace PoeTradeSearch
             tbQualityMin.Text = "";
             tbQualityMax.Text = "";
             tkDetail.Text = "";
+
+            lbDPS.Content = "옵션";
+            Synthesis.Content = "결합";
+
+            cbRarity.Items.Clear();
+            cbRarity.Items.Add("모두");
+            cbRarity.Items.Add(RS.lRarity["Normal"]);
+            cbRarity.Items.Add(RS.lRarity["Magic"]);
+            cbRarity.Items.Add(RS.lRarity["Rare"]);
+            cbRarity.Items.Add(RS.lRarity["Unique"]);
 
             cbAiiCheck.IsChecked = false;
             ckLv.IsChecked = false;
@@ -240,22 +71,17 @@ namespace PoeTradeSearch
             ckQuality.BorderBrush = Synthesis.BorderBrush;
             lbSocketBackground.Visibility = Visibility.Hidden;
 
-            lbDPS.Content = "옵션";
-            Synthesis.Content = "결합";
-
-            cbRarity.Items.Clear();
-            cbRarity.Items.Add("모두");
-            cbRarity.Items.Add(RS.lRarity["Normal"]);
-            cbRarity.Items.Add(RS.lRarity["Magic"]);
-            cbRarity.Items.Add(RS.lRarity["Rare"]);
-            cbRarity.Items.Add(RS.lRarity["Unique"]);
-
             tabControl1.SelectedIndex = 0;
             cbPriceListCount.SelectedIndex = (int)Math.Ceiling(mConfigData.Options.SearchPriceCount / 20) - 1;
             tbPriceFilterMin.Text = mConfigData.Options.SearchPriceMin > 0 ? mConfigData.Options.SearchPriceMin.ToString() : "";
 
             for (int i = 0; i < 10; i++)
             {
+                ((ComboBox)this.FindName("cbOpt" + i)).Items.Clear();
+                // ((ComboBox)this.FindName("cbOpt" + i)).ItemsSource = new List<FilterEntrie>();
+                ((ComboBox)this.FindName("cbOpt" + i)).DisplayMemberPath = "Name";
+                ((ComboBox)this.FindName("cbOpt" + i)).SelectedValuePath = "Name";
+
                 ((TextBox)this.FindName("tbOpt" + i)).Text = "";
                 ((TextBox)this.FindName("tbOpt" + i)).Background = SystemColors.WindowBrush;
                 ((TextBox)this.FindName("tbOpt" + i + "_0")).Text = "";
@@ -264,17 +90,23 @@ namespace PoeTradeSearch
                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
                 ((CheckBox)this.FindName("tbOpt" + i + "_3")).IsChecked = false;
                 ((CheckBox)this.FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
-                ((TextBox)this.FindName("tbOpt" + i)).BorderBrush = SystemColors.ActiveBorderBrush;
-                ((TextBox)this.FindName("tbOpt" + i + "_0")).BorderBrush = SystemColors.ActiveBorderBrush;
-                ((TextBox)this.FindName("tbOpt" + i + "_1")).BorderBrush = SystemColors.ActiveBorderBrush;
-                ((CheckBox)this.FindName("tbOpt" + i + "_2")).BorderBrush = SystemColors.ActiveBorderBrush;
-                ((CheckBox)this.FindName("tbOpt" + i + "_3")).BorderBrush = SystemColors.ActiveBorderBrush;
-
-                ((ComboBox)this.FindName("cbOpt" + i)).Items.Clear();
-                // ((ComboBox)this.FindName("cbOpt" + i)).ItemsSource = new List<FilterEntrie>();
-                ((ComboBox)this.FindName("cbOpt" + i)).DisplayMemberPath = "Name";
-                ((ComboBox)this.FindName("cbOpt" + i)).SelectedValuePath = "Name";
+                SetFilterObjectColor(i, SystemColors.ActiveBorderBrush);
             }
+        }
+
+        private void SetFilterObjectColor(int index, System.Windows.Media.SolidColorBrush colorBrush)
+        {
+            ((Control)this.FindName("tbOpt" + index)).BorderBrush = colorBrush;
+            ((Control)this.FindName("tbOpt" + index + "_0")).BorderBrush = colorBrush;
+            ((Control)this.FindName("tbOpt" + index + "_1")).BorderBrush = colorBrush;
+            ((Control)this.FindName("tbOpt" + index + "_2")).BorderBrush = colorBrush;
+            ((Control)this.FindName("tbOpt" + index + "_3")).BorderBrush = colorBrush;
+        }
+
+        private void SetSearchButtonText(bool is_kor)
+        {
+            bool isExchange = bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0);
+            btnSearch.Content = "거래소에서 " + (isExchange ? "대량 " : "") + "찾기 (" + (is_kor ? "한국" : "영국") + ")";
         }
 
         private void ItemTextParser(string itemText, bool isWinShow = true)
@@ -426,11 +258,7 @@ namespace PoeTradeSearch
 
                                         if (crafted && selidx > -1)
                                         {
-                                            ((TextBox)this.FindName("tbOpt" + k)).BorderBrush = System.Windows.Media.Brushes.Blue;
-                                            ((TextBox)this.FindName("tbOpt" + k + "_0")).BorderBrush = System.Windows.Media.Brushes.Blue;
-                                            ((TextBox)this.FindName("tbOpt" + k + "_1")).BorderBrush = System.Windows.Media.Brushes.Blue;
-                                            ((CheckBox)this.FindName("tbOpt" + k + "_2")).BorderBrush = System.Windows.Media.Brushes.Blue;
-                                            ((CheckBox)this.FindName("tbOpt" + k + "_3")).BorderBrush = System.Windows.Media.Brushes.Blue;
+                                            SetFilterObjectColor(k, System.Windows.Media.Brushes.Blue);
                                             ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex = selidx;
                                         }
                                         else
@@ -763,12 +591,8 @@ namespace PoeTradeSearch
 
                             if (i < Imp_cnt)
                             {
-                                ((TextBox)this.FindName("tbOpt" + i)).BorderBrush = System.Windows.Media.Brushes.DarkRed;
-                                ((TextBox)this.FindName("tbOpt" + i + "_0")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
-                                ((TextBox)this.FindName("tbOpt" + i + "_1")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
-                                ((CheckBox)this.FindName("tbOpt" + i + "_2")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
+                                SetFilterObjectColor(i, System.Windows.Media.Brushes.DarkRed);
                                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
-                                ((CheckBox)this.FindName("tbOpt" + i + "_3")).BorderBrush = System.Windows.Media.Brushes.DarkRed;
 
                                 itemfilters[i].disabled = true;
 
@@ -938,8 +762,7 @@ namespace PoeTradeSearch
                         PriceUpdateThreadWorker(GetItemOptions(), null);
                         SetSearchButtonText(RS.ServerLang == 0);
 
-                        tkPriceInfo1.Foreground = tkPriceInfo2.Foreground = SystemColors.WindowTextBrush;
-                        tkPriceCount1.Foreground = tkPriceCount2.Foreground = SystemColors.WindowTextBrush;
+                        tkPriceInfo.Foreground = tkPriceCount.Foreground = SystemColors.WindowTextBrush;
 
                         this.ShowActivated = false;
                         this.Visibility = Visibility.Visible;
@@ -1190,33 +1013,32 @@ namespace PoeTradeSearch
 
                     if (itemOptions.ByType && Inherit == "Weapons" || Inherit == "Armours")
                     {
-                        string[] tmp = mItemBaseName.Inherits;
+                        string[] Inherits = mItemBaseName.Inherits;
 
-                        if (tmp.Length > 2)
+                        if (Inherits.Length > 2)
                         {
-                            string tmp2 = tmp[Inherit == "Armours" ? 1 : 2].ToLower();
+                            string lo_Inher = Inherits[Inherit == "Armours" ? 1 : 2].ToLower();
 
                             if (Inherit == "Weapons")
                             {
-                                tmp2 = tmp2.Replace("hand", "");
-                                tmp2 = tmp2.Remove(tmp2.Length - 1);
-                                if (tmp2 == "stave" && tmp.Length == 4)
+                                lo_Inher = lo_Inher.Replace("hand", "").Remove(lo_Inher.Length - 1);
+                                if (lo_Inher == "stave" && Inherits.Length == 4)
                                 {
-                                    if (tmp[3] == "AbstractWarstaff")
-                                        tmp2 = "warstaff";
-                                    else if (tmp[3] == "AbstractStaff")
-                                        tmp2 = "staff";
+                                    if (Inherits[3] == "AbstractWarstaff")
+                                        lo_Inher = "warstaff";
+                                    else if (Inherits[3] == "AbstractStaff")
+                                        lo_Inher = "staff";
                                 }
                             }
-                            else if (Inherit == "Armours" && (tmp2 == "shields" || tmp2 == "helmets" || tmp2 == "bodyarmours"))
+                            else if (Inherit == "Armours" && (lo_Inher == "shields" || lo_Inher == "helmets" || lo_Inher == "bodyarmours"))
                             {
-                                if (tmp2 == "bodyarmours")
-                                    tmp2 = "chest";
+                                if (lo_Inher == "bodyarmours")
+                                    lo_Inher = "chest";
                                 else
-                                    tmp2 = tmp2.Remove(tmp2.Length - 1);
+                                    lo_Inher = lo_Inher.Remove(lo_Inher.Length - 1);
                             }
 
-                            option += "." + tmp2;
+                            option += "." + lo_Inher;
                         }
                     }
 
@@ -1235,16 +1057,13 @@ namespace PoeTradeSearch
                         sEntity = sEntity.Replace("\"type\":\"" + JQ.Type + "\",", "\"name\":\"" + JQ.Type + "\",");
                 }
 
-                sEntity = sEntity.Replace("{\"max\":99999,\"min\":99999}", "{}");
-                sEntity = sEntity.Replace("{\"max\":99999,", "{");
-                sEntity = sEntity.Replace(",\"min\":99999}", "}");
+                sEntity = sEntity.Replace("{\"max\":99999,\"min\":99999}", "{}").Replace("{\"max\":99999,", "{").Replace(",\"min\":99999}", "}");
 
                 sEntity = sEntity.Replace(",{\"disabled\":true,\"id\":\"temp_ids\",\"value\":{}}", "");
-                sEntity = sEntity.Replace("[{\"disabled\":true,\"id\":\"temp_ids\",\"value\":{}}", "[");
-                sEntity = sEntity.Replace("[,", "[");
+                sEntity = sEntity.Replace("[{\"disabled\":true,\"id\":\"temp_ids\",\"value\":{}}", "[").Replace("[,", "[");
 
-                sEntity = Regex.Replace(sEntity, "\"(sale_type|rarity|category|corrupted|synthesised_item|shaper_item|elder_item|crusader_item|redeemer_item|hunter_item|warlord_item|map_shaped|map_elder|map_blighted)\":{\"option\":\"any\"},?", "");
-                sEntity = sEntity.Replace("},}", "}}");
+                string tmp = "sale_type|rarity|category|corrupted|synthesised_item|shaper_item|elder_item|crusader_item|redeemer_item|hunter_item|warlord_item|map_shaped|map_elder|map_blighted";
+                sEntity = Regex.Replace(sEntity, "\"(" + tmp + ")\":{\"option\":\"any\"},?", "").Replace("},}", "}}");
 
                 if (error_filter)
                 {
@@ -1442,17 +1261,10 @@ namespace PoeTradeSearch
                             }
                         );
 
-                        tkPriceCount1.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                        tkPriceCount.Dispatcher.BeginInvoke(DispatcherPriority.Background,
                             (ThreadStart)delegate ()
                             {
-                                tkPriceCount1.Text = total > 0 ? total + (resultCount > total ? "+" : ".") : "";
-                            }
-                        );
-
-                        tkPriceCount2.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-                            (ThreadStart)delegate ()
-                            {
-                                tkPriceCount2.Text = total > 0 ? total + (resultCount > total ? "+" : ".") : "";
+                                tkPriceCount.Text = total > 0 ? total + (resultCount > total ? "+" : ".") : "";
                             }
                         );
 
@@ -1468,17 +1280,10 @@ namespace PoeTradeSearch
                 }
             }
 
-            tkPriceInfo1.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+            tkPriceInfo.Dispatcher.BeginInvoke(DispatcherPriority.Background,
                 (ThreadStart)delegate ()
                 {
-                    tkPriceInfo1.Text = result + (result2 != "" ? " = " + result2 : "");
-                }
-            );
-
-            tkPriceInfo2.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-                (ThreadStart)delegate ()
-                {
-                    tkPriceInfo2.Text = result + (result2 != "" ? " = " + result2 : "");
+                    tkPriceInfo.Text = result + (result2 != "" ? " = " + result2 : "");
                 }
             );
 
@@ -1495,10 +1300,10 @@ namespace PoeTradeSearch
 
         private void PriceUpdateThreadWorker(ItemOption itemOptions, string[] exchange)
         {
-            tkPriceInfo1.Text = tkPriceInfo2.Text = "시세 확인중...";
-            tkPriceCount1.Text = tkPriceCount2.Text = "";
-            cbPriceListTotal.Text = "0/0 검색";
             liPrice.Items.Clear();
+            tkPriceCount.Text = "";
+            tkPriceInfo.Text = "시세 확인중...";
+            cbPriceListTotal.Text = "0/0 검색";
 
             int listCount = (cbPriceListCount.SelectedIndex + 1) * 4;
 
@@ -1529,38 +1334,14 @@ namespace PoeTradeSearch
             return item;
         }
 
-        private string GetClipText(bool isUnicode)
-        {
-            return Clipboard.GetText(isUnicode ? TextDataFormat.UnicodeText : TextDataFormat.Text);
-        }
-
-        private void SetClipText(string text, TextDataFormat textDataFormat)
-        {
-            var ClipboardThread = new Thread(() =>
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    try
-                    {
-                        Clipboard.SetText(text, textDataFormat);
-                        return;
-                    }
-                    catch { }
-                    Thread.Sleep(10);
-                }
-            });
-            ClipboardThread.SetApartmentState(ApartmentState.STA);
-            ClipboardThread.IsBackground = false;
-            ClipboardThread.Start();
-        }
-
         private void Timer_Tick(object sender, EventArgs e)
         {
             if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
             {
-                if (!mIsHotKey) InstallRegisterHotKey();
+                if (!mInstalledHotKey) 
+                    InstallRegisterHotKey();
 
-                if (!mIsPause && mConfigData.Options.CtrlWheel)
+                if (!mPausedHotKey && mConfigData.Options.CtrlWheel)
                 {
                     TimeSpan dateDiff = Convert.ToDateTime(DateTime.Now) - mMouseHookCallbackTime;
                     if (dateDiff.Ticks > 3000000000) // 5분간 마우스 움직임이 없으면 훜이 풀렸을 수 있어 다시...
@@ -1572,7 +1353,8 @@ namespace PoeTradeSearch
             }
             else
             {
-                if (mIsHotKey) RemoveRegisterHotKey();
+                if (mInstalledHotKey) 
+                    RemoveRegisterHotKey();
             }
         }
 
@@ -1599,7 +1381,7 @@ namespace PoeTradeSearch
 
         private void InstallRegisterHotKey()
         {
-            mIsHotKey = true;
+            mInstalledHotKey = true;
 
             // 0x0: None, 0x1: Alt, 0x2: Ctrl, 0x3: Shift
             for (int i = 0; i < mConfigData.Shortcuts.Length; i++)
@@ -1612,18 +1394,15 @@ namespace PoeTradeSearch
 
         private void RemoveRegisterHotKey()
         {
-            mIsHotKey = false;
-
             for (int i = 0; i < mConfigData.Shortcuts.Length; i++)
             {
                 ConfigShortcut shortcut = mConfigData.Shortcuts[i];
                 if (shortcut.Keycode > 0 && (shortcut.Value ?? "") != "")
                     Native.UnregisterHotKey(mMainHwnd, 10001 + i);
             }
-        }
 
-        private bool mHotkeyProcBlock = false;
-        private bool mClipboardBlock = false;
+            mInstalledHotKey = false;
+        }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
@@ -1631,7 +1410,7 @@ namespace PoeTradeSearch
             {
                 IntPtr findHwnd = Native.FindWindow(RS.PoeClass, RS.PoeCaption);
 
-                if (!mIsPause && !mClipboardBlock && Native.GetForegroundWindow().Equals(findHwnd))
+                if (!mPausedHotKey && !mClipboardBlock && Native.GetForegroundWindow().Equals(findHwnd))
                 {
                     try
                     {
@@ -1665,9 +1444,9 @@ namespace PoeTradeSearch
                         {
                             if (valueLower == "{pause}")
                             {
-                                mIsPause = !mIsPause;
+                                mPausedHotKey = !mPausedHotKey;
 
-                                if (mIsPause)
+                                if (mPausedHotKey)
                                 {
                                     if (mConfigData.Options.CtrlWheel)
                                         MouseHook.Stop();
@@ -1702,7 +1481,7 @@ namespace PoeTradeSearch
                                         Close();
                                 }
                             }
-                            else if (!mIsPause)
+                            else if (!mPausedHotKey)
                             {
                                 if (valueLower == "{run}" || valueLower == "{wiki}")
                                 {
@@ -1757,18 +1536,18 @@ namespace PoeTradeSearch
                                     if (pHwnd.ToInt32() != 0)
                                         Native.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
 
-                                    PopWindow popWindow = new PopWindow(shortcut.Value);
+                                    WinPopup winPopup = new WinPopup(shortcut.Value);
 
                                     if ((shortcut.Position ?? "") != "")
                                     {
                                         string[] strs = shortcut.Position.ToLower().Split('x');
-                                        popWindow.WindowStartupLocation = WindowStartupLocation.Manual;
-                                        popWindow.Left = double.Parse(strs[0]);
-                                        popWindow.Top = double.Parse(strs[1]);
+                                        winPopup.WindowStartupLocation = WindowStartupLocation.Manual;
+                                        winPopup.Left = double.Parse(strs[0]);
+                                        winPopup.Top = double.Parse(strs[1]);
                                     }
 
-                                    popWindow.Title = popWinTitle;
-                                    popWindow.Show();
+                                    winPopup.Title = popWinTitle;
+                                    winPopup.Show();
                                 }
                             }
                         }

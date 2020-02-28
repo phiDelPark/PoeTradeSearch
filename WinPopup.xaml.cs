@@ -7,13 +7,13 @@ using System.Windows.Media.Imaging;
 namespace PoeTradeSearch
 {
     /// <summary>
-    /// PopWindow.xaml에 대한 상호 작용 논리
+    /// WinPopup.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class PopWindow : Window
+    public partial class WinPopup : Window
     {
         string JpgPath = "";
 
-        public PopWindow(string jpgPath)
+        public WinPopup(string jpgPath)
         {
             InitializeComponent();
 
