@@ -24,7 +24,7 @@ POE 거래소 검색 (한글/영문)
 ### 옵션 파일 ( Config.txt ) 설명
 
       "options":{
-        "league":"Standard",         // 리그 선택 ["Metamorph", "Hardcore Metamorph", "Standard", "Hardcore"]
+        "league":"Standard",         // 리그 선택 ["Delirium", "Hardcore Delirium", "Standard", "Hardcore"]
         "server":"ko",               // 기본 검색 서버 (이름도 이 설정에 따름) ["ko", "en", "auto"]
         "server_timeout":5,          // 서버 접속 대기 시간 (초) 인터넷이 느리면 더 올려 시간 초과를 방지
         "server_redirect":false,     // 일부 환경에서 서버 데이터를 못받아와 거래소 접속이 안되는 경우 사용
