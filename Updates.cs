@@ -175,14 +175,14 @@ namespace PoeTradeSearch
         {
             bool success = false;
 
-            if (File.Exists(path + "csv/ko/BaseItemTypes.csv") && File.Exists(path + "csv/ko/Words.csv"))
+            if (File.Exists(path + "csv/ko/BaseItemTypes.dat.csv") && File.Exists(path + "csv/ko/Words.dat.csv"))
             {
                 try
                 {
                     List<string[]> oCsvEnList = new List<string[]>();
                     List<string[]> oCsvKoList = new List<string[]>();
 
-                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/BaseItemTypes.csv")))
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/BaseItemTypes.dat.csv")))
                     {
                         string sEnContents = oStreamReader.ReadToEnd();
                         string[] sEnLines = sEnContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -193,7 +193,7 @@ namespace PoeTradeSearch
                         }
                     }
 
-                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/BaseItemTypes.csv")))
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/BaseItemTypes.dat.csv")))
                     {
                         string sKoContents = oStreamReader.ReadToEnd();
                         string[] sKoLines = sKoContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -238,7 +238,7 @@ namespace PoeTradeSearch
                     oCsvEnList = new List<string[]>();
                     oCsvKoList = new List<string[]>();
 
-                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/Words.csv")))
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/Words.dat.csv")))
                     {
                         string sEnContents = oStreamReader.ReadToEnd();
                         string[] sEnLines = sEnContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -248,7 +248,7 @@ namespace PoeTradeSearch
                         }
                     }
 
-                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/Words.csv")))
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/Words.dat.csv")))
                     {
                         string sKoContents = oStreamReader.ReadToEnd();
                         string[] sKoLines = sKoContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -282,7 +282,7 @@ namespace PoeTradeSearch
                     oCsvEnList = new List<string[]>();
                     oCsvKoList = new List<string[]>();
 
-                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/Prophecies.csv")))
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/Prophecies.dat.csv")))
                     {
                         string sEnContents = oStreamReader.ReadToEnd();
                         string[] sEnLines = sEnContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -292,7 +292,7 @@ namespace PoeTradeSearch
                         }
                     }
 
-                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/Prophecies.csv")))
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/Prophecies.dat.csv")))
                     {
                         string sKoContents = oStreamReader.ReadToEnd();
                         string[] sKoLines = sKoContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -329,7 +329,7 @@ namespace PoeTradeSearch
                     oCsvEnList = new List<string[]>();
                     oCsvKoList = new List<string[]>();
 
-                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/MonsterVarieties.csv")))
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/en/MonsterVarieties.dat.csv")))
                     {
                         string sEnContents = oStreamReader.ReadToEnd();
                         string[] sEnLines = sEnContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -339,7 +339,7 @@ namespace PoeTradeSearch
                         }
                     }
 
-                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/MonsterVarieties.csv")))
+                    using (StreamReader oStreamReader = new StreamReader(File.OpenRead(path + "csv/ko/MonsterVarieties.dat.csv")))
                     {
                         string sKoContents = oStreamReader.ReadToEnd();
                         string[] sKoLines = sKoContents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);

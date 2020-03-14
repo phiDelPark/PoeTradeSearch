@@ -1,6 +1,6 @@
 ﻿{
 	"options":{
-			"league":"Metamorph",
+			"league":"Delirium",
 			"server":"ko or en",
 			"server_timeout":5,
 			"server_redirect":false,
