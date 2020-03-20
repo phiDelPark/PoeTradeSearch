@@ -1022,7 +1022,7 @@ namespace PoeTradeSearch
 
                             if (Inherit == "Weapons")
                             {
-                                lo_Inher = lo_Inher.Replace("hand", "").Remove(lo_Inher.Length - 1);
+                                lo_Inher = lo_Inher.Remove(lo_Inher.Length - 1).Replace("hand", "");
                                 if (lo_Inher == "stave" && Inherits.Length == 4)
                                 {
                                     if (Inherits[3] == "AbstractWarstaff")
