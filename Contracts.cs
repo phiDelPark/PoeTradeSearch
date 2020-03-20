@@ -89,7 +89,7 @@ namespace PoeTradeSearch
             internal int SearchBeforeDay = 0;
 
             [DataMember(Name = "search_by_type")]
-            internal bool SearchByType0 = false;
+            internal bool SearchByType = false;
 
             [DataMember(Name = "auto_check_unique")]
             internal bool AutoCheckUnique = false;
