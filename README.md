@@ -28,14 +28,14 @@ POE 거래소 검색 (한글/영문)
         "server":"ko",               // 기본 검색 서버 (이름도 이 설정에 따름) ["ko", "en", "auto"]
         "server_timeout":5,          // 서버 접속 대기 시간 (초) 인터넷이 느리면 더 올려 시간 초과를 방지
         "server_redirect":false,     // 일부 환경에서 서버 데이터를 못받아와 거래소 접속이 안되는 경우 사용
-        "search_by_type":false,      // 기본 검색시 이름이 아닌 유형으로 검색 (매직 레어 장비 한정) [true, false]
         "search_before_day":7,       // 검색시 해당일 전 날로 검색 [0, 1, 3, 7, 14] 값 중에서 선택
         "search_price_min":0,        // 시세 검색 최소 값 (단위는 카오스 오브입니다, 0 은 모두 검색)
         "search_price_count":20,     // 시세 검색 목록 수 (20의 배수이고 최대 80, 수가 많을수록 느려짐)
         "auto_check_unique":true,    // 유니크 아이템은 기본적으로 옵션 모두 선택 [true, false]
         "auto_check_totalres":true,  // 저항 옵션의 경우 총 저항 합산 검색 자동 체크 [true, false]
         "auto_select_pseudo":true,   // 유사 옵션으로 검색이 가능하면 유사로 자동 선택 [true, false]
-        "auto_select_corrupt":"",    // 기본 검색시 선택한 타락 옵션으로 검색 (장비 한정) ["all", "no", "yes"]
+        "auto_select_corrupt":"",    // 검색시 선택한 타락 옵션으로 검색 (장비 한정) ["all", "no", "yes"]
+        "auto_select_bytype":"",     // 검색시 이름이 아닌 유형으로 검색 (예: "Weapons,Armours,Rings,Amulets,Belts")
         "check_updates":true,        // 시작시 최신 버전 체크 [true, false]
         "ctrl_wheel":false           // 창고 Ctrl+Wheel 이동 (전체 위치에서 가능), 기본 지원되어 꺼둠 [true, false]
       },

@@ -4,7 +4,6 @@
 			"server":"ko or en",
 			"server_timeout":5,
 			"server_redirect":false,
-			"search_by_type":false,
 			"search_before_day":7,
 			"search_price_min":0,
 			"search_price_count":20,
@@ -12,6 +11,7 @@
 			"auto_check_totalres":true,
 			"auto_select_pseudo":true,
 			"auto_select_corrupt":"no or yes",
+			"auto_select_bytype":"유형값 공백없이 콤마로 구분",
 			"ctrl_wheel":false,
 			"check_updates":true
 		},

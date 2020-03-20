@@ -89,7 +89,7 @@ namespace PoeTradeSearch
             internal int SearchBeforeDay = 0;
 
             [DataMember(Name = "search_by_type")]
-            internal bool SearchByType = false;
+            internal bool SearchByType0 = false;
 
             [DataMember(Name = "auto_check_unique")]
             internal bool AutoCheckUnique = false;
@@ -102,6 +102,9 @@ namespace PoeTradeSearch
 
             [DataMember(Name = "auto_select_corrupt")]
             internal string AutoSelectCorrupt = "";
+
+            [DataMember(Name = "auto_select_bytype")]
+            internal string AutoSelectByType = "";            
 
             [DataMember(Name = "ctrl_wheel")]
             internal bool CtrlWheel = false;
