@@ -91,6 +91,9 @@ namespace PoeTradeSearch
             [DataMember(Name = "search_by_type")]
             internal bool SearchByType = false;
 
+            [DataMember(Name = "auto_price_search")]
+            internal bool AutoPriceSearch = false;
+
             [DataMember(Name = "auto_check_unique")]
             internal bool AutoCheckUnique = false;
 

@@ -764,7 +764,16 @@ namespace PoeTradeSearch
 
                     if (isWinShow || this.Visibility == Visibility.Visible)
                     {
-                        PriceUpdateThreadWorker(GetItemOptions(), null);
+                        if (mConfigData.Options.AutoPriceSearch)
+                        {
+                            PriceUpdateThreadWorker(GetItemOptions(), null);
+                        }
+                        else
+                        {
+                            tkPriceCount.Text = "";
+                            tkPriceInfo.Text = "시세를 검색하려면 클릭해주세요.";
+                        }
+
                         SetSearchButtonText(RS.ServerLang == 0);
 
                         tkPriceInfo.Foreground = tkPriceCount.Foreground = SystemColors.WindowTextBrush;

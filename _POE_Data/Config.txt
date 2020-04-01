@@ -7,6 +7,7 @@
 			"search_before_day":7,
 			"search_price_min":0,
 			"search_price_count":20,
+			"auto_price_search":false,
 			"auto_check_unique":true,
 			"auto_check_totalres":true,
 			"auto_select_pseudo":true,
