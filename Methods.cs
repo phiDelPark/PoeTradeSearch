@@ -764,20 +764,22 @@ namespace PoeTradeSearch
 
                     if (isWinShow || this.Visibility == Visibility.Visible)
                     {
+                        tkPriceInfo.Foreground = tkPriceCount.Foreground = SystemColors.WindowTextBrush;
+
                         if (mConfigData.Options.AutoPriceSearch)
                         {
                             PriceUpdateThreadWorker(GetItemOptions(), null);
                         }
                         else
                         {
+                            liPrice.Items.Clear();
                             tkPriceCount.Text = "";
                             tkPriceInfo.Text = "시세를 검색하려면 클릭해주세요.";
+                            cbPriceListTotal.Text = "0/0 검색";
+                            //tkPriceInfo.Foreground = tkPriceCount.Foreground = System.Windows.SystemColors.HighlightBrush;
                         }
 
                         SetSearchButtonText(RS.ServerLang == 0);
-
-                        tkPriceInfo.Foreground = tkPriceCount.Foreground = SystemColors.WindowTextBrush;
-
                         this.ShowActivated = false;
                         this.Visibility = Visibility.Visible;
                     }

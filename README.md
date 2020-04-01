@@ -31,7 +31,7 @@ POE 거래소 검색 (한글/영문)
         "search_before_day":7,       // 검색시 해당일 전 날로 검색 [0, 1, 3, 7, 14] 값 중에서 선택
         "search_price_min":0,        // 시세 검색 최소 값 (단위는 카오스 오브입니다, 0 은 모두 검색)
         "search_price_count":20,     // 시세 검색 목록 수 (20의 배수이고 최대 80, 수가 많을수록 느려짐)
-        "auto_price_search":false,   // 시세 자동으로 검색 (주의, 현재 정책이 바뀌어 잦은 사용시 거래소가 일시 블럭될 수 있음)
+        "auto_price_search":false,   // 시세 자동으로 검색 (주의, 현재 정책이 바뀌어 사용시 거래소가 일시 블럭될 수 있음)
         "auto_check_unique":true,    // 유니크 아이템은 기본적으로 옵션 모두 선택 [true, false]
         "auto_check_totalres":true,  // 저항 옵션의 경우 총 저항 합산 검색 자동 체크 [true, false]
         "auto_select_pseudo":true,   // 유사 옵션으로 검색이 가능하면 유사로 자동 선택 [true, false]
