@@ -1413,18 +1413,19 @@ namespace PoeTradeSearch
         {
             if (msg == Native.WM_DRAWCLIPBOARD)
             {
-                IntPtr findHwnd = Native.FindWindow(RS.PoeClass, RS.PoeCaption);
-
-                if (!mPausedHotKey && !mClipboardBlock && Native.GetForegroundWindow().Equals(findHwnd))
+                if (!mPausedHotKey && !mClipboardBlock)
                 {
-                    try
+                    if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
                     {
-                        if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
-                            ItemTextParser(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)));
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
+                        try
+                        {
+                            if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
+                                ItemTextParser(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)));
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
                     }
                 }
             }
@@ -1436,33 +1437,31 @@ namespace PoeTradeSearch
 
                 if (Native.GetForegroundWindow().Equals(findHwnd))
                 {
-                    int keyIdx = wParam.ToInt32();
+                    int key_idx = wParam.ToInt32() - 10001;
 
-                    string popWinTitle = "이곳을 잡고 이동, 이미지 클릭시 닫힘";
-                    ConfigShortcut shortcut = mConfigData.Shortcuts[keyIdx - 10001];
-
-                    if (shortcut != null && shortcut.Value != null)
+                    try
                     {
-                        string valueLower = shortcut.Value.ToLower();
+                        ConfigShortcut shortcut = mConfigData.Shortcuts[key_idx];
 
-                        try
+                        if (shortcut != null && shortcut.Value != null)
                         {
+                            string valueLower = shortcut.Value.ToLower();
+                            string popWinTitle = "이곳을 잡고 이동, 이미지 클릭시 닫힘";
+
                             if (valueLower == "{pause}")
                             {
                                 mPausedHotKey = !mPausedHotKey;
 
                                 if (mPausedHotKey)
                                 {
-                                    if (mConfigData.Options.CtrlWheel)
-                                        MouseHook.Stop();
+                                    if (mConfigData.Options.CtrlWheel) MouseHook.Stop();
 
-                                    MessageBox.Show(Application.Current.MainWindow, "프로그램 동작을 일시 중지합니다." + '\n' +
-                                        "다시 시작하려면 일시 중지 단축키를 한번더 누르세요.", "POE 거래소 검색");
+                                    MessageBox.Show(Application.Current.MainWindow, "프로그램 동작을 일시 중지합니다." + '\n'
+                                                    + "다시 시작하려면 일시 중지 단축키를 한번더 누르세요.", "POE 거래소 검색");
                                 }
                                 else
                                 {
-                                    if (mConfigData.Options.CtrlWheel)
-                                        MouseHook.Start();
+                                    if (mConfigData.Options.CtrlWheel) MouseHook.Start();
 
                                     MessageBox.Show(Application.Current.MainWindow, "프로그램 동작을 다시 시작합니다.", "POE 거래소 검색");
                                 }
@@ -1556,10 +1555,10 @@ namespace PoeTradeSearch
                                 }
                             }
                         }
-                        catch (Exception)
-                        {
-                            ForegroundMessage("잘못된 단축키 명령입니다.", "단축키 에러", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
+                    }
+                    catch (Exception)
+                    {
+                        ForegroundMessage("잘못된 단축키 명령입니다.", "단축키 에러", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
 
                     handled = true;
