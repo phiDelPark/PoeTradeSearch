@@ -387,7 +387,7 @@ namespace PoeTradeSearch
                 exchange[1] = exchange_item2.ID;
             }
 
-            PriceUpdateThreadWorker(exchange != null ? null : GetItemOptions(), exchange);
+            UpdatePriceThreadWorker(exchange != null ? null : GetItemOptions(), exchange);
         }
 
         private void tkPriceInfo_MouseRightButtonDown(object sender, MouseButtonEventArgs e)

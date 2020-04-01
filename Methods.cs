@@ -768,7 +768,7 @@ namespace PoeTradeSearch
 
                         if (mConfigData.Options.AutoPriceSearch)
                         {
-                            PriceUpdateThreadWorker(GetItemOptions(), null);
+                            UpdatePriceThreadWorker(GetItemOptions(), null);
                         }
                         else
                         {
@@ -1112,7 +1112,7 @@ namespace PoeTradeSearch
             }
         }
 
-        private void PriceUpdate(string[] entity, int listCount)
+        private void UpdatePrice(string[] entity, int listCount)
         {
             string result = "정보가 없습니다";
             string result2 = "";
@@ -1155,21 +1155,21 @@ namespace PoeTradeSearch
 
                             if (entity.Length > 1)
                             {
-                                listCount = listCount + 2;
+                                //listCount = listCount + 2;
                                 ents0 = Regex.Replace(entity[0], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
                                 ents1 = Regex.Replace(entity[1], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
                             }
 
                             for (int x = 0; x < listCount; x++)
                             {
-                                string[] tmp = new string[5];
-                                int cnt = x * 5;
+                                string[] tmp = new string[10];
+                                int cnt = x * 10;
                                 int length = 0;
 
                                 if (cnt >= resultData.Result.Length)
                                     break;
 
-                                for (int i = 0; i < 5; i++)
+                                for (int i = 0; i < 10; i++)
                                 {
                                     if (i + cnt >= resultData.Result.Length)
                                         break;
@@ -1192,7 +1192,7 @@ namespace PoeTradeSearch
                                 if (jsonResult != "")
                                 {
                                     FetchData fetchData = new FetchData();
-                                    fetchData.Result = new FetchDataInfo[5];
+                                    fetchData.Result = new FetchDataInfo[10];
 
                                     fetchData = Json.Deserialize<FetchData>(jsonResult);
 
@@ -1314,18 +1314,18 @@ namespace PoeTradeSearch
 
         private Thread priceThread = null;
 
-        private void PriceUpdateThreadWorker(ItemOption itemOptions, string[] exchange)
+        private void UpdatePriceThreadWorker(ItemOption itemOptions, string[] exchange)
         {
             liPrice.Items.Clear();
             tkPriceCount.Text = "";
             tkPriceInfo.Text = "시세 확인중...";
             cbPriceListTotal.Text = "0/0 검색";
 
-            int listCount = (cbPriceListCount.SelectedIndex + 1) * 4;
+            int listCount = (cbPriceListCount.SelectedIndex + 1) * 2;
 
             priceThread?.Interrupt();
             priceThread?.Abort();
-            priceThread = new Thread(() => PriceUpdate(
+            priceThread = new Thread(() => UpdatePrice(
                     exchange != null ? exchange : new string[1] { CreateJson(itemOptions, true) },
                     listCount
                 ));
