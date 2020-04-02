@@ -60,12 +60,12 @@ namespace PoeTradeSearch
                              + (mAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "추가 단축키 기능은 관리자 권한으로 실행해야")
                              + " 작동합니다.";
 
-            if (update_type == 0)
+            if (update_type == 1)
             {
                 MessageBoxResult result = MessageBox.Show(
                             Application.Current.MainWindow,
                             start_msg + '\n' + '\n' + "이 프로그램의 최신 버전이 발견 되었습니다." 
-                                      + '\n' + "자동 업데이트를 하시겠습니까?",
+                                      + '\n' + "자동으로 업데이트를 하시겠습니까?",
                             "POE 거래소 검색", 
                             MessageBoxButton.YesNo, MessageBoxImage.Question
                     );

@@ -52,13 +52,12 @@ namespace PoeTradeSearch
             string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
             path = path.Remove(path.Length - 4) + "Data\\";
 #endif
-
             // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
             Thread thread = new Thread(() =>
             {
                 File.Delete(path + "poe_exe.zip");
-                //File.Delete(path + "update.cmd");
-               // File.Delete(path + "update.dat");
+                File.Delete(path + "update.cmd");
+                File.Delete(path + "update.dat");
 
                 using (var client = new WebClient())
                 {
