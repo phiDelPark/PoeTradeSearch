@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -41,6 +42,51 @@ namespace PoeTradeSearch
             thread.Join();
 
             return isUpdates;
+        }
+
+        private void PoeExeUpdates()
+        {
+#if DEBUG
+            string path = System.IO.Path.GetFullPath(@"..\..\") + "_POE_Data\\";
+#else
+            string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            path = path.Remove(path.Length - 4) + "Data\\";
+#endif
+
+            // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
+            Thread thread = new Thread(() =>
+            {
+                File.Delete(path + "poe_exe.zip");
+                //File.Delete(path + "update.cmd");
+               // File.Delete(path + "update.dat");
+
+                using (var client = new WebClient())
+                {
+                    try
+                    {
+                        client.DownloadFile(
+                            "https://raw.githubusercontent.com/phiDelPark/PoeTradeSearch/master/_POE_Data/_POE_EXE.zip",
+                            path + "poe_exe.zip"
+                        );
+                    }
+                    catch { }
+                }
+
+                if (File.Exists(path + "poe_exe.zip"))
+                {
+                    ZipFile.ExtractToDirectory(path + "poe_exe.zip", path);
+                    File.Delete(path + "poe_exe.zip");
+                }
+            });
+            thread.Start();
+            thread.Join();
+
+            while (!File.Exists(path + "update.cmd"))
+            {
+                Thread.Sleep(100);
+            }
+
+            Process.Start(path + "update.cmd");
         }
 
         private bool PoeDataUpdates()
