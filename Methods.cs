@@ -776,7 +776,7 @@ namespace PoeTradeSearch
                         {
                             liPrice.Items.Clear();
                             tkPriceCount.Text = "";
-                            tkPriceInfo.Text = "시세를 검색하려면 클릭해주세요.";
+                            tkPriceInfo.Text = "시세를 검색하려면 클릭해주세요";
                             cbPriceListTotal.Text = "0/0 검색";
                             //tkPriceInfo.Foreground = tkPriceCount.Foreground = System.Windows.SystemColors.HighlightBrush;
                         }
@@ -870,7 +870,9 @@ namespace PoeTradeSearch
         {
             string BeforeDayToString(int day)
             {
-                if (day < 3)
+                if (day < 1)
+                    return "any";
+                else if (day < 3)
                     return "1day";
                 else if (day < 7)
                     return "3days";
@@ -885,22 +887,22 @@ namespace PoeTradeSearch
                 jsonData.Query = new q_Query();
                 q_Query JQ = jsonData.Query;
 
-                JQ.Name = RS.ServerLang == 1 ? mItemBaseName.NameEN : mItemBaseName.NameKR;
-                JQ.Type = RS.ServerLang == 1 ? mItemBaseName.TypeEN : mItemBaseName.TypeKR;
+                jsonData.Sort.Price = "asc";
 
                 byte lang_type = mItemBaseName.LangType;
                 string Inherit = mItemBaseName.Inherits.Length > 0 ? mItemBaseName.Inherits[0] : "";
 
+                JQ.Name = RS.ServerLang == 1 ? mItemBaseName.NameEN : mItemBaseName.NameKR;
+                JQ.Type = RS.ServerLang == 1 ? mItemBaseName.TypeEN : mItemBaseName.TypeKR;
+
                 JQ.Stats = new q_Stats[0];
                 JQ.Status.Option = "online";
-
-                jsonData.Sort.Price = "asc";
 
                 JQ.Filters.Type.Filters.Category.Option = "any";
                 JQ.Filters.Type.Filters.Rarity.Option = itemOptions.RarityAt > 0 ? RS.lRarity.ElementAt(itemOptions.RarityAt - 1).Key.ToLower() : "any";
 
                 JQ.Filters.Trade.Disabled = mConfigData.Options.SearchBeforeDay == 0;
-                JQ.Filters.Trade.Filters.Indexed.Option = mConfigData.Options.SearchBeforeDay == 0 ? "any" : BeforeDayToString(mConfigData.Options.SearchBeforeDay);
+                JQ.Filters.Trade.Filters.Indexed.Option = BeforeDayToString(mConfigData.Options.SearchBeforeDay);
                 JQ.Filters.Trade.Filters.SaleType.Option = useSaleType ? "priced" : "any";
                 JQ.Filters.Trade.Filters.Price.Min = 99999;
                 JQ.Filters.Trade.Filters.Price.Max = 99999;
@@ -1239,6 +1241,12 @@ namespace PoeTradeSearch
                                         }
                                     }
                                 }
+
+                                if (!mLockUpdatePrice)
+                                {
+                                    currencys.Clear();
+                                    break;
+                                }
                             }
 
                             if (currencys.Count > 0)
@@ -1281,7 +1289,7 @@ namespace PoeTradeSearch
 
                         if (resultData.Total == 0 || currencys.Count == 0)
                         {
-                            msg = "해당 물품의 거래가 없습니다";
+                            msg = mLockUpdatePrice ? "해당 물품의 거래가 없습니다" : "검색 실패: 클릭하여 다시 시도해주세요";
                         }
                     }
                 }
@@ -1296,13 +1304,13 @@ namespace PoeTradeSearch
                 tkPriceInfo.Text = msg + (msg_2 != "" ? " = " + msg_2 : "");
             });
 
-            if (liPrice.Items.Count == 0)
+            liPrice.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
             {
-                liPrice.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
+                if (liPrice.Items.Count == 0)
                 {
                     liPrice.Items.Add(msg + (msg_2 != "" ? " = " + msg_2 : ""));
-                });
-            }
+                }
+            });
 
             mLockUpdatePrice = false;
         }
