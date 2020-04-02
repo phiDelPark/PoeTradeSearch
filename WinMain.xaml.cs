@@ -27,6 +27,8 @@ namespace PoeTradeSearch
         private bool mHotkeyProcBlock = false;
         private bool mClipboardBlock = false;
 
+        private bool mLockUpdatePrice = false;        
+
         public WinMain()
         {
             InitializeComponent();
@@ -282,17 +284,17 @@ namespace PoeTradeSearch
                 }
                 else
                 {
-                    string sResult = null;
+                    string request_result = null;
 
                     // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
                     Thread thread = new Thread(() =>
                     {
-                        sResult = SendHTTP(sEntity, RS.TradeApi[RS.ServerLang] + RS.ServerType, mConfigData.Options.ServerTimeout);
-                        if ((sResult ?? "") != "")
+                        request_result = SendHTTP(sEntity, RS.TradeApi[RS.ServerLang] + RS.ServerType, mConfigData.Options.ServerTimeout);
+                        if ((request_result ?? "") != "")
                         {
                             try
                             {
-                                ResultData resultData = Json.Deserialize<ResultData>(sResult);
+                                ResultData resultData = Json.Deserialize<ResultData>(request_result);
                                 Process.Start(RS.TradeUrl[RS.ServerLang] + RS.ServerType + "/" + resultData.ID);
                             }
                             catch { }
@@ -302,7 +304,7 @@ namespace PoeTradeSearch
                     thread.Start();
                     thread.Join();
 
-                    if ((sResult ?? "") == "")
+                    if ((request_result ?? "") == "")
                     {
                         ForegroundMessage(
                             "현재 거래소 접속이 원활하지 않을 수 있습니다." + '\n'

@@ -766,6 +766,8 @@ namespace PoeTradeSearch
                     {
                         tkPriceInfo.Foreground = tkPriceCount.Foreground = SystemColors.WindowTextBrush;
 
+                        mLockUpdatePrice = false;
+
                         if (mConfigData.Options.AutoPriceSearch)
                         {
                             UpdatePriceThreadWorker(GetItemOptions(), null);
@@ -1114,36 +1116,36 @@ namespace PoeTradeSearch
 
         private void UpdatePrice(string[] entity, int listCount)
         {
-            string result = "정보가 없습니다";
-            string result2 = "";
-            string urlString = "";
-            string sEentity;
+            string url_string = "";
+            string json_entity = "";
+            string msg = "정보가 없습니다";
+            string msg_2 = "";
 
             if (entity.Length > 1)
             {
-                sEentity = String.Format(
+                json_entity = String.Format(
                         "{{\"exchange\":{{\"status\":{{\"option\":\"online\"}},\"have\":[\"{0}\"],\"want\":[\"{1}\"]}}}}",
                         entity[0],
                         entity[1]
                     );
-                urlString = RS.ExchangeApi[RS.ServerLang];
+                url_string = RS.ExchangeApi[RS.ServerLang];
             }
             else
             {
-                sEentity = entity[0];
-                urlString = RS.TradeApi[RS.ServerLang];
+                json_entity = entity[0];
+                url_string = RS.TradeApi[RS.ServerLang];
             }
 
-            if (sEentity != null && sEentity != "")
+            if (json_entity != null && json_entity != "")
             {
                 try
                 {
-                    string sResult = SendHTTP(sEentity, urlString + RS.ServerType, mConfigData.Options.ServerTimeout);
-                    result = "거래소 접속이 원활하지 않습니다";
+                    string request_result = SendHTTP(json_entity, url_string + RS.ServerType, mConfigData.Options.ServerTimeout);
+                    msg = "거래소 접속이 원활하지 않습니다";
 
-                    if (sResult != null)
+                    if (request_result != null)
                     {
-                        ResultData resultData = Json.Deserialize<ResultData>(sResult);
+                        ResultData resultData = Json.Deserialize<ResultData>(request_result);
                         Dictionary<string, int> currencys = new Dictionary<string, int>();
 
                         int total = 0;
@@ -1178,7 +1180,7 @@ namespace PoeTradeSearch
                                     length++;
                                 }
 
-                                string jsonResult = "";
+                                string json_result = "";
                                 string url = RS.FetchApi[RS.ServerLang] + string.Join(",", tmp) + "?query=" + resultData.ID;
                                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(url));
                                 request.Timeout = 10000;
@@ -1186,15 +1188,15 @@ namespace PoeTradeSearch
                                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                                 using (StreamReader streamReader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                                 {
-                                    jsonResult = streamReader.ReadToEnd();
+                                    json_result = streamReader.ReadToEnd();
                                 }
 
-                                if (jsonResult != "")
+                                if (json_result != "")
                                 {
                                     FetchData fetchData = new FetchData();
                                     fetchData.Result = new FetchDataInfo[10];
 
-                                    fetchData = Json.Deserialize<FetchData>(jsonResult);
+                                    fetchData = Json.Deserialize<FetchData>(json_result);
 
                                     for (int i = 0; i < fetchData.Result.Length; i++)
                                     {
@@ -1208,22 +1210,20 @@ namespace PoeTradeSearch
                                             string currency = fetchData.Result[i].Listing.Price.Currency;
                                             double amount = fetchData.Result[i].Listing.Price.Amount;
 
-                                            liPrice.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-                                                (ThreadStart)delegate ()
-                                                {
-                                                    ParserDictionary item = GetExchangeItem(currency);
-                                                    string keyName = item != null ? item.Text[0] : currency;
+                                            liPrice.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
+                                            {
+                                                ParserDictionary item = GetExchangeItem(currency);
+                                                string keyName = item != null ? item.Text[0] : currency;
 
-                                                    if (entity.Length > 1)
-                                                    {
-                                                        item = GetExchangeItem(entity[1]);
-                                                        string tName2 = item != null ? item.Text[0] : entity[1];
-                                                        liPrice.Items.Add(Math.Round(1 / amount, 4) + " " + tName2 + " <-> " + Math.Round(amount, 4) + " " + keyName + " [" + account + "]");
-                                                    }
-                                                    else
-                                                        liPrice.Items.Add(amount + " " + keyName + " [" + account + "]");
-                                                }
-                                            );
+                                               if (entity.Length > 1)
+                                               {
+                                                    item = GetExchangeItem(entity[1]);
+                                                    string tName2 = item != null ? item.Text[0] : entity[1];
+                                                    liPrice.Items.Add(Math.Round(1 / amount, 4) + " " + tName2 + " <-> " + Math.Round(amount, 4) + " " + keyName + " [" + account + "]");
+                                               }
+                                               else
+                                                    liPrice.Items.Add(amount + " " + keyName + " [" + account + "]");
+                                            });
 
                                             if (entity.Length > 1)
                                                 key = amount < 1 ? Math.Round(1 / amount, 1) + " " + ents1 : Math.Round(amount, 1) + " " + ents0;
@@ -1259,34 +1259,29 @@ namespace PoeTradeSearch
                                 {
                                     if (i == 2) break;
                                     if (myList[i].Value < 2) continue;
-                                    result2 += myList[i].Key + "[" + myList[i].Value + "], ";
+                                    msg_2 += myList[i].Key + "[" + myList[i].Value + "], ";
                                 }
 
-                                result = Regex.Replace(first + " ~ " + last, @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
-                                result2 = Regex.Replace(result2.TrimEnd(',', ' '), @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
+                                msg = Regex.Replace(first + " ~ " + last, @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
+                                msg_2 = Regex.Replace(msg_2.TrimEnd(',', ' '), @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
 
-                                if (result2 == "")
-                                    result2 = "가장 많은 수 없음";
+                                if (msg_2 == "") msg_2 = "가장 많은 수 없음";
                             }
                         }
 
-                        cbPriceListTotal.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-                            (ThreadStart)delegate ()
-                            {
-                                cbPriceListTotal.Text = total + "/" + resultCount + " 검색";
-                            }
-                        );
+                        cbPriceListTotal.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
+                        {
+                            cbPriceListTotal.Text = total + "/" + resultCount + " 검색";
+                        });
 
-                        tkPriceCount.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-                            (ThreadStart)delegate ()
-                            {
-                                tkPriceCount.Text = total > 0 ? total + (resultCount > total ? "+" : ".") : "";
-                            }
-                        );
+                        tkPriceCount.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
+                        {
+                            tkPriceCount.Text = total > 0 ? total + (resultCount > total ? "+" : ".") : "";
+                        });
 
                         if (resultData.Total == 0 || currencys.Count == 0)
                         {
-                            result = "해당 물품의 거래가 없습니다";
+                            msg = "해당 물품의 거래가 없습니다";
                         }
                     }
                 }
@@ -1296,40 +1291,45 @@ namespace PoeTradeSearch
                 }
             }
 
-            tkPriceInfo.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-                (ThreadStart)delegate ()
-                {
-                    tkPriceInfo.Text = result + (result2 != "" ? " = " + result2 : "");
-                }
-            );
+            tkPriceInfo.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
+            {
+                tkPriceInfo.Text = msg + (msg_2 != "" ? " = " + msg_2 : "");
+            });
 
-            liPrice.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-                (ThreadStart)delegate ()
+            if (liPrice.Items.Count == 0)
+            {
+                liPrice.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
                 {
-                    if (liPrice.Items.Count == 0)
-                        liPrice.Items.Add(result + (result2 != "" ? " = " + result2 : ""));
-                }
-            );
+                    liPrice.Items.Add(msg + (msg_2 != "" ? " = " + msg_2 : ""));
+                });
+            }
+
+            mLockUpdatePrice = false;
         }
 
         private Thread priceThread = null;
 
         private void UpdatePriceThreadWorker(ItemOption itemOptions, string[] exchange)
         {
-            liPrice.Items.Clear();
-            tkPriceCount.Text = "";
-            tkPriceInfo.Text = "시세 확인중...";
-            cbPriceListTotal.Text = "0/0 검색";
+            if (!mLockUpdatePrice)
+            {
+                mLockUpdatePrice = true;
 
-            int listCount = (cbPriceListCount.SelectedIndex + 1) * 2;
+                int listCount = (cbPriceListCount.SelectedIndex + 1) * 2;
 
-            priceThread?.Interrupt();
-            priceThread?.Abort();
-            priceThread = new Thread(() => UpdatePrice(
-                    exchange != null ? exchange : new string[1] { CreateJson(itemOptions, true) },
-                    listCount
-                ));
-            priceThread.Start();
+                liPrice.Items.Clear();
+                tkPriceCount.Text = "";
+                tkPriceInfo.Text = "시세 확인중...";
+                cbPriceListTotal.Text = "0/0 검색";
+
+                priceThread?.Interrupt();
+                priceThread?.Abort();
+                priceThread = new Thread(() => UpdatePrice(
+                        exchange != null ? exchange : new string[1] { CreateJson(itemOptions, true) },
+                        listCount
+                    ));
+                priceThread.Start();
+            }
         }
 
         private ParserDictionary GetExchangeItem(string id)
