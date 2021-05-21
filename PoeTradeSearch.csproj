@@ -106,6 +106,10 @@
     <Compile Include="Methods.cs" />
     <Compile Include="Configure.cs" />
     <Compile Include="Updates.cs" />
+    <Page Include="WinGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WinMain.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -115,6 +119,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Functions.cs" />
+    <Compile Include="WinGrid.xaml.cs">
+      <DependentUpon>WinGrid.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WinMain.xaml.cs">
       <DependentUpon>WinMain.xaml</DependentUpon>
       <SubType>Code</SubType>

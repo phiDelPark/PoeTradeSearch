@@ -24,6 +24,7 @@ namespace PoeTradeSearch
             public byte Corrupt;
             public byte Influence1;
             public byte Influence2;
+            public byte AltQuality;
             public bool ByType;
             public bool ChkLv;
             public bool ChkSocket;
@@ -44,14 +45,12 @@ namespace PoeTradeSearch
         [DataContract]
         public class ItemBaseName
         {
+            public string[] Ids;
             public string NameKR;
             public string TypeKR;
             public string NameEN;
             public string TypeEN;
-
             public byte LangType;
-            //public string Rarity;
-            public string[] Inherits;
         }
 
         [DataContract()]
@@ -62,6 +61,9 @@ namespace PoeTradeSearch
 
             [DataMember(Name = "shortcuts")]
             internal ConfigShortcut[] Shortcuts = null;
+
+            [DataMember(Name = "version")]
+            internal string[] Version = null;
         }
 
         [DataContract(Name = "options")]
@@ -91,8 +93,8 @@ namespace PoeTradeSearch
             [DataMember(Name = "search_by_type")]
             internal bool SearchByType = false;
 
-            [DataMember(Name = "auto_price_search")]
-            internal bool AutoPriceSearch = false;
+            [DataMember(Name = "auto_search_delay")]
+            internal int AutoSearchDelay = 10;
 
             [DataMember(Name = "auto_check_unique")]
             internal bool AutoCheckUnique = false;
@@ -107,7 +109,7 @@ namespace PoeTradeSearch
             internal string AutoSelectCorrupt = "";
 
             [DataMember(Name = "auto_select_bytype")]
-            internal string AutoSelectByType = "";            
+            internal string AutoSelectByType = "";
 
             [DataMember(Name = "ctrl_wheel")]
             internal bool CtrlWheel = false;
@@ -135,90 +137,104 @@ namespace PoeTradeSearch
         [DataContract()]
         internal class ParserData
         {
+            [DataMember(Name = "category")]
+            internal ParserEntries Category = null;
             [DataMember(Name = "rarity")]
-            internal string[] Rarity = null;
+            internal ParserEntries Rarity = null;
             [DataMember(Name = "quality")]
-            internal string[] Quality = null;
+            internal ParserEntries Quality = null;
             [DataMember(Name = "sockets")]
-            internal string[] Sockets = null;
+            internal ParserEntries Sockets = null;
             [DataMember(Name = "unidentified")]
-            internal string[] Unidentified = null;
+            internal ParserEntries Unidentified = null;
             [DataMember(Name = "max")]
-            internal string[] Max = null;
+            internal ParserEntries Max = null;
             [DataMember(Name = "level")]
-            internal string[] Level = null;
+            internal ParserEntries Level = null;
             [DataMember(Name = "item_level")]
-            internal string[] ItemLevel = null;
+            internal ParserEntries ItemLevel = null;
             [DataMember(Name = "talisman_tier")]
-            internal string[] TalismanTier = null;
+            internal ParserEntries TalismanTier = null;
             [DataMember(Name = "map_tier")]
-            internal string[] MapTier = null;
+            internal ParserEntries MapTier = null;
             [DataMember(Name = "superior")]
-            internal string[] Superior = null;
+            internal ParserEntries Superior = null;
             [DataMember(Name = "vaal")]
-            internal string[] Vaal = null;
+            internal ParserEntries Vaal = null;
             [DataMember(Name = "corrupted")]
-            internal string[] Corrupted = null;
+            internal ParserEntries Corrupted = null;
             [DataMember(Name = "metamorph")]
-            internal string[] Metamorph = null;
+            internal ParserEntries Metamorph = null;
             [DataMember(Name = "shaper_item")]
-            internal string[] ShaperItem = null;
+            internal ParserEntries ShaperItem = null;
             [DataMember(Name = "elder_item")]
-            internal string[] ElderItem = null;
+            internal ParserEntries ElderItem = null;
             [DataMember(Name = "crusader_item")]
-            internal string[] CrusaderItem = null;
+            internal ParserEntries CrusaderItem = null;
             [DataMember(Name = "redeemer_item")]
-            internal string[] RedeemerItem = null;
+            internal ParserEntries RedeemerItem = null;
             [DataMember(Name = "hunter_item")]
-            internal string[] HunterItem = null;
+            internal ParserEntries HunterItem = null;
             [DataMember(Name = "warlord_item")]
-            internal string[] WarlordItem = null;
+            internal ParserEntries WarlordItem = null;
             [DataMember(Name = "synthesised_item")]
-            internal string[] SynthesisedItem = null;
+            internal ParserEntries SynthesisedItem = null;
             [DataMember(Name = "synthesised")]
-            internal string[] Synthesised = null;
+            internal ParserEntries Synthesised = null;
             [DataMember(Name = "shaped")]
-            internal string[] Shaped = null;
+            internal ParserEntries Shaped = null;
             [DataMember(Name = "blighted")]
-            internal string[] Blighted = null;
+            internal ParserEntries Blighted = null;
             [DataMember(Name = "monster_genus")]
-            internal string[] MonsterGenus = null;
+            internal ParserEntries MonsterGenus = null;
             [DataMember(Name = "monster_group")]
-            internal string[] MonsterGroup = null;
+            internal ParserEntries MonsterGroup = null;
             [DataMember(Name = "physical_damage")]
-            internal string[] PhysicalDamage = null;
+            internal ParserEntries PhysicalDamage = null;
             [DataMember(Name = "elemental_damage")]
-            internal string[] ElementalDamage = null;
+            internal ParserEntries ElementalDamage = null;
             [DataMember(Name = "chaos_damage")]
-            internal string[] ChaosDamage = null;
+            internal ParserEntries ChaosDamage = null;
             [DataMember(Name = "attacks_per_second")]
-            internal string[] AttacksPerSecond = null;
+            internal ParserEntries AttacksPerSecond = null;
             [DataMember(Name = "attack_speed_incr")]
-            internal string[] AttackSpeedIncr = null;
+            internal ParserEntries AttackSpeedIncr = null;
             [DataMember(Name = "physical_damage_incr")]
-            internal string[] PhysicalDamageIncr = null;
+            internal ParserEntries PhysicalDamageIncr = null;
             [DataMember(Name = "prophecy_item")]
-            internal string[] ProphecyItem = null;
+            internal ParserEntries ProphecyItem = null;
             [DataMember(Name = "entrails_item")]
-            internal string[] EntrailsItem = null;
-
+            internal ParserEntries EntrailsItem = null;
+            [DataMember(Name = "unstack_items")]
+            internal ParserEntries UnstackItems = null;
+            [DataMember(Name = "gems")]
+            internal ParserEntries Gems = null;
             [DataMember(Name = "currency")]
-            internal ParserDictionary[] Currency = null;
+            internal ParserEntries Currency = null;
             [DataMember(Name = "exchange")]
-            internal ParserDictionary[] Exchange = null;
-
+            internal ParserEntries Exchange = null;
             [DataMember(Name = "checked")]
-            internal ParserDictionary[] Checked = null;
+            internal ParserEntries Checked = null;
+        }
 
-            [DataMember(Name = "version")]
-            internal string[] Version = null;
+        [DataContract]
+        internal class ParserEntries
+        {
+            [DataMember(Name = "text")]
+            internal string[] Text = null;
+
+            [DataMember(Name = "entries")]
+            internal ParserDictionary[] Entries = null;
         }
 
         [DataContract]
         internal class ParserDictionary
         {
             [DataMember(Name = "id")]
-            internal string ID = null;
+            internal string Id = null;
+
+            [DataMember(Name = "key")]
+            internal string Key = null;
 
             [DataMember(Name = "text")]
             internal string[] Text = null;
@@ -228,87 +244,36 @@ namespace PoeTradeSearch
         }
 
         [DataContract]
-        internal class BaseData
+        internal class PoeData
         {
             [DataMember(Name = "result")]
-            internal BaseResult[] Result = null;
+            internal DataResult[] Result = null;
+
+            [DataMember(Name = "upddate")]
+            internal string Upddate = null;
         }
 
         [DataContract]
-        internal class BaseResult
+        internal class DataResult
         {
-            [DataMember(Name = "data")]
-            internal BaseResultData[] Data = null;
-        }
+            [DataMember(Name = "id")]
+            internal string Id = "";
 
-        [DataContract]
-        internal class BaseResultData
-        {
-            [DataMember(Name = "Id")]
-            internal string ID = null;
-
-            [DataMember(Name = "Name")]
-            internal string NameEn = null;
-
-            [DataMember(Name = "NameKo")]
-            internal string NameKo = null;
-
-            [DataMember(Name = "InheritsFrom")]
-            internal string InheritsFrom = null;
-
-            [DataMember(Name = "Detail")]
-            internal string Detail = null;
-        }
-
-        [DataContract]
-        internal class WordData
-        {
-            [DataMember(Name = "result")]
-            public WordeResult[] Result = null;
-        }
-
-        [DataContract]
-        internal class WordeResult
-        {
-            [DataMember(Name = "data")]
-            public WordeResultData[] Data = null;
-        }
-
-        [DataContract]
-        internal class WordeResultData
-        {
-            [DataMember(Name = "WordlistsKey")]
-            internal string Key = null;
-
-            [DataMember(Name = "Text2")]
-            internal string NameEn = null;
-
-            [DataMember(Name = "Text2Ko")]
-            internal string NameKo = null;
-        }
-
-        [DataContract]
-        internal class FilterData
-        {
-            [DataMember(Name = "result")]
-            internal FilterResult[] Result = null;
-        }
-
-        [DataContract]
-        internal class FilterResult
-        {
             [DataMember(Name = "label")]
             internal string Label = "";
 
             [DataMember(Name = "entries")]
-            internal FilterResultEntrie[] Entries = null;
+            internal DataEntrie[] Entries = null;
         }
 
         [DataContract]
-        internal class FilterResultEntrie
+        internal class DataEntrie
         {
             [DataMember(Name = "id")]
-            internal string ID = "";
+            internal string Id = "";
+
+            [DataMember(Name = "name")]
+            internal string Name = "";
 
             [DataMember(Name = "text")]
             internal string Text = "";
@@ -318,6 +283,16 @@ namespace PoeTradeSearch
 
             [DataMember(Name = "part")]
             internal string Part = "";
+
+            [DataMember(Name = "flags")]
+            internal DataFlags[] Flags = null;
+        }
+
+        [DataContract]
+        internal class DataFlags
+        {
+            [DataMember(Name = "unique")]
+            internal bool Unique = false;
         }
 
         [DataContract]
@@ -472,6 +447,9 @@ namespace PoeTradeSearch
 
             [DataMember(Name = "synthesised_item")]
             internal q_Option Synthesis = new q_Option();
+
+            [DataMember(Name = "gem_alternate_quality")]
+            internal q_Option AlternateQuality = new q_Option();
         }
 
         [DataContract]

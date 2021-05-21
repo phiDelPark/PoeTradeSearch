@@ -20,13 +20,13 @@ namespace PoeTradeSearch
             if (jpgPath != null)
             {
                 string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                path = path.Remove(path.Length - 4) + "Data\\";
+                path = path.Remove(path.Length - 4) + "\\";
                 JpgPath = path + jpgPath;
             }
         }
 
         public static BitmapSource ConvertBitmapToDPI(BitmapImage bitmapImage, int dpi)
-        { 
+        {
             // 96 DPI standard.
             int width = bitmapImage.PixelWidth;
             int height = bitmapImage.PixelHeight;
@@ -56,7 +56,7 @@ namespace PoeTradeSearch
 
         private void Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(ProgressBar1.Visibility != Visibility.Visible)
+            if (ProgressBar1.Visibility != Visibility.Visible)
                 Close();
         }
 

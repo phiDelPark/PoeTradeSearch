@@ -238,6 +238,12 @@
                             </ComboBox>
                         </Grid>
                     </Border>
+                    <ComboBox Name="cbGemAltQuality" HorizontalAlignment="Left" Margin="256,240,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="121">
+                        <ComboBoxItem>기본</ComboBoxItem>
+                        <ComboBoxItem>기묘한</ComboBoxItem>
+                        <ComboBoxItem>상이한</ComboBoxItem>
+                        <ComboBoxItem>몽환적인</ComboBoxItem>
+                    </ComboBox>
                 </Grid>
             </TabItem>
             <TabItem Header="자세히">

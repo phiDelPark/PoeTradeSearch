@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
@@ -9,8 +10,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Markup;
 
 namespace PoeTradeSearch
 {
@@ -32,6 +31,16 @@ namespace PoeTradeSearch
         [DllImport("user32.dll")] internal static extern IntPtr GetForegroundWindow();
 
         [DllImport("user32.dll")] internal static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left;        // x position of upper-left corner
+            public int Top;         // y position of upper-left corner
+            public int Right;       // x position of lower-right corner
+            public int Bottom;      // y position of lower-right corner
+        }
+        [DllImport("user32.dll")] internal static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
         internal const int GWL_EXSTYLE = -20;
         internal const int WS_EX_NOACTIVATE = 0x08000000;
@@ -262,8 +271,9 @@ namespace PoeTradeSearch
                 else
                 {
                     HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(urlString));
+                    request.CookieContainer = new CookieContainer();
+                    request.UserAgent = RS.UserAgent;
                     request.Timeout = timeout * 1000;
-                    request.UserAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2"; // SGS Galaxy
 
                     if (entity == null)
                     {
@@ -295,6 +305,56 @@ namespace PoeTradeSearch
             }
 
             return result;
+        }
+
+        private string GetLapsedTime(string utc)
+        {
+            string timeString = string.Empty;
+
+            DateTime dateTime = DateTime.ParseExact(utc, "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                                           CultureInfo.InvariantCulture,
+                                           DateTimeStyles.AssumeUniversal |
+                                           DateTimeStyles.AdjustToUniversal);
+
+            //   dateTime = Convert.ToDateTime(dateTime, new CultureInfo("ko-KR"));
+            TimeSpan ts = DateTime.UtcNow.Subtract(dateTime);
+
+            int DayPeriod = Math.Abs(ts.Days);
+
+            if (DayPeriod < 1)
+            {
+                int HourPeriod = Math.Abs(ts.Hours);
+
+                if (HourPeriod < 1)
+                {
+                    int MinutePeriod = Math.Abs(ts.Minutes);
+                    if (MinutePeriod < 1)
+                    {
+                        int SecondPeriod = Math.Abs(ts.Seconds);
+                        return " * " + SecondPeriod.ToString().PadLeft(2, '\u2000') + "초전";
+                    }
+                    else
+                    {
+                        return " * " + MinutePeriod.ToString().PadLeft(2, '\u2000')  + "분전";
+                    }
+                }
+                else
+                {
+                    return " - " + HourPeriod.ToString().PadLeft(2, '\u2000') + "시전";
+                }
+            }
+            else if ((DayPeriod > 0) && (DayPeriod < 7))
+            {
+                return " ? " + DayPeriod.ToString().PadLeft(2, '\u2000') + "일전";
+            }
+            else if (DayPeriod == 7)
+            {
+                return " ? " + "1".PadLeft(2, '\u2000') + "주전";
+            }
+            else
+            {
+                return dateTime.ToString("yyyy년 MM월 dd일");
+            }
         }
 
         private string GetClipText(bool isUnicode)

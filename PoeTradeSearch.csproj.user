@@ -12,6 +12,6 @@
     <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>-createdatabase--</StartArguments>
+    <StartArguments>-createdatabase-</StartArguments>
   </PropertyGroup>
 </Project>

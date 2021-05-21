@@ -13,34 +13,19 @@ namespace PoeTradeSearch
         internal static string[] TradeUrl = { "https://poe.game.daum.net/trade/search/", "https://www.pathofexile.com/trade/search/" };
         internal static string[] TradeApi = { "https://poe.game.daum.net/api/trade/search/", "https://www.pathofexile.com/api/trade/search/" };
         internal static string[] FetchApi = { "https://poe.game.daum.net/api/trade/fetch/", "https://www.pathofexile.com/api/trade/fetch/" };
+        internal static string[] ExchangeUrl = { "https://poe.game.daum.net/trade/exchange/", "https://www.pathofexile.com/trade/exchange/" };
         internal static string[] ExchangeApi = { "https://poe.game.daum.net/api/trade/exchange/", "https://www.pathofexile.com/api/trade/exchange/" };
+
+        internal static string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36";
 
         internal static byte ServerLang = 0;
         internal static string ServerType = "";
-
-        internal static readonly string[] SClickSplitItem = { "Shift + 클릭으로 아이템 나누기", "Shift click to unstack" };
-
-        // 일반, 마법, 희귀, 고유 이 순서 매우 중요함 바뀌면 에러 날 수 있음
-        internal static Dictionary<string, string> lRarity = new Dictionary<string, string>()
-        {
-            { "Normal", "일반" }, { "Magic", "마법" }, { "Rare", "희귀" }, { "Unique", "고유" },
-            { "Currency", "화폐" }, { "Gem", "젬" }, { "Divination Card", "점술 카드" }, { "Prophecy", "예언" }
-        };
 
         internal static Dictionary<string, string> lFilterType = new Dictionary<string, string>()
         {
             { "pseudo", "유사"}, { "explicit", "일반"}, { "implicit", "고정"}, { "fractured", "분열"},
             { "enchant", "인챈"},  { "crafted", "제작"}, { "veiled", "장막"}, { "monster", "야수"}, { "delve", "탐광"}
         };
-
-        internal static Dictionary<string, string> lInherit = new Dictionary<string, string>()
-        {
-            { "Weapons","weapon" }, { "Quivers","armour.quiver" }, { "Armours","armour" },
-            { "Amulets","accessory.amulet" }, { "Rings","accessory.ring" }, { "Belts","accessory.belt" }, /* accessory */
-            { "Jewels","jewel" }, { "Flasks","flask" }, { "DivinationCards","card" }, { "Prophecies","prophecy" }, { "Gems","gem" },
-            { "Currency","currency" },  { "Maps","map" }, { "MapFragments","map" }
-        };
-
         internal static Dictionary<string, bool> lDefaultPosition = new Dictionary<string, bool>()
         {
             { "stat_3441651621", true}, { "stat_3853018505", true}, { "stat_969865219", true},  { "stat_4176970656", true},
@@ -60,10 +45,11 @@ namespace PoeTradeSearch
         {
             { "stat_210067635", 1}, { "stat_691932474", 1}, { "stat_3885634897", 1}, { "stat_2223678961", 1},
             { "stat_1940865751", 1}, { "stat_3336890334", 1}, { "stat_709508406", 1}, { "stat_1037193709", 1}, { "stat_821021828", 1 },
-            { "stat_4052037485", 2}, { "stat_4015621042", 2}, { "stat_124859000", 2}, { "stat_53045048", 2}, 
+            { "stat_55876295", 1 },
+            { "stat_4052037485", 2}, { "stat_4015621042", 2}, { "stat_124859000", 2}, { "stat_53045048", 2},
             { "stat_1062208444", 2}, { "stat_3484657501", 2}, { "stat_3321629045", 2}, { "stat_1999113824", 2}, { "stat_2451402625", 2}, { "stat_3523867985", 2 }
         };
-        
+
         internal static Dictionary<string, bool> lResistance = new Dictionary<string, bool>()
         {
             { "stat_4220027924", true }, { "stat_3372524247", true }, { "stat_1671376347", true }, { "stat_2923486259", true },
@@ -93,16 +79,12 @@ namespace PoeTradeSearch
         private ParserData mParserData;
         private ItemBaseName mItemBaseName;
 
-        private List<BaseResultData> mBaseDatas = null;
-        private List<WordeResultData> mWordDatas = null;
-        private List<BaseResultData> mProphecyDatas = null;
-        private List<BaseResultData> mMonsterDatas = null;
-
-        private FilterData[] mFilterData = new FilterData[2];
+        private PoeData[] mFilterData = new PoeData[2];
+        private PoeData[] mItemsData = new PoeData[2];
+        private PoeData[] mStaticData = new PoeData[2];
 
         private bool mDisableClip = false;
         private bool mAdministrator = false;
-        private bool mCreateDatabase = false;
 
         private static int closeKeyCode = 0;
 
@@ -112,7 +94,7 @@ namespace PoeTradeSearch
             string path = System.IO.Path.GetFullPath(@"..\..\") + "_POE_Data\\";
 #else
             string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            path = path.Remove(path.Length - 4) + "Data\\";
+            path = path.Remove(path.Length - 4) + "\\";
 #endif
             FileStream fs = null;
             try
@@ -160,69 +142,22 @@ namespace PoeTradeSearch
             string path = System.IO.Path.GetFullPath(@"..\..\") + "_POE_Data\\";
 #else
             string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            path = path.Remove(path.Length - 4) + "Data\\";
+            path = path.Remove(path.Length - 4) + "\\";
 #endif
             FileStream fs = null;
             string s = "";
             try
             {
-                if (mCreateDatabase)
+                if (!File.Exists(path + "FiltersKO.txt") || !File.Exists(path + "FiltersEN.txt"))
                 {
-                    string[] items = { "Bases", "Words", "Prophecies", "Monsters", "FiltersKO", "FiltersEN" };
-                    foreach (string item in items)
-                    {
-                        File.Delete(path + item + ".txt");
-                    }
+                    string[] items = { "FiltersKO", "FiltersEN", "ItemsKO", "ItemsEN", "StaticKO", "StaticEN" };
+                    foreach (string item in items) File.Delete(path + item + ".txt");
 
-                    if (!BaseDataUpdates(path) || !FilterDataUpdates(path))
+                    if (!FilterDataUpdate(path) || !ItemDataUpdate(path) || !StaticDataUpdate(path))
                     {
                         s = "생성 실패";
                         throw new UnauthorizedAccessException("failed to create database");
                     }
-                }
-
-                s = "Bases.txt";
-                fs = new FileStream(path + s, FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    BaseData data = Json.Deserialize<BaseData>(json);
-                    mBaseDatas = new List<BaseResultData>();
-                    mBaseDatas.AddRange(data.Result[0].Data);
-                }
-
-                s = "Words.txt";
-                fs = new FileStream(path + s, FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    WordData data = Json.Deserialize<WordData>(json);
-                    mWordDatas = new List<WordeResultData>();
-                    mWordDatas.AddRange(data.Result[0].Data);
-                }
-
-                s = "Prophecies.txt";
-                fs = new FileStream(path + s, FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    BaseData data = Json.Deserialize<BaseData>(json);
-                    mProphecyDatas = new List<BaseResultData>();
-                    mProphecyDatas.AddRange(data.Result[0].Data);
-                }
-
-                s = "Monsters.txt";
-                fs = new FileStream(path + s, FileMode.Open);
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    fs = null;
-                    string json = reader.ReadToEnd();
-                    BaseData data = Json.Deserialize<BaseData>(json);
-                    mMonsterDatas = new List<BaseResultData>();
-                    mMonsterDatas.AddRange(data.Result[0].Data);
                 }
 
                 s = "FiltersKO.txt";
@@ -231,7 +166,7 @@ namespace PoeTradeSearch
                 {
                     fs = null;
                     string json = reader.ReadToEnd();
-                    mFilterData[0] = Json.Deserialize<FilterData>(json);
+                    mFilterData[0] = Json.Deserialize<PoeData>(json);
                 }
 
                 s = "FiltersEN.txt";
@@ -240,7 +175,43 @@ namespace PoeTradeSearch
                 {
                     fs = null;
                     string json = reader.ReadToEnd();
-                    mFilterData[1] = Json.Deserialize<FilterData>(json);
+                    mFilterData[1] = Json.Deserialize<PoeData>(json);
+                }
+
+                s = "ItemsKO.txt";
+                fs = new FileStream(path + s, FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    mItemsData[0] = Json.Deserialize<PoeData>(json);
+                }
+
+                s = "ItemsEN.txt";
+                fs = new FileStream(path + s, FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    mItemsData[1] = Json.Deserialize<PoeData>(json);
+                }
+
+                s = "StaticKO.txt";
+                fs = new FileStream(path + s, FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    mStaticData[0] = Json.Deserialize<PoeData>(json);
+                }
+
+                s = "StaticEN.txt";
+                fs = new FileStream(path + s, FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    mStaticData[1] = Json.Deserialize<PoeData>(json);
                 }
             }
             catch (Exception ex)
@@ -251,8 +222,7 @@ namespace PoeTradeSearch
             }
             finally
             {
-                if (fs != null)
-                    fs.Dispose();
+                if (fs != null) fs.Dispose();
             }
 
             outString = s;

@@ -31,14 +31,15 @@ POE 거래소 검색 (한글/영문)
         "search_before_day":7,       // 검색시 해당일 전 날로 검색 [0, 1, 3, 7, 14] 값 중에서 선택
         "search_price_min":0,        // 시세 검색 최소 값 (단위는 카오스 오브입니다, 0 은 모두 검색)
         "search_price_count":20,     // 시세 검색 목록 수 (20의 배수이고 최대 80, 수가 많을수록 느려짐)
-        "auto_price_search":false,   // 시세 자동으로 검색 (주의, 현재 정책이 바뀌어 사용시 거래소가 일시 블럭될 수 있음)
+        "auto_search_delay":30,      // 시세 자동 검색 주기를 30초에 1번으로합니다. (0 이면 자동 안함)
+                                     // (주의, 너무 빠르게 검색하면 거래소가 일시적으로 블럭될 수 있음)
         "auto_check_unique":true,    // 유니크 아이템은 기본적으로 옵션 모두 선택 [true, false]
         "auto_check_totalres":true,  // 저항 옵션의 경우 총 저항 합산 검색 자동 체크 [true, false]
         "auto_select_pseudo":true,   // 유사 옵션으로 검색이 가능하면 유사로 자동 선택 [true, false]
         "auto_select_corrupt":"",    // 검색시 선택한 타락 옵션으로 검색 (장비 한정) ["all", "no", "yes"]
-        "auto_select_bytype":"",     // 검색시 이름이 아닌 유형으로 검색 (예: "Weapons,Armours,Rings,Amulets,Belts")
+        "auto_select_bytype":"",     // 검색시 이름이 아닌 유형으로 검색 (예: "weapon,armour,accessory")
         "check_updates":true,        // 시작시 최신 버전 체크 [true, false]
-        "ctrl_wheel":false           // 창고 Ctrl+Wheel 이동 (전체 위치에서 가능), 기본 지원되어 꺼둠 [true, false]
+        "ctrl_wheel":false           // 창고 Ctrl+Wheel 로 탭이동 (전체 위치에서 가능) [true, false]
       },
        // 아래 단축키들과 창고 휠 이동은 관리자 권한으로 실행이 필요합니다.
        // 키코드(keycode) 는 이 링크를 참고 (https://github.com/phiDelPark/PoeTradeSearch/wiki)
@@ -46,6 +47,8 @@ POE 거래소 검색 (한글/영문)
             {"keycode":113,"value":"{Enter}/hideout{Enter}"},     // F2.  은신처 ("{Enter}채팅명령어{Enter}")
             {"keycode":115,"value":"{Enter}/exit{Enter}"},        // F4.  나가기
             {"keycode":116,"value":"{Enter}/remaining{Enter}"},   // F5.  남은 몬스터
+            {"keycode":117,"value":"{grid:stash}"},               // F6.  창고 좌표 보기 (*테스트중인 기능)
+            {"keycode":118,"value":"{grid:quad}",                 // F7.  창고 좌표 보기 - 쿼드 (*테스트중인 기능)
             {"keycode":120,"value":"신디보상표.jpg"},              // F9.  데이터 폴더의 이미지 출력 (단 .jpg만 가능)
             {"keycode":121,"value":"사원보상표.jpg"},              // F10. 주로 이렇게 POE 정보를 이미지 만들어 사용
             {"keycode":122,"value":"{Pause}"},                    // F11. 값이 "{Pause}"면 일시 중지 키로 사용됨
@@ -56,5 +59,5 @@ POE 거래소 검색 (한글/영문)
                                                                   // 참고: "ctrl":true 는 Ctrl을 같이 눌러야 한다는 뜻
         ]
 
-옵션 파일 수정 후엔 저장 후 프로그램을 다시 실행해 주셔야 옵션을 새로 읽어 갱신됩니다.<br>
-이 프로그램의 버전 확인법: 4자리 숫자중 앞 3자리 숫자는 POE DB 버전 4번째 숫자는 해당 버전의 업데이트 수 입니다.
+옵션 파일 수정 후엔 저장 후 프로그램을 다시 실행해 주셔야 옵션을 새로 읽어 갱신됩니다.<br><br>
+참고: 최신 데이터로 자동 업데이트 하려면 FiltersKO.txt 파일 삭제후 실행하면 자동 업데이트합니다.
