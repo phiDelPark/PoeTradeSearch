@@ -386,8 +386,14 @@ namespace PoeTradeSearch
 
         private void ForegroundMessage(string message, string caption, MessageBoxButton button, MessageBoxImage icon)
         {
-            MessageBox.Show(Application.Current.MainWindow, message, caption, button, icon);
-            Native.SetForegroundWindow(Native.FindWindow(RS.PoeClass, RS.PoeCaption));
+            try
+            {
+                MessageBox.Show(Application.Current.MainWindow, message, caption, button, icon);
+                Native.SetForegroundWindow(Native.FindWindow(RS.PoeClass, RS.PoeCaption));
+            }
+            catch
+            {
+            }
         }
     }
 }

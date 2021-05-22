@@ -154,6 +154,8 @@ namespace PoeTradeSearch
             internal ParserEntries TalismanTier = null;
             [DataMember(Name = "map_tier")]
             internal ParserEntries MapTier = null;
+            [DataMember(Name = "map_ultimatum")]
+            internal ParserEntries MapUltimatum = null;
             [DataMember(Name = "superior")]
             internal ParserEntries Superior = null;
             [DataMember(Name = "vaal")]
