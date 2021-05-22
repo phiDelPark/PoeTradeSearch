@@ -903,7 +903,7 @@ namespace PoeTradeSearch
                 JQ.Filters.Misc.Filters.Ilvl.Max = itemOptions.ChkLv != true || Inherit == "gem" || Inherit == "map" ? 99999 : itemOptions.LvMax;
                 JQ.Filters.Misc.Filters.Gem_level.Min = itemOptions.ChkLv == true && Inherit == "gem" ? itemOptions.LvMin : 99999;
                 JQ.Filters.Misc.Filters.Gem_level.Max = itemOptions.ChkLv == true && Inherit == "gem" ? itemOptions.LvMax : 99999;
-                JQ.Filters.Misc.Filters.AlternateQuality.Option = itemOptions.AltQuality > 1 ? itemOptions.AltQuality.ToString() : "any";
+                JQ.Filters.Misc.Filters.AlternateQuality.Option = itemOptions.AltQuality > 0 ? itemOptions.AltQuality.ToString() : "any";
 
                 JQ.Filters.Misc.Filters.Shaper.Option = Inherit != "map" && (itemOptions.Influence1 == 1 || itemOptions.Influence2 == 1) ? "true" : "any";
                 JQ.Filters.Misc.Filters.Elder.Option = Inherit != "map" && (itemOptions.Influence1 == 2 || itemOptions.Influence2 == 2) ? "true" : "any";
