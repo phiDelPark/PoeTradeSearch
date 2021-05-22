@@ -250,6 +250,10 @@ namespace PoeTradeSearch
                                                 local_exists = true;
                                                 entries = entries_tmp;
                                             }
+                                            else
+                                            {
+                                                entries = Array.FindAll(entries, x => x.Part == null);
+                                            }
                                         }
 
                                         if (entries.Length > 0)
@@ -429,6 +433,7 @@ namespace PoeTradeSearch
                     //if (is_map || is_currency) is_map_fragment = false;
                     */
                     bool is_map = cate_ids[0] == "map"; // || lItemOption[PS.MapTier.Text[z]] != "";
+                    bool is_map_fragment = cate_ids.Length > 1 && cate_ids[0] == "map" && cate_ids[1] == "fragment";
                     bool is_currency = rarity_id == "currency";
                     bool is_divinationCard = rarity_id == "card";
                     bool is_gem = rarity_id == "gem";
@@ -461,7 +466,12 @@ namespace PoeTradeSearch
                     if (is_prophecy)
                     {
                         cate_ids = new string[] { "prophecy" };
-                        item_rarity = Array.Find(PS.Category.Entries, x => x.Key == "prophecies").Text[z];
+                        item_rarity = Array.Find(PS.Category.Entries, x => x.Id == "prophecy").Text[z];
+                        item_idx = Array.FindIndex(mItemsData[z].Result[cate_idx].Entries, x => x.Type == item_type);
+                    }
+                    if (is_map_fragment)
+                    {
+                        item_rarity = Array.Find(PS.Category.Entries, x => x.Id == "map.fragment").Text[z];
                         item_idx = Array.FindIndex(mItemsData[z].Result[cate_idx].Entries, x => x.Type == item_type);
                     }
                     else if (lItemOption[PS.MonsterGenus.Text[z]] != "" && lItemOption[PS.MonsterGroup.Text[z]] != "")
@@ -473,7 +483,7 @@ namespace PoeTradeSearch
                         item_type = z == 1 || item_idx == -1 ? item_type : mItemsData[1].Result[cate_idx].Entries[item_idx].Type;
                         item_idx = -1; // 야수는 영어로만 검색됨...
                     }
-                    else if(cate_idx > -1)
+                    else if (cate_idx > -1)
                     {
                         DataResult data = mItemsData[z].Result[cate_idx];
 
@@ -556,13 +566,11 @@ namespace PoeTradeSearch
                     string item_quality = Regex.Replace(lItemOption[PS.Quality.Text[z]], "[^0-9]", "");
                     bool by_type = cate_ids.Length > 1 && (cate_ids[0] == "weapon" || cate_ids[0] == "armour" || cate_ids[0] == "accessory");
 
-                    bool is_fragment = cate_ids.Length > 1 && cate_ids[1] == "fragment";
-
-                    if (is_detail || is_fragment)
+                    if (is_detail || is_map_fragment)
                     {
                         try
                         {
-                            int i = is_fragment ? 1 : (is_gem ? 3 : 2);
+                            int i = is_map_fragment ? 1 : (is_gem ? 3 : 2);
                             tkDetail.Text = asData.Length > (i + 1) ? asData[i] + asData[i + 1] : asData[asData.Length - 1];
 
                             tkDetail.Text = Regex.Replace(
@@ -598,7 +606,7 @@ namespace PoeTradeSearch
                             {
                                 if ((string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue != RS.lFilterType["crafted"]
                                     && ((mConfigData.Options.AutoCheckUnique && rarity_id == "unique")
-                                    || (Array.Find(mParserData.Checked.Entries, x => x.Text[z] == ifilter.text && x.Id.IndexOf(cate_ids[0] + "/") > -1) != null)))
+                                    || (Array.Find(mCheckedData.Checked.Entries, x => x.Text[z] == ifilter.text && x.Id.IndexOf(cate_ids[0] + "/") > -1) != null)))
                                 {
                                     ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = true;
                                     itemfilters[i].disabled = false;
@@ -1149,7 +1157,7 @@ namespace PoeTradeSearch
                                                 {
                                                     liPrice.Items.Add((
                                                         String.Format(
-                                                            "{0} {1} [{2}]", 
+                                                            "{0} {1} [{2}]",
                                                             GetLapsedTime(indexed).PadRight(10, '\u2000'), (amount + " " + keyName).PadRight(12, '\u2000'), account)
                                                         )
                                                     );
@@ -1428,7 +1436,7 @@ namespace PoeTradeSearch
                         if (shortcut != null && shortcut.Value != null)
                         {
                             string valueLower = shortcut.Value.ToLower();
-                            string popWinTitle = "이곳을 잡고 이동, 이미지 클릭시 닫힘";
+                            string popWinTitle = "이곳을 잡고 이동, 닫기는 클릭 혹은 ESC";
 
                             if (valueLower == "{pause}")
                             {
@@ -1531,7 +1539,7 @@ namespace PoeTradeSearch
                                         Native.RECT rct = new Native.RECT();
                                         Native.GetWindowRect(findHwnd, out rct);
 
-                                        WinGrid winGrid = new WinGrid(valueLower.IndexOf("{grid:quad}") == 0, rct.Left, rct.Top);
+                                        WinGrid winGrid = new WinGrid(valueLower.IndexOf("{grid:quad}") == 0, Native.FindWindow(RS.PoeClass, RS.PoeCaption));
                                         winGrid.Title = Title + " - " + "{grid:stash}";
                                         winGrid.Show();
                                     }

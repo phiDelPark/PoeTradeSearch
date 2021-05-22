@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -40,7 +41,7 @@ namespace PoeTradeSearch
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (JpgPath != "")
+            if (File.Exists(JpgPath))
             {
                 imJpg.Source = ConvertBitmapToDPI(new BitmapImage(new Uri(JpgPath)), 96);
             }

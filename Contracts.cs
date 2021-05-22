@@ -61,9 +61,6 @@ namespace PoeTradeSearch
 
             [DataMember(Name = "shortcuts")]
             internal ConfigShortcut[] Shortcuts = null;
-
-            [DataMember(Name = "version")]
-            internal string[] Version = null;
         }
 
         [DataContract(Name = "options")]
@@ -213,6 +210,11 @@ namespace PoeTradeSearch
             internal ParserEntries Currency = null;
             [DataMember(Name = "exchange")]
             internal ParserEntries Exchange = null;
+        }
+
+        [DataContract()]
+        internal class CheckedData
+        {
             [DataMember(Name = "checked")]
             internal ParserEntries Checked = null;
         }

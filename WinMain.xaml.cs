@@ -49,7 +49,7 @@ namespace PoeTradeSearch
             }
 
             string outString = "";
-            int update_type = mConfigData.Options.CheckUpdates ? CheckUpdates(mConfigData == null ? "0.0.0.0" : mConfigData.Version[1]) : 0;
+            int update_type = mConfigData.Options.CheckUpdates ? CheckUpdates() : 0;
 
             string start_msg = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n'
                              + "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n'
@@ -209,7 +209,6 @@ namespace PoeTradeSearch
 
         private void Window_Activated(object sender, EventArgs e)
         {
-
         }
 
         private void Window_Deactivated(object sender, EventArgs e)
@@ -440,7 +439,7 @@ namespace PoeTradeSearch
                 }
                 else
                 {
-                    tbHelpText.Text = "시세 좌클릭은 재검색";
+                    tbHelpText.Text = "시세 좌클릭은 재검색 우클릭은?";
                 }
             }
         }
@@ -489,10 +488,8 @@ namespace PoeTradeSearch
                 + "   F4) 나가기" + '\n'
                 + "   F5) 남은 몬스터 수" + '\n'
                 + "   F6~7) 창고 좌표 출력" + '\n'
-                + "   F8~9) 이미지 출력" + '\n'
-                + "   F10) 이미지 출력" + '\n'
+                + "   F9~10) 이미지 출력" + '\n'
                 + "   F11) 일시 중지" + '\n'
-                + "   ESC) 창 닫기" + '\n'
                 + "   Ctrl+N) 링크 열기" + '\n'
                 + "   Ctrl+H) 선택한 아이템 위키" + '\n'
                 + "}" + '\n' + '\n'

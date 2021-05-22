@@ -41,6 +41,8 @@ namespace PoeTradeSearch
             public int Bottom;      // y position of lower-right corner
         }
         [DllImport("user32.dll")] internal static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+        [DllImport("user32.dll")] internal static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+        [DllImport("user32.dll")] internal static extern bool ClientToScreen(IntPtr hWnd, ref Point lpPoint);
 
         internal const int GWL_EXSTYLE = -20;
         internal const int WS_EX_NOACTIVATE = 0x08000000;
@@ -335,7 +337,7 @@ namespace PoeTradeSearch
                     }
                     else
                     {
-                        return " * " + MinutePeriod.ToString().PadLeft(2, '\u2000')  + "분전";
+                        return " * " + MinutePeriod.ToString().PadLeft(2, '\u2000') + "분전";
                     }
                 }
                 else

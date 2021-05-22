@@ -9,6 +9,6 @@
     <Grid>
         <Image Name="imJpg" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" MinHeight="100" MinWidth="150" MouseDown="Image_MouseDown" />
         <ProgressBar Name="ProgressBar1" HorizontalAlignment="Left" Height="34" Margin="0,0,0,0" VerticalAlignment="Top" MinHeight="100" MinWidth="150" IsIndeterminate="True" Visibility="Hidden"/>
-        <Label Name="Label1" Content="최신 POE DATA&#10;업데이트 하는중..." HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Width="130" FontWeight="Bold" Visibility="Hidden"/>
+        <Label Name="Label1" Content="빈페이지" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Width="130" FontWeight="Bold" Visibility="Hidden"/>
     </Grid>
 </Window>

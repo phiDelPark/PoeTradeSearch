@@ -7,7 +7,7 @@
 			"search_before_day":7,
 			"search_price_min":0,
 			"search_price_count":20,
-			"auto_search_delay":30,
+			"auto_search_delay":0,
 			"auto_check_unique":true,
 			"auto_check_totalres":true,
 			"auto_select_pseudo":true,
@@ -29,7 +29,5 @@
 			{"keycode":78,"ctrl":true,"value":"{Link}https://poe.ninja/{Link}","Detail":"링크 열기 (Ctrl+N)"},
 			{"keycode":72,"ctrl":true,"value":"{Wiki}","Detail":"선택한 아이템의 위키 보기 (Ctrl+H)"},
 			{"keycode":0,"ctrl":true,"value":"{Run}","Detail":"작동키 (Ctrl+C) 변경은 프로젝트 홈 위키 참고"}
-		],
-
-	"version":[ "3.14.1d", "3.14.1.4" ]
+		]
 }

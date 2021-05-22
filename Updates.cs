@@ -12,7 +12,7 @@ namespace PoeTradeSearch
 {
     public partial class WinMain : Window
     {
-        private int CheckUpdates(string poe_version)
+        private int CheckUpdates()
         {
             int isUpdates = 0;
 
@@ -28,12 +28,14 @@ namespace PoeTradeSearch
                     {
                         Version version = new Version(GetFileVersion());
                         isUpdates = version.CompareTo(new Version(versions[0])) < 0 ? 1 : 0;
+                        /*
                         if (isUpdates == 0)
                         {
                             // POE 데이터 버전 검사
-                            version = new Version(poe_version);
+                            version = new Version(this_version);
                             isUpdates = version.CompareTo(new Version(versions[1])) < 0 ? 2 : 0;
                         }
+                        */
                     }
                 }
             });
@@ -279,6 +281,31 @@ namespace PoeTradeSearch
                 }
             });
 
+            thread.Start();
+            thread.Join();
+
+            return success;
+        }
+
+        private bool BasicDataUpdate(string path, string filename)
+        {
+            bool success = false;
+
+            // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
+            Thread thread = new Thread(() =>
+            {
+                string u = "https://raw.githubusercontent.com/phiDelPark/PoeTradeSearch/master/_POE_Data/" + filename;
+                string v_string = SendHTTP(null, u, 3);
+                if ((v_string ?? "") != "")
+                {
+                    using (StreamWriter writer = new StreamWriter(path + filename, false, Encoding.UTF8))
+                    {
+                        writer.Write(v_string);
+                    }
+
+                    success = true;
+                }
+            });
             thread.Start();
             thread.Join();
 

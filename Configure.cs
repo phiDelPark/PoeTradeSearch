@@ -77,6 +77,7 @@ namespace PoeTradeSearch
     {
         private ConfigData mConfigData;
         private ParserData mParserData;
+        private CheckedData mCheckedData;
         private ItemBaseName mItemBaseName;
 
         private PoeData[] mFilterData = new PoeData[2];
@@ -99,6 +100,15 @@ namespace PoeTradeSearch
             FileStream fs = null;
             try
             {
+                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
+                if (!File.Exists(path + "Config.txt"))
+                {
+                    if (!BasicDataUpdate(path, "Config.txt"))
+                    {
+                        throw new UnauthorizedAccessException("failed to create parser");
+                    }
+                }
                 fs = new FileStream(path + "Config.txt", FileMode.Open);
                 using (StreamReader reader = new StreamReader(fs))
                 {
@@ -110,16 +120,34 @@ namespace PoeTradeSearch
                 if (mConfigData.Options.SearchPriceCount > 80)
                     mConfigData.Options.SearchPriceCount = 80;
 
-                // 업데이트 오류시 Parser.txt가 지워질수 있어 존재여부 체크
-                if (File.Exists(path + "Parser.txt"))
+                if (!File.Exists(path + "Parser.txt"))
                 {
-                    fs = new FileStream(path + "Parser.txt", FileMode.Open);
-                    using (StreamReader reader = new StreamReader(fs))
+                    if (!BasicDataUpdate(path, "Parser.txt"))
                     {
-                        fs = null;
-                        string json = reader.ReadToEnd();
-                        mParserData = Json.Deserialize<ParserData>(json);
+                        throw new UnauthorizedAccessException("failed to create parser");
                     }
+                }
+                fs = new FileStream(path + "Parser.txt", FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    mParserData = Json.Deserialize<ParserData>(json);
+                }
+
+                if (!File.Exists(path + "Checked.txt"))
+                {
+                    if (!BasicDataUpdate(path, "Checked.txt"))
+                    {
+                        throw new UnauthorizedAccessException("failed to create parser");
+                    }
+                }
+                fs = new FileStream(path + "Checked.txt", FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    mCheckedData = Json.Deserialize<CheckedData>(json);
                 }
             }
             catch (Exception ex)

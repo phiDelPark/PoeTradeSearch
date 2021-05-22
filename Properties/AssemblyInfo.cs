@@ -50,4 +50,4 @@ using System.Windows;
 // 기본값으로 할 수 있습니다.
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("3.14.1.4")]
+[assembly: AssemblyFileVersion("3.14.1.6")]
