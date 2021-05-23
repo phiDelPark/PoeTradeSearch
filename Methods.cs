@@ -1248,6 +1248,10 @@ namespace PoeTradeSearch
                     {
                         liPrice.Items.Add(msg + (msg_2 != "" ? " = " + msg_2 : ""));
                     }
+                    else
+                    {
+                        liPrice.ScrollIntoView(liPrice.Items[0]);
+                    }
                 });
             }
         }

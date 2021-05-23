@@ -105,9 +105,7 @@ namespace PoeTradeSearch
                 if (!File.Exists(path + "Config.txt"))
                 {
                     if (!BasicDataUpdate(path, "Config.txt"))
-                    {
-                        throw new UnauthorizedAccessException("failed to create parser");
-                    }
+                        throw new UnauthorizedAccessException("Config 파일 생성 실패");
                 }
                 fs = new FileStream(path + "Config.txt", FileMode.Open);
                 using (StreamReader reader = new StreamReader(fs))
@@ -123,9 +121,7 @@ namespace PoeTradeSearch
                 if (!File.Exists(path + "Parser.txt"))
                 {
                     if (!BasicDataUpdate(path, "Parser.txt"))
-                    {
-                        throw new UnauthorizedAccessException("failed to create parser");
-                    }
+                        throw new UnauthorizedAccessException("Parser 파일 생성 실패");
                 }
                 fs = new FileStream(path + "Parser.txt", FileMode.Open);
                 using (StreamReader reader = new StreamReader(fs))
@@ -138,9 +134,7 @@ namespace PoeTradeSearch
                 if (!File.Exists(path + "Checked.txt"))
                 {
                     if (!BasicDataUpdate(path, "Checked.txt"))
-                    {
-                        throw new UnauthorizedAccessException("failed to create parser");
-                    }
+                        throw new UnauthorizedAccessException("checked 파일 생성 실패");
                 }
                 fs = new FileStream(path + "Checked.txt", FileMode.Open);
                 using (StreamReader reader = new StreamReader(fs))
@@ -184,7 +178,7 @@ namespace PoeTradeSearch
                     if (!FilterDataUpdate(path) || !ItemDataUpdate(path) || !StaticDataUpdate(path))
                     {
                         s = "생성 실패";
-                        throw new UnauthorizedAccessException("failed to create database");
+                        throw new UnauthorizedAccessException("Database 파일 생성 실패");
                     }
                 }
 
