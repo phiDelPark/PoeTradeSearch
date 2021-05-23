@@ -47,8 +47,7 @@
 			{"id":"jewel/","text":[ "한손 근접 무기 사용 시 치명타 피해 배율 #%", "#% to Critical Strike Multiplier with One Handed Melee Weapons" ]},
 			{"id":"jewel/","text":[ "양손 근접 무기 사용 시 치명타 피해 배율 #%", "#% to Critical Strike Multiplier with Two Handed Melee Weapons" ]},
 			{"id":"jewel/","text":[ "방패를 들고 있는 동안 주문 피해 #% 증가", "#% increased Spell Damage while holding a Shield" ]},
-			{"id":"jewel/","text":[ "방패를 들고 있는 동안 공격 피해 #% 증가", "#% increased Attack Damage while holding a Shield"]},
-			{"id":"jewel/","text":[ "패시브 스킬 #개 추가", "Adds # Passive Skills"]}
+			{"id":"jewel/","text":[ "방패를 들고 있는 동안 공격 피해 #% 증가", "#% increased Attack Damage while holding a Shield"]}
 		]
 	}
 }

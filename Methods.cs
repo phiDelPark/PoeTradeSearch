@@ -85,9 +85,14 @@ namespace PoeTradeSearch
                 ((ComboBox)this.FindName("cbOpt" + i)).SelectedValuePath = "Name";
 
                 ((TextBox)this.FindName("tbOpt" + i)).Text = "";
+                ((TextBox)this.FindName("tbOpt" + i)).Tag = null;
                 ((TextBox)this.FindName("tbOpt" + i)).Background = SystemColors.WindowBrush;
                 ((TextBox)this.FindName("tbOpt" + i + "_0")).Text = "";
                 ((TextBox)this.FindName("tbOpt" + i + "_1")).Text = "";
+                ((TextBox)this.FindName("tbOpt" + i + "_0")).IsEnabled = true;
+                ((TextBox)this.FindName("tbOpt" + i + "_1")).IsEnabled = true;
+                ((TextBox)this.FindName("tbOpt" + i + "_0")).Background = SystemColors.WindowBrush;
+                ((TextBox)this.FindName("tbOpt" + i + "_0")).Foreground = ((TextBox)this.FindName("tbOpt" + i)).Foreground;
                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsEnabled = true;
                 ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
                 ((CheckBox)this.FindName("tbOpt" + i + "_3")).IsChecked = false;
@@ -143,6 +148,28 @@ namespace PoeTradeSearch
                             " = T." + Math.Round(physicalDPS + elementalDPS + chaosDPS, 2).ToString();
         }
 
+        private void Deduplicationfilter(List<Itemfilter> itemfilters)
+        {
+            for (int i = 0; i < itemfilters.Count; i++)
+            {
+                string txt = ((TextBox)this.FindName("tbOpt" + i)).Text;
+                if (((CheckBox)this.FindName("tbOpt" + i + "_2")).IsEnabled == false) continue;
+
+                for (int j = 0; j < itemfilters.Count; j++)
+                {
+                    if (i == j) continue;
+
+                    CheckBox tmpCcheckBox2 = (CheckBox)this.FindName("tbOpt" + j + "_2");
+                    if (((TextBox)this.FindName("tbOpt" + j)).Text == txt)
+                    {
+                        tmpCcheckBox2.IsChecked = false;
+                        tmpCcheckBox2.IsEnabled = false;
+                        itemfilters[j].disabled = true;
+                    }
+                }
+            }
+        }
+
         private void ItemTextParser(string itemText, bool isWinShow = true)
         {
             string item_category = "";
@@ -195,7 +222,7 @@ namespace PoeTradeSearch
                     Dictionary<string, string> lItemOption = new Dictionary<string, string>()
                     {
                         { PS.Quality.Text[z], "" }, { PS.Level.Text[z], "" }, { PS.ItemLevel.Text[z], "" }, { PS.TalismanTier.Text[z], "" }, { PS.MapTier.Text[z], "" },
-                        { PS.Sockets.Text[z], "" }, { PS.MapUltimatum.Text[z], "" }, { PS.MonsterGenus.Text[z], "" }, { PS.MonsterGroup.Text[z], "" }, 
+                        { PS.Sockets.Text[z], "" }, { PS.MapUltimatum.Text[z], "" }, { PS.MonsterGenus.Text[z], "" }, { PS.MonsterGroup.Text[z], "" },
                         { PS.PhysicalDamage.Text[z], "" }, { PS.ElementalDamage.Text[z], "" }, { PS.ChaosDamage.Text[z], "" },
                         { PS.AttacksPerSecond.Text[z], "" }, { PS.ShaperItem.Text[z], "" }, { PS.ElderItem.Text[z], "" }, { PS.CrusaderItem.Text[z], "" },
                         { PS.RedeemerItem.Text[z], "" }, { PS.HunterItem.Text[z], "" }, { PS.WarlordItem.Text[z], "" }, { PS.SynthesisedItem.Text[z], "" },
@@ -219,13 +246,24 @@ namespace PoeTradeSearch
                             else if (k < 10 && (lItemOption[PS.ItemLevel.Text[z]] != "" || PS.MapUltimatum.Text[z] != ""))
                             {
                                 double min = 99999, max = 99999;
-                                bool resistance = false;
                                 bool crafted = asOpt[j].IndexOf("(crafted)") > -1;
+                                bool resistance = false;
+                                string cluster_jewel = "";
+
+                                if (asTmp.Length == 2)
+                                {
+                                    asTmp[1] = Regex.Replace(asTmp[1], @" \([a-zA-Z]+\)", "").Trim();
+                                    ParserDictionary Cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == asTmp[1]);
+                                    if (Cluster != null)
+                                    {
+                                        cluster_jewel = Cluster.Text[z];
+                                        asOpt[j] = asTmp[0] + ": " + Cluster.Id;
+                                    }
+                                }
 
                                 string input = Regex.Replace(asOpt[j], @" \([a-zA-Z]+\)", "");
                                 input = Regex.Escape(Regex.Replace(input, @"[+-]?[0-9]+\.[0-9]+|[+-]?[0-9]+", "#"));
                                 input = Regex.Replace(input, @"\\#", "[+-]?([0-9]+\\.[0-9]+|[0-9]+|\\#)");
-                                //input = input + (is_captured_beast ? "\\(" + RS.Captured[z] + "\\)" : "");
 
                                 bool local_exists = false;
                                 DataEntrie filter = null;
@@ -233,6 +271,7 @@ namespace PoeTradeSearch
 
                                 foreach (DataResult data_result in mFilterData[z].Result)
                                 {
+
                                     DataEntrie[] entries = Array.FindAll(data_result.Entries, x => rgx.IsMatch(x.Text));
 
                                     // 2개 이상 같은 옵션이 있을때 장비 옵션 (특정) 만 추출
@@ -336,13 +375,6 @@ namespace PoeTradeSearch
 
                                         selidx = ((ComboBox)this.FindName("cbOpt" + k)).Items.Count == 1 ? 0 : -1;
 
-                                        //if (is_captured_beast)
-                                        //{
-                                        //    ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.lFilterType["monster"];
-                                        //    selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
-                                        //}
-                                        //else
-
                                         // 인첸트, 제작은 다른 곳에서 다시 체크함
                                         string[] tmps = { !local_exists && mConfigData.Options.AutoSelectPseudo ? "pseudo" : "explicit", "explicit", "fractured" };
                                         foreach (string tmp in tmps)
@@ -389,9 +421,6 @@ namespace PoeTradeSearch
                                         }
                                     }
 
-                                    ((TextBox)this.FindName("tbOpt" + k + "_0")).Text = min == 99999 ? "" : min.ToString();
-                                    ((TextBox)this.FindName("tbOpt" + k + "_1")).Text = max == 99999 ? "" : max.ToString();
-
                                     Itemfilter itemfilter = new Itemfilter
                                     {
                                         id = filter.Type,
@@ -400,6 +429,19 @@ namespace PoeTradeSearch
                                         min = min,
                                         disabled = true
                                     };
+
+                                    if (cluster_jewel != "")
+                                    {
+                                        ((TextBox)this.FindName("tbOpt" + k)).Text = cluster_jewel;
+                                        ((TextBox)this.FindName("tbOpt" + k)).Tag = "CLUSTER";
+                                        ((TextBox)this.FindName("tbOpt" + k + "_0")).IsEnabled = false;
+                                        ((TextBox)this.FindName("tbOpt" + k + "_1")).IsEnabled = false;
+                                        ((TextBox)this.FindName("tbOpt" + k + "_0")).Background = SystemColors.WindowBrush;
+                                        ((TextBox)this.FindName("tbOpt" + k + "_0")).Foreground = SystemColors.WindowBrush;
+                                    }
+
+                                    ((TextBox)this.FindName("tbOpt" + k + "_0")).Text = min == 99999 ? "" : min.ToString();
+                                    ((TextBox)this.FindName("tbOpt" + k + "_1")).Text = max == 99999 ? "" : max.ToString();
 
                                     itemfilters.Add(itemfilter);
 
@@ -430,10 +472,10 @@ namespace PoeTradeSearch
                     bool is_map_ultimatum = lItemOption[PS.MapUltimatum.Text[z]] != "";
                     bool is_prophecy = lItemOption[PS.ProphecyItem.Text[z]] == "_TRUE_";
                     bool is_currency = rarity_id == "currency";
-                    bool is_divinationCard = rarity_id == "card";
+                    bool is_divination_card = rarity_id == "card";
                     bool is_gem = rarity_id == "gem";
                     bool is_vaal_gem = is_gem && lItemOption[PS.Vaal.Text[z] + " " + item_type] == "_TRUE_";
-                    bool is_detail = is_gem || (!is_map_ultimatum && is_currency) || is_divinationCard || is_prophecy;
+                    bool is_detail = is_gem || (!is_map_ultimatum && is_currency) || is_divination_card || is_prophecy;
                     bool is_unIdentify = lItemOption[PS.Unidentified.Text[z]] == "_TRUE_";
 
                     if (lItemOption[PS.Sockets.Text[z]] != "")
@@ -557,7 +599,6 @@ namespace PoeTradeSearch
                     mItemBaseName.TypeEN = z == 1 || cate_idx == -1 || item_idx == -1 ? item_type : mItemsData[1].Result[cate_idx].Entries[item_idx].Type;
                     mItemBaseName.TypeKR = z == 0 || cate_idx == -1 || item_idx == -1 ? item_type : mItemsData[0].Result[cate_idx].Entries[item_idx].Type;
 
-
                     string item_quality = Regex.Replace(lItemOption[PS.Quality.Text[z]], "[^0-9]", "");
                     bool by_type = cate_ids.Length > 1 && (cate_ids[0] == "weapon" || cate_ids[0] == "armour" || cate_ids[0] == "accessory");
 
@@ -583,27 +624,27 @@ namespace PoeTradeSearch
                         for (int i = 0; i < itemfilters.Count; i++)
                         {
                             Itemfilter ifilter = itemfilters[i];
+                            ComboBox tmpComboBox = (ComboBox)this.FindName("cbOpt" + i);
+                            CheckBox tmpCheckBox = (CheckBox)this.FindName("tbOpt" + i + "_2");
 
                             if (i < Imp_cnt)
                             {
                                 SetFilterObjectColor(i, System.Windows.Media.Brushes.Blue);
-                                ((ComboBox)this.FindName("cbOpt" + i)).SelectedValue = RS.lFilterType["enchant"];
-                                if (((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex == -1)
+                                tmpComboBox.SelectedValue = RS.lFilterType["enchant"];
+                                if (tmpComboBox.SelectedIndex == -1)
                                 {
                                     SetFilterObjectColor(i, System.Windows.Media.Brushes.DarkRed);
-                                    ((ComboBox)this.FindName("cbOpt" + i)).SelectedValue = RS.lFilterType["implicit"];
+                                    tmpComboBox.SelectedValue = RS.lFilterType["implicit"];
                                 }
-
-                                ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
+                                tmpCheckBox.IsChecked = ((string)((TextBox)this.FindName("tbOpt" + i)).Tag ?? "") == "CLUSTER";
                                 itemfilters[i].disabled = true;
                             }
-                            else if (cate_ids[0] != "" && ((ComboBox)this.FindName("cbOpt" + i)).SelectedIndex > -1)
+                            else if (cate_ids[0] != "" && tmpComboBox.SelectedIndex > -1)
                             {
-                                if ((string)((ComboBox)this.FindName("cbOpt" + i)).SelectedValue != RS.lFilterType["crafted"]
-                                    && ((mConfigData.Options.AutoCheckUnique && rarity_id == "unique")
+                                if ((string)tmpComboBox.SelectedValue != RS.lFilterType["crafted"] && ((mConfigData.Options.AutoCheckUnique && rarity_id == "unique")
                                     || (Array.Find(mCheckedData.Checked.Entries, x => x.Text[z] == ifilter.text && x.Id.IndexOf(cate_ids[0] + "/") > -1) != null)))
                                 {
-                                    ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = true;
+                                    tmpCheckBox.IsChecked = true;
                                     itemfilters[i].disabled = false;
                                 }
                             }
@@ -612,260 +653,247 @@ namespace PoeTradeSearch
                         // 장기는 중복 옵션 제거
                         if (cate_ids.Length > 1 && cate_ids[0] == "monster" && cate_ids[1] == "sample")
                         {
-                            for (int i = 0; i < itemfilters.Count; i++)
-                            {
-                                string txt = ((TextBox)this.FindName("tbOpt" + i)).Text;
-                                if (((CheckBox)this.FindName("tbOpt" + i + "_2")).IsEnabled == false) continue;
-                                for (int j = 0; j < itemfilters.Count; j++)
-                                {
-                                    if (i == j) continue;
-                                    if (((TextBox)this.FindName("tbOpt" + j)).Text == txt)
-                                    {
-                                        ((CheckBox)this.FindName("tbOpt" + j + "_2")).IsChecked = false;
-                                        ((CheckBox)this.FindName("tbOpt" + j + "_2")).IsEnabled = false;
-                                        itemfilters[j].disabled = true;
-                                    }
-                                }
-                            }
+                            Deduplicationfilter(itemfilters);
                         }
 
-                        if (!is_unIdentify && cate_ids[0] == "weapon")
-                        {
-                            setDPS(
-                                    lItemOption[PS.PhysicalDamage.Text[z]], lItemOption[PS.ElementalDamage.Text[z]], lItemOption[PS.ChaosDamage.Text[z]],
-                                    item_quality, lItemOption[PS.AttacksPerSecond.Text[z]], PhysicalDamageIncr, attackSpeedIncr
-                                );
-                        }
-                    }
-
-                    cbName.SelectionChanged -= cbName_SelectionChanged;
-                    cbName.Items.Clear();
-                    cbName.Items.Add((Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\,\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\,\s']+\)$", "")).Trim());
-                    cbName.Items.Add((mItemBaseName.NameEN + " " + mItemBaseName.TypeEN).Trim());
-                    cbName.Items.Add((RS.ServerLang == 1 ? "영국서버 - " : "한국서버 - ") + "아이템 유형으로 검색합니다");
-                    cbName.SelectedIndex = RS.ServerLang == 1 ? 1 : 0;
-                    if (by_type && (rarity_id == "magic" || rarity_id == "rare"))
+                    if (!is_unIdentify && cate_ids[0] == "weapon")
                     {
-                        string[] bys = mConfigData.Options.AutoSelectByType.ToLower().Split(',');
-                        if (Array.IndexOf(bys, cate_ids[0]) > -1) cbName.SelectedIndex = 2;
-                    }
-                    cbName.SelectionChanged += cbName_SelectionChanged;
-
-                    cbRarity.SelectedValue = item_rarity;
-                    if (cbRarity.SelectedIndex == -1)
-                    {
-                        cbRarity.Items.Clear();
-                        cbRarity.Items.Add(item_rarity);
-                        cbRarity.SelectedIndex = 0;
-                    }
-                    else if ((string)cbRarity.SelectedValue == "normal")
-                    {
-                        cbRarity.SelectedIndex = 0;
-                    }
-
-                    bool Is_exchangeCurrency = cate_ids[0] == "currency" && GetExchangeItem(z, item_type) != null;
-                    bdExchange.Visibility = !is_gem && (is_detail || Is_exchangeCurrency) ? Visibility.Visible : Visibility.Hidden;
-                    bdExchange.IsEnabled = Is_exchangeCurrency;
-
-                    if (bdExchange.Visibility == Visibility.Hidden)
-                    {
-                        tbLvMin.Text = Regex.Replace(lItemOption[is_gem ? PS.Level.Text[z] : PS.ItemLevel.Text[z]], "[^0-9]", "");
-                        tbQualityMin.Text = item_quality;
-
-                        string[] Influences = { PS.ShaperItem.Text[z], PS.ElderItem.Text[z], PS.CrusaderItem.Text[z], PS.RedeemerItem.Text[z], PS.HunterItem.Text[z], PS.WarlordItem.Text[z] };
-                        for (int i = 0; i < Influences.Length; i++)
-                        {
-                            if (lItemOption[Influences[i]] == "_TRUE_")
-                                cbInfluence1.SelectedIndex = i + 1;
-                        }
-
-                        for (int i = 0; i < Influences.Length; i++)
-                        {
-                            if (cbInfluence1.SelectedIndex != (i + 1) && lItemOption[Influences[i]] == "_TRUE_")
-                                cbInfluence2.SelectedIndex = i + 1;
-                        }
-
-                        if (lItemOption[PS.Corrupted.Text[z]] == "_TRUE_")
-                        {
-                            cbCorrupt.BorderThickness = new Thickness(2);
-                            cbCorrupt.FontWeight = FontWeights.Bold;
-                            cbCorrupt.Foreground = System.Windows.Media.Brushes.DarkRed;
-                        }
-
-                        Synthesis.IsChecked = (is_map && is_blight) || lItemOption[PS.SynthesisedItem.Text[z]] == "_TRUE_";
-
-                        if (cbInfluence1.SelectedIndex > 0) cbInfluence1.BorderThickness = new Thickness(2);
-                        if (cbInfluence2.SelectedIndex > 0) cbInfluence2.BorderThickness = new Thickness(2);
-
-                        if (is_map)
-                        {
-                            tbLvMin.Text = tbLvMax.Text = lItemOption[PS.MapTier.Text[z]];
-                            ckLv.Content = "등급";
-                            ckLv.IsChecked = true;
-                            Synthesis.Content = "역병";
-                        }
-                        else if (is_gem)
-                        {
-                            ckLv.IsChecked = lItemOption[PS.Level.Text[z]].IndexOf(" (" + PS.Max.Text[z]) > 0;
-                            ckQuality.IsChecked = ckLv.IsChecked == true && item_quality != "" && int.Parse(item_quality) > 19;
-                            cbGemAltQuality.SelectedIndex = alt_quality;
-                        }
-                        else if (by_type || cate_ids[0] == "flask")
-                        {
-                            if (tbQualityMin.Text != "" && int.Parse(tbQualityMin.Text) > (cate_ids[0] == "accessory" ? 4 : 20))
-                            {
-                                ckQuality.FontWeight = FontWeights.Bold;
-                                ckQuality.Foreground = System.Windows.Media.Brushes.DarkRed;
-                                ckQuality.BorderBrush = System.Windows.Media.Brushes.DarkRed;
-                            }
-
-                            if (by_type)
-                            {
-                                if (tbLvMin.Text != "" && int.Parse(tbLvMin.Text) > 82)
-                                {
-                                    ckLv.FontWeight = FontWeights.Bold;
-                                    ckLv.Foreground = System.Windows.Media.Brushes.DarkRed;
-                                    ckLv.BorderBrush = System.Windows.Media.Brushes.DarkRed;
-                                }
-
-                                cbCorrupt.SelectedIndex = mConfigData.Options.AutoSelectCorrupt == "no" ? 2 : (mConfigData.Options.AutoSelectCorrupt == "yes" ? 1 : 0);
-                            }
-                        }
-                    }
-
-                    cbGemAltQuality.Visibility = is_gem ? Visibility.Visible : Visibility.Hidden;
-                    bdDetail.Visibility = is_detail ? Visibility.Visible : Visibility.Hidden;
-                    lbSocketBackground.Visibility = by_type ? Visibility.Hidden : Visibility.Visible;
-
-                    if (isWinShow || this.Visibility == Visibility.Visible)
-                    {
-                        tkPriceInfo.Foreground = tkPriceCount.Foreground = SystemColors.WindowTextBrush;
-
-                        mLockUpdatePrice = false;
-
-                        if (mConfigData.Options.AutoSearchDelay > 0 && mAutoSearchTimerCount < 1)
-                        {
-                            UpdatePriceThreadWorker(GetItemOptions(), null);
-                        }
-                        else
-                        {
-                            liPrice.Items.Clear();
-                            tkPriceCount.Text = "";
-                            cbPriceListTotal.Text = "0/0 검색";
-                            //tkPriceInfo.Foreground = tkPriceCount.Foreground = System.Windows.SystemColors.HighlightBrush;
-                        }
-
-                        SetSearchButtonText(RS.ServerLang == 0);
-                        this.ShowActivated = false;
-                        this.Visibility = Visibility.Visible;
+                        setDPS(
+                                lItemOption[PS.PhysicalDamage.Text[z]], lItemOption[PS.ElementalDamage.Text[z]], lItemOption[PS.ChaosDamage.Text[z]],
+                                item_quality, lItemOption[PS.AttacksPerSecond.Text[z]], PhysicalDamageIncr, attackSpeedIncr
+                            );
                     }
                 }
+
+                cbName.SelectionChanged -= cbName_SelectionChanged;
+                cbName.Items.Clear();
+                cbName.Items.Add((Regex.Replace(mItemBaseName.NameKR, @"\([a-zA-Z\,\s']+\)$", "") + " " + Regex.Replace(mItemBaseName.TypeKR, @"\([a-zA-Z\,\s']+\)$", "")).Trim());
+                cbName.Items.Add((mItemBaseName.NameEN + " " + mItemBaseName.TypeEN).Trim());
+                cbName.Items.Add((RS.ServerLang == 1 ? "영국서버 - " : "한국서버 - ") + "아이템 유형으로 검색합니다");
+                cbName.SelectedIndex = RS.ServerLang == 1 ? 1 : 0;
+                if (by_type && (rarity_id == "magic" || rarity_id == "rare"))
+                {
+                    string[] bys = mConfigData.Options.AutoSelectByType.ToLower().Split(',');
+                    if (Array.IndexOf(bys, cate_ids[0]) > -1) cbName.SelectedIndex = 2;
+                }
+                cbName.SelectionChanged += cbName_SelectionChanged;
+
+                cbRarity.SelectedValue = item_rarity;
+                if (cbRarity.SelectedIndex == -1)
+                {
+                    cbRarity.Items.Clear();
+                    cbRarity.Items.Add(item_rarity);
+                    cbRarity.SelectedIndex = 0;
+                }
+                else if ((string)cbRarity.SelectedValue == "normal")
+                {
+                    cbRarity.SelectedIndex = 0;
+                }
+
+                bool Is_exchangeCurrency = cate_ids[0] == "currency" && GetExchangeItem(z, item_type) != null;
+                bdExchange.Visibility = !is_gem && (is_detail || Is_exchangeCurrency) ? Visibility.Visible : Visibility.Hidden;
+                bdExchange.IsEnabled = Is_exchangeCurrency;
+
+                if (bdExchange.Visibility == Visibility.Hidden)
+                {
+                    tbLvMin.Text = Regex.Replace(lItemOption[is_gem ? PS.Level.Text[z] : PS.ItemLevel.Text[z]], "[^0-9]", "");
+                    tbQualityMin.Text = item_quality;
+
+                    string[] Influences = { PS.ShaperItem.Text[z], PS.ElderItem.Text[z], PS.CrusaderItem.Text[z], PS.RedeemerItem.Text[z], PS.HunterItem.Text[z], PS.WarlordItem.Text[z] };
+                    for (int i = 0; i < Influences.Length; i++)
+                    {
+                        if (lItemOption[Influences[i]] == "_TRUE_")
+                            cbInfluence1.SelectedIndex = i + 1;
+                    }
+
+                    for (int i = 0; i < Influences.Length; i++)
+                    {
+                        if (cbInfluence1.SelectedIndex != (i + 1) && lItemOption[Influences[i]] == "_TRUE_")
+                            cbInfluence2.SelectedIndex = i + 1;
+                    }
+
+                    if (lItemOption[PS.Corrupted.Text[z]] == "_TRUE_")
+                    {
+                        cbCorrupt.BorderThickness = new Thickness(2);
+                        cbCorrupt.FontWeight = FontWeights.Bold;
+                        cbCorrupt.Foreground = System.Windows.Media.Brushes.DarkRed;
+                    }
+
+                    Synthesis.IsChecked = (is_map && is_blight) || lItemOption[PS.SynthesisedItem.Text[z]] == "_TRUE_";
+
+                    if (cbInfluence1.SelectedIndex > 0) cbInfluence1.BorderThickness = new Thickness(2);
+                    if (cbInfluence2.SelectedIndex > 0) cbInfluence2.BorderThickness = new Thickness(2);
+
+                    if (is_map)
+                    {
+                        tbLvMin.Text = tbLvMax.Text = lItemOption[PS.MapTier.Text[z]];
+                        ckLv.Content = "등급";
+                        ckLv.IsChecked = true;
+                        Synthesis.Content = "역병";
+                    }
+                    else if (is_gem)
+                    {
+                        ckLv.IsChecked = lItemOption[PS.Level.Text[z]].IndexOf(" (" + PS.Max.Text[z]) > 0;
+                        ckQuality.IsChecked = ckLv.IsChecked == true && item_quality != "" && int.Parse(item_quality) > 19;
+                        cbGemAltQuality.SelectedIndex = alt_quality;
+                    }
+                    else if (by_type || cate_ids[0] == "flask")
+                    {
+                        if (tbQualityMin.Text != "" && int.Parse(tbQualityMin.Text) > (cate_ids[0] == "accessory" ? 4 : 20))
+                        {
+                            ckQuality.FontWeight = FontWeights.Bold;
+                            ckQuality.Foreground = System.Windows.Media.Brushes.DarkRed;
+                            ckQuality.BorderBrush = System.Windows.Media.Brushes.DarkRed;
+                        }
+
+                        if (by_type)
+                        {
+                            if (tbLvMin.Text != "" && int.Parse(tbLvMin.Text) > 82)
+                            {
+                                ckLv.FontWeight = FontWeights.Bold;
+                                ckLv.Foreground = System.Windows.Media.Brushes.DarkRed;
+                                ckLv.BorderBrush = System.Windows.Media.Brushes.DarkRed;
+                            }
+
+                            cbCorrupt.SelectedIndex = mConfigData.Options.AutoSelectCorrupt == "no" ? 2 : (mConfigData.Options.AutoSelectCorrupt == "yes" ? 1 : 0);
+                        }
+                    }
+                }
+
+                cbGemAltQuality.Visibility = is_gem ? Visibility.Visible : Visibility.Hidden;
+                bdDetail.Visibility = is_detail ? Visibility.Visible : Visibility.Hidden;
+                lbSocketBackground.Visibility = by_type ? Visibility.Hidden : Visibility.Visible;
+
+                if (isWinShow || this.Visibility == Visibility.Visible)
+                {
+                    tkPriceInfo.Foreground = tkPriceCount.Foreground = SystemColors.WindowTextBrush;
+
+                    mLockUpdatePrice = false;
+
+                    if (mConfigData.Options.AutoSearchDelay > 0 && mAutoSearchTimerCount < 1)
+                    {
+                        UpdatePriceThreadWorker(GetItemOptions(), null);
+                    }
+                    else
+                    {
+                        liPrice.Items.Clear();
+                        tkPriceCount.Text = "";
+                        cbPriceListTotal.Text = "0/0 검색";
+                        //tkPriceInfo.Foreground = tkPriceCount.Foreground = System.Windows.SystemColors.HighlightBrush;
+                    }
+
+                    SetSearchButtonText(RS.ServerLang == 0);
+                    this.ShowActivated = false;
+                    this.Visibility = Visibility.Visible;
+                }
+            }
             }
             catch (Exception ex)
             {
                 //Console.WriteLine(ex.Message);
                 ForegroundMessage(String.Format("{0} 에러:  {1}\r\n\r\n{2}\r\n\r\n", ex.Source, ex.Message, ex.StackTrace), "에러", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
+}
 
-        private ItemOption GetItemOptions()
+private ItemOption GetItemOptions()
+{
+    ItemOption itemOption = new ItemOption();
+
+    itemOption.Influence1 = (byte)cbInfluence1.SelectedIndex;
+    itemOption.Influence2 = (byte)cbInfluence2.SelectedIndex;
+
+    // 영향은 첫번째 값이 우선 순위여야 함
+    if (itemOption.Influence1 == 0 && itemOption.Influence2 != 0)
+    {
+        itemOption.Influence1 = itemOption.Influence2;
+        itemOption.Influence2 = 0;
+    }
+
+    itemOption.Corrupt = (byte)cbCorrupt.SelectedIndex;
+    itemOption.Synthesis = Synthesis.IsChecked == true;
+    itemOption.ChkSocket = ckSocket.IsChecked == true;
+    itemOption.ChkQuality = ckQuality.IsChecked == true;
+    itemOption.ChkLv = ckLv.IsChecked == true;
+    itemOption.ByType = cbName.SelectedIndex == 2;
+
+    itemOption.SocketMin = StrToDouble(tbSocketMin.Text, 99999);
+    itemOption.SocketMax = StrToDouble(tbSocketMax.Text, 99999);
+    itemOption.LinkMin = StrToDouble(tbLinksMin.Text, 99999);
+    itemOption.LinkMax = StrToDouble(tbLinksMax.Text, 99999);
+    itemOption.QualityMin = StrToDouble(tbQualityMin.Text, 99999);
+    itemOption.QualityMax = StrToDouble(tbQualityMax.Text, 99999);
+    itemOption.LvMin = StrToDouble(tbLvMin.Text, 99999);
+    itemOption.LvMax = StrToDouble(tbLvMax.Text, 99999);
+
+    itemOption.PriceMin = tbPriceFilterMin.Text == "" ? 0 : StrToDouble(tbPriceFilterMin.Text, 99999);
+    itemOption.RarityAt = (byte)(cbRarity.Items.Count > 1 ? cbRarity.SelectedIndex : 0);
+
+    itemOption.AltQuality = (byte)cbGemAltQuality.SelectedIndex;
+
+    int total_res_idx = -1;
+
+    for (int i = 0; i < 10; i++)
+    {
+        Itemfilter itemfilter = new Itemfilter();
+        ComboBox comboBox = (ComboBox)this.FindName("cbOpt" + i);
+
+        if (comboBox.SelectedIndex > -1)
         {
-            ItemOption itemOption = new ItemOption();
+            itemfilter.text = ((TextBox)this.FindName("tbOpt" + i)).Text.Trim();
+            itemfilter.flag = (string)((TextBox)this.FindName("tbOpt" + i)).Tag;
+            itemfilter.disabled = ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked != true;
+            itemfilter.min = StrToDouble(((TextBox)this.FindName("tbOpt" + i + "_0")).Text, 99999);
+            itemfilter.max = StrToDouble(((TextBox)this.FindName("tbOpt" + i + "_1")).Text, 99999);
 
-            itemOption.Influence1 = (byte)cbInfluence1.SelectedIndex;
-            itemOption.Influence2 = (byte)cbInfluence2.SelectedIndex;
-
-            // 영향은 첫번째 값이 우선 순위여야 함
-            if (itemOption.Influence1 == 0 && itemOption.Influence2 != 0)
+            if (itemfilter.disabled == false && ((CheckBox)this.FindName("tbOpt" + i + "_3")).IsChecked == true)
             {
-                itemOption.Influence1 = itemOption.Influence2;
-                itemOption.Influence2 = 0;
-            }
-
-            itemOption.Corrupt = (byte)cbCorrupt.SelectedIndex;
-            itemOption.Synthesis = Synthesis.IsChecked == true;
-            itemOption.ChkSocket = ckSocket.IsChecked == true;
-            itemOption.ChkQuality = ckQuality.IsChecked == true;
-            itemOption.ChkLv = ckLv.IsChecked == true;
-            itemOption.ByType = cbName.SelectedIndex == 2;
-
-            itemOption.SocketMin = StrToDouble(tbSocketMin.Text, 99999);
-            itemOption.SocketMax = StrToDouble(tbSocketMax.Text, 99999);
-            itemOption.LinkMin = StrToDouble(tbLinksMin.Text, 99999);
-            itemOption.LinkMax = StrToDouble(tbLinksMax.Text, 99999);
-            itemOption.QualityMin = StrToDouble(tbQualityMin.Text, 99999);
-            itemOption.QualityMax = StrToDouble(tbQualityMax.Text, 99999);
-            itemOption.LvMin = StrToDouble(tbLvMin.Text, 99999);
-            itemOption.LvMax = StrToDouble(tbLvMax.Text, 99999);
-
-            itemOption.PriceMin = tbPriceFilterMin.Text == "" ? 0 : StrToDouble(tbPriceFilterMin.Text, 99999);
-            itemOption.RarityAt = (byte)(cbRarity.Items.Count > 1 ? cbRarity.SelectedIndex : 0);
-
-            itemOption.AltQuality = (byte)cbGemAltQuality.SelectedIndex;
-
-            int total_res_idx = -1;
-
-            for (int i = 0; i < 10; i++)
-            {
-                Itemfilter itemfilter = new Itemfilter();
-                ComboBox comboBox = (ComboBox)this.FindName("cbOpt" + i);
-
-                if (comboBox.SelectedIndex > -1)
+                if (total_res_idx == -1)
                 {
-                    itemfilter.text = ((TextBox)this.FindName("tbOpt" + i)).Text.Trim();
-                    itemfilter.disabled = ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked != true;
-                    itemfilter.min = StrToDouble(((TextBox)this.FindName("tbOpt" + i + "_0")).Text, 99999);
-                    itemfilter.max = StrToDouble(((TextBox)this.FindName("tbOpt" + i + "_1")).Text, 99999);
-
-                    if (itemfilter.disabled == false && ((CheckBox)this.FindName("tbOpt" + i + "_3")).IsChecked == true)
-                    {
-                        if (total_res_idx == -1)
-                        {
-                            total_res_idx = itemOption.itemfilters.Count;
-                            itemfilter.id = "pseudo.pseudo_total_resistance";
-                        }
-                        else
-                        {
-                            double min = itemOption.itemfilters[total_res_idx].min;
-                            itemOption.itemfilters[total_res_idx].min = (min == 99999 ? 0 : min) + (itemfilter.min == 99999 ? 0 : itemfilter.min);
-                            double max = itemOption.itemfilters[total_res_idx].max;
-                            itemOption.itemfilters[total_res_idx].max = (max == 99999 ? 0 : max) + (itemfilter.max == 99999 ? 0 : itemfilter.max);
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        itemfilter.id = ((FilterEntrie)comboBox.SelectedItem).ID;
-                    }
-
-                    itemOption.itemfilters.Add(itemfilter);
+                    total_res_idx = itemOption.itemfilters.Count;
+                    itemfilter.id = "pseudo.pseudo_total_resistance";
+                }
+                else
+                {
+                    double min = itemOption.itemfilters[total_res_idx].min;
+                    itemOption.itemfilters[total_res_idx].min = (min == 99999 ? 0 : min) + (itemfilter.min == 99999 ? 0 : itemfilter.min);
+                    double max = itemOption.itemfilters[total_res_idx].max;
+                    itemOption.itemfilters[total_res_idx].max = (max == 99999 ? 0 : max) + (itemfilter.max == 99999 ? 0 : itemfilter.max);
+                    continue;
                 }
             }
-
-            // 총 저항은 min 값만 필요
-            if (total_res_idx > -1)
+            else
             {
-                itemOption.itemfilters[total_res_idx].min = itemOption.itemfilters[total_res_idx].min + itemOption.itemfilters[total_res_idx].max;
-                itemOption.itemfilters[total_res_idx].max = 0;
+                itemfilter.id = ((FilterEntrie)comboBox.SelectedItem).ID;
             }
 
-            return itemOption;
+            itemOption.itemfilters.Add(itemfilter);
         }
+    }
 
-        private string CreateJson(ItemOption itemOptions, bool useSaleType)
-        {
-            string BeforeDayToString(int day)
-            {
-                if (day < 1)
-                    return "any";
-                else if (day < 3)
-                    return "1day";
-                else if (day < 7)
-                    return "3days";
-                else if (day < 14)
-                    return "1week";
-                return "2weeks";
-            }
+    // 총 저항은 min 값만 필요
+    if (total_res_idx > -1)
+    {
+        itemOption.itemfilters[total_res_idx].min = itemOption.itemfilters[total_res_idx].min + itemOption.itemfilters[total_res_idx].max;
+        itemOption.itemfilters[total_res_idx].max = 0;
+    }
+
+    return itemOption;
+}
+
+private string CreateJson(ItemOption itemOptions, bool useSaleType)
+{
+    string BeforeDayToString(int day)
+    {
+        if (day < 1)
+            return "any";
+        else if (day < 3)
+            return "1day";
+        else if (day < 7)
+            return "3days";
+        else if (day < 14)
+            return "1week";
+        return "2weeks";
+    }
 
             try
             {
@@ -926,7 +954,7 @@ namespace PoeTradeSearch
                 JQ.Filters.Misc.Filters.Corrupted.Option = itemOptions.Corrupt == 1 ? "true" : (itemOptions.Corrupt == 2 ? "false" : "any");
 
                 JQ.Filters.Misc.Disabled = !(
-                    itemOptions.ChkQuality == true || itemOptions.Corrupt != 0 || itemOptions.AltQuality > 1
+                    itemOptions.ChkQuality == true || itemOptions.Corrupt != 0 || itemOptions.AltQuality > 0
                     || (Inherit != "map" && (itemOptions.Influence1 != 0 || itemOptions.ChkLv == true || itemOptions.Synthesis == true))
                 ); ;
 
@@ -981,6 +1009,10 @@ namespace PoeTradeSearch
                                     JQ.Stats[0].Filters[idx].Disabled = itemOptions.itemfilters[i].disabled == true;
                                     JQ.Stats[0].Filters[idx].Value.Min = itemOptions.itemfilters[i].min;
                                     JQ.Stats[0].Filters[idx].Value.Max = itemOptions.itemfilters[i].max;
+                                    if ((itemOptions.itemfilters[i].flag ?? "") == "CLUSTER")
+                                    {
+                                        JQ.Stats[0].Filters[idx].Value.Option = itemOptions.itemfilters[i].min;
+                                    }
                                     JQ.Stats[0].Filters[idx++].Id = filter.Id;
                                 }
                                 else
@@ -1016,577 +1048,576 @@ namespace PoeTradeSearch
                         sEntity = sEntity.Replace("\"type\":\"" + JQ.Type + "\",", "\"term\":\"" + JQ.Type + "\",");
                 }
 
-                sEntity = sEntity.Replace("{\"max\":99999,\"min\":99999}", "{}").Replace("{\"max\":99999,", "{").Replace(",\"min\":99999}", "}");
+                sEntity = Regex.Replace(sEntity.Replace("{[a-z\":,]+\"temp_ids\"[a-z\":,]+{[a-z0-9\":,]*}}", ""), "\"(min|max)\":99999|\"option\":0", "");
+                sEntity = Regex.Replace(sEntity, "\"("
+                    + "sale_type|rarity|category|corrupted|synthesised_item|shaper_item|elder_item|crusader_item|redeemer_item|hunter_item|warlord_"
+                    + "item|map_shaped|map_elder|map_blighted" + ")\":{\"option\":\"any\"},?", ""
+                );
+                sEntity = Regex.Replace(Regex.Replace(sEntity, "({),{1,}", "$1"), ",{1,}(}|])", "$1");
 
-                sEntity = sEntity.Replace(",{\"disabled\":true,\"id\":\"temp_ids\",\"value\":{}}", "");
-                sEntity = sEntity.Replace("[{\"disabled\":true,\"id\":\"temp_ids\",\"value\":{}}", "[").Replace("[,", "[");
-
-                string tmp = "sale_type|rarity|category|corrupted|synthesised_item|shaper_item|elder_item|crusader_item|redeemer_item|hunter_item|warlord_item|map_shaped|map_elder|map_blighted";
-                sEntity = Regex.Replace(sEntity, "\"(" + tmp + ")\":{\"option\":\"any\"},?", "").Replace("},}", "}}");
-
-                if (error_filter)
-                {
-                    Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-                        (ThreadStart)delegate ()
-                        {
-                            for (int i = 0; i < itemOptions.itemfilters.Count; i++)
-                            {
-                                if (itemOptions.itemfilters[i].isNull)
-                                {
-                                    ((TextBox)this.FindName("tbOpt" + i)).Background = System.Windows.Media.Brushes.Red;
-                                    ((TextBox)this.FindName("tbOpt" + i + "_0")).Text = "error";
-                                    ((TextBox)this.FindName("tbOpt" + i + "_1")).Text = "error";
-                                    ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
-                                    ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsEnabled = false;
-                                    ((CheckBox)this.FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
-                                }
-                            }
-                        }
-                    );
-                }
-
-                return sEntity;
-            }
-            catch (Exception ex)
-            {
-                //Console.WriteLine(ex.Message);
-                ForegroundMessage(String.Format("{0} 에러:  {1}\r\n\r\n{2}\r\n\r\n", ex.Source, ex.Message, ex.StackTrace), "에러", MessageBoxButton.OK, MessageBoxImage.Error);
-                return "";
-            }
-        }
-
-        private void UpdatePrice(string[] entity, int listCount)
+        if (error_filter)
         {
-            string url_string = "";
-            string json_entity = "";
-            string msg = "정보가 없습니다";
-            string msg_2 = "";
-
-            try
-            {
-                if (entity.Length > 0 && !string.IsNullOrEmpty(entity[0]))
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                (ThreadStart)delegate ()
                 {
-                    if (entity.Length == 1)
+                    for (int i = 0; i < itemOptions.itemfilters.Count; i++)
                     {
-                        json_entity = entity[0];
-                        url_string = RS.TradeApi[RS.ServerLang] + RS.ServerType;
-                    }
-                    else
-                    {
-                        url_string = RS.ExchangeApi[RS.ServerLang] + RS.ServerType;
-                        json_entity = "{\"exchange\":{\"status\":{\"option\":\"online\"},\"have\":[\"" + entity[0] + "\"],\"want\":[\"" + entity[1] + "\"]}}";
-                    }
-                    string request_result = SendHTTP(json_entity, url_string, mConfigData.Options.ServerTimeout);
-                    msg = "거래소 접속이 원활하지 않습니다";
-
-                    if (request_result != null)
-                    {
-                        ResultData resultData = Json.Deserialize<ResultData>(request_result);
-                        Dictionary<string, int> currencys = new Dictionary<string, int>();
-
-                        int total = 0;
-                        int resultCount = resultData.Result.Length;
-
-                        if (resultData.Result.Length > 0)
+                        if (itemOptions.itemfilters[i].isNull)
                         {
-                            string ents0 = "", ents1 = "";
-
-                            if (entity.Length > 1)
-                            {
-                                //listCount = listCount + 2;
-                                ents0 = Regex.Replace(entity[0], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
-                                ents1 = Regex.Replace(entity[1], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
-                            }
-
-                            for (int x = 0; x < listCount; x++)
-                            {
-                                string[] tmp = new string[10];
-                                int cnt = x * 10;
-                                int length = 0;
-
-                                if (cnt >= resultData.Result.Length)
-                                    break;
-
-                                for (int i = 0; i < 10; i++)
-                                {
-                                    if (i + cnt >= resultData.Result.Length)
-                                        break;
-
-                                    tmp[i] = resultData.Result[i + cnt];
-                                    length++;
-                                }
-
-                                string json_result = "";
-                                string url = RS.FetchApi[RS.ServerLang] + string.Join(",", tmp) + "?query=" + resultData.ID;
-                                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(url));
-                                request.CookieContainer = new CookieContainer();
-                                request.UserAgent = RS.UserAgent;
-                                request.Timeout = mConfigData.Options.ServerTimeout * 1000;
-                                //request.UseDefaultCredentials = true;
-
-                                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                                using (StreamReader streamReader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
-                                {
-                                    json_result = streamReader.ReadToEnd();
-                                }
-
-                                if (json_result != "")
-                                {
-                                    FetchData fetchData = new FetchData();
-                                    fetchData.Result = new FetchDataInfo[10];
-
-                                    fetchData = Json.Deserialize<FetchData>(json_result);
-
-                                    for (int i = 0; i < fetchData.Result.Length; i++)
-                                    {
-                                        if (fetchData.Result[i] == null)
-                                            break;
-
-                                        if (fetchData.Result[i].Listing.Price != null && fetchData.Result[i].Listing.Price.Amount > 0)
-                                        {
-                                            string key = "";
-                                            string indexed = fetchData.Result[i].Listing.Indexed;
-                                            string account = fetchData.Result[i].Listing.Account.Name;
-                                            string currency = fetchData.Result[i].Listing.Price.Currency;
-                                            double amount = fetchData.Result[i].Listing.Price.Amount;
-
-                                            liPrice.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
-                                            {
-                                                ParserDictionary item = GetExchangeItem(currency);
-                                                string keyName = item != null ? item.Text[0] : currency;
-
-                                                if (entity.Length > 1)
-                                                {
-                                                    item = GetExchangeItem(entity[1]);
-                                                    string tName2 = item != null ? item.Text[0] : entity[1];
-                                                    liPrice.Items.Add(Math.Round(1 / amount, 4) + " " + tName2 + " <-> " + Math.Round(amount, 4) + " " + keyName + " [" + account + "]");
-                                                }
-                                                else
-                                                {
-                                                    liPrice.Items.Add((
-                                                        String.Format(
-                                                            "{0} {1} [{2}]",
-                                                            GetLapsedTime(indexed).PadRight(10, '\u2000'), (amount + " " + keyName).PadRight(12, '\u2000'), account)
-                                                        )
-                                                    );
-                                                }
-                                            });
-
-                                            if (entity.Length > 1)
-                                                key = amount < 1 ? Math.Round(1 / amount, 1) + " " + ents1 : Math.Round(amount, 1) + " " + ents0;
-                                            else
-                                                key = Math.Round(amount - 0.1) + " " + currency;
-
-                                            if (currencys.ContainsKey(key))
-                                                currencys[key]++;
-                                            else
-                                                currencys.Add(key, 1);
-
-                                            total++;
-                                        }
-                                    }
-                                }
-
-                                if (!mLockUpdatePrice)
-                                {
-                                    currencys.Clear();
-                                    break;
-                                }
-                            }
-
-                            if (currencys.Count > 0)
-                            {
-                                List<KeyValuePair<string, int>> myList = new List<KeyValuePair<string, int>>(currencys);
-                                string first = ((KeyValuePair<string, int>)myList[0]).Key;
-                                string last = ((KeyValuePair<string, int>)myList[myList.Count - 1]).Key;
-
-                                myList.Sort(
-                                    delegate (KeyValuePair<string, int> firstPair,
-                                    KeyValuePair<string, int> nextPair)
-                                    {
-                                        return -1 * firstPair.Value.CompareTo(nextPair.Value);
-                                    }
-                                );
-
-                                for (int i = 0; i < myList.Count; i++)
-                                {
-                                    if (i == 2) break;
-                                    if (myList[i].Value < 2) continue;
-                                    msg_2 += myList[i].Key + "[" + myList[i].Value + "], ";
-                                }
-
-                                msg = Regex.Replace(first + " ~ " + last, @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
-                                msg_2 = Regex.Replace(msg_2.TrimEnd(',', ' '), @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
-
-                                if (msg_2 == "") msg_2 = "가장 많은 수 없음";
-                            }
-                        }
-
-                        cbPriceListTotal.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
-                        {
-                            cbPriceListTotal.Text = total + "/" + resultCount + " 검색";
-                        });
-
-                        if (resultData.Total == 0 || currencys.Count == 0)
-                        {
-                            msg = mLockUpdatePrice ? "해당 물품의 거래가 없습니다" : "검색 실패: 클릭하여 다시 시도해주세요";
+                            ((TextBox)this.FindName("tbOpt" + i)).Background = System.Windows.Media.Brushes.Red;
+                            ((TextBox)this.FindName("tbOpt" + i + "_0")).Text = "error";
+                            ((TextBox)this.FindName("tbOpt" + i + "_1")).Text = "error";
+                            ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
+                            ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsEnabled = false;
+                            ((CheckBox)this.FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            finally
-            {
-                mLockUpdatePrice = false;
-
-                tkPriceCount.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
-                {
-                    if (tkPriceCount.Text == ".") tkPriceCount.Text = ""; // 값 . 이면 읽는중 표시 끝나면 처리
-                });
-
-                tkPriceInfo.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
-                {
-                    tkPriceInfo.Text = msg + (msg_2 != "" ? " = " + msg_2 : "");
-                });
-
-                liPrice.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
-                {
-                    if (liPrice.Items.Count == 0)
-                    {
-                        liPrice.Items.Add(msg + (msg_2 != "" ? " = " + msg_2 : ""));
-                    }
-                    else
-                    {
-                        liPrice.ScrollIntoView(liPrice.Items[0]);
-                    }
-                });
-            }
+            );
         }
 
-        private Thread priceThread = null;
-        private void UpdatePriceThreadWorker(ItemOption itemOptions, string[] exchange)
+        return sEntity;
+    }
+    catch (Exception ex)
+    {
+        //Console.WriteLine(ex.Message);
+        ForegroundMessage(String.Format("{0} 에러:  {1}\r\n\r\n{2}\r\n\r\n", ex.Source, ex.Message, ex.StackTrace), "에러", MessageBoxButton.OK, MessageBoxImage.Error);
+        return "";
+    }
+}
+
+private void UpdatePrice(string[] entity, int listCount)
+{
+    string url_string = "";
+    string json_entity = "";
+    string msg = "정보가 없습니다";
+    string msg_2 = "";
+
+    try
+    {
+        if (entity.Length > 0 && !string.IsNullOrEmpty(entity[0]))
         {
-            if (!mLockUpdatePrice)
+            if (entity.Length == 1)
             {
-                mLockUpdatePrice = true;
-
-                int listCount = (cbPriceListCount.SelectedIndex + 1) * 2;
-
-                liPrice.Items.Clear();
-                tkPriceCount.Text = ".";
-                tkPriceInfo.Text = "시세 확인중...";
-                cbPriceListTotal.Text = "0/0 검색";
-
-                priceThread?.Interrupt();
-                priceThread?.Abort();
-                priceThread = new Thread(() =>
-                {
-                    UpdatePrice(
-                            exchange != null ? exchange : new string[1] { CreateJson(itemOptions, true) },
-                            listCount
-                        );
-
-                    if (mConfigData.Options.AutoSearchDelay > 0)
-                    {
-                        mAutoSearchTimer.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
-                        {
-                            mAutoSearchTimer.Stop();
-                            mAutoSearchTimerCount = mConfigData.Options.AutoSearchDelay;
-                            mAutoSearchTimer.Start();
-                        });
-                    }
-                });
-                priceThread.Start();
-            }
-        }
-
-        private int mAutoSearchTimerCount;
-        private void AutoSearchTimer_Tick(object sender, EventArgs e)
-        {
-            tkPriceInfo.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
-            {
-                if (mAutoSearchTimerCount < 1)
-                {
-                    mAutoSearchTimer.Stop();
-                    if (liPrice.Items.Count == 0 && tkPriceCount.Text != ".")
-                        tkPriceInfo.Text = (string)tkPriceInfo.Tag;
-                }
-                else
-                {
-                    mAutoSearchTimerCount--;
-                    if (liPrice.Items.Count == 0 && tkPriceCount.Text != ".")
-                        tkPriceInfo.Text = (string)tkPriceInfo.Tag + " (" + mAutoSearchTimerCount + ")";
-                }
-            });
-        }
-
-        private ParserDictionary GetExchangeItem(string id)
-        {
-            ParserDictionary item = Array.Find(mParserData.Currency.Entries, x => x.Id == id);
-            if (item == null)
-                item = Array.Find(mParserData.Exchange.Entries, x => x.Id == id);
-
-            return item;
-        }
-
-        private ParserDictionary GetExchangeItem(int index, string text)
-        {
-            ParserDictionary item = Array.Find(mParserData.Currency.Entries, x => x.Text[index] == text);
-            if (item == null)
-                item = Array.Find(mParserData.Exchange.Entries, x => x.Text[index] == text);
-
-            return item;
-        }
-
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
-            {
-                if (!mInstalledHotKey)
-                    InstallRegisterHotKey();
-
-                if (!mPausedHotKey && mConfigData.Options.CtrlWheel)
-                {
-                    TimeSpan dateDiff = Convert.ToDateTime(DateTime.Now) - mMouseHookCallbackTime;
-                    if (dateDiff.Ticks > 3000000000) // 5분간 마우스 움직임이 없으면 훜이 풀렸을 수 있어 다시...
-                    {
-                        mMouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
-                        MouseHook.Start();
-                    }
-                }
+                json_entity = entity[0];
+                url_string = RS.TradeApi[RS.ServerLang] + RS.ServerType;
             }
             else
             {
-                if (mInstalledHotKey)
-                    RemoveRegisterHotKey();
+                url_string = RS.ExchangeApi[RS.ServerLang] + RS.ServerType;
+                json_entity = "{\"exchange\":{\"status\":{\"option\":\"online\"},\"have\":[\"" + entity[0] + "\"],\"want\":[\"" + entity[1] + "\"]}}";
+            }
+            string request_result = SendHTTP(json_entity, url_string, mConfigData.Options.ServerTimeout);
+            msg = "거래소 접속이 원활하지 않습니다";
+
+            if (request_result != null)
+            {
+                ResultData resultData = Json.Deserialize<ResultData>(request_result);
+                Dictionary<string, int> currencys = new Dictionary<string, int>();
+
+                int total = 0;
+                int resultCount = resultData.Result.Length;
+
+                if (resultData.Result.Length > 0)
+                {
+                    string ents0 = "", ents1 = "";
+
+                    if (entity.Length > 1)
+                    {
+                        //listCount = listCount + 2;
+                        ents0 = Regex.Replace(entity[0], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
+                        ents1 = Regex.Replace(entity[1], @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
+                    }
+
+                    for (int x = 0; x < listCount; x++)
+                    {
+                        string[] tmp = new string[10];
+                        int cnt = x * 10;
+                        int length = 0;
+
+                        if (cnt >= resultData.Result.Length)
+                            break;
+
+                        for (int i = 0; i < 10; i++)
+                        {
+                            if (i + cnt >= resultData.Result.Length)
+                                break;
+
+                            tmp[i] = resultData.Result[i + cnt];
+                            length++;
+                        }
+
+                        string json_result = "";
+                        string url = RS.FetchApi[RS.ServerLang] + string.Join(",", tmp) + "?query=" + resultData.ID;
+                        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(url));
+                        request.CookieContainer = new CookieContainer();
+                        request.UserAgent = RS.UserAgent;
+                        request.Timeout = mConfigData.Options.ServerTimeout * 1000;
+                        //request.UseDefaultCredentials = true;
+
+                        using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                        using (StreamReader streamReader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                        {
+                            json_result = streamReader.ReadToEnd();
+                        }
+
+                        if (json_result != "")
+                        {
+                            FetchData fetchData = new FetchData();
+                            fetchData.Result = new FetchDataInfo[10];
+
+                            fetchData = Json.Deserialize<FetchData>(json_result);
+
+                            for (int i = 0; i < fetchData.Result.Length; i++)
+                            {
+                                if (fetchData.Result[i] == null)
+                                    break;
+
+                                if (fetchData.Result[i].Listing.Price != null && fetchData.Result[i].Listing.Price.Amount > 0)
+                                {
+                                    string key = "";
+                                    string indexed = fetchData.Result[i].Listing.Indexed;
+                                    string account = fetchData.Result[i].Listing.Account.Name;
+                                    string currency = fetchData.Result[i].Listing.Price.Currency;
+                                    double amount = fetchData.Result[i].Listing.Price.Amount;
+
+                                    liPrice.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
+                                    {
+                                        ParserDictionary item = GetExchangeItem(currency);
+                                        string keyName = item != null ? item.Text[0] : currency;
+
+                                        if (entity.Length > 1)
+                                        {
+                                            item = GetExchangeItem(entity[1]);
+                                            string tName2 = item != null ? item.Text[0] : entity[1];
+                                            liPrice.Items.Add(Math.Round(1 / amount, 4) + " " + tName2 + " <-> " + Math.Round(amount, 4) + " " + keyName + " [" + account + "]");
+                                        }
+                                        else
+                                        {
+                                            liPrice.Items.Add((
+                                                String.Format(
+                                                    "{0} {1} [{2}]",
+                                                    GetLapsedTime(indexed).PadRight(10, '\u2000'), (amount + " " + keyName).PadRight(12, '\u2000'), account)
+                                                )
+                                            );
+                                        }
+                                    });
+
+                                    if (entity.Length > 1)
+                                        key = amount < 1 ? Math.Round(1 / amount, 1) + " " + ents1 : Math.Round(amount, 1) + " " + ents0;
+                                    else
+                                        key = Math.Round(amount - 0.1) + " " + currency;
+
+                                    if (currencys.ContainsKey(key))
+                                        currencys[key]++;
+                                    else
+                                        currencys.Add(key, 1);
+
+                                    total++;
+                                }
+                            }
+                        }
+
+                        if (!mLockUpdatePrice)
+                        {
+                            currencys.Clear();
+                            break;
+                        }
+                    }
+
+                    if (currencys.Count > 0)
+                    {
+                        List<KeyValuePair<string, int>> myList = new List<KeyValuePair<string, int>>(currencys);
+                        string first = ((KeyValuePair<string, int>)myList[0]).Key;
+                        string last = ((KeyValuePair<string, int>)myList[myList.Count - 1]).Key;
+
+                        myList.Sort(
+                            delegate (KeyValuePair<string, int> firstPair,
+                            KeyValuePair<string, int> nextPair)
+                            {
+                                return -1 * firstPair.Value.CompareTo(nextPair.Value);
+                            }
+                        );
+
+                        for (int i = 0; i < myList.Count; i++)
+                        {
+                            if (i == 2) break;
+                            if (myList[i].Value < 2) continue;
+                            msg_2 += myList[i].Key + "[" + myList[i].Value + "], ";
+                        }
+
+                        msg = Regex.Replace(first + " ~ " + last, @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
+                        msg_2 = Regex.Replace(msg_2.TrimEnd(',', ' '), @"(timeless-)?([a-z]{3})[a-z\-]+\-([a-z]+)", @"$3`$2");
+
+                        if (msg_2 == "") msg_2 = "가장 많은 수 없음";
+                    }
+                }
+
+                cbPriceListTotal.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
+                {
+                    cbPriceListTotal.Text = total + "/" + resultCount + " 검색";
+                });
+
+                if (resultData.Total == 0 || currencys.Count == 0)
+                {
+                    msg = mLockUpdatePrice ? "해당 물품의 거래가 없습니다" : "검색 실패: 클릭하여 다시 시도해주세요";
+                }
             }
         }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
+    finally
+    {
+        mLockUpdatePrice = false;
 
-        private void MouseEvent(object sender, EventArgs e)
+        tkPriceCount.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
         {
-            if (!mHotkeyProcBlock)
-            {
-                mHotkeyProcBlock = true;
+            if (tkPriceCount.Text == ".") tkPriceCount.Text = ""; // 값 . 이면 읽는중 표시 끝나면 처리
+                });
 
+        tkPriceInfo.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
+        {
+            tkPriceInfo.Text = msg + (msg_2 != "" ? " = " + msg_2 : "");
+        });
+
+        liPrice.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
+        {
+            if (liPrice.Items.Count == 0)
+            {
+                liPrice.Items.Add(msg + (msg_2 != "" ? " = " + msg_2 : ""));
+            }
+            else
+            {
+                liPrice.ScrollIntoView(liPrice.Items[0]);
+            }
+        });
+    }
+}
+
+private Thread priceThread = null;
+private void UpdatePriceThreadWorker(ItemOption itemOptions, string[] exchange)
+{
+    if (!mLockUpdatePrice)
+    {
+        mLockUpdatePrice = true;
+
+        int listCount = (cbPriceListCount.SelectedIndex + 1) * 2;
+
+        liPrice.Items.Clear();
+        tkPriceCount.Text = ".";
+        tkPriceInfo.Text = "시세 확인중...";
+        cbPriceListTotal.Text = "0/0 검색";
+
+        priceThread?.Interrupt();
+        priceThread?.Abort();
+        priceThread = new Thread(() =>
+        {
+            UpdatePrice(
+                    exchange != null ? exchange : new string[1] { CreateJson(itemOptions, true) },
+                    listCount
+                );
+
+            if (mConfigData.Options.AutoSearchDelay > 0)
+            {
+                mAutoSearchTimer.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
+                {
+                    mAutoSearchTimer.Stop();
+                    mAutoSearchTimerCount = mConfigData.Options.AutoSearchDelay;
+                    mAutoSearchTimer.Start();
+                });
+            }
+        });
+        priceThread.Start();
+    }
+}
+
+private int mAutoSearchTimerCount;
+private void AutoSearchTimer_Tick(object sender, EventArgs e)
+{
+    tkPriceInfo.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate ()
+    {
+        if (mAutoSearchTimerCount < 1)
+        {
+            mAutoSearchTimer.Stop();
+            if (liPrice.Items.Count == 0 && tkPriceCount.Text != ".")
+                tkPriceInfo.Text = (string)tkPriceInfo.Tag;
+        }
+        else
+        {
+            mAutoSearchTimerCount--;
+            if (liPrice.Items.Count == 0 && tkPriceCount.Text != ".")
+                tkPriceInfo.Text = (string)tkPriceInfo.Tag + " (" + mAutoSearchTimerCount + ")";
+        }
+    });
+}
+
+private ParserDictionary GetExchangeItem(string id)
+{
+    ParserDictionary item = Array.Find(mParserData.Currency.Entries, x => x.Id == id);
+    if (item == null)
+        item = Array.Find(mParserData.Exchange.Entries, x => x.Id == id);
+
+    return item;
+}
+
+private ParserDictionary GetExchangeItem(int index, string text)
+{
+    ParserDictionary item = Array.Find(mParserData.Currency.Entries, x => x.Text[index] == text);
+    if (item == null)
+        item = Array.Find(mParserData.Exchange.Entries, x => x.Text[index] == text);
+
+    return item;
+}
+
+private void Timer_Tick(object sender, EventArgs e)
+{
+    if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
+    {
+        if (!mInstalledHotKey)
+            InstallRegisterHotKey();
+
+        if (!mPausedHotKey && mConfigData.Options.CtrlWheel)
+        {
+            TimeSpan dateDiff = Convert.ToDateTime(DateTime.Now) - mMouseHookCallbackTime;
+            if (dateDiff.Ticks > 3000000000) // 5분간 마우스 움직임이 없으면 훜이 풀렸을 수 있어 다시...
+            {
+                mMouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
+                MouseHook.Start();
+            }
+        }
+    }
+    else
+    {
+        if (mInstalledHotKey)
+            RemoveRegisterHotKey();
+    }
+}
+
+private void MouseEvent(object sender, EventArgs e)
+{
+    if (!mHotkeyProcBlock)
+    {
+        mHotkeyProcBlock = true;
+
+        try
+        {
+            int zDelta = ((MouseHook.MouseEventArgs)e).zDelta;
+            if (zDelta != 0)
+                System.Windows.Forms.SendKeys.SendWait(zDelta > 0 ? "{Left}" : "{Right}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+        mHotkeyProcBlock = false;
+    }
+}
+
+private void InstallRegisterHotKey()
+{
+    mInstalledHotKey = true;
+
+    // 0x0: None, 0x1: Alt, 0x2: Ctrl, 0x3: Shift
+    for (int i = 0; i < mConfigData.Shortcuts.Length; i++)
+    {
+        ConfigShortcut shortcut = mConfigData.Shortcuts[i];
+        if (shortcut.Keycode > 0 && (shortcut.Value ?? "") != "")
+            Native.RegisterHotKey(mMainHwnd, 10001 + i, (uint)(shortcut.Ctrl ? 0x2 : 0x0), (uint)Math.Abs(shortcut.Keycode));
+    }
+}
+
+private void RemoveRegisterHotKey()
+{
+    for (int i = 0; i < mConfigData.Shortcuts.Length; i++)
+    {
+        ConfigShortcut shortcut = mConfigData.Shortcuts[i];
+        if (shortcut.Keycode > 0 && (shortcut.Value ?? "") != "")
+            Native.UnregisterHotKey(mMainHwnd, 10001 + i);
+    }
+
+    mInstalledHotKey = false;
+}
+
+private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+{
+    if (msg == Native.WM_DRAWCLIPBOARD)
+    {
+        if (!mPausedHotKey && !mClipboardBlock)
+        {
+            if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
+            {
                 try
                 {
-                    int zDelta = ((MouseHook.MouseEventArgs)e).zDelta;
-                    if (zDelta != 0)
-                        System.Windows.Forms.SendKeys.SendWait(zDelta > 0 ? "{Left}" : "{Right}");
+                    if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
+                        ItemTextParser(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)));
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
-
-                mHotkeyProcBlock = false;
             }
         }
+    }
+    else if (!mHotkeyProcBlock && msg == (int)0x312) //WM_HOTKEY
+    {
+        mHotkeyProcBlock = true;
 
-        private void InstallRegisterHotKey()
+        IntPtr findHwnd = Native.FindWindow(RS.PoeClass, RS.PoeCaption);
+
+        if (Native.GetForegroundWindow().Equals(findHwnd))
         {
-            mInstalledHotKey = true;
+            int key_idx = wParam.ToInt32() - 10001;
 
-            // 0x0: None, 0x1: Alt, 0x2: Ctrl, 0x3: Shift
-            for (int i = 0; i < mConfigData.Shortcuts.Length; i++)
+            try
             {
-                ConfigShortcut shortcut = mConfigData.Shortcuts[i];
-                if (shortcut.Keycode > 0 && (shortcut.Value ?? "") != "")
-                    Native.RegisterHotKey(mMainHwnd, 10001 + i, (uint)(shortcut.Ctrl ? 0x2 : 0x0), (uint)Math.Abs(shortcut.Keycode));
-            }
-        }
+                ConfigShortcut shortcut = mConfigData.Shortcuts[key_idx];
 
-        private void RemoveRegisterHotKey()
-        {
-            for (int i = 0; i < mConfigData.Shortcuts.Length; i++)
-            {
-                ConfigShortcut shortcut = mConfigData.Shortcuts[i];
-                if (shortcut.Keycode > 0 && (shortcut.Value ?? "") != "")
-                    Native.UnregisterHotKey(mMainHwnd, 10001 + i);
-            }
-
-            mInstalledHotKey = false;
-        }
-
-        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            if (msg == Native.WM_DRAWCLIPBOARD)
-            {
-                if (!mPausedHotKey && !mClipboardBlock)
+                if (shortcut != null && shortcut.Value != null)
                 {
-                    if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
+                    string valueLower = shortcut.Value.ToLower();
+                    string popWinTitle = "이곳을 잡고 이동, 닫기는 클릭 혹은 ESC";
+
+                    if (valueLower == "{pause}")
                     {
-                        try
+                        mPausedHotKey = !mPausedHotKey;
+
+                        if (mPausedHotKey)
                         {
-                            if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
-                                ItemTextParser(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)));
+                            if (mConfigData.Options.CtrlWheel) MouseHook.Stop();
+
+                            MessageBox.Show(Application.Current.MainWindow, "프로그램 동작을 일시 중지합니다." + '\n'
+                                            + "다시 시작하려면 일시 중지 단축키를 한번더 누르세요.", "POE 거래소 검색");
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            Console.WriteLine(ex.Message);
+                            if (mConfigData.Options.CtrlWheel) MouseHook.Start();
+
+                            MessageBox.Show(Application.Current.MainWindow, "프로그램 동작을 다시 시작합니다.", "POE 거래소 검색");
+                        }
+
+                        Native.SetForegroundWindow(findHwnd);
+                    }
+                    else if (valueLower == "{close}")
+                    {
+                        IntPtr pHwnd = Native.FindWindow(null, popWinTitle);
+                        IntPtr pHwnd2 = Native.FindWindow(null, Title + " - " + "{grid:stash}");
+                        if (pHwnd.ToInt32() != 0 || pHwnd2.ToInt32() != 0)
+                        {
+                            if (pHwnd.ToInt32() != 0)
+                                Native.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
+                            if (pHwnd2.ToInt32() != 0)
+                                Native.SendMessage(pHwnd2, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
+                        }
+                        else if (this.Visibility == Visibility.Hidden)
+                        {
+                            Native.SendMessage(findHwnd, 0x0101, new IntPtr(shortcut.Keycode), IntPtr.Zero);
+                        }
+                        else if (this.Visibility == Visibility.Visible)
+                        {
+                            Close();
+                        }
+                    }
+                    else if (!mPausedHotKey)
+                    {
+                        if (valueLower == "{run}" || valueLower == "{wiki}")
+                        {
+                            mClipboardBlock = true;
+
+                            System.Windows.Forms.SendKeys.SendWait("^{c}");
+                            Thread.Sleep(300);
+
+                            try
+                            {
+                                if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
+                                {
+                                    ItemTextParser(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)), valueLower != "{wiki}");
+
+                                    if (valueLower == "{wiki}")
+                                        Button_Click_4(null, new RoutedEventArgs());
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
+
+                            mClipboardBlock = false;
+                        }
+                        else if (valueLower.IndexOf("{enter}") == 0)
+                        {
+                            Regex regex = new Regex(@"{enter}", RegexOptions.IgnoreCase);
+                            string tmp = regex.Replace(shortcut.Value, "" + '\n');
+                            string[] strs = tmp.Trim().Split('\n');
+
+                            for (int i = 0; i < strs.Length; i++)
+                            {
+                                SetClipText(strs[i], TextDataFormat.UnicodeText);
+                                Thread.Sleep(300);
+                                System.Windows.Forms.SendKeys.SendWait("{enter}");
+                                System.Windows.Forms.SendKeys.SendWait("^{a}");
+                                System.Windows.Forms.SendKeys.SendWait("^{v}");
+                                System.Windows.Forms.SendKeys.SendWait("{enter}");
+                            }
+                        }
+                        else if (valueLower.IndexOf("{link}") == 0)
+                        {
+                            Regex regex = new Regex(@"{link}", RegexOptions.IgnoreCase);
+                            string tmp = regex.Replace(shortcut.Value, "" + '\n');
+                            string[] strs = tmp.Trim().Split('\n');
+                            if (strs.Length > 0) Process.Start(strs[0]);
+                        }
+                        else if (valueLower.IndexOf("{grid:quad}") == 0 || valueLower.IndexOf("{grid:stash}") == 0)
+                        {
+                            IntPtr pHwnd = Native.FindWindow(null, Title + " - " + "{grid:stash}");
+                            if (pHwnd.ToInt32() != 0)
+                            {
+                                Native.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
+                            }
+                            else
+                            {
+                                WinGrid winGrid = new WinGrid(valueLower.IndexOf("{grid:quad}") == 0, findHwnd);
+                                winGrid.Title = Title + " - " + "{grid:stash}";
+                                winGrid.Show();
+                            }
+                        }
+                        else if (valueLower.IndexOf(".jpg") > 0)
+                        {
+                            IntPtr pHwnd = Native.FindWindow(null, popWinTitle);
+                            if (pHwnd.ToInt32() != 0)
+                                Native.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
+
+                            WinPopup winPopup = new WinPopup(shortcut.Value);
+
+                            if ((shortcut.Position ?? "") != "")
+                            {
+                                string[] strs = shortcut.Position.ToLower().Split('x');
+                                winPopup.WindowStartupLocation = WindowStartupLocation.Manual;
+                                winPopup.Left = double.Parse(strs[0]);
+                                winPopup.Top = double.Parse(strs[1]);
+                            }
+
+                            winPopup.Title = popWinTitle;
+                            winPopup.Show();
                         }
                     }
                 }
             }
-            else if (!mHotkeyProcBlock && msg == (int)0x312) //WM_HOTKEY
+            catch (Exception)
             {
-                mHotkeyProcBlock = true;
-
-                IntPtr findHwnd = Native.FindWindow(RS.PoeClass, RS.PoeCaption);
-
-                if (Native.GetForegroundWindow().Equals(findHwnd))
-                {
-                    int key_idx = wParam.ToInt32() - 10001;
-
-                    try
-                    {
-                        ConfigShortcut shortcut = mConfigData.Shortcuts[key_idx];
-
-                        if (shortcut != null && shortcut.Value != null)
-                        {
-                            string valueLower = shortcut.Value.ToLower();
-                            string popWinTitle = "이곳을 잡고 이동, 닫기는 클릭 혹은 ESC";
-
-                            if (valueLower == "{pause}")
-                            {
-                                mPausedHotKey = !mPausedHotKey;
-
-                                if (mPausedHotKey)
-                                {
-                                    if (mConfigData.Options.CtrlWheel) MouseHook.Stop();
-
-                                    MessageBox.Show(Application.Current.MainWindow, "프로그램 동작을 일시 중지합니다." + '\n'
-                                                    + "다시 시작하려면 일시 중지 단축키를 한번더 누르세요.", "POE 거래소 검색");
-                                }
-                                else
-                                {
-                                    if (mConfigData.Options.CtrlWheel) MouseHook.Start();
-
-                                    MessageBox.Show(Application.Current.MainWindow, "프로그램 동작을 다시 시작합니다.", "POE 거래소 검색");
-                                }
-
-                                Native.SetForegroundWindow(findHwnd);
-                            }
-                            else if (valueLower == "{close}")
-                            {
-                                IntPtr pHwnd = Native.FindWindow(null, popWinTitle);
-                                IntPtr pHwnd2 = Native.FindWindow(null, Title + " - " + "{grid:stash}");
-                                if (pHwnd.ToInt32() != 0 || pHwnd2.ToInt32() != 0)
-                                {
-                                    if (pHwnd.ToInt32() != 0)
-                                        Native.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
-                                    if (pHwnd2.ToInt32() != 0)
-                                        Native.SendMessage(pHwnd2, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
-                                }
-                                else if (this.Visibility == Visibility.Hidden)
-                                {
-                                    Native.SendMessage(findHwnd, 0x0101, new IntPtr(shortcut.Keycode), IntPtr.Zero);
-                                }
-                                else if (this.Visibility == Visibility.Visible)
-                                {
-                                    Close();
-                                }
-                            }
-                            else if (!mPausedHotKey)
-                            {
-                                if (valueLower == "{run}" || valueLower == "{wiki}")
-                                {
-                                    mClipboardBlock = true;
-
-                                    System.Windows.Forms.SendKeys.SendWait("^{c}");
-                                    Thread.Sleep(300);
-
-                                    try
-                                    {
-                                        if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
-                                        {
-                                            ItemTextParser(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)), valueLower != "{wiki}");
-
-                                            if (valueLower == "{wiki}")
-                                                Button_Click_4(null, new RoutedEventArgs());
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Console.WriteLine(ex.Message);
-                                    }
-
-                                    mClipboardBlock = false;
-                                }
-                                else if (valueLower.IndexOf("{enter}") == 0)
-                                {
-                                    Regex regex = new Regex(@"{enter}", RegexOptions.IgnoreCase);
-                                    string tmp = regex.Replace(shortcut.Value, "" + '\n');
-                                    string[] strs = tmp.Trim().Split('\n');
-
-                                    for (int i = 0; i < strs.Length; i++)
-                                    {
-                                        SetClipText(strs[i], TextDataFormat.UnicodeText);
-                                        Thread.Sleep(300);
-                                        System.Windows.Forms.SendKeys.SendWait("{enter}");
-                                        System.Windows.Forms.SendKeys.SendWait("^{a}");
-                                        System.Windows.Forms.SendKeys.SendWait("^{v}");
-                                        System.Windows.Forms.SendKeys.SendWait("{enter}");
-                                    }
-                                }
-                                else if (valueLower.IndexOf("{link}") == 0)
-                                {
-                                    Regex regex = new Regex(@"{link}", RegexOptions.IgnoreCase);
-                                    string tmp = regex.Replace(shortcut.Value, "" + '\n');
-                                    string[] strs = tmp.Trim().Split('\n');
-                                    if (strs.Length > 0) Process.Start(strs[0]);
-                                }
-                                else if (valueLower.IndexOf("{grid:quad}") == 0 || valueLower.IndexOf("{grid:stash}") == 0)
-                                {
-                                    IntPtr pHwnd = Native.FindWindow(null, Title + " - " + "{grid:stash}");
-                                    if (pHwnd.ToInt32() != 0)
-                                    {
-                                        Native.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
-                                    }
-                                    else
-                                    {
-                                        WinGrid winGrid = new WinGrid(valueLower.IndexOf("{grid:quad}") == 0, findHwnd);
-                                        winGrid.Title = Title + " - " + "{grid:stash}";
-                                        winGrid.Show();
-                                    }
-                                }
-                                else if (valueLower.IndexOf(".jpg") > 0)
-                                {
-                                    IntPtr pHwnd = Native.FindWindow(null, popWinTitle);
-                                    if (pHwnd.ToInt32() != 0)
-                                        Native.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
-
-                                    WinPopup winPopup = new WinPopup(shortcut.Value);
-
-                                    if ((shortcut.Position ?? "") != "")
-                                    {
-                                        string[] strs = shortcut.Position.ToLower().Split('x');
-                                        winPopup.WindowStartupLocation = WindowStartupLocation.Manual;
-                                        winPopup.Left = double.Parse(strs[0]);
-                                        winPopup.Top = double.Parse(strs[1]);
-                                    }
-
-                                    winPopup.Title = popWinTitle;
-                                    winPopup.Show();
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        ForegroundMessage("잘못된 단축키 명령입니다.", "단축키 에러", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-
-                    handled = true;
-                }
-
-                mHotkeyProcBlock = false;
+                ForegroundMessage("잘못된 단축키 명령입니다.", "단축키 에러", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-            return IntPtr.Zero;
+            handled = true;
         }
+
+        mHotkeyProcBlock = false;
+    }
+
+    return IntPtr.Zero;
+}
     }
 }

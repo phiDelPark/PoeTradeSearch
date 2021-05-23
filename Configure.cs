@@ -23,7 +23,7 @@ namespace PoeTradeSearch
 
         internal static Dictionary<string, string> lFilterType = new Dictionary<string, string>()
         {
-            { "pseudo", "유사"}, { "explicit", "일반"}, { "implicit", "고정"}, { "fractured", "분열"}, { "enchant", "인챈"}, 
+            { "pseudo", "유사"}, { "explicit", "일반"}, { "implicit", "고정"}, { "fractured", "분열"}, { "enchant", "인챈"},
             { "crafted", "제작"}, { "veiled", "장막"}, { "monster", "야수"}, { "delve", "탐광"}, { "ultimatum", "결전" }
         };
         internal static Dictionary<string, bool> lDefaultPosition = new Dictionary<string, bool>()

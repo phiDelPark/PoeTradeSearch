@@ -13,6 +13,7 @@ namespace PoeTradeSearch
             public string text;
             public double max;
             public double min;
+            public string flag;
             public bool disabled;
             public bool isNull = false;
         }
@@ -212,6 +213,8 @@ namespace PoeTradeSearch
             internal ParserEntries Currency = null;
             [DataMember(Name = "exchange")]
             internal ParserEntries Exchange = null;
+            [DataMember(Name = "cluster")]
+            internal ParserEntries Cluster = null;
         }
 
         [DataContract()]
@@ -377,6 +380,9 @@ namespace PoeTradeSearch
 
             [DataMember(Name = "max")]
             internal double Max;
+
+            [DataMember(Name = "option")]
+            internal double Option;
         }
 
         [DataContract]
