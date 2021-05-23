@@ -820,15 +820,18 @@ namespace PoeTradeSearch
                     if (itemfilter.disabled == false && ((CheckBox)this.FindName("tbOpt" + i + "_3")).IsChecked == true)
                     {
                         if (total_res_idx == -1)
+                        {
                             total_res_idx = itemOption.itemfilters.Count;
+                            itemfilter.id = "pseudo.pseudo_total_resistance";
+                        }
                         else
                         {
-                            itemOption.itemfilters[total_res_idx].min += itemfilter.min == 99999 ? 0 : itemfilter.min;
-                            itemOption.itemfilters[total_res_idx].max += itemfilter.max == 99999 ? 0 : itemfilter.max;
+                            double min = itemOption.itemfilters[total_res_idx].min;
+                            itemOption.itemfilters[total_res_idx].min = (min == 99999 ? 0 : min) + (itemfilter.min == 99999 ? 0 : itemfilter.min);
+                            double max = itemOption.itemfilters[total_res_idx].max;
+                            itemOption.itemfilters[total_res_idx].max = (max == 99999 ? 0 : max) + (itemfilter.max == 99999 ? 0 : itemfilter.max);
                             continue;
                         }
-
-                        itemfilter.id = "pseudo.pseudo_total_resistance";
                     }
                     else
                     {
@@ -837,6 +840,13 @@ namespace PoeTradeSearch
 
                     itemOption.itemfilters.Add(itemfilter);
                 }
+            }
+
+            // 총 저항은 min 값만 필요
+            if (total_res_idx > -1)
+            {
+                itemOption.itemfilters[total_res_idx].min = itemOption.itemfilters[total_res_idx].min + itemOption.itemfilters[total_res_idx].max;
+                itemOption.itemfilters[total_res_idx].max = 0;
             }
 
             return itemOption;
