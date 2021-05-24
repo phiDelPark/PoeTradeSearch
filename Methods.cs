@@ -894,7 +894,7 @@ namespace PoeTradeSearch
                 double min = itemOption.itemfilters[total_res_idx].min;
                 double max = itemOption.itemfilters[total_res_idx].max;
                 itemOption.itemfilters[total_res_idx].min = (min == 99999 ? 0 : min) + (max == 99999 ? 0 : max);
-                itemOption.itemfilters[total_res_idx].max = 0;
+                itemOption.itemfilters[total_res_idx].max = 99999;
             }
 
             return itemOption;
