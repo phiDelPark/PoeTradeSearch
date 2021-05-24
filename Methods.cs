@@ -891,7 +891,9 @@ namespace PoeTradeSearch
             // 총 저항은 min 값만 필요
             if (total_res_idx > -1)
             {
-                itemOption.itemfilters[total_res_idx].min = itemOption.itemfilters[total_res_idx].min + itemOption.itemfilters[total_res_idx].max;
+                double min = itemOption.itemfilters[total_res_idx].min;
+                double max = itemOption.itemfilters[total_res_idx].max;
+                itemOption.itemfilters[total_res_idx].min = (min == 99999 ? 0 : min) + (max == 99999 ? 0 : max);
                 itemOption.itemfilters[total_res_idx].max = 0;
             }
 
