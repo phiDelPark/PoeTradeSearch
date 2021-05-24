@@ -3,12 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:PoeTradeSearch"
         mc:Ignorable="d" ResizeMode="NoResize" Topmost="True" SizeToContent="WidthAndHeight" Left="30" Top="30" FontFamily="Malgun Gothic" FontSize="12"
         Title="POE 거래소 검색" Loaded="Window_Loaded" Closing="Window_Closing" Closed="Window_Closed" Deactivated="Window_Deactivated" PreviewKeyDown="Window_PreviewKeyDown" Activated="Window_Activated">
 
     <Grid Margin="25, 20, 25, 25">
-        <ComboBox Name="cbRarity" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
+        <ComboBox Name="cbRarity" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,1,0,0" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
             <ComboBox.Resources>
                 <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
             </ComboBox.Resources>
@@ -52,7 +53,7 @@
             </TabControl.Resources>
             <TabItem Header="간략히">
                 <Grid Name="gdTabItem1">
-                    <ComboBox Name="cbOpt0" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="2,8,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
+                    <ComboBox Name="cbOpt0" HorizontalAlignment="Left" Margin="2,8,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
                         <ComboBox.Resources>
                             <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
                         </ComboBox.Resources>
@@ -63,7 +64,7 @@
                     <CheckBox Name="tbOpt0_2" Content="" HorizontalAlignment="Left" Margin="362,10,0,0" VerticalAlignment="Top" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
                     <CheckBox Name="tbOpt0_3" Content="" HorizontalAlignment="Left" Margin="247,10,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="0" />
 
-                    <ComboBox Name="cbOpt1" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="2,33,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
+                    <ComboBox Name="cbOpt1" HorizontalAlignment="Left" Margin="2,33,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
                         <ComboBox.Resources>
                             <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
                         </ComboBox.Resources>
@@ -74,7 +75,7 @@
                     <CheckBox Name="tbOpt1_2" Content="" HorizontalAlignment="Left" Margin="362,35,0,0" VerticalAlignment="Top" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
                     <CheckBox Name="tbOpt1_3" Content="" HorizontalAlignment="Left" Margin="247,35,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="1" />
 
-                    <ComboBox Name="cbOpt2" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="2,58,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
+                    <ComboBox Name="cbOpt2" HorizontalAlignment="Left" Margin="2,58,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
                         <ComboBox.Resources>
                             <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
                         </ComboBox.Resources>
@@ -85,7 +86,7 @@
                     <CheckBox Name="tbOpt2_2" Content="" HorizontalAlignment="Left" Margin="362,60,0,0" VerticalAlignment="Top" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
                     <CheckBox Name="tbOpt2_3" Content="" HorizontalAlignment="Left" Margin="247,60,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="2" />
 
-                    <ComboBox Name="cbOpt3" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="2,83,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
+                    <ComboBox Name="cbOpt3" HorizontalAlignment="Left" Margin="2,83,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
                         <ComboBox.Resources>
                             <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
                         </ComboBox.Resources>
@@ -96,7 +97,7 @@
                     <CheckBox Name="tbOpt3_2" Content="" HorizontalAlignment="Left" Margin="362,85,0,0" VerticalAlignment="Top" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
                     <CheckBox Name="tbOpt3_3" Content="" HorizontalAlignment="Left" Margin="247,85,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="3" />
 
-                    <ComboBox Name="cbOpt4" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="2,108,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
+                    <ComboBox Name="cbOpt4" HorizontalAlignment="Left" Margin="2,108,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
                         <ComboBox.Resources>
                             <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
                         </ComboBox.Resources>
@@ -107,7 +108,7 @@
                     <CheckBox Name="tbOpt4_2" Content="" HorizontalAlignment="Left" Margin="362,110,0,0" VerticalAlignment="Top" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
                     <CheckBox Name="tbOpt4_3" Content="" HorizontalAlignment="Left" Margin="247,110,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="4" />
 
-                    <ComboBox Name="cbOpt5" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="2,133,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
+                    <ComboBox Name="cbOpt5" HorizontalAlignment="Left" Margin="2,133,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
                         <ComboBox.Resources>
                             <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
                         </ComboBox.Resources>
@@ -118,7 +119,7 @@
                     <CheckBox Name="tbOpt5_2" Content="" HorizontalAlignment="Left" Margin="362,135,0,0" VerticalAlignment="Top" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
                     <CheckBox Name="tbOpt5_3" Content="" HorizontalAlignment="Left" Margin="247,135,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="5" />
 
-                    <ComboBox Name="cbOpt6" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="2,158,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
+                    <ComboBox Name="cbOpt6" HorizontalAlignment="Left" Margin="2,158,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
                         <ComboBox.Resources>
                             <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
                         </ComboBox.Resources>
@@ -129,7 +130,7 @@
                     <CheckBox Name="tbOpt6_2" Content="" HorizontalAlignment="Left" Margin="362,160,0,0" VerticalAlignment="Top" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
                     <CheckBox Name="tbOpt6_3" Content="" HorizontalAlignment="Left" Margin="247,160,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="6" />
 
-                    <ComboBox Name="cbOpt7" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="2,183,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
+                    <ComboBox Name="cbOpt7" HorizontalAlignment="Left" Margin="2,183,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
                         <ComboBox.Resources>
                             <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
                         </ComboBox.Resources>
@@ -140,7 +141,7 @@
                     <CheckBox Name="tbOpt7_2" Content="" HorizontalAlignment="Left" Margin="362,185,0,0" VerticalAlignment="Top" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
                     <CheckBox Name="tbOpt7_3" Content="" HorizontalAlignment="Left" Margin="247,185,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="7" />
 
-                    <ComboBox Name="cbOpt8" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="2,208,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
+                    <ComboBox Name="cbOpt8" HorizontalAlignment="Left" Margin="2,208,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
                         <ComboBox.Resources>
                             <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
                         </ComboBox.Resources>
@@ -151,7 +152,7 @@
                     <CheckBox Name="tbOpt8_2" Content="" HorizontalAlignment="Left" Margin="362,210,0,0" VerticalAlignment="Top" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
                     <CheckBox Name="tbOpt8_3" Content="" HorizontalAlignment="Left" Margin="247,210,0,0" VerticalAlignment="Top" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Tag="8" />
 
-                    <ComboBox Name="cbOpt9" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalAlignment="Left" Margin="2,233,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
+                    <ComboBox Name="cbOpt9" HorizontalAlignment="Left" Margin="2,233,0,0" VerticalAlignment="Top" Width="37" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
                         <ComboBox.Resources>
                             <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
                         </ComboBox.Resources>
@@ -186,7 +187,7 @@
 
                     <CheckBox Name="Synthesis" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Content="결합" HorizontalAlignment="Left" Margin="255,275,-20,0" VerticalAlignment="Top" Width="146" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
 
-                    <ComboBox Name="cbCorrupt" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="317,270,0,0" VerticalAlignment="Top" Width="60" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
+                    <ComboBox Name="cbCorrupt" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="317,270,0,0" VerticalAlignment="Top" Width="60" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
                         <ComboBox.Resources>
                             <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
                         </ComboBox.Resources>
@@ -195,7 +196,7 @@
                         <ComboBoxItem>아니오</ComboBoxItem>
                     </ComboBox>
 
-                    <ComboBox Name="cbInfluence1" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="317,293,0,0" VerticalAlignment="Top" Width="60" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
+                    <ComboBox Name="cbInfluence1" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="317,293,0,0" VerticalAlignment="Top" Width="60" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
                         <ComboBox.Resources>
                             <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
                         </ComboBox.Resources>
@@ -208,7 +209,7 @@
                         <ComboBoxItem>전쟁군주</ComboBoxItem>
                     </ComboBox>
 
-                    <ComboBox Name="cbInfluence2" xmlns:sys="clr-namespace:System;assembly=mscorlib" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="256,293,0,0" VerticalAlignment="Top" Width="60" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
+                    <ComboBox Name="cbInfluence2" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="256,293,0,0" VerticalAlignment="Top" Width="60" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
                         <ComboBox.Resources>
                             <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
                         </ComboBox.Resources>
@@ -219,6 +220,12 @@
                         <ComboBoxItem>대속자</ComboBoxItem>
                         <ComboBoxItem>사냥꾼</ComboBoxItem>
                         <ComboBoxItem>전쟁군주</ComboBoxItem>
+                    </ComboBox>
+
+                    <ComboBox Name="cbAltQuality" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="256,293,0,0" VerticalAlignment="Top" Width="121" SelectionChanged="tkPrice_ReSet">
+                        <ComboBox.Resources>
+                            <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">0</sys:Double>
+                        </ComboBox.Resources>
                     </ComboBox>
 
                     <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" HorizontalAlignment="Left" Height="1" Margin="0,319,0,0" VerticalAlignment="Top" Width="385" RenderTransformOrigin="0.5,0.5" />
@@ -238,12 +245,6 @@
                             </ComboBox>
                         </Grid>
                     </Border>
-                    <ComboBox Name="cbGemAltQuality" HorizontalAlignment="Left" Margin="256,240,0,0" VerticalAlignment="Top" MaxDropDownHeight="282" Width="121">
-                        <ComboBoxItem>기본</ComboBoxItem>
-                        <ComboBoxItem>기묘한</ComboBoxItem>
-                        <ComboBoxItem>상이한</ComboBoxItem>
-                        <ComboBoxItem>몽환적인</ComboBoxItem>
-                    </ComboBox>
                 </Grid>
             </TabItem>
             <TabItem Header="자세히">

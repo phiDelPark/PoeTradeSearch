@@ -253,6 +253,15 @@
 			{"id":"card","text":[ "점술 카드", "Divination Card" ]}
 		]
 	},
+	"heist":{
+		"text":[ "강탈 대상", "Heist Target" ],
+		"entries":[
+			{"id":"normal","text":[ "보통 가치", "Moderate Value" ]},
+			{"id":"magic","text":[ "높은 가치", "High Value" ]},
+			{"id":"rare","text":[ "귀중한 가치", "Precious" ]},
+			{"id":"unique","text":[ "환산 불가능한 가치", "Priceless" ]}
+		]
+	},
 	"gems":{
 		"entries":[
 			{"text":[ "기묘한", "Anomalous" ]},

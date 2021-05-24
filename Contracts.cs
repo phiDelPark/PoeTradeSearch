@@ -215,6 +215,8 @@ namespace PoeTradeSearch
             internal ParserEntries Exchange = null;
             [DataMember(Name = "cluster")]
             internal ParserEntries Cluster = null;
+            [DataMember(Name = "heist")]
+            internal ParserEntries Heist = null;
         }
 
         [DataContract()]
@@ -499,6 +501,23 @@ namespace PoeTradeSearch
         }
 
         [DataContract]
+        internal class q_Heist_filters_filters
+        {
+            [DataMember(Name = "heist_objective_value")]
+            internal q_Option HeistObjective = new q_Option();
+        }
+
+        [DataContract]
+        internal class q_Heist_filters
+        {
+            [DataMember(Name = "disabled")]
+            internal bool Disabled = false;
+
+            [DataMember(Name = "filters")]
+            internal q_Heist_filters_filters Filters = new q_Heist_filters_filters();
+        }
+
+        [DataContract]
         internal class q_Trade_filters_filters
         {
             [DataMember(Name = "indexed")]
@@ -526,19 +545,16 @@ namespace PoeTradeSearch
         {
             [DataMember(Name = "type_filters")]
             internal q_Type_filters Type = new q_Type_filters();
-
             [DataMember(Name = "socket_filters")]
             internal q_Socket_filters Socket = new q_Socket_filters();
-
             [DataMember(Name = "map_filters")]
             internal q_Map_filters Map = new q_Map_filters();
-
+            [DataMember(Name = "heist_filters")]
+            internal q_Heist_filters Heist = new q_Heist_filters();
             [DataMember(Name = "misc_filters")]
             internal q_Misc_filters Misc = new q_Misc_filters();
-
             [DataMember(Name = "trade_filters")]
             internal q_Trade_filters Trade = new q_Trade_filters();
-
             [DataMember(Name = "weapon_filters")]
             internal q_Disabled_filters Weapon = new q_Disabled_filters();
             [DataMember(Name = "armour_filters")]
