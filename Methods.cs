@@ -1522,7 +1522,7 @@ namespace PoeTradeSearch
             {
                 if (!mPausedHotKey && !mClipboardBlock)
                 {
-                    if (!Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
+                    if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
                     {
                         try
                         {
