@@ -269,12 +269,18 @@
 			{"text":[ "몽환적인", "Phantasmal" ]}
 		]
 	},
+	"map_tier":{
+		"text":[ "지도 등급", "Map Tier" ],
+		"entries":[
+			{"text":[ "쉐이퍼", "The Shaper" ]},
+			{"text":[ "엘더", "The Elder" ]}
+		]
+	},
 	"quality":{"text":[ "퀄리티", "Quality" ]},
 	"sockets":{"text":[ "홈", "Sockets" ]},
 	"level":{"text":[ "레벨", "Level" ]},
 	"item_level":{"text":[ "아이템 레벨", "Item Level" ]},
 	"talisman_tier":{"text":[ "부적 등급", "Talisman Tier" ]},
-	"map_tier":{"text":[ "지도 등급", "Map Tier" ]},
 	"map_ultimatum":{"text":[ "도전", "Challenge" ]},
 	"monster_genus":{"text":[ "종", "Genus" ]},
 	"monster_group":{"text":[ "속", "Group" ]},
@@ -288,8 +294,8 @@
 	"blighted":{"text":[ "역병 걸린", "Blighted" ]},
 	"synthesised":{"text":[ "결합된", "Synthesised" ]},
 	"synthesised_item":{"text":[ "결합된 아이템", "Synthesised Item" ]},
-	"shaper_item":{"text":[ "쉐이퍼 아이템", "Shaper Item" ]},
 	"elder_item":{"text":[ "엘더 아이템", "Elder Item" ]},
+	"shaper_item":{"text":[ "쉐이퍼 아이템", "Shaper Item" ]},
 	"crusader_item":{"text":[ "십자군 아이템", "Crusader Item" ]},
 	"redeemer_item":{"text":[ "대속자 아이템", "Redeemer Item" ]},
 	"hunter_item":{"text":[ "사냥꾼 아이템", "Hunter Item" ]},

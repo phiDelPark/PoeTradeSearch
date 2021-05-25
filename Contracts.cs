@@ -384,7 +384,7 @@ namespace PoeTradeSearch
             internal double Max;
 
             [DataMember(Name = "option")]
-            internal double Option;
+            internal object Option;
         }
 
         [DataContract]

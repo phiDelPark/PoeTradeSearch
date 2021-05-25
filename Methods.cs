@@ -175,6 +175,7 @@ namespace PoeTradeSearch
             string item_name = "";
             string item_type = "";
             string item_rarity = "";
+            string map_influenced = "";
             ParserData PS = mParserData;
 
             try
@@ -236,31 +237,49 @@ namespace PoeTradeSearch
                         {
                             if (asOpt[j].Trim() == "") continue;
 
-                            string[] asTmp = Regex.Replace(asOpt[j], @" \([\w\s]+\)\: ", ": ").Split(':');
+                            string[] asLocal = Regex.Replace(asOpt[j], @" \([\w\s]+\)\: ", ": ").Split(':');
 
-                            if (lItemOption.ContainsKey(asTmp[0]))
+                            if (lItemOption.ContainsKey(asLocal[0]))
                             {
-                                if (lItemOption[asTmp[0]] == "") lItemOption[asTmp[0]] = asTmp.Length > 1 ? asTmp[1].Trim() : "_TRUE_";
+                                if (lItemOption[asLocal[0]] == "") lItemOption[asLocal[0]] = asLocal.Length > 1 ? asLocal[1].Trim() : "_TRUE_";
                             }
                             else if (k < 10 && (lItemOption[PS.ItemLevel.Text[z]] != "" || PS.MapUltimatum.Text[z] != ""))
                             {
-                                double min = 99999, max = 99999;
-                                bool crafted = asOpt[j].IndexOf("(crafted)") > -1;
-                                bool resistance = false;
                                 string cluster_jewel = "";
+                                double min = 99999, max = 99999;
+                                bool resistance = false;
+                                bool crafted = asOpt[j].IndexOf("(crafted)") > -1;
+                                bool implicit_ = asOpt[j].IndexOf("(implicit)") > -1;
 
-                                if (asTmp.Length == 2)
+                                if (asLocal.Length == 2)
                                 {
-                                    asTmp[1] = Regex.Replace(asTmp[1], @" \([a-zA-Z]+\)", "").Trim();
-                                    ParserDictionary Cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == asTmp[1]);
+                                    asLocal[1] = Regex.Replace(asLocal[1], @" \([a-zA-Z]+\)", "").Trim();
+                                    ParserDictionary Cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == asLocal[1]);
                                     if (Cluster != null)
                                     {
                                         cluster_jewel = Cluster.Text[z];
-                                        asOpt[j] = asTmp[0] + ": " + Cluster.Id;
+                                        asOpt[j] = asLocal[0] + ": " + Cluster.Id;
                                     }
                                 }
 
                                 string input = Regex.Replace(asOpt[j], @" \([a-zA-Z]+\)", "");
+
+                                if (implicit_ && cate_ids.Length == 1 && cate_ids[0] == "map")
+                                {
+                                    string pats = "";
+                                    foreach (ParserDictionary item in PS.MapTier.Entries)
+                                    {
+                                        pats += item.Text[z] + "|";
+                                    }
+                                    Match match = Regex.Match(input.Trim(), "(.+) (" + pats + "_none_)(.*)");
+                                    if (match.Success)
+                                    {
+                                        map_influenced = match.Groups[2] + "";
+                                        input = match.Groups[1] + " #" + match.Groups[3];
+                                    }
+                                    continue;
+                                }
+
                                 input = Regex.Escape(Regex.Replace(input, @"[+-]?[0-9]+\.[0-9]+|[+-]?[0-9]+", "#"));
                                 input = Regex.Replace(input, @"\\#", "[+-]?([0-9]+\\.[0-9]+|[0-9]+|\\#)");
 
@@ -721,20 +740,20 @@ namespace PoeTradeSearch
 
                         Synthesis.IsChecked = (is_map && is_blight) || lItemOption[PS.SynthesisedItem.Text[z]] == "_TRUE_";
 
-                        cbAltQuality.Visibility = is_gem || is_heist ? Visibility.Visible : Visibility.Hidden;
+                        cbAltQuality.Visibility = is_gem || is_heist || is_map ? Visibility.Visible : Visibility.Hidden;
 
                         cbInfluence1.Visibility = cbAltQuality.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
                         cbInfluence2.Visibility = cbAltQuality.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
                         if (cbInfluence1.SelectedIndex > 0) cbInfluence1.BorderThickness = new Thickness(2);
                         if (cbInfluence2.SelectedIndex > 0) cbInfluence2.BorderThickness = new Thickness(2);
 
-                        if (is_heist || is_gem)
+                        if (is_heist || is_gem || is_map)
                         {
-                            cbAltQuality.Items.Add(is_heist ? "모든 강탈 가치" : "모든 젬");
+                            cbAltQuality.Items.Add(is_heist ? "모든 강탈 가치" : (is_gem ? "모든 젬" : "영향 없음"));
 
-                            foreach (ParserDictionary item in (is_heist ? PS.Heist.Entries : PS.Gems.Entries))
+                            foreach (ParserDictionary item in (is_heist ? PS.Heist.Entries : (is_gem ? PS.Gems.Entries : PS.MapTier.Entries)))
                             {
-                                cbAltQuality.Items.Add(item.Text[0]);
+                                cbAltQuality.Items.Add(item.Text[z]);
                             }
 
                             if (is_gem)
@@ -747,6 +766,10 @@ namespace PoeTradeSearch
                             {
                                 //string tmp = Regex.Replace(lItemOption[PS.Heist.Text[z]], @".+ \(([^\)]+)\)$", "$1");
                                 cbAltQuality.SelectedIndex = 0; // SelectedValue = tmp;
+                            }
+                            else if (is_map)
+                            {
+                                cbAltQuality.SelectedValue = map_influenced != "" ? map_influenced : "영향 없음";
                             }
                         }
                         else if (is_map)
@@ -973,13 +996,22 @@ namespace PoeTradeSearch
                 JQ.Filters.Misc.Filters.Synthesis.Option = Inherit != "map" && itemOptions.Synthesis == true ? "true" : "any";
                 JQ.Filters.Misc.Filters.Corrupted.Option = itemOptions.Corrupt == 1 ? "true" : (itemOptions.Corrupt == 2 ? "false" : "any");
 
+                JQ.Filters.Heist.Filters.HeistObjective.Option = "any";
+                if (Inherit == "heistmission" && itemOptions.AltQuality > 0)
+                {
+                    string[] tmp = new string[] { "moderate", "high", "precious", "priceless" };
+                    JQ.Filters.Heist.Filters.HeistObjective.Option = tmp[itemOptions.AltQuality - 1];
+                }
+
+                JQ.Filters.Heist.Disabled = JQ.Filters.Heist.Filters.HeistObjective.Option == "any";
+
                 JQ.Filters.Misc.Disabled = !(
                     itemOptions.ChkQuality == true || itemOptions.Corrupt != 0 || itemOptions.AltQuality > 0
                     || (Inherit != "map" && (itemOptions.Influence1 != 0 || itemOptions.ChkLv == true || itemOptions.Synthesis == true))
                 ); ;
 
                 JQ.Filters.Map.Disabled = !(
-                    Inherit == "map" && (itemOptions.ChkLv == true || itemOptions.Synthesis == true || itemOptions.Influence1 != 0)
+                    Inherit == "map" && (itemOptions.AltQuality > 0 || itemOptions.ChkLv == true || itemOptions.Synthesis == true || itemOptions.Influence1 != 0)
                 );
 
                 JQ.Filters.Map.Filters.Tier.Min = itemOptions.ChkLv == true && Inherit == "map" ? itemOptions.LvMin : 99999;
@@ -987,14 +1019,22 @@ namespace PoeTradeSearch
                 JQ.Filters.Map.Filters.Shaper.Option = Inherit == "map" && itemOptions.Influence1 == 1 ? "true" : "any";
                 JQ.Filters.Map.Filters.Elder.Option = Inherit == "map" && itemOptions.Influence1 == 2 ? "true" : "any";
                 JQ.Filters.Map.Filters.Blight.Option = Inherit == "map" && itemOptions.Synthesis == true ? "true" : "any";
-
-                JQ.Filters.Heist.Filters.HeistObjective.Option = "any";
-                if (Inherit == "heistmission" && itemOptions.AltQuality > 0)
+                if (Inherit == "map" && itemOptions.AltQuality > 0)
                 {
-                    string[] tmp = new string[] { "moderate", "high", "precious", "priceless" };
-                    JQ.Filters.Heist.Filters.HeistObjective.Option = tmp[itemOptions.AltQuality - 1];
+                    Itemfilter itemfilter = new Itemfilter();
+                    itemfilter.id = "implicit.stat_1792283443";
+                    DataResult filterResult = Array.Find(mFilterData[lang_type].Result, x => x.Label == RS.lFilterType["implicit"]);
+                    DataEntrie filter = Array.Find(filterResult.Entries, x => x.Id == itemfilter.id);
+                    if (filter != null)
+                    {
+                        itemfilter.text = filter.Text;
+                        itemfilter.flag = "INFLUENCED";
+                        itemfilter.disabled = false;
+                        itemfilter.min = itemOptions.AltQuality;
+                        itemfilter.max = 99999;
+                        itemOptions.itemfilters.Add(itemfilter);
+                    }
                 }
-                JQ.Filters.Heist.Disabled = JQ.Filters.Heist.Filters.HeistObjective.Option == "any";
 
                 bool error_filter = false;
 
@@ -1040,6 +1080,12 @@ namespace PoeTradeSearch
                                     if ((itemOptions.itemfilters[i].flag ?? "") == "CLUSTER")
                                     {
                                         JQ.Stats[0].Filters[idx].Value.Option = itemOptions.itemfilters[i].min;
+                                        JQ.Stats[0].Filters[idx].Value.Min = 99999;
+                                    }
+                                    else if ((itemOptions.itemfilters[i].flag ?? "") == "INFLUENCED")
+                                    {
+                                        JQ.Stats[0].Filters[idx].Value.Option = itemOptions.itemfilters[i].min.ToString();
+                                        JQ.Stats[0].Filters[idx].Value.Min = 99999;
                                     }
                                     JQ.Stats[0].Filters[idx++].Id = filter.Id;
                                 }
@@ -1476,7 +1522,7 @@ namespace PoeTradeSearch
             {
                 if (!mPausedHotKey && !mClipboardBlock)
                 {
-                    if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
+                    if (!Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
                     {
                         try
                         {
