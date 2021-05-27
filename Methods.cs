@@ -770,14 +770,11 @@ namespace PoeTradeSearch
                             else if (is_map)
                             {
                                 cbAltQuality.SelectedValue = map_influenced != "" ? map_influenced : "영향 없음";
+                                tbLvMin.Text = tbLvMax.Text = lItemOption[PS.MapTier.Text[z]];
+                                ckLv.Content = "등급";
+                                ckLv.IsChecked = true;
+                                Synthesis.Content = "역병";
                             }
-                        }
-                        else if (is_map)
-                        {
-                            tbLvMin.Text = tbLvMax.Text = lItemOption[PS.MapTier.Text[z]];
-                            ckLv.Content = "등급";
-                            ckLv.IsChecked = true;
-                            Synthesis.Content = "역병";
                         }
                         else if (by_type || cate_ids[0] == "flask")
                         {
