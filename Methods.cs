@@ -1127,7 +1127,7 @@ namespace PoeTradeSearch
                     + "sale_type|rarity|category|corrupted|synthesised_item|shaper_item|elder_item|crusader_item|redeemer_item|hunter_item|warlord_"
                     + "item|map_shaped|map_elder|map_blighted|heist_objective_value" + ")\":{\"option\":\"any\"},?", ""
                 );
-                sEntity = Regex.Replace(Regex.Replace(sEntity, "({),{1,}", "$1"), ",{1,}(}|])", "$1");
+                sEntity = Regex.Replace(Regex.Replace(Regex.Replace(sEntity, ",{2,}", ","), "({),{1,}", "$1"), ",{1,}(}|])", "$1");
 
                 if (error_filter)
                 {
@@ -1522,7 +1522,11 @@ namespace PoeTradeSearch
             {
                 if (!mPausedHotKey && !mClipboardBlock)
                 {
+#if DEBUG
                     if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
+#else
+                    if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
+#endif
                     {
                         try
                         {

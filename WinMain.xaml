@@ -185,7 +185,7 @@
                     <TextBox Name="tbLinksMax" HorizontalAlignment="Left" Height="18" Margin="213,294,0,0" Text="" VerticalAlignment="Top" Width="16" PreviewMouseLeftButtonDown="TbOpt0_0_PreviewMouseLeftButtonDown" />
                     <Label Name="lbSocketBackground" Content="" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" HorizontalAlignment="Left" Margin="139,275,0,0" VerticalAlignment="Top" Width="111" Visibility="Hidden" Height="37" />
 
-                    <CheckBox Name="Synthesis" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Content="결합" HorizontalAlignment="Left" Margin="255,275,-20,0" VerticalAlignment="Top" Width="146" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
+                    <CheckBox Name="Synthesis" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Content="결합" HorizontalAlignment="Left" Margin="255,275,0,0" VerticalAlignment="Top" Width="62" Checked="tkPrice_ReSet" Unchecked="tkPrice_ReSet" />
 
                     <ComboBox Name="cbCorrupt" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="317,270,0,0" VerticalAlignment="Top" Width="60" SelectedIndex="0" SelectionChanged="tkPrice_ReSet">
                         <ComboBox.Resources>
