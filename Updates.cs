@@ -69,7 +69,11 @@ namespace PoeTradeSearch
                             path + "poe_exe.zip"
                         );
                     }
-                    catch { }
+                    catch 
+                    {
+                        MessageBox.Show("서버 접속이 원할하지 않을 수 있습니다." + '\n' + "다음에 다시 시도해 주세요.", "업데이트에 실패했습니다.");
+                        throw;
+                    }
                 }
 
                 if (File.Exists(path + "poe_exe.zip"))
