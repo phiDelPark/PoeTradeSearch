@@ -1520,7 +1520,7 @@ namespace PoeTradeSearch
                 if (!mPausedHotKey && !mClipboardBlock)
                 {
 #if DEBUG
-                    if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
+                    if (!Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
 #else
                     if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
 #endif
