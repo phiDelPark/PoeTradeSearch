@@ -759,7 +759,7 @@ namespace PoeTradeSearch
                             if (is_gem)
                             {
                                 ckLv.IsChecked = lItemOption[PS.Level.Text[z]].IndexOf(" (" + PS.Max.Text[z]) > 0;
-                                ckQuality.IsChecked = ckLv.IsChecked == true && item_quality != "" && int.Parse(item_quality) > 19;
+                                ckQuality.IsChecked = item_quality != "" && ((ckLv.IsChecked == true && int.Parse(item_quality) > 19) || int.Parse(item_quality) > 20);
                                 cbAltQuality.SelectedIndex = alt_quality;
                             }
                             else if (is_heist)
