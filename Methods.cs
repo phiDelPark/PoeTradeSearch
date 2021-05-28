@@ -717,9 +717,8 @@ namespace PoeTradeSearch
                         cbRarity.SelectedIndex = 0;
                     }
 
-                    bool Is_exchangeCurrency = cate_ids[0] == "currency" && GetExchangeItem(z, item_type) != null;
-                    bdExchange.Visibility = !is_gem && (is_detail || Is_exchangeCurrency) ? Visibility.Visible : Visibility.Hidden;
-                    bdExchange.IsEnabled = Is_exchangeCurrency;
+                    bdExchange.IsEnabled = cate_ids[0] == "currency" && GetExchangeItem(z, item_type) != null;
+                    bdExchange.Visibility = !is_gem && (is_detail || bdExchange.IsEnabled) ? Visibility.Visible : Visibility.Hidden;
 
                     if (bdExchange.Visibility == Visibility.Hidden)
                     {
@@ -745,15 +744,6 @@ namespace PoeTradeSearch
                             cbCorrupt.FontWeight = FontWeights.Bold;
                             cbCorrupt.Foreground = System.Windows.Media.Brushes.DarkRed;
                         }
-
-                        Synthesis.IsChecked = (is_map && is_blight) || lItemOption[PS.SynthesisedItem.Text[z]] == "_TRUE_";
-
-                        cbAltQuality.Visibility = is_gem || is_heist || is_map ? Visibility.Visible : Visibility.Hidden;
-
-                        cbInfluence1.Visibility = cbAltQuality.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
-                        cbInfluence2.Visibility = cbAltQuality.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
-                        if (cbInfluence1.SelectedIndex > 0) cbInfluence1.BorderThickness = new Thickness(2);
-                        if (cbInfluence2.SelectedIndex > 0) cbInfluence2.BorderThickness = new Thickness(2);
 
                         if (is_heist || is_gem || is_map)
                         {
@@ -807,11 +797,18 @@ namespace PoeTradeSearch
                         }
                     }
 
-                    bdDetail.Visibility = is_detail ? Visibility.Visible : Visibility.Hidden;
-                    lbSocketBackground.Visibility = by_type ? Visibility.Hidden : Visibility.Visible;
-
                     if (isWinShow || this.Visibility == Visibility.Visible)
                     {
+                        Synthesis.IsChecked = (is_map && is_blight) || lItemOption[PS.SynthesisedItem.Text[z]] == "_TRUE_";
+                        lbSocketBackground.Visibility = by_type ? Visibility.Hidden : Visibility.Visible;
+                        cbAltQuality.Visibility = by_type ? Visibility.Hidden : Visibility.Visible;
+                        bdDetail.Visibility = is_detail ? Visibility.Visible : Visibility.Hidden;
+
+                        cbInfluence1.Visibility = cbAltQuality.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
+                        cbInfluence2.Visibility = cbAltQuality.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
+                        if (cbInfluence1.SelectedIndex > 0) cbInfluence1.BorderThickness = new Thickness(2);
+                        if (cbInfluence2.SelectedIndex > 0) cbInfluence2.BorderThickness = new Thickness(2);
+
                         tkPriceInfo.Foreground = tkPriceCount.Foreground = SystemColors.WindowTextBrush;
 
                         mLockUpdatePrice = false;
@@ -1012,7 +1009,7 @@ namespace PoeTradeSearch
                 JQ.Filters.Heist.Disabled = JQ.Filters.Heist.Filters.HeistObjective.Option == "any";
 
                 JQ.Filters.Misc.Disabled = !(
-                    itemOptions.ChkQuality == true || itemOptions.Corrupt != 0 || itemOptions.AltQuality > 0
+                    itemOptions.ChkQuality == true || itemOptions.Corrupt > 0 || (itemOptions.AltQuality != 0xff && itemOptions.AltQuality > 0)
                     || (Inherit != "map" && (itemOptions.Influence1 != 0 || itemOptions.ChkLv == true || itemOptions.Synthesis == true))
                 ); ;
 
