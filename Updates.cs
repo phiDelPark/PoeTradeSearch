@@ -193,6 +193,7 @@ namespace PoeTradeSearch
                             }
                         }
 
+                        /*
                         foreach (KeyValuePair<string, bool> itm in RS.lDisable)
                         {
                             for (int i = 0; i < rootClass.Result.Length; i++)
@@ -205,6 +206,7 @@ namespace PoeTradeSearch
                                 }
                             }
                         }
+                        */
 
                         rootClass.Upddate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
                         using (StreamWriter writer = new StreamWriter(path + (isKR ? "FiltersKO.txt" : "FiltersEN.txt"), false, Encoding.UTF8))

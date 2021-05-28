@@ -441,7 +441,8 @@ namespace PoeTradeSearch
 
                                     Itemfilter itemfilter = new Itemfilter
                                     {
-                                        id = filter.Type,
+                                        id = filter.Id,
+                                        type = filter.Type,
                                         text = filter.Text,
                                         max = max,
                                         min = min,
@@ -449,13 +450,13 @@ namespace PoeTradeSearch
                                     };
 
                                     if (cluster_jewel != "")
-                                    {
-                                        ((TextBox)this.FindName("tbOpt" + k)).Text = cluster_jewel;
-                                        ((TextBox)this.FindName("tbOpt" + k)).Tag = "CLUSTER";
+                                    { 
                                         ((TextBox)this.FindName("tbOpt" + k + "_0")).IsEnabled = false;
                                         ((TextBox)this.FindName("tbOpt" + k + "_1")).IsEnabled = false;
                                         ((TextBox)this.FindName("tbOpt" + k + "_0")).Background = SystemColors.WindowBrush;
                                         ((TextBox)this.FindName("tbOpt" + k + "_0")).Foreground = SystemColors.WindowBrush;
+                                            ((TextBox)this.FindName("tbOpt" + k)).Text = cluster_jewel;
+                                            ((TextBox)this.FindName("tbOpt" + k)).Tag = "CLUSTER";
                                     }
 
                                     ((TextBox)this.FindName("tbOpt" + k + "_0")).Text = min == 99999 ? "" : min.ToString();
@@ -666,6 +667,13 @@ namespace PoeTradeSearch
                                     tmpCheckBox.IsChecked = true;
                                     itemfilters[i].disabled = false;
                                 }
+                            }
+
+                            if (RS.lDisable.ContainsKey(ifilter.id.Split('.')[1]))
+                            {
+                                tmpCheckBox.IsChecked = false;
+                                tmpCheckBox.IsEnabled = false;
+                                itemfilters[i].disabled = true;
                             }
                         }
 
@@ -904,6 +912,7 @@ namespace PoeTradeSearch
                         itemfilter.id = ((FilterEntrie)comboBox.SelectedItem).ID;
                     }
 
+                    itemfilter.type = itemfilter.id.Split('.')[0];
                     itemOption.itemfilters.Add(itemfilter);
                 }
             }
@@ -1048,7 +1057,7 @@ namespace PoeTradeSearch
                     {
                         string input = itemOptions.itemfilters[i].text;
                         string id = itemOptions.itemfilters[i].id;
-                        string type = itemOptions.itemfilters[i].id.Split('.')[0];
+                        string type = itemOptions.itemfilters[i].type;
 
                         if (input.Trim() != "" && RS.lFilterType.ContainsKey(type))
                         {

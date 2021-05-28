@@ -26,6 +26,7 @@ namespace PoeTradeSearch
             { "pseudo", "유사"}, { "explicit", "일반"}, { "implicit", "고정"}, { "fractured", "분열"}, { "enchant", "인챈"},
             { "crafted", "제작"}, { "veiled", "장막"}, { "monster", "야수"}, { "delve", "탐광"}, { "ultimatum", "결전" }
         };
+
         internal static Dictionary<string, bool> lDefaultPosition = new Dictionary<string, bool>()
         {
             { "stat_3441651621", true}, { "stat_3853018505", true}, { "stat_969865219", true},  { "stat_4176970656", true},
@@ -38,7 +39,8 @@ namespace PoeTradeSearch
 
         internal static Dictionary<string, bool> lDisable = new Dictionary<string, bool>()
         {
-            { "stat_1001829678", true}, { "stat_1778298516", true}, { "stat_2881111359", true},  { "stat_561307714", true}, { "stat_57434274", true},  { "stat_3666934677", true}
+            { "stat_1001829678", true}, { "stat_1778298516", true}, { "stat_2881111359", true},  { "stat_561307714", true}, { "stat_57434274", true},  
+            { "stat_3666934677", true}, { "stat_723388324", true}
         };
 
         internal static Dictionary<string, byte> lParticular = new Dictionary<string, byte>()

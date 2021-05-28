@@ -10,6 +10,7 @@ namespace PoeTradeSearch
         public class Itemfilter
         {
             public string id;
+            public string type;
             public string text;
             public double max;
             public double min;
