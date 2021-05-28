@@ -243,7 +243,7 @@ namespace PoeTradeSearch
                             {
                                 if (lItemOption[asLocal[0]] == "") lItemOption[asLocal[0]] = asLocal.Length > 1 ? asLocal[1].Trim() : "_TRUE_";
                             }
-                            else if (k < 10 && (lItemOption[PS.ItemLevel.Text[z]] != "" || PS.MapUltimatum.Text[z] != ""))
+                            else if (k < 10 && (lItemOption[PS.ItemLevel.Text[z]] != "" || lItemOption[PS.MapUltimatum.Text[z]] != ""))
                             {
                                 string cluster_jewel = "";
                                 double min = 99999, max = 99999;
@@ -1520,7 +1520,7 @@ namespace PoeTradeSearch
                 if (!mPausedHotKey && !mClipboardBlock)
                 {
 #if DEBUG
-                    if (!Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
+                    if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
 #else
                     if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
 #endif
