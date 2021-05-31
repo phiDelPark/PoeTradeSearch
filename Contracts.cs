@@ -115,7 +115,7 @@ namespace PoeTradeSearch
             internal bool CtrlWheel = false;
 
             [DataMember(Name = "check_updates")]
-            internal bool CheckUpdates = false;
+            internal bool CheckUpdates = false;            
         }
 
         [DataContract(Name = "shortcuts")]

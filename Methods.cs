@@ -1556,7 +1556,7 @@ namespace PoeTradeSearch
 #if DEBUG
                     if (!Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
 #else
-                    test123(); //무언가 테스트...
+                    //test123(); //무언가 테스트...
                     if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
 #endif
                     {
