@@ -861,8 +861,8 @@ namespace PoeTradeSearch
         {
             ItemOption itemOption = new ItemOption();
 
-            itemOption.Influence1 = (byte)cbInfluence1.SelectedIndex;
-            itemOption.Influence2 = (byte)cbInfluence2.SelectedIndex;
+            itemOption.Influence1 = cbInfluence1.SelectedIndex;
+            itemOption.Influence2 = cbInfluence2.SelectedIndex;
 
             // 영향은 첫번째 값이 우선 순위여야 함
             if (itemOption.Influence1 == 0 && itemOption.Influence2 != 0)
@@ -871,7 +871,7 @@ namespace PoeTradeSearch
                 itemOption.Influence2 = 0;
             }
 
-            itemOption.Corrupt = (byte)cbCorrupt.SelectedIndex;
+            itemOption.Corrupt = cbCorrupt.SelectedIndex;
             itemOption.Synthesis = Synthesis.IsChecked == true;
             itemOption.ChkSocket = ckSocket.IsChecked == true;
             itemOption.ChkQuality = ckQuality.IsChecked == true;
@@ -887,8 +887,8 @@ namespace PoeTradeSearch
             itemOption.LvMin = StrToDouble(tbLvMin.Text, 99999);
             itemOption.LvMax = StrToDouble(tbLvMax.Text, 99999);
 
-            itemOption.AltQuality = (byte)cbAltQuality.SelectedIndex;
-            itemOption.RarityAt = (byte)(cbRarity.Items.Count > 1 ? cbRarity.SelectedIndex : 0);
+            itemOption.AltQuality = cbAltQuality.SelectedIndex;
+            itemOption.RarityAt = (cbRarity.Items.Count > 1 ? cbRarity.SelectedIndex : 0);
             itemOption.Flags = (string)(cbRarity.SelectedValue ?? "") == "결전" ? "결전|" + cbAltQuality.SelectedValue : "";
             itemOption.PriceMin = tbPriceFilterMin.Text == "" ? 0 : StrToDouble(tbPriceFilterMin.Text, 99999);
 
@@ -1555,9 +1555,9 @@ namespace PoeTradeSearch
                 if (!mPausedHotKey && !mClipboardBlock)
                 {
 #if DEBUG
+                    test123(); //무언가 테스트...
                     if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
 #else
-                    //test123(); //무언가 테스트...
                     if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
 #endif
                     {

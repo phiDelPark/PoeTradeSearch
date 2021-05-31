@@ -22,11 +22,11 @@ namespace PoeTradeSearch
         [DataContract]
         public class ItemOption
         {
-            public byte RarityAt;
-            public byte Corrupt;
-            public byte Influence1;
-            public byte Influence2;
-            public byte AltQuality;
+            public int RarityAt;
+            public int Corrupt;
+            public int Influence1;
+            public int Influence2;
+            public int AltQuality;
             public bool ByType;
             public bool ChkLv;
             public bool ChkSocket;
