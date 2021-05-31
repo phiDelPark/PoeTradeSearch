@@ -115,7 +115,7 @@ namespace PoeTradeSearch
             internal bool CtrlWheel = false;
 
             [DataMember(Name = "check_updates")]
-            internal bool CheckUpdates = false;            
+            internal bool CheckUpdates = false;
         }
 
         [DataContract(Name = "shortcuts")]
@@ -160,7 +160,7 @@ namespace PoeTradeSearch
             [DataMember(Name = "map_ultimatum")]
             internal ParserEntries MapUltimatum = null;
             [DataMember(Name = "reward_ultimatum")]
-            internal ParserEntries RewardUltimatum = null;            
+            internal ParserEntries RewardUltimatum = null;
             [DataMember(Name = "superior")]
             internal ParserEntries Superior = null;
             [DataMember(Name = "vaal")]

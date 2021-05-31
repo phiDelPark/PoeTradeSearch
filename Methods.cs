@@ -239,10 +239,10 @@ namespace PoeTradeSearch
                     Dictionary<string, string> lItemOption = new Dictionary<string, string>()
                     {
                         { PS.Quality.Text[z], "" }, { PS.Level.Text[z], "" }, { PS.ItemLevel.Text[z], "" }, { PS.TalismanTier.Text[z], "" }, { PS.MapTier.Text[z], "" },
-                        { PS.Sockets.Text[z], "" }, { PS.Heist.Text[z], "" }, { PS.MapUltimatum.Text[z], "" }, { PS.RewardUltimatum.Text[z], "" }, 
+                        { PS.Sockets.Text[z], "" }, { PS.Heist.Text[z], "" }, { PS.MapUltimatum.Text[z], "" }, { PS.RewardUltimatum.Text[z], "" },
                         { PS.MonsterGenus.Text[z], "" }, { PS.MonsterGroup.Text[z], "" },
-                        { PS.PhysicalDamage.Text[z], "" }, { PS.ElementalDamage.Text[z], "" }, { PS.ChaosDamage.Text[z], "" }, { PS.AttacksPerSecond.Text[z], "" }, 
-                        { PS.ShaperItem.Text[z], "" }, { PS.ElderItem.Text[z], "" }, { PS.CrusaderItem.Text[z], "" }, { PS.RedeemerItem.Text[z], "" }, 
+                        { PS.PhysicalDamage.Text[z], "" }, { PS.ElementalDamage.Text[z], "" }, { PS.ChaosDamage.Text[z], "" }, { PS.AttacksPerSecond.Text[z], "" },
+                        { PS.ShaperItem.Text[z], "" }, { PS.ElderItem.Text[z], "" }, { PS.CrusaderItem.Text[z], "" }, { PS.RedeemerItem.Text[z], "" },
                         { PS.HunterItem.Text[z], "" }, { PS.WarlordItem.Text[z], "" }, { PS.SynthesisedItem.Text[z], "" },
                         { PS.Corrupted.Text[z], "" }, { PS.Unidentified.Text[z], "" }, { PS.ProphecyItem.Text[z], "" }, { PS.Vaal.Text[z] + " " + item_type, "" }
                     };
@@ -1053,6 +1053,7 @@ namespace PoeTradeSearch
                     if (filter != null)
                     {
                         itemfilter.text = filter.Text;
+                        itemfilter.type = "implicit";
                         itemfilter.flag = "INFLUENCED";
                         itemfilter.disabled = false;
                         itemfilter.min = itemOptions.AltQuality;
@@ -1155,7 +1156,7 @@ namespace PoeTradeSearch
                 sEntity = Regex.Replace(sEntity.Replace("{[a-z\":,]+\"temp_ids\"[a-z\":,]+{[a-z0-9\":,]*}}", ""), "\"(min|max)\":99999|\"option\":0", "");
                 sEntity = Regex.Replace(sEntity, "\"("
                     + "sale_type|rarity|category|corrupted|synthesised_item|shaper_item|elder_item|crusader_item|redeemer_item|hunter_item|warlord_"
-                    + "item|map_shaped|map_elder|map_blighted|heist_objective_value|ultimatum_output" + ")\":{\"option\":\"any\"},?", ""
+                    + "item|map_shaped|map_elder|map_blighted|heist_objective_value|ultimatum_reward|ultimatum_output" + ")\":{\"option\":(\"any\"|null)},?", ""
                 );
                 sEntity = Regex.Replace(Regex.Replace(Regex.Replace(sEntity, ",{2,}", ","), "({),{1,}", "$1"), ",{1,}(}|])", "$1");
 
@@ -1554,9 +1555,9 @@ namespace PoeTradeSearch
                 if (!mPausedHotKey && !mClipboardBlock)
                 {
 #if DEBUG
-                    if (!Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
+                    if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
 #else
-                    //test123(); //무언가 테스트...
+                    test123(); //무언가 테스트...
                     if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
 #endif
                     {
