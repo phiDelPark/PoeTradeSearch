@@ -41,6 +41,7 @@ namespace PoeTradeSearch
             public double LvMin;
             public double LvMax;
             public double PriceMin;
+            public string Flags;
             public List<Itemfilter> itemfilters = new List<Itemfilter>();
         }
 
@@ -158,6 +159,8 @@ namespace PoeTradeSearch
             internal ParserEntries MapTier = null;
             [DataMember(Name = "map_ultimatum")]
             internal ParserEntries MapUltimatum = null;
+            [DataMember(Name = "reward_ultimatum")]
+            internal ParserEntries RewardUltimatum = null;            
             [DataMember(Name = "superior")]
             internal ParserEntries Superior = null;
             [DataMember(Name = "vaal")]
@@ -180,8 +183,6 @@ namespace PoeTradeSearch
             internal ParserEntries WarlordItem = null;
             [DataMember(Name = "synthesised_item")]
             internal ParserEntries SynthesisedItem = null;
-            [DataMember(Name = "synthesised")]
-            internal ParserEntries Synthesised = null;
             [DataMember(Name = "shaped")]
             internal ParserEntries Shaped = null;
             [DataMember(Name = "blighted")]
@@ -519,6 +520,26 @@ namespace PoeTradeSearch
         }
 
         [DataContract]
+        internal class q_ultimatum_filters_filters
+        {
+            [DataMember(Name = "ultimatum_reward")]
+            internal q_Option Reward = new q_Option();
+
+            [DataMember(Name = "ultimatum_output")]
+            internal q_Option Output = new q_Option();
+        }
+
+        [DataContract]
+        internal class q_ultimatum_filters
+        {
+            [DataMember(Name = "disabled")]
+            internal bool Disabled = false;
+
+            [DataMember(Name = "filters")]
+            internal q_ultimatum_filters_filters Filters = new q_ultimatum_filters_filters();
+        }
+
+        [DataContract]
         internal class q_Trade_filters_filters
         {
             [DataMember(Name = "indexed")]
@@ -552,6 +573,8 @@ namespace PoeTradeSearch
             internal q_Map_filters Map = new q_Map_filters();
             [DataMember(Name = "heist_filters")]
             internal q_Heist_filters Heist = new q_Heist_filters();
+            [DataMember(Name = "ultimatum_filters")]
+            internal q_ultimatum_filters Ultimatum = new q_ultimatum_filters();
             [DataMember(Name = "misc_filters")]
             internal q_Misc_filters Misc = new q_Misc_filters();
             [DataMember(Name = "trade_filters")]

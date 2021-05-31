@@ -253,15 +253,6 @@
 			{"id":"card","text":[ "점술 카드", "Divination Card" ]}
 		]
 	},
-	"heist":{
-		"text":[ "강탈 대상", "Heist Target" ],
-		"entries":[
-			{"id":"normal","text":[ "보통 가치", "Moderate Value" ]},
-			{"id":"magic","text":[ "높은 가치", "High Value" ]},
-			{"id":"rare","text":[ "귀중한 가치", "Precious" ]},
-			{"id":"unique","text":[ "환산 불가능한 가치", "Priceless" ]}
-		]
-	},
 	"gems":{
 		"entries":[
 			{"text":[ "기묘한", "Anomalous" ]},
@@ -276,12 +267,30 @@
 			{"text":[ "엘더", "The Elder" ]}
 		]
 	},
+	"heist":{
+		"text":[ "강탈 대상", "Heist Target" ],
+		"entries":[
+			{"id":"normal","text":[ "보통 가치", "Moderate Value" ]},
+			{"id":"magic","text":[ "높은 가치", "High Value" ]},
+			{"id":"rare","text":[ "귀중한 가치", "Precious" ]},
+			{"id":"unique","text":[ "환산 불가능한 가치", "Priceless" ]}
+		]
+	},
+	"map_ultimatum":{"text":[ "도전", "Challenge" ]},
+	"reward_ultimatum":{
+		"text":[ "보상", "Reward" ],
+		"entries":[
+			{"id":"DoubleCurrency","text":[ "소모되는 화폐 2배", "Doubles sacrificed Currency" ]},
+			{"id":"DoubleDivCards","text":[ "소모되는 점술 카드 2배", "Doubles sacrificed Divination Cards" ]},
+			{"id":"MirrorRare","text":[ "아이템과 복제본", "Item and Mirrored Copy" ]},
+			{"id":"ExchangeUnique","text":[ "유니크 아이템", "Unique Item" ]}
+		]
+	},
 	"quality":{"text":[ "퀄리티", "Quality" ]},
 	"sockets":{"text":[ "홈", "Sockets" ]},
 	"level":{"text":[ "레벨", "Level" ]},
 	"item_level":{"text":[ "아이템 레벨", "Item Level" ]},
 	"talisman_tier":{"text":[ "부적 등급", "Talisman Tier" ]},
-	"map_ultimatum":{"text":[ "도전", "Challenge" ]},
 	"monster_genus":{"text":[ "종", "Genus" ]},
 	"monster_group":{"text":[ "속", "Group" ]},
 	"superior":{"text":[ "상급", "Superior" ]},
@@ -292,14 +301,13 @@
 	"metamorph":{"text":[ "변형", "Metamorph" ]},
 	"shaped":{"text":[ "형성된", "Shaped" ]},
 	"blighted":{"text":[ "역병 걸린", "Blighted" ]},
-	"synthesised":{"text":[ "결합된", "Synthesised" ]},
-	"synthesised_item":{"text":[ "결합된 아이템", "Synthesised Item" ]},
 	"elder_item":{"text":[ "엘더 아이템", "Elder Item" ]},
 	"shaper_item":{"text":[ "쉐이퍼 아이템", "Shaper Item" ]},
 	"crusader_item":{"text":[ "십자군 아이템", "Crusader Item" ]},
 	"redeemer_item":{"text":[ "대속자 아이템", "Redeemer Item" ]},
 	"hunter_item":{"text":[ "사냥꾼 아이템", "Hunter Item" ]},
 	"warlord_item":{"text":[ "전쟁군주 아이템", "Warlord Item" ]},
+	"synthesised_item":{"text":[ "결합된 아이템", "Synthesised Item" ]},
 	"prophecy_item":{"text":[ "우클릭으로 이 예언을 캐릭터에 추가하십시오.", "Right-click to add this prophecy to your character." ]},
 	"unstack_items":{"text":[ "Shift + 클릭으로 아이템 나누기", "Shift click to unstack" ]}
 }

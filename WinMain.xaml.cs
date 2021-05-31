@@ -525,9 +525,6 @@ namespace PoeTradeSearch
             e.Cancel = true;
             Keyboard.ClearFocus();
             this.Visibility = Visibility.Hidden;
-            // 자동 시세 검색으로 바뀐 텍스트 닫을때 초기화
-            tkPriceCount.Text = "";
-            tkPriceInfo.Text = (string)tkPriceInfo.Tag;
         }
 
         private void Window_Closed(object sender, EventArgs e)
