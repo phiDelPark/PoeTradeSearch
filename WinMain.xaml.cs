@@ -330,8 +330,8 @@ namespace PoeTradeSearch
 
             for (int i = 0; i < 10; i++)
             {
-                if (((CheckBox)this.FindName("tbOpt" + i + "_2")).IsEnabled == true)
-                    ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = is_checked;
+                if (((CheckBox)FindName("tbOpt" + i + "_2")).IsEnabled == true)
+                    ((CheckBox)FindName("tbOpt" + i + "_2")).IsChecked = is_checked;
             }
         }
 

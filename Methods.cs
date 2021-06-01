@@ -82,35 +82,35 @@ namespace PoeTradeSearch
 
             for (int i = 0; i < 10; i++)
             {
-                ((ComboBox)this.FindName("cbOpt" + i)).Items.Clear();
-                // ((ComboBox)this.FindName("cbOpt" + i)).ItemsSource = new List<FilterEntrie>();
-                ((ComboBox)this.FindName("cbOpt" + i)).DisplayMemberPath = "Name";
-                ((ComboBox)this.FindName("cbOpt" + i)).SelectedValuePath = "Name";
+                ((ComboBox)FindName("cbOpt" + i)).Items.Clear();
+                // ((ComboBox)FindName("cbOpt" + i)).ItemsSource = new List<FilterEntrie>();
+                ((ComboBox)FindName("cbOpt" + i)).DisplayMemberPath = "Name";
+                ((ComboBox)FindName("cbOpt" + i)).SelectedValuePath = "Name";
 
-                ((TextBox)this.FindName("tbOpt" + i)).Text = "";
-                ((TextBox)this.FindName("tbOpt" + i)).Tag = null;
-                ((TextBox)this.FindName("tbOpt" + i)).Background = SystemColors.WindowBrush;
-                ((TextBox)this.FindName("tbOpt" + i + "_0")).Text = "";
-                ((TextBox)this.FindName("tbOpt" + i + "_1")).Text = "";
-                ((TextBox)this.FindName("tbOpt" + i + "_0")).IsEnabled = true;
-                ((TextBox)this.FindName("tbOpt" + i + "_1")).IsEnabled = true;
-                ((TextBox)this.FindName("tbOpt" + i + "_0")).Background = SystemColors.WindowBrush;
-                ((TextBox)this.FindName("tbOpt" + i + "_0")).Foreground = ((TextBox)this.FindName("tbOpt" + i)).Foreground;
-                ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsEnabled = true;
-                ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
-                ((CheckBox)this.FindName("tbOpt" + i + "_3")).IsChecked = false;
-                ((CheckBox)this.FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
+                ((TextBox)FindName("tbOpt" + i)).Text = "";
+                ((TextBox)FindName("tbOpt" + i)).Tag = null;
+                ((TextBox)FindName("tbOpt" + i)).Background = SystemColors.WindowBrush;
+                ((TextBox)FindName("tbOpt" + i + "_0")).Text = "";
+                ((TextBox)FindName("tbOpt" + i + "_1")).Text = "";
+                ((TextBox)FindName("tbOpt" + i + "_0")).IsEnabled = true;
+                ((TextBox)FindName("tbOpt" + i + "_1")).IsEnabled = true;
+                ((TextBox)FindName("tbOpt" + i + "_0")).Background = SystemColors.WindowBrush;
+                ((TextBox)FindName("tbOpt" + i + "_0")).Foreground = ((TextBox)FindName("tbOpt" + i)).Foreground;
+                ((CheckBox)FindName("tbOpt" + i + "_2")).IsEnabled = true;
+                ((CheckBox)FindName("tbOpt" + i + "_2")).IsChecked = false;
+                ((CheckBox)FindName("tbOpt" + i + "_3")).IsChecked = false;
+                ((CheckBox)FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
                 SetFilterObjectColor(i, SystemColors.ActiveBorderBrush);
             }
         }
 
         private void SetFilterObjectColor(int index, System.Windows.Media.SolidColorBrush colorBrush)
         {
-            ((Control)this.FindName("tbOpt" + index)).BorderBrush = colorBrush;
-            ((Control)this.FindName("tbOpt" + index + "_0")).BorderBrush = colorBrush;
-            ((Control)this.FindName("tbOpt" + index + "_1")).BorderBrush = colorBrush;
-            ((Control)this.FindName("tbOpt" + index + "_2")).BorderBrush = colorBrush;
-            ((Control)this.FindName("tbOpt" + index + "_3")).BorderBrush = colorBrush;
+            ((Control)FindName("tbOpt" + index)).BorderBrush = colorBrush;
+            ((Control)FindName("tbOpt" + index + "_0")).BorderBrush = colorBrush;
+            ((Control)FindName("tbOpt" + index + "_1")).BorderBrush = colorBrush;
+            ((Control)FindName("tbOpt" + index + "_2")).BorderBrush = colorBrush;
+            ((Control)FindName("tbOpt" + index + "_3")).BorderBrush = colorBrush;
         }
 
         private void SetSearchButtonText(bool is_kor)
@@ -126,8 +126,8 @@ namespace PoeTradeSearch
             double elementalDPS = DamageToDPS(elemental);
             double chaosDPS = DamageToDPS(chaos);
 
-            double quality20Dps = quality == "" ? 0 : StrToDouble(quality, 0);
-            double attacksPerSecond = StrToDouble(Regex.Replace(perSecond, "[^0-9.]", ""), 0);
+            double quality20Dps = quality == "" ? 0 : quality.ToDouble(0);
+            double attacksPerSecond = Regex.Replace(perSecond, "[^0-9.]", "").ToDouble(0);
 
             if (speedIncr > 0)
             {
@@ -154,15 +154,15 @@ namespace PoeTradeSearch
         {
             for (int i = 0; i < itemfilters.Count; i++)
             {
-                string txt = ((TextBox)this.FindName("tbOpt" + i)).Text;
-                if (((CheckBox)this.FindName("tbOpt" + i + "_2")).IsEnabled == false) continue;
+                string txt = ((TextBox)FindName("tbOpt" + i)).Text;
+                if (((CheckBox)FindName("tbOpt" + i + "_2")).IsEnabled == false) continue;
 
                 for (int j = 0; j < itemfilters.Count; j++)
                 {
                     if (i == j) continue;
 
-                    CheckBox tmpCcheckBox2 = (CheckBox)this.FindName("tbOpt" + j + "_2");
-                    if (((TextBox)this.FindName("tbOpt" + j)).Text == txt)
+                    CheckBox tmpCcheckBox2 = (CheckBox)FindName("tbOpt" + j + "_2");
+                    if (((TextBox)FindName("tbOpt" + j)).Text == txt)
                     {
                         tmpCcheckBox2.IsChecked = false;
                         tmpCcheckBox2.IsEnabled = false;
@@ -253,7 +253,7 @@ namespace PoeTradeSearch
 
                         for (int j = 0; j < asOpt.Length; j++)
                         {
-                            if (asOpt[j].Trim() == "") continue;
+                            if (asOpt[j].Trim().IsEmpty()) continue;
 
                             string[] asLocal = Regex.Replace(asOpt[j], @" \([\w\s]+\)\: ", ": ").Split(':');
 
@@ -261,7 +261,7 @@ namespace PoeTradeSearch
                             {
                                 if (lItemOption[asLocal[0]] == "") lItemOption[asLocal[0]] = asLocal.Length > 1 ? asLocal[1].Trim() : "_TRUE_";
                             }
-                            else if (k < 10 && (lItemOption[PS.ItemLevel.Text[z]] != "" || lItemOption[PS.MapUltimatum.Text[z]] != ""))
+                            else if (k < 10 && (!lItemOption[PS.ItemLevel.Text[z]].IsEmpty() || !lItemOption[PS.MapUltimatum.Text[z]].IsEmpty()))
                             {
                                 string cluster_jewel = "";
                                 double min = 99999, max = 99999;
@@ -307,7 +307,6 @@ namespace PoeTradeSearch
 
                                 foreach (DataResult data_result in mFilterData[z].Result)
                                 {
-
                                     DataEntrie[] entries = Array.FindAll(data_result.Entries, x => rgx.IsMatch(x.Text));
 
                                     // 2개 이상 같은 옵션이 있을때 장비 옵션 (특정) 만 추출
@@ -365,7 +364,7 @@ namespace PoeTradeSearch
 
                                             if (isBreak)
                                             {
-                                                ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(new FilterEntrie(entrie.Id, data_result.Label));
+                                                ((ComboBox)FindName("cbOpt" + k)).Items.Add(new FilterEntrie(entrie.Id, data_result.Label));
 
                                                 if (filter == null)
                                                 {
@@ -374,8 +373,8 @@ namespace PoeTradeSearch
                                                     filter = entrie;
 
                                                     MatchCollection matches = Regex.Matches(asOpt[j], @"[-]?[0-9]+\.[0-9]+|[-]?[0-9]+");
-                                                    min = isMin && matches.Count > idxMin ? StrToDouble(((Match)matches[idxMin]).Value, 99999) : 99999;
-                                                    max = isMax && idxMin < idxMax && matches.Count > idxMax ? StrToDouble(((Match)matches[idxMax]).Value, 99999) : 99999;
+                                                    min = isMin && matches.Count > idxMin ? ((Match)matches[idxMin]).Value.ToDouble(99999) : 99999;
+                                                    max = isMax && idxMin < idxMax && matches.Count > idxMax ? ((Match)matches[idxMax]).Value.ToDouble(99999) : 99999;
                                                 }
 
                                                 break;
@@ -386,44 +385,44 @@ namespace PoeTradeSearch
 
                                 if (filter != null)
                                 {
-                                    ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.lFilterType["crafted"];
-                                    int selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
+                                    ((ComboBox)FindName("cbOpt" + k)).SelectedValue = RS.lFilterType["crafted"];
+                                    int selidx = ((ComboBox)FindName("cbOpt" + k)).SelectedIndex;
 
                                     if (crafted && selidx > -1)
                                     {
                                         SetFilterObjectColor(k, System.Windows.Media.Brushes.Blue);
-                                        ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex = selidx;
+                                        ((ComboBox)FindName("cbOpt" + k)).SelectedIndex = selidx;
                                     }
                                     else
                                     {
-                                        ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.lFilterType["pseudo"];
-                                        selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
+                                        ((ComboBox)FindName("cbOpt" + k)).SelectedValue = RS.lFilterType["pseudo"];
+                                        selidx = ((ComboBox)FindName("cbOpt" + k)).SelectedIndex;
 
-                                        if (selidx == -1 && ((ComboBox)this.FindName("cbOpt" + k)).Items.Count > 0)
+                                        if (selidx == -1 && ((ComboBox)FindName("cbOpt" + k)).Items.Count > 0)
                                         {
-                                            FilterEntrie filterEntrie = (FilterEntrie)((ComboBox)this.FindName("cbOpt" + k)).Items[0];
+                                            FilterEntrie filterEntrie = (FilterEntrie)((ComboBox)FindName("cbOpt" + k)).Items[0];
                                             string[] id_split = filterEntrie.ID.Split('.');
                                             if (id_split.Length == 2 && RS.lPseudo.ContainsKey(id_split[1]))
                                             {
-                                                ((ComboBox)this.FindName("cbOpt" + k)).Items.Add(new FilterEntrie("pseudo." + RS.lPseudo[id_split[1]], RS.lFilterType["pseudo"]));
+                                                ((ComboBox)FindName("cbOpt" + k)).Items.Add(new FilterEntrie("pseudo." + RS.lPseudo[id_split[1]], RS.lFilterType["pseudo"]));
                                             }
                                         }
 
-                                        selidx = ((ComboBox)this.FindName("cbOpt" + k)).Items.Count == 1 ? 0 : -1;
+                                        selidx = ((ComboBox)FindName("cbOpt" + k)).Items.Count == 1 ? 0 : -1;
 
                                         // 인첸트, 제작은 다른 곳에서 다시 체크함
                                         string[] tmps = { !local_exists && mConfigData.Options.AutoSelectPseudo ? "pseudo" : "explicit", "explicit", "fractured" };
                                         foreach (string tmp in tmps)
                                         {
-                                            ((ComboBox)this.FindName("cbOpt" + k)).SelectedValue = RS.lFilterType[tmp];
-                                            if (((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex > -1)
+                                            ((ComboBox)FindName("cbOpt" + k)).SelectedValue = RS.lFilterType[tmp];
+                                            if (((ComboBox)FindName("cbOpt" + k)).SelectedIndex > -1)
                                             {
-                                                selidx = ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex;
+                                                selidx = ((ComboBox)FindName("cbOpt" + k)).SelectedIndex;
                                                 break;
                                             }
                                         }
 
-                                        ((ComboBox)this.FindName("cbOpt" + k)).SelectedIndex = selidx;
+                                        ((ComboBox)FindName("cbOpt" + k)).SelectedIndex = selidx;
                                     }
 
                                     if (i != baki)
@@ -432,10 +431,10 @@ namespace PoeTradeSearch
                                         notImpCnt = 0;
                                     }
 
-                                    ((TextBox)this.FindName("tbOpt" + k)).Text = filter.Text;
-                                    ((CheckBox)this.FindName("tbOpt" + k + "_3")).Visibility = resistance ? Visibility.Visible : Visibility.Hidden;
-                                    if (((CheckBox)this.FindName("tbOpt" + k + "_3")).Visibility == Visibility.Visible && mConfigData.Options.AutoCheckTotalres)
-                                        ((CheckBox)this.FindName("tbOpt" + k + "_3")).IsChecked = true;
+                                    ((TextBox)FindName("tbOpt" + k)).Text = filter.Text;
+                                    ((CheckBox)FindName("tbOpt" + k + "_3")).Visibility = resistance ? Visibility.Visible : Visibility.Hidden;
+                                    if (((CheckBox)FindName("tbOpt" + k + "_3")).Visibility == Visibility.Visible && mConfigData.Options.AutoCheckTotalres)
+                                        ((CheckBox)FindName("tbOpt" + k + "_3")).IsChecked = true;
 
                                     if (min != 99999 && max != 99999)
                                     {
@@ -450,14 +449,14 @@ namespace PoeTradeSearch
                                     {
                                         string[] split = filter.Id.Split('.');
                                         bool defMaxPosition = split.Length == 2 && RS.lDefaultPosition.ContainsKey(split[1]);
-                                        if ((defMaxPosition && min > 0 && max == 99999) || (!defMaxPosition && min < 0 && max == 99999))
+                                        if (((defMaxPosition && min > 0) || (!defMaxPosition && min < 0)) && max == 99999)
                                         {
                                             max = min;
                                             min = 99999;
                                         }
                                     }
 
-                                    Itemfilter itemfilter = new Itemfilter
+                                    itemfilters.Add(new Itemfilter
                                     {
                                         id = filter.Id,
                                         type = filter.Type,
@@ -465,31 +464,23 @@ namespace PoeTradeSearch
                                         max = max,
                                         min = min,
                                         disabled = true
-                                    };
+                                    });
 
                                     if (cluster_jewel != "")
                                     {
-                                        ((TextBox)this.FindName("tbOpt" + k + "_0")).IsEnabled = false;
-                                        ((TextBox)this.FindName("tbOpt" + k + "_1")).IsEnabled = false;
-                                        ((TextBox)this.FindName("tbOpt" + k + "_0")).Background = SystemColors.WindowBrush;
-                                        ((TextBox)this.FindName("tbOpt" + k + "_0")).Foreground = SystemColors.WindowBrush;
-                                        ((TextBox)this.FindName("tbOpt" + k)).Text = cluster_jewel;
-                                        ((TextBox)this.FindName("tbOpt" + k)).Tag = "CLUSTER";
+                                        ((TextBox)FindName("tbOpt" + k + "_0")).IsEnabled = false;
+                                        ((TextBox)FindName("tbOpt" + k + "_1")).IsEnabled = false;
+                                        ((TextBox)FindName("tbOpt" + k + "_0")).Background = SystemColors.WindowBrush;
+                                        ((TextBox)FindName("tbOpt" + k + "_0")).Foreground = SystemColors.WindowBrush;
+                                        ((TextBox)FindName("tbOpt" + k)).Text = cluster_jewel;
+                                        ((TextBox)FindName("tbOpt" + k)).Tag = "CLUSTER";
                                     }
 
-                                    ((TextBox)this.FindName("tbOpt" + k + "_0")).Text = min == 99999 ? "" : min.ToString();
-                                    ((TextBox)this.FindName("tbOpt" + k + "_1")).Text = max == 99999 ? "" : max.ToString();
+                                    ((TextBox)FindName("tbOpt" + k + "_0")).Text = min == 99999 ? "" : min.ToString();
+                                    ((TextBox)FindName("tbOpt" + k + "_1")).Text = max == 99999 ? "" : max.ToString();
 
-                                    itemfilters.Add(itemfilter);
-
-                                    if (filter.Text == PS.AttackSpeedIncr.Text[z] && min > 0 && min < 999)
-                                    {
-                                        attackSpeedIncr += min;
-                                    }
-                                    else if (filter.Text == PS.PhysicalDamageIncr.Text[z] && min > 0 && min < 9999)
-                                    {
-                                        PhysicalDamageIncr += min;
-                                    }
+                                    attackSpeedIncr += filter.Text == PS.AttackSpeedIncr.Text[z] && min.WithIn(1, 999) ? min : 0;
+                                    PhysicalDamageIncr += filter.Text == PS.PhysicalDamageIncr.Text[z] && min.WithIn(1, 9999) ? min : 0;
 
                                     k++;
                                     notImpCnt++;
@@ -505,7 +496,7 @@ namespace PoeTradeSearch
                     //if (is_map || is_currency) is_map_fragment = false;
                     */
                     bool is_map = cate_ids[0] == "map"; // || lItemOption[PS.MapTier.Text[z]] != "";
-                    bool is_map_fragment = cate_ids.Length > 1 && cate_ids[0] == "map" && cate_ids[1] == "fragment";
+                    bool is_map_fragment = cate_ids.Length > 1 && cate_ids.Join(".") == "map.fragment";
                     bool is_map_ultimatum = lItemOption[PS.MapUltimatum.Text[z]] != "";
                     bool is_prophecy = lItemOption[PS.ProphecyItem.Text[z]] == "_TRUE_";
                     bool is_currency = rarity_id == "currency";
@@ -513,8 +504,8 @@ namespace PoeTradeSearch
                     bool is_gem = rarity_id == "gem";
                     bool is_vaal_gem = is_gem && lItemOption[PS.Vaal.Text[z] + " " + item_type] == "_TRUE_";
                     bool is_heist = lItemOption[PS.Heist.Text[z]] != "";
-                    bool is_detail = is_gem || is_map_fragment || (!is_map_ultimatum && is_currency) || is_divination_card || is_prophecy;
                     bool is_unIdentify = lItemOption[PS.Unidentified.Text[z]] == "_TRUE_";
+                    bool is_detail = is_gem || is_map_fragment || (!is_map_ultimatum && is_currency) || is_divination_card || is_prophecy;
 
                     int item_idx = -1;
                     int cate_idx = category != null ? Array.FindIndex(mItemsData[z].Result, x => x.Id.Equals(category.Key)) : -1;
@@ -597,7 +588,7 @@ namespace PoeTradeSearch
                                 for (int i = 0; i < tmp.Length - 1; i++)
                                 {
                                     tmp[i] = "";
-                                    string tmp2 = string.Join(" ", tmp).Trim();
+                                    string tmp2 = tmp.Join(" ").Trim();
 
                                     DataEntrie entries = Array.Find(data.Entries, x => x.Type.Equals(tmp2));
                                     if (entries != null)
@@ -619,7 +610,7 @@ namespace PoeTradeSearch
                     mItemBaseName.TypeKR = z == 0 || cate_idx == -1 || item_idx == -1 ? item_type : mItemsData[0].Result[cate_idx].Entries[item_idx].Type;
 
                     string item_quality = Regex.Replace(lItemOption[PS.Quality.Text[z]], "[^0-9]", "");
-                    bool by_type = cate_ids.Length > 1 && (cate_ids[0] == "weapon" || cate_ids[0] == "armour" || cate_ids[0] == "accessory");
+                    bool by_type = cate_ids.Length > 1 && cate_ids[0].WithIn(new string[] { "weapon", "armour", "accessory" });
 
                     if (is_detail || is_map_fragment)
                     {
@@ -643,8 +634,8 @@ namespace PoeTradeSearch
                         for (int i = 0; i < itemfilters.Count; i++)
                         {
                             Itemfilter ifilter = itemfilters[i];
-                            ComboBox tmpComboBox = (ComboBox)this.FindName("cbOpt" + i);
-                            CheckBox tmpCheckBox = (CheckBox)this.FindName("tbOpt" + i + "_2");
+                            ComboBox tmpComboBox = (ComboBox)FindName("cbOpt" + i);
+                            CheckBox tmpCheckBox = (CheckBox)FindName("tbOpt" + i + "_2");
 
                             if (i < Imp_cnt)
                             {
@@ -655,7 +646,7 @@ namespace PoeTradeSearch
                                     SetFilterObjectColor(i, System.Windows.Media.Brushes.DarkRed);
                                     tmpComboBox.SelectedValue = RS.lFilterType["implicit"];
                                 }
-                                tmpCheckBox.IsChecked = ((string)((TextBox)this.FindName("tbOpt" + i)).Tag ?? "") == "CLUSTER";
+                                tmpCheckBox.IsChecked = ((string)((TextBox)FindName("tbOpt" + i)).Tag ?? "") == "CLUSTER";
                                 itemfilters[i].disabled = true;
                             }
                             else if (cate_ids[0] != "" && tmpComboBox.SelectedIndex > -1)
@@ -677,7 +668,7 @@ namespace PoeTradeSearch
                         }
 
                         // 장기는 중복 옵션 제거
-                        if (cate_ids.Length > 1 && cate_ids[0] == "monster" && cate_ids[1] == "sample")
+                        if (cate_ids.Join(".") == "monster.sample")
                         {
                             Deduplicationfilter(itemfilters);
                         }
@@ -698,7 +689,7 @@ namespace PoeTradeSearch
                     cbName.Items.Add((RS.ServerLang == 1 ? "영국서버 - " : "한국서버 - ") + "아이템 유형으로 검색합니다");
                     cbName.SelectedIndex = RS.ServerLang == 1 ? 1 : 0;
 
-                    if (by_type && (rarity_id == "magic" || rarity_id == "rare"))
+                    if (by_type && rarity_id.WithIn(new string[] { "magic", "rare" }))
                     {
                         string[] bys = mConfigData.Options.AutoSelectByType.ToLower().Split(',');
                         if (Array.IndexOf(bys, cate_ids[0]) > -1) cbName.SelectedIndex = 2;
@@ -758,7 +749,7 @@ namespace PoeTradeSearch
                             if (is_gem)
                             {
                                 ckLv.IsChecked = lItemOption[PS.Level.Text[z]].IndexOf(" (" + PS.Max.Text[z]) > 0;
-                                ckQuality.IsChecked = item_quality != "" && int.Parse(item_quality) > 20;
+                                ckQuality.IsChecked = item_quality.ToInt(0) > 20;
                                 cbAltQuality.SelectedIndex = alt_quality;
                             }
                             else if (is_heist)
@@ -790,7 +781,7 @@ namespace PoeTradeSearch
                         }
                         else if (by_type || cate_ids[0] == "flask")
                         {
-                            if (tbQualityMin.Text != "" && int.Parse(tbQualityMin.Text) > (cate_ids[0] == "accessory" ? 4 : 20))
+                            if (tbQualityMin.Text.ToInt(0) > (cate_ids[0] == "accessory" ? 4 : 20))
                             {
                                 ckQuality.FontWeight = FontWeights.Bold;
                                 ckQuality.Foreground = System.Windows.Media.Brushes.DarkRed;
@@ -799,7 +790,7 @@ namespace PoeTradeSearch
 
                             if (by_type)
                             {
-                                if (tbLvMin.Text != "" && int.Parse(tbLvMin.Text) > 82)
+                                if (tbLvMin.Text.ToInt(0) > 82)
                                 {
                                     ckLv.FontWeight = FontWeights.Bold;
                                     ckLv.Foreground = System.Windows.Media.Brushes.DarkRed;
@@ -878,19 +869,19 @@ namespace PoeTradeSearch
             itemOption.ChkLv = ckLv.IsChecked == true;
             itemOption.ByType = cbName.SelectedIndex == 2;
 
-            itemOption.SocketMin = StrToDouble(tbSocketMin.Text, 99999);
-            itemOption.SocketMax = StrToDouble(tbSocketMax.Text, 99999);
-            itemOption.LinkMin = StrToDouble(tbLinksMin.Text, 99999);
-            itemOption.LinkMax = StrToDouble(tbLinksMax.Text, 99999);
-            itemOption.QualityMin = StrToDouble(tbQualityMin.Text, 99999);
-            itemOption.QualityMax = StrToDouble(tbQualityMax.Text, 99999);
-            itemOption.LvMin = StrToDouble(tbLvMin.Text, 99999);
-            itemOption.LvMax = StrToDouble(tbLvMax.Text, 99999);
+            itemOption.SocketMin = tbSocketMin.Text.ToDouble(99999);
+            itemOption.SocketMax = tbSocketMax.Text.ToDouble(99999);
+            itemOption.LinkMin = tbLinksMin.Text.ToDouble(99999);
+            itemOption.LinkMax = tbLinksMax.Text.ToDouble(99999);
+            itemOption.QualityMin = tbQualityMin.Text.ToDouble(99999);
+            itemOption.QualityMax = tbQualityMax.Text.ToDouble(99999);
+            itemOption.LvMin = tbLvMin.Text.ToDouble(99999);
+            itemOption.LvMax = tbLvMax.Text.ToDouble(99999);
 
             itemOption.AltQuality = cbAltQuality.SelectedIndex;
             itemOption.RarityAt = (cbRarity.Items.Count > 1 ? cbRarity.SelectedIndex : 0);
             itemOption.Flags = (string)(cbRarity.SelectedValue ?? "") == "결전" ? "결전|" + cbAltQuality.SelectedValue : "";
-            itemOption.PriceMin = tbPriceFilterMin.Text == "" ? 0 : StrToDouble(tbPriceFilterMin.Text, 99999);
+            itemOption.PriceMin = tbPriceFilterMin.Text == "" ? 0 : tbPriceFilterMin.Text.ToDouble(99999);
 
 
             int total_res_idx = -1;
@@ -898,17 +889,17 @@ namespace PoeTradeSearch
             for (int i = 0; i < 10; i++)
             {
                 Itemfilter itemfilter = new Itemfilter();
-                ComboBox comboBox = (ComboBox)this.FindName("cbOpt" + i);
+                ComboBox comboBox = (ComboBox)FindName("cbOpt" + i);
 
                 if (comboBox.SelectedIndex > -1)
                 {
-                    itemfilter.text = ((TextBox)this.FindName("tbOpt" + i)).Text.Trim();
-                    itemfilter.flag = (string)((TextBox)this.FindName("tbOpt" + i)).Tag;
-                    itemfilter.disabled = ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked != true;
-                    itemfilter.min = StrToDouble(((TextBox)this.FindName("tbOpt" + i + "_0")).Text, 99999);
-                    itemfilter.max = StrToDouble(((TextBox)this.FindName("tbOpt" + i + "_1")).Text, 99999);
+                    itemfilter.text = ((TextBox)FindName("tbOpt" + i)).Text.Trim();
+                    itemfilter.flag = (string)((TextBox)FindName("tbOpt" + i)).Tag;
+                    itemfilter.disabled = ((CheckBox)FindName("tbOpt" + i + "_2")).IsChecked != true;
+                    itemfilter.min = ((TextBox)FindName("tbOpt" + i + "_0")).Text.ToDouble(99999);
+                    itemfilter.max = ((TextBox)FindName("tbOpt" + i + "_1")).Text.ToDouble(99999);
 
-                    if (itemfilter.disabled == false && ((CheckBox)this.FindName("tbOpt" + i + "_3")).IsChecked == true)
+                    if (itemfilter.disabled == false && ((CheckBox)FindName("tbOpt" + i + "_3")).IsChecked == true)
                     {
                         if (total_res_idx == -1)
                         {
@@ -979,7 +970,7 @@ namespace PoeTradeSearch
                 JQ.Stats = new q_Stats[0];
                 JQ.Status.Option = "online";
 
-                JQ.Filters.Type.Filters.Category.Option = Inherit == "jewel" ? Inherit : string.Join(".", mItemBaseName.Ids);
+                JQ.Filters.Type.Filters.Category.Option = Inherit == "jewel" ? Inherit : mItemBaseName.Ids.Join(".");
                 JQ.Filters.Type.Filters.Rarity.Option = itemOptions.RarityAt > 0 ? (mParserData.Rarity.Entries[itemOptions.RarityAt - 1].Id) : "any";
                 //JQ.Filters.Type.Filters.Rarity.Option = itemOptions.RarityAt > 0 ? RS.lRarity.ElementAt(itemOptions.RarityAt - 1).Key.ToLower() : "any";
 
@@ -1169,12 +1160,12 @@ namespace PoeTradeSearch
                             {
                                 if (itemOptions.itemfilters[i].isNull)
                                 {
-                                    ((TextBox)this.FindName("tbOpt" + i)).Background = System.Windows.Media.Brushes.Red;
-                                    ((TextBox)this.FindName("tbOpt" + i + "_0")).Text = "error";
-                                    ((TextBox)this.FindName("tbOpt" + i + "_1")).Text = "error";
-                                    ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsChecked = false;
-                                    ((CheckBox)this.FindName("tbOpt" + i + "_2")).IsEnabled = false;
-                                    ((CheckBox)this.FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
+                                    ((TextBox)FindName("tbOpt" + i)).Background = System.Windows.Media.Brushes.Red;
+                                    ((TextBox)FindName("tbOpt" + i + "_0")).Text = "error";
+                                    ((TextBox)FindName("tbOpt" + i + "_1")).Text = "error";
+                                    ((CheckBox)FindName("tbOpt" + i + "_2")).IsChecked = false;
+                                    ((CheckBox)FindName("tbOpt" + i + "_2")).IsEnabled = false;
+                                    ((CheckBox)FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
                                 }
                             }
                         }
@@ -1253,7 +1244,7 @@ namespace PoeTradeSearch
                                 }
 
                                 string json_result = "";
-                                string url = RS.FetchApi[RS.ServerLang] + string.Join(",", tmp) + "?query=" + resultData.ID;
+                                string url = RS.FetchApi[RS.ServerLang] + tmp.Join(",") + "?query=" + resultData.ID;
                                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(url));
                                 request.CookieContainer = new CookieContainer();
                                 request.UserAgent = RS.UserAgent;

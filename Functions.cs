@@ -215,20 +215,6 @@ namespace PoeTradeSearch
             return fvi.FileVersion;
         }
 
-        private double StrToDouble(string s, double def = 0)
-        {
-            if ((s ?? "") != "")
-            {
-                try
-                {
-                    def = double.Parse(s);
-                }
-                catch { }
-            }
-
-            return def;
-        }
-
         private double DamageToDPS(string damage)
         {
             double dps = 0;
