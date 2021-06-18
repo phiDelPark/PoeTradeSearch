@@ -5,7 +5,6 @@ using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Json;
-using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -201,13 +200,6 @@ namespace PoeTradeSearch
 
     public partial class WinMain : Window
     {
-        internal bool IsAdministrator()
-        {
-            var identity = WindowsIdentity.GetCurrent();
-            var principal = new WindowsPrincipal(identity);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-
         private string GetFileVersion()
         {
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();

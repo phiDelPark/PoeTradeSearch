@@ -86,20 +86,11 @@ namespace PoeTradeSearch
         private PoeData[] mItemsData = new PoeData[2];
         private PoeData[] mStaticData = new PoeData[2];
 
-        private bool mDisableClip = false;
-        private bool mAdministrator = false;
-
-        private static int closeKeyCode = 0;
-
         private bool Setting()
         {
-#if DEBUG
-            string path = System.IO.Path.GetFullPath(@"..\..\") + "_POE_Data\\";
-#else
-            string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            path = path.Remove(path.Length - 4) + "\\";
-#endif
+            string path = (string)Application.Current.Properties["DataPath"];
             FileStream fs = null;
+
             try
             {
                 if (!Directory.Exists(path)) Directory.CreateDirectory(path);
@@ -237,6 +228,10 @@ namespace PoeTradeSearch
                     string json = reader.ReadToEnd();
                     mStaticData[1] = Json.Deserialize<PoeData>(json);
                 }
+
+                RS.ServerType = RS.ServerType == "" ? mConfigData.Options.League : RS.ServerType;
+                RS.ServerType = RS.ServerType.ToLower().Replace(" ", "%20").ToTitleCase();
+                RS.ServerLang = (byte)(mConfigData.Options.Server == "en" ? 1 : 0);
             }
             catch (Exception ex)
             {

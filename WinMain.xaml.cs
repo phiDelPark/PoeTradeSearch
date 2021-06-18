@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,6 +24,9 @@ namespace PoeTradeSearch
         private bool mHotkeyProcBlock = false;
         private bool mClipboardBlock = false;
         private bool mLockUpdatePrice = false;
+        private bool mDisableClip = false;
+        private bool mAdministrator = false;
+        private static int closeKeyCode = 0;
 
         DispatcherTimer mAutoSearchTimer;
 
@@ -33,7 +35,7 @@ namespace PoeTradeSearch
             InitializeComponent();
 
             Clipboard.Clear();
-            mAdministrator = IsAdministrator();
+            mAdministrator = (bool)Application.Current.Properties["IsAdministrator"];
             mAutoSearchTimer = new DispatcherTimer();
             mAutoSearchTimer.Interval = TimeSpan.FromSeconds(1);
             mAutoSearchTimer.Tick += new EventHandler(AutoSearchTimer_Tick);
@@ -118,9 +120,6 @@ namespace PoeTradeSearch
             }
 
             /////////////
-            RS.ServerType = RS.ServerType == "" ? mConfigData.Options.League : RS.ServerType;
-            RS.ServerType = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(RS.ServerType.ToLower()).Replace(" ", "%20");
-            RS.ServerLang = (byte)(mConfigData.Options.Server == "en" ? 1 : 0);
 
             ComboBox[] cbs = { cbOrbs, cbSplinters, cbCorrupt, cbInfluence1, cbInfluence2, cbAltQuality };
             foreach (ComboBox cb in cbs)

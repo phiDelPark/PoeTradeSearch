@@ -111,6 +111,9 @@
     <Compile Include="Configure.cs" />
     <Compile Include="test.cs" />
     <Compile Include="Updates.cs" />
+    <Compile Include="WinSetting.xaml.cs">
+      <DependentUpon>WinSetting.xaml</DependentUpon>
+    </Compile>
     <Page Include="WinGrid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -132,6 +135,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="WinPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WinSetting.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

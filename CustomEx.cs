@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PoeTradeSearch
 {
@@ -29,6 +25,19 @@ namespace PoeTradeSearch
         public static double ToDouble(this string owner, double @default = 0)
         {
             return owner.IsEmpty() ? @default : double.Parse(owner);
+        }
+
+        public static string ToTitleCase(this string owner)
+        {
+            if (owner == null) return owner;
+            string[] words = owner.Split(' ');
+            for (int i = 0; i < words.Length; i++)
+            {
+                if (words[i].Length == 0) continue;
+                words[i] = char.ToUpper(words[i][0])
+                    + (words[i].Length > 1 ? words[i].Substring(1).ToLower() : "");
+            }
+            return string.Join(" ", words);
         }
 
         public static string Value(this string[] owner, int index, string @default = null)
