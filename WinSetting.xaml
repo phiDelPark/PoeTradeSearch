@@ -1,0 +1,82 @@
+﻿<Window x:Class="PoeTradeSearch.WinSetting"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PoeTradeSearch"
+        mc:Ignorable="d"
+        Title="설정" Height="470" Width="482" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+    <Grid>
+        <TabControl TabStripPlacement="Left" BorderThickness="0">
+            <TabItem Header="기본" HorizontalAlignment="Left" Height="50" Margin="5,5,-5,-5" VerticalAlignment="Top" Width="80">
+                <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Margin="5">
+                    <Grid>
+                        <Label Content="기본 검색 서버:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                        <ComboBox Name="cbServerType" HorizontalAlignment="Left" VerticalAlignment="Top" Height="22" Width="106" Margin="108,14,0,0" SelectedIndex="0">
+                            <ComboBoxItem>자동</ComboBoxItem>
+                            <ComboBoxItem>한국</ComboBoxItem>
+                            <ComboBoxItem>영국</ComboBoxItem>
+                        </ComboBox>
+                        <Label Content="자동 검색:" HorizontalAlignment="Left" Margin="10,73,0,0" VerticalAlignment="Top"/>
+                        <ComboBox Name="cbSearchAutoDelay" HorizontalAlignment="Left" VerticalAlignment="Top" Height="22" Width="106" Margin="80,77,0,0" SelectedIndex="0">
+                            <ComboBoxItem>수동</ComboBoxItem>
+                            <ComboBoxItem>30초</ComboBoxItem>
+                            <ComboBoxItem>60초</ComboBoxItem>
+                        </ComboBox>
+                        <Label Content="검색시 해당 전 날로 검색:" HorizontalAlignment="Left" Margin="10,104,0,0" VerticalAlignment="Top"/>
+                        <ComboBox Name="cbSearchBeforeDay" HorizontalAlignment="Left" VerticalAlignment="Top" Height="22" Width="106" Margin="165,108,0,0" SelectedIndex="3">
+                            <ComboBoxItem>모두</ComboBoxItem>
+                            <ComboBoxItem>7일 전</ComboBoxItem>
+                            <ComboBoxItem>14일 전</ComboBoxItem>
+                        </ComboBox>
+                        <Label Content="검색 목록 수 (높을수록 느려짐):" HorizontalAlignment="Left" Margin="10,135,0,0" VerticalAlignment="Top"/>
+                        <ComboBox Name="cbSearchListCount" HorizontalAlignment="Left" VerticalAlignment="Top" Height="22" Width="106" Margin="196,139,0,0" SelectedIndex="0">
+                            <ComboBoxItem>20개</ComboBoxItem>
+                            <ComboBoxItem>40개</ComboBoxItem>
+                            <ComboBoxItem>60개</ComboBoxItem>
+                            <ComboBoxItem>80개</ComboBoxItem>
+                        </ComboBox>
+                        <CheckBox Name="ckAutoCheckUnique" Content="고유 장비는 옵션 자동 체크하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,204,0,0"/>
+                        <CheckBox Name="ckAutoSelectPseudo" Content="가능하면 유사 옵션 사용하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,224,0,0"/>
+                        <CheckBox Name="ckAutoCheckTotalres" Content="저항의 경우 합산 검색하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,244,0,0"/>
+                        <CheckBox Name="ckAutoCheckUpdates" Content="업데이트 자동 체크하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,286,0,0"/>
+                    </Grid>
+                </Border>
+            </TabItem>
+            <TabItem Header="단축키" HorizontalAlignment="Left" Height="50" Margin="5,5,-5,-5" VerticalAlignment="Top" Width="80">
+                <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Margin="5">
+                    <Grid>
+                        <CheckBox Name="ckUseCtrlWheel" Content="컨트로 + 마우스 휠로 스크롤하여 창고 탭이동 하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,14,0,0"/>
+                        <Label Content="단축키" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,43,0,0"/>
+                        <Label Content="작업값" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="128,43,0,0"/>
+                        <local:HotkeyBox x:Name="Hotkey1" HorizontalAlignment="Left" Margin="15,74,0,0" VerticalAlignment="Top" Height="22" Width="102"/>
+                        <TextBox Name="HotkeyValue1" Margin="132,74,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="22"/>
+                        <local:HotkeyBox x:Name="Hotkey2" HorizontalAlignment="Left" Margin="15,101,0,0" VerticalAlignment="Top" Height="22" Width="102"/>
+                        <TextBox Name="HotkeyValue2" Margin="132,101,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="22"/>
+                        <local:HotkeyBox x:Name="Hotkey3" HorizontalAlignment="Left" Margin="15,128,0,0" VerticalAlignment="Top" Height="22" Width="102"/>
+                        <TextBox Name="HotkeyValue3" Margin="132,128,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="22"/>
+                        <local:HotkeyBox x:Name="Hotkey4" HorizontalAlignment="Left" Margin="15,155,0,0" VerticalAlignment="Top" Height="22" Width="102"/>
+                        <TextBox Name="HotkeyValue4" Margin="132,155,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="22"/>
+                        <local:HotkeyBox x:Name="Hotkey5" HorizontalAlignment="Left" Margin="15,182,0,0" VerticalAlignment="Top" Height="22" Width="102"/>
+                        <TextBox Name="HotkeyValue5" Margin="132,182,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="22"/>
+                        <local:HotkeyBox x:Name="Hotkey6" HorizontalAlignment="Left" Margin="15,209,0,0" VerticalAlignment="Top" Height="22" Width="102"/>
+                        <TextBox Name="HotkeyValue6" Margin="132,209,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="22"/>
+                        <local:HotkeyBox x:Name="Hotkey7" HorizontalAlignment="Left" Margin="15,236,0,0" VerticalAlignment="Top" Height="22" Width="102"/>
+                        <TextBox Name="HotkeyValue7" Margin="132,236,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="22"/>
+                        <local:HotkeyBox x:Name="Hotkey8" HorizontalAlignment="Left" Margin="15,263,0,0" VerticalAlignment="Top" Height="22" Width="102"/>
+                        <TextBox Name="HotkeyValue8" Margin="132,263,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="22"/>
+                        <local:HotkeyBox x:Name="Hotkey9" HorizontalAlignment="Left" Margin="15,290,0,0" VerticalAlignment="Top" Height="22" Width="102"/>
+                        <TextBox Name="HotkeyValue9" Margin="132,290,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="22"/>
+                        <local:HotkeyBox x:Name="Hotkey10" HorizontalAlignment="Left" Margin="15,317,0,0" VerticalAlignment="Top" Height="22" Width="102"/>
+                        <TextBox Name="HotkeyValue10" Margin="132,317,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="22"/>
+                        <local:HotkeyBox x:Name="Hotkey11" HorizontalAlignment="Left" Margin="15,344,0,0" VerticalAlignment="Top" Height="22" Width="102"/>
+                        <TextBox Name="HotkeyValue11" Margin="132,344,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="22"/>
+                        <local:HotkeyBox x:Name="Hotkey12" HorizontalAlignment="Left" Margin="15,371,0,0" VerticalAlignment="Top" Height="22" Width="102"/>
+                        <TextBox Name="HotkeyValue12" Margin="132,371,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="22"/>
+                    </Grid>
+                </Border>
+            </TabItem>
+        </TabControl>
+        <Button Content="확인" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="50" Width="79" Margin="8,0,0,7" BorderThickness="1,1,0,1" Click="Button_Click"/>
+    </Grid>
+</Window>

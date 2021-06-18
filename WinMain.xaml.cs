@@ -51,7 +51,7 @@ namespace PoeTradeSearch
             }
 
             string outString = "";
-            int update_type = mConfigData.Options.CheckUpdates ? CheckUpdates() : 0;
+            int update_type = mConfigData.Options.AutoCheckUpdates ? CheckUpdates() : 0;
 
             string start_msg = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n'
                              + "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n'
@@ -161,7 +161,6 @@ namespace PoeTradeSearch
                     cbSplinters.Items.Add(item.Text[0]);
             }
 
-            this.Title += " - " + RS.ServerType;
             this.Visibility = Visibility.Hidden;
 
             /////////////////
@@ -187,7 +186,7 @@ namespace PoeTradeSearch
                 //EventHook.EventAction += new EventHandler(WinEvent);
                 //EventHook.Start();
 
-                if (mConfigData.Options.CtrlWheel)
+                if (mConfigData.Options.UseCtrlWheel)
                 {
                     mMouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
                     MouseHook.MouseAction += new EventHandler(MouseEvent);
@@ -243,11 +242,15 @@ namespace PoeTradeSearch
             string sEntity;
             string[] exchange = null;
 
+            int langIndex = cbName.SelectedIndex;
+            string league = mConfigData.Options.League;
+            string type = (cbName.SelectedItem as ItemNames).Type;
+
             if (bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0))
             {
                 exchange = new string[2];
 
-                ParserDictionary exchange_item1 = GetExchangeItem(0, mItemBaseName.TypeKR);
+                ParserDictionary exchange_item1 = GetExchangeItem(0, type);
                 ParserDictionary exchange_item2 = GetExchangeItem(0, (string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue));
 
                 if (exchange_item1 == null || exchange_item2 == null)
@@ -260,7 +263,7 @@ namespace PoeTradeSearch
                 exchange[1] = exchange_item2.Id;
 
                 Process.Start(
-                        RS.ExchangeUrl[RS.ServerLang] + RS.ServerType + "/?q="
+                        RS.ExchangeUrl[langIndex] + league + "/?q="
                         + Uri.EscapeDataString(
                             "{\"exchange\":{\"status\":{\"option\":\"online\"},\"have\":[\"" + exchange[0] + "\"],\"want\":[\"" + exchange[1] + "\"]}}"
                         )
@@ -278,7 +281,7 @@ namespace PoeTradeSearch
 
                 if (mConfigData.Options.ServerRedirect)
                 {
-                    Process.Start(RS.TradeApi[RS.ServerLang] + RS.ServerType + "/?redirect&source=" + Uri.EscapeDataString(sEntity));
+                    Process.Start(RS.TradeApi[langIndex] + league + "/?redirect&source=" + Uri.EscapeDataString(sEntity));
                 }
                 else
                 {
@@ -287,13 +290,13 @@ namespace PoeTradeSearch
                     // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
                     Thread thread = new Thread(() =>
                     {
-                        request_result = SendHTTP(sEntity, RS.TradeApi[RS.ServerLang] + RS.ServerType, mConfigData.Options.ServerTimeout);
+                        request_result = SendHTTP(sEntity, RS.TradeApi[langIndex] + league, mConfigData.Options.ServerTimeout);
                         if ((request_result ?? "") != "")
                         {
                             try
                             {
                                 ResultData resultData = Json.Deserialize<ResultData>(request_result);
-                                Process.Start(RS.TradeUrl[RS.ServerLang] + RS.ServerType + "/" + resultData.ID);
+                                Process.Start(RS.TradeUrl[langIndex] + league + "/" + resultData.ID);
                             }
                             catch { }
                         }
@@ -353,7 +356,6 @@ namespace PoeTradeSearch
 
             ((ComboBox)sender).FontWeight = ((ComboBox)sender).SelectedIndex == 0 ? FontWeights.Normal : FontWeights.SemiBold;
 
-            SetSearchButtonText(RS.ServerLang == 0);
             TkPrice_MouseLeftButtonDown(null, null);
         }
 
@@ -366,12 +368,13 @@ namespace PoeTradeSearch
         private void TkPrice_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             string[] exchange = null;
+            string type = (cbName.SelectedItem as ItemNames).Type;
 
             if (bdExchange.Visibility == Visibility.Visible && (cbOrbs.SelectedIndex > 0 || cbSplinters.SelectedIndex > 0))
             {
                 exchange = new string[2];
 
-                ParserDictionary exchange_item1 = GetExchangeItem(0, mItemBaseName.TypeKR);
+                ParserDictionary exchange_item1 = GetExchangeItem(0, type);
                 ParserDictionary exchange_item2 = GetExchangeItem(0, (string)(cbOrbs.SelectedIndex > 0 ? cbOrbs.SelectedValue : cbSplinters.SelectedValue));
 
                 if (exchange_item1 == null || exchange_item2 == null)
@@ -419,7 +422,7 @@ namespace PoeTradeSearch
                     gdTabItem2.Children.Add(tkPriceInfo);
                     gdTabItem2.Children.Add(tkPriceCount);
                 }
-                tbHelpText.Text = "최소 값 단위는 카오스 오브";
+                //tbHelpText.Text = "최소 값 단위는 카오스 오브";
             }
             else
             {
@@ -431,6 +434,7 @@ namespace PoeTradeSearch
                     gdTabItem1.Children.Add(tkPriceInfo);
                     gdTabItem1.Children.Add(tkPriceCount);
                 }
+                /*
                 Random r = new Random();
                 if (r.Next(2) == 1)
                 {
@@ -440,30 +444,23 @@ namespace PoeTradeSearch
                 {
                     tbHelpText.Text = "시세 좌클릭은 재검색 우클릭은?";
                 }
+                */
             }
-        }
-
-        private void cbName_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (cbName.SelectedIndex < 2)
-            {
-                RS.ServerLang = (byte)cbName.SelectedIndex;
-                mConfigData.Options.Server = RS.ServerLang == 1 ? "en" : "ko";
-                cbName.Items[2] = (RS.ServerLang == 1 ? "영국서버 - " : "한국서버 - ") + "아이템 유형으로 검색합니다";
-            }
-
-            SetSearchButtonText(RS.ServerLang == 0);
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
+            string name = (cbName.Items[1] as ItemNames).Name;
+            string type = (cbName.Items[1] as ItemNames).Type;
             try
             {
                 Process.Start(
                     "https://pathofexile.gamepedia.com/" +
                     (
-                        Array.Find(mParserData.Rarity.Entries, x => (x.Text[0] == (string)cbRarity.SelectedValue || x.Text[1] == (string)cbRarity.SelectedValue)) != null
-                        && mItemBaseName.NameEN != "" ? mItemBaseName.NameEN : mItemBaseName.TypeEN
+                        Array.Find(mParserData.Rarity.Entries, 
+                                x => (x.Text[0] == (string)cbRarity.SelectedValue || x.Text[1] == (string)cbRarity.SelectedValue)
+                            ) != null
+                        && name != "" ? name : type
                     ).Replace(' ', '_')
                 );
             }
@@ -533,7 +530,7 @@ namespace PoeTradeSearch
                 if (mInstalledHotKey)
                     RemoveRegisterHotKey();
 
-                if (mConfigData.Options.CtrlWheel)
+                if (mConfigData.Options.UseCtrlWheel)
                     MouseHook.Stop();
             }
         }

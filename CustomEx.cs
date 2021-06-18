@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Json;
+using System.Text;
 
 namespace PoeTradeSearch
 {
@@ -62,6 +67,18 @@ namespace PoeTradeSearch
         public static bool WithIn(this double owner, double minimum, double maximum)
         {
             return owner >= minimum && owner <= maximum;
+        }
+
+        #endregion
+
+        #region Enumerable Extensions
+
+        public static void ForEach<T>(this IEnumerable<T> ie, Action<T> action)
+        {
+            foreach (var i in ie)
+            {
+                action(i);
+            }
         }
 
         #endregion

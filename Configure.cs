@@ -18,9 +18,6 @@ namespace PoeTradeSearch
 
         internal static string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36";
 
-        internal static byte ServerLang = 0;
-        internal static string ServerType = "";
-
         internal static Dictionary<string, string> lFilterType = new Dictionary<string, string>()
         {
             { "pseudo", "유사"}, { "explicit", "일반"}, { "implicit", "고정"}, { "fractured", "분열"}, { "enchant", "인챈"},
@@ -77,16 +74,15 @@ namespace PoeTradeSearch
 
     public partial class WinMain : Window
     {
-        private ConfigData mConfigData;
+        internal ConfigData mConfigData;
         private ParserData mParserData;
         private CheckedData mCheckedData;
-        private ItemBaseName mItemBaseName;
 
         private PoeData[] mFilterData = new PoeData[2];
         private PoeData[] mItemsData = new PoeData[2];
         private PoeData[] mStaticData = new PoeData[2];
 
-        private bool Setting()
+        internal bool Setting()
         {
             string path = (string)Application.Current.Properties["DataPath"];
             FileStream fs = null;
@@ -108,8 +104,8 @@ namespace PoeTradeSearch
                     mConfigData = Json.Deserialize<ConfigData>(json);
                 }
 
-                if (mConfigData.Options.SearchPriceCount > 80)
-                    mConfigData.Options.SearchPriceCount = 80;
+                if (mConfigData.Options.SearchListCount > 80)
+                    mConfigData.Options.SearchListCount = 80;
 
                 if (!File.Exists(path + "Parser.txt"))
                 {
@@ -153,12 +149,7 @@ namespace PoeTradeSearch
 
         private bool LoadData(out string outString)
         {
-#if DEBUG
-            string path = System.IO.Path.GetFullPath(@"..\..\") + "_POE_Data\\";
-#else
-            string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            path = path.Remove(path.Length - 4) + "\\";
-#endif
+            string path = (string)Application.Current.Properties["DataPath"];
             FileStream fs = null;
             string s = "";
             try
@@ -228,10 +219,6 @@ namespace PoeTradeSearch
                     string json = reader.ReadToEnd();
                     mStaticData[1] = Json.Deserialize<PoeData>(json);
                 }
-
-                RS.ServerType = RS.ServerType == "" ? mConfigData.Options.League : RS.ServerType;
-                RS.ServerType = RS.ServerType.ToLower().Replace(" ", "%20").ToTitleCase();
-                RS.ServerLang = (byte)(mConfigData.Options.Server == "en" ? 1 : 0);
             }
             catch (Exception ex)
             {

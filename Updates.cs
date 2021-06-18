@@ -47,12 +47,7 @@ namespace PoeTradeSearch
 
         private void PoeExeUpdates()
         {
-#if DEBUG
-            string path = System.IO.Path.GetFullPath(@"..\..\") + "_POE_Data\\";
-#else
-            string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            path = path.Remove(path.Length - 4) + "\\";
-#endif
+            string path = (string)Application.Current.Properties["DataPath"];
             // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
             Thread thread = new Thread(() =>
             {
@@ -97,12 +92,7 @@ namespace PoeTradeSearch
                 private bool PoeDataUpdates()
                 {
                     bool isUpdates = false;
-        #if DEBUG
-                    string path = System.IO.Path.GetFullPath(@"..\..\") + "_POE_Data\\";
-        #else
-                    string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                    path = path.Remove(path.Length - 4) + "\\";
-        #endif
+                    string path = (string)Application.Current.Properties["DataPath"];
 
                     // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
                     Thread thread = new Thread(() =>

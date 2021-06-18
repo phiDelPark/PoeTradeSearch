@@ -15,7 +15,19 @@
             </ComboBox.Resources>
         </ComboBox>
 
-        <ComboBox Name="cbName" HorizontalAlignment="Left" Margin="0,24,0,0" VerticalAlignment="Top" Width="385" FontWeight="Bold" SelectionChanged="cbName_SelectionChanged" />
+        <ComboBox Name="cbName" HorizontalAlignment="Left" Margin="0,24,0,0" VerticalAlignment="Top" Width="385" FontWeight="Bold">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock>
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0}">
+                                <Binding Path="Text" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
 
         <Label Name="lbDPS" Content="옵션" HorizontalAlignment="Left" Margin="0,54,0,0" VerticalAlignment="Top" />
         <Label Content="최소" HorizontalAlignment="Left" Margin="280,54,0,0" VerticalAlignment="Top" />
@@ -40,9 +52,9 @@
             </Button.Resources>
         </Button>
 
-        <TextBlock Name="tbHelpText" Text="시세 클릭시 새로고침" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" HorizontalAlignment="Left" Margin="5,430,0,0" VerticalAlignment="Top" IsEnabled="False" />
+        <CheckBox Name="ckByCategory" Content="아이템 유형으로 검색" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" HorizontalAlignment="Left" Margin="5,431,0,0" VerticalAlignment="Top" />
 
-        <Button Name="btnSearch" Content="거래소에서 찾기 (한국)" HorizontalAlignment="Left" Margin="0,460,0,-5" VerticalAlignment="Top" Width="260" Height="38" Click="Button_Click" />
+        <Button Name="btnSearch" Content="거래소에서 찾기" HorizontalAlignment="Left" Margin="0,460,0,-5" VerticalAlignment="Top" Width="260" Height="38" Click="Button_Click" />
         <Button Name="btnClose" Content="닫기" HorizontalAlignment="Left" Margin="285,460,0,-5" VerticalAlignment="Top" Width="100" Height="38" Click="Button_Click_1" IsDefault="True" FontWeight="Bold" />
 
         <TabControl Name="tabControl1" BorderThickness="0 1" HorizontalAlignment="Left" Height="372" Margin="0,77,0,0" VerticalAlignment="Top" Width="385" TabStripPlacement="Bottom" SelectionChanged="tabControl1_SelectionChanged">

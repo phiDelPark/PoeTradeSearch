@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Json;
@@ -177,14 +178,75 @@ namespace PoeTradeSearch
 
     internal static class Json
     {
-        internal static string Serialize<T>(object obj) where T : class
+        private const string INDENT_STRING = "    ";
+
+        private static string BeautifyJson(string str)
+        {
+            var indent = 0;
+            var quoted = false;
+            var sb = new StringBuilder();
+            for (var i = 0; i < str.Length; i++)
+            {
+                var ch = str[i];
+                switch (ch)
+                {
+                    case '{':
+                    case '[':
+                        sb.Append(ch);
+                        if (!quoted)
+                        {
+                            sb.AppendLine();
+                            Enumerable.Range(0, ++indent).ForEach(item => sb.Append(INDENT_STRING));
+                        }
+                        break;
+                    case '}':
+                    case ']':
+                        if (!quoted)
+                        {
+                            sb.AppendLine();
+                            Enumerable.Range(0, --indent).ForEach(item => sb.Append(INDENT_STRING));
+                        }
+                        sb.Append(ch);
+                        break;
+                    case '"':
+                        sb.Append(ch);
+                        bool escaped = false;
+                        var index = i;
+                        while (index > 0 && str[--index] == '\\')
+                            escaped = !escaped;
+                        if (!escaped)
+                            quoted = !quoted;
+                        break;
+                    case ',':
+                        sb.Append(ch);
+                        if (!quoted)
+                        {
+                            sb.AppendLine();
+                            Enumerable.Range(0, indent).ForEach(item => sb.Append(INDENT_STRING));
+                        }
+                        break;
+                    case ':':
+                        sb.Append(ch);
+                        if (!quoted)
+                            sb.Append(" ");
+                        break;
+                    default:
+                        sb.Append(ch);
+                        break;
+                }
+            }
+            return sb.ToString();
+        }
+
+        internal static string Serialize<T>(object obj, bool beautify = false) where T : class
         {
             DataContractJsonSerializer dcsJson = new DataContractJsonSerializer(typeof(T));
             MemoryStream mS = new MemoryStream();
             dcsJson.WriteObject(mS, obj);
             var json = mS.ToArray();
             mS.Close();
-            return Encoding.UTF8.GetString(json, 0, json.Length);
+            string s = Encoding.UTF8.GetString(json, 0, json.Length);
+            return beautify ? BeautifyJson(s) : s;
         }
 
         internal static T Deserialize<T>(string strData) where T : class

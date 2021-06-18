@@ -1,33 +1,81 @@
 ﻿{
-	"options":{
-			"league":"Ultimatum",
-			"server":"ko or en",
-			"server_timeout":5,
-			"server_redirect":false,
-			"search_before_day":7,
-			"search_price_min":0,
-			"search_price_count":20,
-			"auto_search_delay":0,
-			"auto_check_unique":true,
-			"auto_check_totalres":true,
-			"auto_select_pseudo":true,
-			"auto_select_corrupt":"no or yes",
-			"auto_select_bytype":"유형값 공백없이 콤마로 구분",
-			"ctrl_wheel":false,
-			"check_updates":true
-		},
-	"shortcuts":[
-			{"keycode":113,"value":"{Enter}/hideout{Enter}","Detail":"은신처 이동 (F2)"},
-			{"keycode":115,"value":"{Enter}/exit{Enter}","Detail":"나가기 (F4)"},
-			{"keycode":116,"value":"{Enter}/remaining{Enter}","Detail":"남은 몬스터 수 (F5)"},
-			{"keycode":117,"value":"{grid:stash}","Detail":"창고 좌표 보기 (F6)"},
-			{"keycode":118,"value":"{grid:quad}","Detail":"창고 좌표 보기 - 쿼드 (F7)"},
-			{"keycode":120,"value":"Syndicate_0.jpg","position":"0x0","Detail":"이미지 출력, 단, .jpg만 가능 (F9)"},
-			{"keycode":121,"value":"Temple_0.jpg","position":"0x0","Detail":"이미지 출력, 단, .jpg만 가능 (F10)"},
-			{"keycode":122,"value":"{Pause}","Detail":"일시 중지 (F11)"},
-			{"keycode":27,"value":"{Close}","Detail":"창 닫기 (ESC)"},
-			{"keycode":78,"ctrl":true,"value":"{Link}https://poe.ninja/{Link}","Detail":"링크 열기 (Ctrl+N)"},
-			{"keycode":72,"ctrl":true,"value":"{Wiki}","Detail":"선택한 아이템의 위키 보기 (Ctrl+H)"},
-			{"keycode":0,"ctrl":true,"value":"{Run}","Detail":"작동키 (Ctrl+C) 변경은 프로젝트 홈 위키 참고"}
-		]
+    "options": {
+        "auto_check_totalres": true,
+        "auto_check_unique": true,
+        "auto_select_bytype": "유형값 공백없이 콤마로 구분",
+        "auto_select_corrupt": "no or yes",
+        "auto_select_pseudo": true,
+        "check_updates": true,
+        "league": "Ultimatum",
+        "search_auto_delay": 0,
+        "search_before_day": 7,
+        "search_list_count": 20,
+        "search_price_minimum": 0,
+        "server_redirect": false,
+        "server_timeout": 5,
+        "server_type": 0,
+        "use_ctrl_wheel": true
+    },
+    "shortcuts": [
+        {
+            "keycode": 0,
+            "modifiers": 0,
+            "value": "{Run} 작동 (기본값: Ctrl+C)"
+        },
+        {
+            "keycode": 72,
+            "modifiers": 2,
+            "value": "{Wiki} 아이템의 위키 보기"
+        },
+        {
+            "keycode": 113,
+            "modifiers": 0,
+            "value": "{Enter}\/hideout{Enter}"
+        },
+        {
+            "keycode": 115,
+            "modifiers": 0,
+            "value": "{Enter}\/exit{Enter}"
+        },
+        {
+            "keycode": 116,
+            "modifiers": 0,
+            "value": "{Enter}\/remaining{Enter}"
+        },
+        {
+            "keycode": 117,
+            "modifiers": 0,
+            "value": "{grid:stash} 창고 좌표 보기"
+        },
+        {
+            "keycode": 118,
+            "modifiers": 0,
+            "value": "{grid:quad} 창고 좌표 보기 - 쿼드"
+        },
+        {
+            "keycode": 120,
+            "modifiers": 0,
+            "value": "Syndicate_0.jpg"
+        },
+        {
+            "keycode": 121,
+            "modifiers": 0,
+            "value": "Temple_0.jpg"
+        },
+        {
+            "keycode": 78,
+            "modifiers": 2,
+            "value": "{Link}https:\/\/poe.ninja\/{Link}"
+        },
+        {
+            "keycode": 0,
+            "modifiers": 0,
+            "value": ""
+        },
+        {
+            "keycode": 0,
+            "modifiers": 0,
+            "value": ""
+        }
+    ]
 }
