@@ -71,6 +71,17 @@ namespace PoeTradeSearch
             { "stat_2435536961", "pseudo_adds_physical_damage_to_spells" }, { "stat_2831165374", "pseudo_adds_lightning_damage_to_spells" }, { "stat_2469416729", "pseudo_adds_cold_damage_to_spells" }, { "stat_1133016593", "pseudo_adds_fire_damage_to_spells" }, { "stat_2300399854", "pseudo_adds_chaos_damage_to_spells" },
             { "stat_3325883026", "pseudo_total_life_regen" }, { "stat_836936635", "pseudo_percent_life_regen" }, { "stat_789117908", "pseudo_increased_mana_regen" }
         };
+
+        internal static ParserEntries lRadius = new ParserEntries()
+        {
+            Entries = new ParserDictionary[4]
+            {
+                new ParserDictionary { Text = new string[2] { "좁은 반경", "Small Ring" } },
+                new ParserDictionary { Text = new string[2] { "중간 반경", "Medium Ring" } },
+                new ParserDictionary { Text = new string[2] { "넓은 반경", "Large Ring" } },
+                new ParserDictionary { Text = new string[2] { "아주 넓은 반경", "Very Large Ring" } }
+            }
+        };
     }
 
     public partial class WinMain : Window

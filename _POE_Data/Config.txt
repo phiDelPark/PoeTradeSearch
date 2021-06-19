@@ -2,7 +2,7 @@
     "options": {
         "auto_check_totalres": true,
         "auto_check_unique": true,
-        "auto_select_bytype": "유형값 공백없이 콤마로 구분",
+        "auto_select_bytype": "monster.sample,temp1",
         "auto_select_corrupt": "no or yes",
         "auto_select_pseudo": true,
         "check_updates": true,

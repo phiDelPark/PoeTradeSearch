@@ -13,9 +13,14 @@ namespace PoeTradeSearch
             return orNull ? string.IsNullOrEmpty(owner) : owner == "";
         }
 
-        public static string Join(this string[] owner, string separator)
+        public static bool WithIn(this string owner, string[] value)
         {
-            return owner.Length > 1 ? string.Join(separator, owner) : owner[0];
+            return owner != null && Array.Exists(value, x => x.Equals(owner));
+        }
+
+        public static bool WithIn(this string owner, double minimum, double maximum)
+        {
+            return !owner.IsEmpty() && double.Parse(owner).WithIn(minimum, maximum);
         }
 
         public static int ToInt(this string owner, int @default = 0)
@@ -41,19 +46,23 @@ namespace PoeTradeSearch
             return string.Join(" ", words);
         }
 
+        public static string Regex(this string owner, string pattern, string replacement)
+        {
+            return System.Text.RegularExpressions.Regex.Replace(owner, pattern, replacement);
+        }
+
+        #endregion
+
+        #region Strings Extensions
+
+        public static string Join(this string[] owner, string separator)
+        {
+            return owner.Length > 1 ? string.Join(separator, owner) : owner[0];
+        }
+
         public static string Value(this string[] owner, int index, string @default = null)
         {
             return owner.Length > index ? owner[index] : @default;
-        }
-
-        public static bool WithIn(this string owner, string[] value)
-        {
-            return owner != null && Array.Exists(value, x => x.Equals(owner));
-        }
-
-        public static bool WithIn(this string owner, double minimum, double maximum)
-        {
-            return !owner.IsEmpty() && double.Parse(owner).WithIn(minimum, maximum);
         }
 
         #endregion

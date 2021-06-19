@@ -84,6 +84,7 @@ namespace PoeTradeSearch
         public string text;
         public double max;
         public double min;
+        public object option;
         public string flag;
         public bool disabled;
         public bool isNull = false;
@@ -130,6 +131,8 @@ namespace PoeTradeSearch
         internal ParserEntries Quality = null;
         [DataMember(Name = "sockets")]
         internal ParserEntries Sockets = null;
+        [DataMember(Name = "radius")]
+        internal ParserEntries Radius = null;
         [DataMember(Name = "unidentified")]
         internal ParserEntries Unidentified = null;
         [DataMember(Name = "max")]

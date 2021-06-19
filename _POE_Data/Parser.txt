@@ -286,6 +286,15 @@
 			{"id":"ExchangeUnique","text":[ "유니크 아이템", "Unique Item" ]}
 		]
 	},
+	"radius":{
+		"text":[ "적용 반경", "Radius" ],
+		"entries":[
+			{"id":"1","text":[ "좁은 반경의 패시브 스킬에만 영향을 미침", "Only affects Passives in Small Ring" ]},
+			{"id":"2","text":[ "중간 반경의 패시브 스킬에만 영향을 미침", "Only affects Passives in Medium Ring" ]},
+			{"id":"3","text":[ "넓은 반경의 패시브 스킬에만 영향을 미침", "Only affects Passives in Large Ring" ]},
+			{"id":"4","text":[ "아주 넓은 반경의 패시브 스킬에만 영향을 미침", "Only affects Passives in Very Large Ring" ]}
+		]
+	},
 	"quality":{"text":[ "퀄리티", "Quality" ]},
 	"sockets":{"text":[ "홈", "Sockets" ]},
 	"level":{"text":[ "레벨", "Level" ]},

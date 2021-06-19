@@ -51,7 +51,7 @@ namespace PoeTradeSearch
             lbDbVersion.Content = "버전: " + Application.Current.Properties["FileVersion"] + "\n" + winMain.mFilterData[0].Upddate;
 
             cbLeague.SelectedItem = winMain.mConfigData.Options.League ?? "";
-            if(cbLeague.SelectedIndex == -1)
+            if (cbLeague.SelectedIndex == -1)
             {
                 cbLeague.Items.Add(winMain.mConfigData.Options.League ?? "");
                 cbLeague.SelectedIndex = cbLeague.Items.Count - 1;
