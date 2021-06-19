@@ -5,41 +5,46 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoeTradeSearch"
         mc:Ignorable="d"
-        Title="설정" Height="470" Width="482" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="설정" Height="470" Width="482" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Topmost="True">
     <Grid>
         <TabControl TabStripPlacement="Left" BorderThickness="0">
             <TabItem Header="기본" HorizontalAlignment="Left" Height="50" Margin="5,5,-5,-5" VerticalAlignment="Top" Width="80">
                 <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Margin="5">
                     <Grid>
-                        <Label Content="기본 검색 서버:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                        <ComboBox Name="cbServerType" HorizontalAlignment="Left" VerticalAlignment="Top" Height="22" Width="106" Margin="108,14,0,0" SelectedIndex="0">
+                        <Label Content="기본 검색 리그:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                        <ComboBox Name="cbLeague" HorizontalAlignment="Left" VerticalAlignment="Top" Height="22" Width="194" Margin="108,14,0,0"/>
+
+                        <Label Content="기본 검색 서버:" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top"/>
+                        <ComboBox Name="cbServerType" HorizontalAlignment="Left" VerticalAlignment="Top" Height="22" Width="106" Margin="108,41,0,0" SelectedIndex="0">
                             <ComboBoxItem>자동</ComboBoxItem>
                             <ComboBoxItem>한국</ComboBoxItem>
                             <ComboBoxItem>영국</ComboBoxItem>
                         </ComboBox>
-                        <Label Content="자동 검색:" HorizontalAlignment="Left" Margin="10,73,0,0" VerticalAlignment="Top"/>
-                        <ComboBox Name="cbSearchAutoDelay" HorizontalAlignment="Left" VerticalAlignment="Top" Height="22" Width="106" Margin="80,77,0,0" SelectedIndex="0">
+                        <Label Content="자동 검색:" HorizontalAlignment="Left" Margin="10,103,0,0" VerticalAlignment="Top"/>
+                        <ComboBox Name="cbSearchAutoDelay" HorizontalAlignment="Left" VerticalAlignment="Top" Height="22" Width="106" Margin="196,107,0,0" SelectedIndex="0">
                             <ComboBoxItem>수동</ComboBoxItem>
                             <ComboBoxItem>30초</ComboBoxItem>
                             <ComboBoxItem>60초</ComboBoxItem>
                         </ComboBox>
-                        <Label Content="검색시 해당 전 날로 검색:" HorizontalAlignment="Left" Margin="10,104,0,0" VerticalAlignment="Top"/>
-                        <ComboBox Name="cbSearchBeforeDay" HorizontalAlignment="Left" VerticalAlignment="Top" Height="22" Width="106" Margin="165,108,0,0" SelectedIndex="1">
+                        <Label Content="검색시 해당 전 날로 검색:" HorizontalAlignment="Left" Margin="10,134,0,0" VerticalAlignment="Top"/>
+                        <ComboBox Name="cbSearchBeforeDay" HorizontalAlignment="Left" VerticalAlignment="Top" Height="22" Width="106" Margin="196,138,0,0" SelectedIndex="1">
                             <ComboBoxItem>모두</ComboBoxItem>
                             <ComboBoxItem>7일 전</ComboBoxItem>
                             <ComboBoxItem>14일 전</ComboBoxItem>
                         </ComboBox>
-                        <Label Content="검색 목록 수 (높을수록 느려짐):" HorizontalAlignment="Left" Margin="10,135,0,0" VerticalAlignment="Top"/>
-                        <ComboBox Name="cbSearchListCount" HorizontalAlignment="Left" VerticalAlignment="Top" Height="22" Width="106" Margin="196,139,0,0" SelectedIndex="0">
+                        <Label Content="검색 목록 수 (높을수록 느려짐):" HorizontalAlignment="Left" Margin="10,165,0,0" VerticalAlignment="Top"/>
+                        <ComboBox Name="cbSearchListCount" HorizontalAlignment="Left" VerticalAlignment="Top" Height="22" Width="106" Margin="196,169,0,0" SelectedIndex="0">
                             <ComboBoxItem>20개</ComboBoxItem>
                             <ComboBoxItem>40개</ComboBoxItem>
                             <ComboBoxItem>60개</ComboBoxItem>
                             <ComboBoxItem>80개</ComboBoxItem>
                         </ComboBox>
-                        <CheckBox Name="ckAutoCheckUnique" Content="고유 장비는 옵션 자동 체크하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,204,0,0"/>
-                        <CheckBox Name="ckAutoSelectPseudo" Content="가능하면 유사 옵션 사용하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,224,0,0"/>
-                        <CheckBox Name="ckAutoCheckTotalres" Content="저항의 경우 합산 검색하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,244,0,0"/>
-                        <CheckBox Name="ckAutoCheckUpdates" Content="업데이트 자동 체크하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,286,0,0"/>
+                        <CheckBox Name="ckAutoCheckUnique" Content="고유 장비는 옵션 자동 체크하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,224,0,0"/>
+                        <CheckBox Name="ckAutoSelectPseudo" Content="가능하면 유사 옵션 사용하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,244,0,0"/>
+                        <CheckBox Name="ckAutoCheckTotalres" Content="저항의 경우 합산 검색하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,264,0,0"/>
+                        <CheckBox Name="ckAutoCheckUpdates" Content="업데이트 자동 체크하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,296,0,0"/>
+                        <Label Name="lbDbVersion" Content="0000000" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" HorizontalAlignment="Left" Margin="10,0,0,5" VerticalAlignment="Bottom"/>
+                        <Button Name="btUpdateDB" Content="최신 데이터 업데이트" VerticalAlignment="Bottom" Height="38" Width="172" Click="btUpdateDB_Click" HorizontalAlignment="Right" Margin="0,0,10,10"/>
                     </Grid>
                 </Border>
             </TabItem>

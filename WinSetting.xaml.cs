@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -14,15 +15,47 @@ namespace PoeTradeSearch
     /// </summary>
     public partial class WinSetting : Window
     {
+        PoeData mLeagues = null;
+
         public WinSetting()
         {
             //TODO 페이지로... 근데 언제하냐? 귀찮...
             InitializeComponent();
+
+            WinMain winMain = (WinMain)Application.Current.MainWindow;
+            Thread thread = new Thread(() =>
+            {
+                string json = winMain.SendHTTP(null, RS.LeaguesApi, 5);
+                if ((json ?? "") != "")
+                {
+                    mLeagues = Json.Deserialize<PoeData>(json);
+                }
+            });
+            thread.Start();
+            thread.Join();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             WinMain winMain = (WinMain)Application.Current.MainWindow;
+
+            cbLeague.Items.Clear();
+            if (mLeagues?.Result.Length > 0)
+            {
+                foreach (DataResult item in mLeagues.Result)
+                {
+                    cbLeague.Items.Add(item.Id);
+                }
+            }
+
+            lbDbVersion.Content = "버전: " + Application.Current.Properties["FileVersion"] + "\n" + winMain.mFilterData[0].Upddate;
+
+            cbLeague.SelectedItem = winMain.mConfigData.Options.League ?? "";
+            if(cbLeague.SelectedIndex == -1)
+            {
+                cbLeague.Items.Add(winMain.mConfigData.Options.League ?? "");
+                cbLeague.SelectedIndex = cbLeague.Items.Count - 1;
+            }
 
             cbServerType.SelectedIndex = winMain.mConfigData.Options.ServerType;
             cbSearchAutoDelay.SelectedIndex = Math.Abs(winMain.mConfigData.Options.SearchAutoDelay / 30);
@@ -53,6 +86,7 @@ namespace PoeTradeSearch
         {
             WinMain winMain = (WinMain)Application.Current.MainWindow;
 
+            winMain.mConfigData.Options.League = (string)cbLeague.SelectedItem;
             winMain.mConfigData.Options.ServerType = cbServerType.SelectedIndex;
             winMain.mConfigData.Options.SearchAutoDelay = cbSearchAutoDelay.SelectedIndex * 30;
             winMain.mConfigData.Options.SearchBeforeDay = cbSearchBeforeDay.SelectedIndex * 7;
@@ -98,6 +132,15 @@ namespace PoeTradeSearch
                 Arguments = "/wait_shutdown"
             });
             Application.Current.Shutdown();
+        }
+
+        private void btUpdateDB_Click(object sender, RoutedEventArgs e)
+        {
+            string path = (string)Application.Current.Properties["DataPath"];
+            File.Delete(path + "FiltersKO.txt");
+            File.Delete(path + "FiltersEN.txt");
+            lbDbVersion.Content = "버전: " + Application.Current.Properties["FileVersion"] + "\n" + "확인 또는 재실행시 적용됨";
+            btUpdateDB.IsEnabled = false;
         }
     }
 }

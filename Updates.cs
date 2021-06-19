@@ -26,7 +26,7 @@ namespace PoeTradeSearch
                     string[] versions = ver_string.Split('\n');
                     if (versions.Length > 1)
                     {
-                        Version version = new Version(GetFileVersion());
+                        Version version = new Version((string)Application.Current.Properties["FileVersion"]);
                         isUpdates = version.CompareTo(new Version(versions[0])) < 0 ? 1 : 0;
                         /*
                         if (isUpdates == 0)
@@ -87,50 +87,6 @@ namespace PoeTradeSearch
 
             Process.Start(path + "update.cmd");
         }
-
-        /*
-                private bool PoeDataUpdates()
-                {
-                    bool isUpdates = false;
-                    string path = (string)Application.Current.Properties["DataPath"];
-
-                    // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
-                    Thread thread = new Thread(() =>
-                    {
-                        File.Delete(path + "poe_data.zip");
-
-                        using (var client = new WebClient())
-                        {
-                            try
-                            {
-                                client.DownloadFile(
-                                    "https://raw.githubusercontent.com/phiDelPark/PoeTradeSearch/master/_POE_Data/_POE_Data.zip",
-                                    path + "poe_data.zip"
-                                );
-                            }
-                            catch { }
-                        }
-
-                        if (File.Exists(path + "poe_data.zip"))
-                        {
-                            string[] items = { "FiltersKO", "FiltersEN", "ItemsKO", "ItemsEN", "StaticKO", "StaticEN", "Parser" };
-                            foreach (string item in items)
-                            {
-                                File.Delete(path + item + ".txt");
-                            }
-
-                            ZipFile.ExtractToDirectory(path + "poe_data.zip", path);
-                            File.Delete(path + "poe_data.zip");
-
-                            isUpdates = true;
-                        }
-                    });
-                    thread.Start();
-                    thread.Join();
-
-                    return isUpdates;
-                }
-        */
 
         private bool FilterDataUpdate(string path)
         {

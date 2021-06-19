@@ -142,6 +142,9 @@ namespace PoeTradeSearch
 
             Application.Current.Properties["DataPath"] = path;
             Application.Current.Properties["IsAdministrator"] = IsAdministrator();
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            Application.Current.Properties["FileVersion"] = fvi.FileVersion;
 
             if (File.Exists(path + "Admin.run") && !(bool)Application.Current.Properties["IsAdministrator"])
             {

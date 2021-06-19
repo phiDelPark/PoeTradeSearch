@@ -36,15 +36,7 @@
 
         <TextBlock Name="cbPriceListTotal" Text="0" TextAlignment="Right" HorizontalAlignment="Left" Margin="285,59,0,0" VerticalAlignment="Top" Width="96" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Visibility="Hidden" />
 
-        <Button Content="Wiki"  HorizontalAlignment="Left" Height="20" Margin="307,1,0,0" VerticalAlignment="Top" Width="50" Click="Button_Click_4" >
-            <Button.Resources>
-                <Style TargetType="Border">
-                    <Setter Property="CornerRadius" Value="9"/>
-                </Style>
-            </Button.Resources>
-        </Button>
-
-        <Button Content="?"  HorizontalAlignment="Left" Height="20" Margin="365,1,0,0" VerticalAlignment="Top" Width="20" Click="Button_Click_3" >
+        <Button Content="Wiki"  HorizontalAlignment="Left" Height="20" Margin="335,1,0,0" VerticalAlignment="Top" Width="50" Click="Button_Click_4" >
             <Button.Resources>
                 <Style TargetType="Border">
                     <Setter Property="CornerRadius" Value="9"/>

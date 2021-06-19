@@ -10,6 +10,7 @@ namespace PoeTradeSearch
         internal static string PoeClass = "POEWindowClass";
         internal static string PoeCaption = "Path of Exile";
 
+        internal static string LeaguesApi = "https://www.pathofexile.com/api/trade/data/leagues";
         internal static string[] TradeUrl = { "https://poe.game.daum.net/trade/search/", "https://www.pathofexile.com/trade/search/" };
         internal static string[] TradeApi = { "https://poe.game.daum.net/api/trade/search/", "https://www.pathofexile.com/api/trade/search/" };
         internal static string[] FetchApi = { "https://poe.game.daum.net/api/trade/fetch/", "https://www.pathofexile.com/api/trade/fetch/" };
@@ -78,7 +79,7 @@ namespace PoeTradeSearch
         private ParserData mParserData;
         private CheckedData mCheckedData;
 
-        private PoeData[] mFilterData = new PoeData[2];
+        internal PoeData[] mFilterData = new PoeData[2];
         private PoeData[] mItemsData = new PoeData[2];
         private PoeData[] mStaticData = new PoeData[2];
 

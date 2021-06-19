@@ -93,7 +93,7 @@ namespace PoeTradeSearch
             string outString = "";
             int update_type = mConfigData.Options.AutoCheckUpdates ? CheckUpdates() : 0;
 
-            string start_msg = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n'
+            string start_msg = "프로그램 버전 " + Application.Current.Properties["FileVersion"] + " 을(를) 시작합니다." + '\n' + '\n'
                              + "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n'
                              + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n'
                              + (mAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "추가 단축키 기능은 관리자 권한으로 실행해야")
@@ -433,33 +433,6 @@ namespace PoeTradeSearch
             {
                 ForegroundMessage("해당 아이템의 위키 연결에 실패했습니다.", "에러", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-        }
-
-        private void Button_Click_3(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show(Application.Current.MainWindow,
-                "버전: " + GetFileVersion() + " (DATA." + mFilterData[0].Upddate + ")" + '\n' + '\n'
-                + "프로젝트: https://github.com/phiDelPark/PoeTradeSearch" + '\n' + '\n' + '\n'
-                + "리그 선택은 설정 파일에서 설정 가능합니다." + '\n' + '\n'
-                + "검색 서버는 아이템 이름 클릭시 한/영 선택이 가능합니다." + '\n'
-                + "시세 보는법: 검색수[.+] 최소값 ~ 최대값 = 많은[수] 1 ~ 2위" + '\n' + '\n'
-                + "단축키 또는 창고휠 기능은 관리자 권한으로 실행해야 작동합니다." + '\n'
-                + "{" + '\n'
-                + "   F2) 은신처 이동" + '\n'
-                + "   F4) 나가기" + '\n'
-                + "   F5) 남은 몬스터 수" + '\n'
-                + "   F6~7) 창고 좌표 출력" + '\n'
-                + "   F9~10) 이미지 출력" + '\n'
-                + "   F11) 일시 중지" + '\n'
-                + "   Ctrl+N) 링크 열기" + '\n'
-                + "   Ctrl+H) 선택한 아이템 위키" + '\n'
-                + "}" + '\n' + '\n'
-                + "프로그램 설정은 데이터 폴더 Config.txt 파일을 열고 설정할 수 있습니다." + '\n'
-                + "참고: FiltersKO.txt를 삭제후 실행하면 최신 데이터로 자동 업데이트합니다.",
-                "POE 거래소 검색"
-                );
-
-            Native.SetForegroundWindow(Native.FindWindow(RS.PoeClass, RS.PoeCaption));
         }
 
         private void cbPriceListCount_DropDownOpened(object sender, EventArgs e)

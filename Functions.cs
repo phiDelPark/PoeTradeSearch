@@ -248,13 +248,6 @@ namespace PoeTradeSearch
 
     public partial class WinMain : Window
     {
-        private string GetFileVersion()
-        {
-            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-            return fvi.FileVersion;
-        }
-
         private double DamageToDPS(string damage)
         {
             double dps = 0;
@@ -272,7 +265,7 @@ namespace PoeTradeSearch
             return dps;
         }
 
-        private string SendHTTP(string entity, string urlString, int timeout = 5)
+        internal string SendHTTP(string entity, string urlString, int timeout = 5)
         {
             string result = "";
 

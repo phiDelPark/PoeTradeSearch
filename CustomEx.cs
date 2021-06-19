@@ -69,7 +69,7 @@ namespace PoeTradeSearch
 
         #region Enumerable Extensions
 
-        public static void ForEach00<T>(this IEnumerable<T> ie, Action<T> action)
+        public static void ForEach<T>(this IEnumerable<T> ie, Action<T> action)
         {
             foreach (var i in ie) action(i);
         }
