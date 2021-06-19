@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
+using System.Net;
 using System.Reflection;
 using System.Security.Principal;
 using System.Threading;
@@ -17,7 +19,7 @@ namespace PoeTradeSearch
     public partial class App : Application, IDisposable
     {
         private string mLogFilePath;
-        private System.Windows.Forms.NotifyIcon mTrayIcon;
+        public System.Windows.Forms.NotifyIcon mTrayIcon { get; set; }
 
         private void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
@@ -49,6 +51,48 @@ namespace PoeTradeSearch
             return false;
         }
 
+        private void PoeExeUpdates(string path)
+        {
+            // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
+            Thread thread = new Thread(() =>
+            {
+                File.Delete(path + "poe_exe.zip");
+                File.Delete(path + "update.cmd");
+                File.Delete(path + "update.dat");
+
+                using (var client = new WebClient())
+                {
+                    try
+                    {
+                        client.DownloadFile(
+                            "https://raw.githubusercontent.com/phiDelPark/PoeTradeSearch/master/_POE_Data/_POE_EXE.zip",
+                            path + "poe_exe.zip"
+                        );
+                    }
+                    catch
+                    {
+                        MessageBox.Show("서버 접속이 원할하지 않을 수 있습니다." + '\n' + "다음에 다시 시도해 주세요.", "업데이트에 실패했습니다.");
+                        throw;
+                    }
+                }
+
+                if (File.Exists(path + "poe_exe.zip"))
+                {
+                    ZipFile.ExtractToDirectory(path + "poe_exe.zip", path);
+                    File.Delete(path + "poe_exe.zip");
+                }
+            });
+            thread.Start();
+            thread.Join();
+
+            while (!File.Exists(path + "update.cmd"))
+            {
+                Thread.Sleep(100);
+            }
+
+            Process.Start(path + "update.cmd");
+        }
+
         private void TrayMenuClick(object sender, EventArgs e)
         {
             switch ((int)(sender as System.Windows.Forms.MenuItem).Tag)
@@ -65,6 +109,10 @@ namespace PoeTradeSearch
                     {
                         Arguments = "/wait_shutdown"
                     });
+                    Application.Current.Shutdown();
+                    break;
+                case 3:
+                    PoeExeUpdates((string)Application.Current.Properties["DataPath"]);
                     Application.Current.Shutdown();
                     break;
             }
@@ -169,7 +217,9 @@ namespace PoeTradeSearch
             {
                 System.Windows.Forms.ContextMenu TrayCM = new System.Windows.Forms.ContextMenu();
                 TrayCM.MenuItems.Add(new System.Windows.Forms.MenuItem() { Text = "설정", Tag = 1 });
+                TrayCM.MenuItems.Add(new System.Windows.Forms.MenuItem() { Text = "-" });
                 TrayCM.MenuItems.Add(new System.Windows.Forms.MenuItem() { Text = "재시작", Tag = 2 });
+                TrayCM.MenuItems.Add(new System.Windows.Forms.MenuItem() { Text = "업데이트", Name= "this_update", Tag = 3 });
                 TrayCM.MenuItems.Add(new System.Windows.Forms.MenuItem() { Text = "-" });
                 TrayCM.MenuItems.Add(new System.Windows.Forms.MenuItem() { Text = "종료", Tag = 0 });
                 foreach (System.Windows.Forms.MenuItem item in TrayCM.MenuItems)

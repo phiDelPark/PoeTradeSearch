@@ -45,49 +45,6 @@ namespace PoeTradeSearch
             return isUpdates;
         }
 
-        private void PoeExeUpdates()
-        {
-            string path = (string)Application.Current.Properties["DataPath"];
-            // 마우스 훜시 프로그램에 딜레이가 생겨 쓰레드 처리
-            Thread thread = new Thread(() =>
-            {
-                File.Delete(path + "poe_exe.zip");
-                File.Delete(path + "update.cmd");
-                File.Delete(path + "update.dat");
-
-                using (var client = new WebClient())
-                {
-                    try
-                    {
-                        client.DownloadFile(
-                            "https://raw.githubusercontent.com/phiDelPark/PoeTradeSearch/master/_POE_Data/_POE_EXE.zip",
-                            path + "poe_exe.zip"
-                        );
-                    }
-                    catch
-                    {
-                        MessageBox.Show("서버 접속이 원할하지 않을 수 있습니다." + '\n' + "다음에 다시 시도해 주세요.", "업데이트에 실패했습니다.");
-                        throw;
-                    }
-                }
-
-                if (File.Exists(path + "poe_exe.zip"))
-                {
-                    ZipFile.ExtractToDirectory(path + "poe_exe.zip", path);
-                    File.Delete(path + "poe_exe.zip");
-                }
-            });
-            thread.Start();
-            thread.Join();
-
-            while (!File.Exists(path + "update.cmd"))
-            {
-                Thread.Sleep(100);
-            }
-
-            Process.Start(path + "update.cmd");
-        }
-
         private bool FilterDataUpdate(string path)
         {
             bool success = false;
@@ -158,6 +115,7 @@ namespace PoeTradeSearch
                         using (StreamWriter writer = new StreamWriter(path + (isKR ? "FiltersKO.txt" : "FiltersEN.txt"), false, Encoding.UTF8))
                         {
                             writer.Write(Json.Serialize<PoeData>(rootClass));
+                            writer.Close();
                         }
 
                         success = true;
@@ -192,6 +150,7 @@ namespace PoeTradeSearch
                         using (StreamWriter writer = new StreamWriter(path + (isKR ? "ItemsKO.txt" : "ItemsEN.txt"), false, Encoding.UTF8))
                         {
                             writer.Write(Json.Serialize<PoeData>(rootClass));
+                            writer.Close();
                         }
 
                         success = true;
@@ -226,6 +185,7 @@ namespace PoeTradeSearch
                         using (StreamWriter writer = new StreamWriter(path + (isKR ? "StaticKO.txt" : "StaticEN.txt"), false, Encoding.UTF8))
                         {
                             writer.Write(Json.Serialize<PoeData>(rootClass));
+                            writer.Close();
                         }
 
                         success = true;
@@ -253,6 +213,7 @@ namespace PoeTradeSearch
                     using (StreamWriter writer = new StreamWriter(path + filename, false, Encoding.UTF8))
                     {
                         writer.Write(v_string);
+                        writer.Close();
                     }
 
                     success = true;

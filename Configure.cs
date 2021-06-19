@@ -168,6 +168,10 @@ namespace PoeTradeSearch
             {
                 if (!File.Exists(path + "FiltersKO.txt") || !File.Exists(path + "FiltersEN.txt"))
                 {
+                    mTrayIcon.BalloonTipText = "데이터를 업데이트 하는중...";
+                    mTrayIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+                    mTrayIcon.ShowBalloonTip(5000);
+
                     string[] items = { "FiltersKO", "FiltersEN", "ItemsKO", "ItemsEN", "StaticKO", "StaticEN" };
                     foreach (string item in items) File.Delete(path + item + ".txt");
 
@@ -185,6 +189,7 @@ namespace PoeTradeSearch
                     fs = null;
                     string json = reader.ReadToEnd();
                     mFilterData[0] = Json.Deserialize<PoeData>(json);
+                    reader.Close();
                 }
 
                 s = "FiltersEN.txt";
@@ -194,6 +199,7 @@ namespace PoeTradeSearch
                     fs = null;
                     string json = reader.ReadToEnd();
                     mFilterData[1] = Json.Deserialize<PoeData>(json);
+                    reader.Close();
                 }
 
                 s = "ItemsKO.txt";
@@ -203,6 +209,7 @@ namespace PoeTradeSearch
                     fs = null;
                     string json = reader.ReadToEnd();
                     mItemsData[0] = Json.Deserialize<PoeData>(json);
+                    reader.Close();
                 }
 
                 s = "ItemsEN.txt";
@@ -212,6 +219,7 @@ namespace PoeTradeSearch
                     fs = null;
                     string json = reader.ReadToEnd();
                     mItemsData[1] = Json.Deserialize<PoeData>(json);
+                    reader.Close();
                 }
 
                 s = "StaticKO.txt";
@@ -221,6 +229,7 @@ namespace PoeTradeSearch
                     fs = null;
                     string json = reader.ReadToEnd();
                     mStaticData[0] = Json.Deserialize<PoeData>(json);
+                    reader.Close();
                 }
 
                 s = "StaticEN.txt";
@@ -230,6 +239,7 @@ namespace PoeTradeSearch
                     fs = null;
                     string json = reader.ReadToEnd();
                     mStaticData[1] = Json.Deserialize<PoeData>(json);
+                    reader.Close();
                 }
             }
             catch (Exception ex)

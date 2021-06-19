@@ -29,6 +29,7 @@ namespace PoeTradeSearch
         private bool mLockUpdatePrice = false;
 
         DispatcherTimer mAutoSearchTimer;
+        System.Windows.Forms.NotifyIcon mTrayIcon = ((App)Application.Current).mTrayIcon;
 
         public WinMain()
         {
@@ -93,38 +94,7 @@ namespace PoeTradeSearch
             string outString = "";
             int update_type = mConfigData.Options.AutoCheckUpdates ? CheckUpdates() : 0;
 
-            string start_msg = "프로그램 버전 " + Application.Current.Properties["FileVersion"] + " 을(를) 시작합니다." + '\n' + '\n'
-                             + "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n'
-                             + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n'
-                             + (mAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "추가 단축키 기능은 관리자 권한으로 실행해야")
-                             + " 작동합니다.";
-
-            if (update_type == 1)
-            {
-                MessageBoxResult result = MessageBox.Show(
-                            Application.Current.MainWindow,
-                            start_msg + '\n' + '\n' + "이 프로그램의 최신 버전이 발견 되었습니다."
-                                      + '\n' + "자동으로 업데이트를 하시겠습니까?",
-                            "POE 거래소 검색",
-                            MessageBoxButton.YesNo, MessageBoxImage.Question
-                    );
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    // Process.Start("https://github.com/phiDelPark/PoeTradeSearch/releases");
-                    PoeExeUpdates();
-                    Application.Current.Shutdown();
-                    return;
-                }
-            }
-            else
-            {
-                MessageBox.Show(
-                        Application.Current.MainWindow,
-                        start_msg + '\n' + "더 자세한 정보를 보시려면 프로그램 상단 (?) 를 눌러 확인하세요.",
-                        "POE 거래소 검색"
-                    );
-            }
+            mTrayIcon.BalloonTipTitle = "버전 " + Application.Current.Properties["FileVersion"];
 
             if (!LoadData(out outString))
             {
@@ -132,6 +102,21 @@ namespace PoeTradeSearch
                 Application.Current.Shutdown(0xD); //ERROR_INVALID_DATA
                 return;
             }
+
+            if (update_type == 1)
+            {
+                mTrayIcon.BalloonTipText = "최신 버전이 발견 되었습니다." + "\n" + "트레이 아이콘을 우클릭해 업데이트 하세요.";
+                mTrayIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.None;
+                //mTrayIcon.BalloonTipClicked += (sd,ea) => {};
+            }
+            else
+            {
+                mTrayIcon.ContextMenu.MenuItems.Find("this_update", false)[0].Enabled = false;
+                mTrayIcon.BalloonTipText = "프로그램을 시작합니다." + "\n" + "사용법: 아이템 위에서 Ctrl + C" + "\n" + "종료는: 트레이 아이콘을 우클릭";
+                mTrayIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            }
+
+            mTrayIcon.ShowBalloonTip(5000);
 
             InitializeControls();
 

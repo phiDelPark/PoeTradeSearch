@@ -25,14 +25,9 @@ POE 거래소 검색 (한글/영문)
 
       "options":{
         "league":"Standard",         // 리그 선택 ["Delirium", "Hardcore Delirium", "Standard", "Hardcore"]
-        "server":"ko",               // 기본 검색 서버 (이름도 이 설정에 따름) ["ko", "en", "auto"]
         "server_timeout":5,          // 서버 접속 대기 시간 (초) 인터넷이 느리면 더 올려 시간 초과를 방지
         "server_redirect":false,     // 일부 환경에서 서버 데이터를 못받아와 거래소 접속이 안되는 경우 사용
-        "search_before_day":7,       // 검색시 해당일 전 날로 검색 [0, 1, 3, 7, 14] 값 중에서 선택
         "search_price_min":0,        // 시세 검색 최소 값 (단위는 카오스 오브입니다, 0 은 모두 검색)
-        "search_price_count":20,     // 시세 검색 목록 수 (20의 배수이고 최대 80, 수가 많을수록 느려짐)
-        "auto_search_delay":30,      // 시세 자동 검색 주기를 30초에 1번으로합니다. (0 이면 자동 안함)
-                                     // (주의, 너무 빠르게 검색하면 거래소가 일시적으로 블럭될 수 있음)
         "auto_check_unique":true,    // 유니크 아이템은 기본적으로 옵션 모두 선택 [true, false]
         "auto_check_totalres":true,  // 저항 옵션의 경우 총 저항 합산 검색 자동 체크 [true, false]
         "auto_select_pseudo":true,   // 유사 옵션으로 검색이 가능하면 유사로 자동 선택 [true, false]
@@ -47,16 +42,12 @@ POE 거래소 검색 (한글/영문)
             {"keycode":113,"value":"{Enter}/hideout{Enter}"},     // F2.  은신처 ("{Enter}채팅명령어{Enter}")
             {"keycode":115,"value":"{Enter}/exit{Enter}"},        // F4.  나가기
             {"keycode":116,"value":"{Enter}/remaining{Enter}"},   // F5.  남은 몬스터
-            {"keycode":117,"value":"{grid:stash}"},               // F6.  창고 좌표 보기 (*테스트중인 기능)
-            {"keycode":118,"value":"{grid:quad}",                 // F7.  창고 좌표 보기 - 쿼드 (*테스트중인 기능)
+            {"keycode":117,"value":"{Grid:Stash}"},               // F6.  창고 좌표 보기
             {"keycode":120,"value":"신디보상표.jpg"},              // F9.  데이터 폴더의 이미지 출력 (단 .jpg만 가능)
             {"keycode":121,"value":"사원보상표.jpg"},              // F10. 주로 이렇게 POE 정보를 이미지 만들어 사용
-            {"keycode":122,"value":"{Pause}"},                    // F11. 값이 "{Pause}"면 일시 중지 키로 사용됨
-            {"keycode":27,"value":"{Close}"},                     // ESC. 값이 "{Close}"면 창 닫기 키로 사용됨
-            {"keycode":78,"ctrl":true,"value":"{Link}URL{Link}"}, // Ctrl+N. 링크열기 (기본은 닌자로 설정)
-            {"keycode":72,"ctrl":true,"value":"{Wiki}"},          // Ctrl+H. 현재 선택된 아이템을 위키로 열기
-            {"keycode":0,"ctrl":true,"value":"{Run}"}             // 작동키 Ctrl+C. 변경은 키코드 0을 원하는 키로 바꿈
-                                                                  // 참고: "ctrl":true 는 Ctrl을 같이 눌러야 한다는 뜻
+            {"keycode":78,"modifiers":2,"value":"{Link}URL{Link}"}, // Ctrl+N. 링크열기 (기본은 닌자로 설정)
+            {"keycode":72,"modifiers":2,"value":"{Wiki}"},          // Ctrl+H. 현재 선택된 아이템을 위키로 열기
+            {"keycode":0,"modifiers":2,"value":"{Run}"}             // 작동키 Ctrl+C. 변경은 키코드 0을 원하는 키로 바꿈
         ]
 
 옵션 파일 수정 후엔 저장 후 프로그램을 다시 실행해 주셔야 옵션을 새로 읽어 갱신됩니다.<br><br>
