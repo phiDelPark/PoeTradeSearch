@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -61,7 +63,9 @@ namespace PoeTradeSearch
             winMain.mConfigData.Options.AutoCheckTotalres = ckAutoCheckTotalres.IsChecked == true;
             winMain.mConfigData.Options.AutoCheckUpdates = ckAutoCheckUpdates.IsChecked == true;
 
+
             winMain.mConfigData.Options.UseCtrlWheel = ckUseCtrlWheel.IsChecked == true;
+            bool enable_admin = winMain.mConfigData.Options.UseCtrlWheel;
 
             winMain.mConfigData.Shortcuts = new ConfigShortcut[12];
             for (int i = 0; i < 12; i++)
@@ -74,15 +78,26 @@ namespace PoeTradeSearch
                 winMain.mConfigData.Shortcuts[i].Keycode = (int)KeyInterop.VirtualKeyFromKey(hotkey?.Key ?? 0);
                 winMain.mConfigData.Shortcuts[i].Modifiers = (int)(hotkey?.Modifiers ?? 0);
                 winMain.mConfigData.Shortcuts[i].Value = value;
+
+                if (!enable_admin) enable_admin = winMain.mConfigData.Shortcuts[i].Keycode != 0;
             }
 
             string path = (string)Application.Current.Properties["DataPath"];
             using (StreamWriter writer = new StreamWriter(path + "Config.txt", false, Encoding.UTF8))
             {
                 writer.Write(Json.Serialize<ConfigData>(winMain.mConfigData, true));
+                writer.Close();
             }
 
-            Close();
+            if (enable_admin) File.Create(path + "Admin.run");
+            else File.Delete(path + "Admin.run");
+
+            // 설정이 바뀌면 재시작
+            Process.Start(new ProcessStartInfo(Assembly.GetExecutingAssembly().Location)
+            {
+                Arguments = "/wait_shutdown"
+            });
+            Application.Current.Shutdown();
         }
     }
 }

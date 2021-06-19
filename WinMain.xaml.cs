@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,106 +23,22 @@ namespace PoeTradeSearch
         private static bool mInstalledHotKey = false;
         public static bool mPausedHotKey = false;
 
+        private bool mAdministrator = false;
         private bool mHotkeyProcBlock = false;
         private bool mClipboardBlock = false;
         private bool mLockUpdatePrice = false;
-        private bool mDisableClip = false;
-        private bool mAdministrator = false;
-        private static int closeKeyCode = 0;
 
         DispatcherTimer mAutoSearchTimer;
 
         public WinMain()
         {
-            InitializeComponent();
-
             Clipboard.Clear();
+            InitializeComponent();
             mAdministrator = (bool)Application.Current.Properties["IsAdministrator"];
-            mAutoSearchTimer = new DispatcherTimer();
-            mAutoSearchTimer.Interval = TimeSpan.FromSeconds(1);
-            mAutoSearchTimer.Tick += new EventHandler(AutoSearchTimer_Tick);
-            tkPriceInfo.Tag = tkPriceInfo.Text = "시세를 검색하려면 클릭해주세요";
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void InitializeControls()
         {
-            if (!Setting())
-            {
-                Application.Current.Shutdown(0xD); //ERROR_INVALID_DATA
-                return;
-            }
-
-            string outString = "";
-            int update_type = mConfigData.Options.AutoCheckUpdates ? CheckUpdates() : 0;
-
-            string start_msg = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n'
-                             + "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n'
-                             + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n'
-                             + (mAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "추가 단축키 기능은 관리자 권한으로 실행해야")
-                             + " 작동합니다.";
-
-            if (update_type == 1)
-            {
-                MessageBoxResult result = MessageBox.Show(
-                            Application.Current.MainWindow,
-                            start_msg + '\n' + '\n' + "이 프로그램의 최신 버전이 발견 되었습니다."
-                                      + '\n' + "자동으로 업데이트를 하시겠습니까?",
-                            "POE 거래소 검색",
-                            MessageBoxButton.YesNo, MessageBoxImage.Question
-                    );
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    // Process.Start("https://github.com/phiDelPark/PoeTradeSearch/releases");
-                    PoeExeUpdates();
-                    Application.Current.Shutdown();
-                    return;
-                }
-            }
-            else
-            {
-                /*
-                if (update_type == 2)
-                {
-                    WinPopup winPopup = new WinPopup(null);
-                    Task.Factory.StartNew(() =>
-                    {
-                        if (PoeDataUpdates())
-                        {
-                            if (!Setting())
-                            {
-                                Application.Current.Shutdown(0xD); //ERROR_INVALID_DATA
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            start_msg = start_msg + '\n' + '\n' + "최신 POE 데이터 업데이트를 실패하였습니다."
-                                      + '\n' + "접속이 원할하지 않을 수 있으므로 다음 실행시 다시 시도합니다." + '\n';
-                        }
-
-                        this.Dispatcher.Invoke(() => { winPopup.Close(); });
-                    });
-                    winPopup.ShowDialog();
-                }
-                */
-
-                MessageBox.Show(
-                        Application.Current.MainWindow,
-                        start_msg + '\n' + "더 자세한 정보를 보시려면 프로그램 상단 (?) 를 눌러 확인하세요.",
-                        "POE 거래소 검색"
-                    );
-            }
-
-            if (!LoadData(out outString))
-            {
-                this.Visibility = Visibility.Hidden;
-                Application.Current.Shutdown(0xD); //ERROR_INVALID_DATA
-                return;
-            }
-
-            /////////////
-
             ComboBox[] cbs = { cbOrbs, cbSplinters, cbCorrupt, cbInfluence1, cbInfluence2, cbAltQuality };
             foreach (ComboBox cb in cbs)
             {
@@ -162,25 +80,72 @@ namespace PoeTradeSearch
             }
 
             this.Visibility = Visibility.Hidden;
+        }
 
-            /////////////////
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!Setting())
+            {
+                Application.Current.Shutdown(0xD); //ERROR_INVALID_DATA
+                return;
+            }
+
+            string outString = "";
+            int update_type = mConfigData.Options.AutoCheckUpdates ? CheckUpdates() : 0;
+
+            string start_msg = "프로그램 버전 " + GetFileVersion() + " 을(를) 시작합니다." + '\n' + '\n'
+                             + "* 사용법: 인게임 아이템 위에서 Ctrl + C 하면 창이 뜹니다." + '\n'
+                             + "* 종료는: 트레이 아이콘을 우클릭 하시면 됩니다." + '\n' + '\n'
+                             + (mAdministrator ? "관리자로 실행했기에 추가 단축키 기능이" : "추가 단축키 기능은 관리자 권한으로 실행해야")
+                             + " 작동합니다.";
+
+            if (update_type == 1)
+            {
+                MessageBoxResult result = MessageBox.Show(
+                            Application.Current.MainWindow,
+                            start_msg + '\n' + '\n' + "이 프로그램의 최신 버전이 발견 되었습니다."
+                                      + '\n' + "자동으로 업데이트를 하시겠습니까?",
+                            "POE 거래소 검색",
+                            MessageBoxButton.YesNo, MessageBoxImage.Question
+                    );
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    // Process.Start("https://github.com/phiDelPark/PoeTradeSearch/releases");
+                    PoeExeUpdates();
+                    Application.Current.Shutdown();
+                    return;
+                }
+            }
+            else
+            {
+                MessageBox.Show(
+                        Application.Current.MainWindow,
+                        start_msg + '\n' + "더 자세한 정보를 보시려면 프로그램 상단 (?) 를 눌러 확인하세요.",
+                        "POE 거래소 검색"
+                    );
+            }
+
+            if (!LoadData(out outString))
+            {
+                this.Visibility = Visibility.Hidden;
+                Application.Current.Shutdown(0xD); //ERROR_INVALID_DATA
+                return;
+            }
+
+            InitializeControls();
+
+            mAutoSearchTimer = new DispatcherTimer();
+            mAutoSearchTimer.Interval = TimeSpan.FromSeconds(1);
+            mAutoSearchTimer.Tick += new EventHandler(AutoSearchTimer_Tick);
+            tkPriceInfo.Tag = tkPriceInfo.Text = "시세를 검색하려면 클릭해주세요";
+
             mMainHwnd = new WindowInteropHelper(this).Handle;
             HwndSource source = HwndSource.FromHwnd(mMainHwnd);
             source.AddHook(new HwndSourceHook(WndProc));
 
             if (mAdministrator)
             {
-                foreach (var item in mConfigData.Shortcuts)
-                {
-                    if (item.Keycode > 0 && (item.Value ?? "") != "")
-                    {
-                        if (!mDisableClip && item.Value.ToLower() == "{run}")
-                            mDisableClip = true;
-                        else if (item.Value.ToLower() == "{close}")
-                            closeKeyCode = item.Keycode;
-                    }
-                }
-
                 // 창 활성화 후킹 사용시 가끔 꼬여서 타이머로 교체
                 //InstallRegisterHotKey();
                 //EventHook.EventAction += new EventHandler(WinEvent);
@@ -199,7 +164,7 @@ namespace PoeTradeSearch
                 timer.Start();
             }
 
-            if (!mDisableClip)
+            if (Array.Find(mConfigData.Shortcuts, x => x.Keycode > 0 && (x.Value ?? "").ToLower() == "{run}") == null)
             {
                 IntPtr mNextClipBoardViewerHWnd = Native.SetClipboardViewer(mMainHwnd);
             }
@@ -457,7 +422,7 @@ namespace PoeTradeSearch
                 Process.Start(
                     "https://pathofexile.gamepedia.com/" +
                     (
-                        Array.Find(mParserData.Rarity.Entries, 
+                        Array.Find(mParserData.Rarity.Entries,
                                 x => (x.Text[0] == (string)cbRarity.SelectedValue || x.Text[1] == (string)cbRarity.SelectedValue)
                             ) != null
                         && name != "" ? name : type
@@ -512,8 +477,7 @@ namespace PoeTradeSearch
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (closeKeyCode > 0 && KeyInterop.VirtualKeyFromKey(e.Key) == closeKeyCode)
-                Close();
+            if (e.Key == Key.Escape) Close();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -533,6 +497,274 @@ namespace PoeTradeSearch
                 if (mConfigData.Options.UseCtrlWheel)
                     MouseHook.Stop();
             }
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
+            {
+                if (!mInstalledHotKey)
+                    InstallRegisterHotKey();
+
+                if (!mPausedHotKey && mConfigData.Options.UseCtrlWheel)
+                {
+                    TimeSpan dateDiff = Convert.ToDateTime(DateTime.Now) - mMouseHookCallbackTime;
+                    if (dateDiff.Ticks > 3000000000) // 5분간 마우스 움직임이 없으면 훜이 풀렸을 수 있어 다시...
+                    {
+                        mMouseHookCallbackTime = Convert.ToDateTime(DateTime.Now);
+                        MouseHook.Start();
+                    }
+                }
+            }
+            else
+            {
+                if (mInstalledHotKey)
+                    RemoveRegisterHotKey();
+            }
+        }
+
+        private void MouseEvent(object sender, EventArgs e)
+        {
+            if (!mHotkeyProcBlock)
+            {
+                mHotkeyProcBlock = true;
+
+                try
+                {
+                    int zDelta = ((MouseHook.MouseEventArgs)e).zDelta;
+                    if (zDelta != 0)
+                    {
+                        System.Windows.Forms.SendKeys.SendWait(zDelta > 0 ? "{Left}" : "{Right}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
+                mHotkeyProcBlock = false;
+            }
+        }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == Native.WM_DRAWCLIPBOARD)
+            {
+                if (!mPausedHotKey && !mClipboardBlock)
+                {
+#if DEBUG
+                    if (true)
+#else
+                    if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
+#endif
+                    {
+                        try
+                        {
+                            if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
+                                ItemTextParser(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)));
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                    }
+                }
+            }
+            else if (!mHotkeyProcBlock && msg == (int)0x312) //WM_HOTKEY
+            {
+                mHotkeyProcBlock = true;
+
+                IntPtr findHwnd = Native.FindWindow(RS.PoeClass, RS.PoeCaption);
+
+                if (Native.GetForegroundWindow().Equals(findHwnd))
+                {
+                    int key_idx = wParam.ToInt32() - 10001;
+                    string popWinTitle = "이곳을 잡고 이동, 닫기는 클릭 혹은 ESC";
+
+                    try
+                    {
+                        if (key_idx == -1)
+                        {
+                            IntPtr pHwnd = Native.FindWindow(null, popWinTitle);
+                            IntPtr pHwnd2 = Native.FindWindow(null, Title + " - " + "{grid:stash}");
+                            if (pHwnd.ToInt32() != 0 || pHwnd2.ToInt32() != 0)
+                            {
+                                if (pHwnd.ToInt32() != 0)
+                                    Native.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
+                                if (pHwnd2.ToInt32() != 0)
+                                    Native.SendMessage(pHwnd2, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
+                            }
+                            else if (this.Visibility == Visibility.Hidden)
+                            {
+                                Native.SendMessage(findHwnd, 0x0101, new IntPtr(/* ESC = */ 27), IntPtr.Zero);
+                            }
+                            else if (this.Visibility == Visibility.Visible)
+                            {
+                                Close();
+                            }
+                        }
+                        else
+                        {
+                            ConfigShortcut shortcut = mConfigData.Shortcuts[key_idx];
+
+                            if (shortcut != null && shortcut.Value != null)
+                            {
+                                string valueLower = shortcut.Value.ToLower();
+
+                                if (valueLower.IndexOf("{pause}") == 0)
+                                {
+                                    mPausedHotKey = !mPausedHotKey;
+
+                                    if (mPausedHotKey)
+                                    {
+                                        if (mConfigData.Options.UseCtrlWheel) MouseHook.Stop();
+
+                                        MessageBox.Show(Application.Current.MainWindow, "프로그램 동작을 일시 중지합니다." + '\n'
+                                                        + "다시 시작하려면 일시 중지 단축키를 한번더 누르세요.", "POE 거래소 검색");
+                                    }
+                                    else
+                                    {
+                                        if (mConfigData.Options.UseCtrlWheel) MouseHook.Start();
+
+                                        MessageBox.Show(Application.Current.MainWindow, "프로그램 동작을 다시 시작합니다.", "POE 거래소 검색");
+                                    }
+
+                                    Native.SetForegroundWindow(findHwnd);
+                                }
+                                else if (valueLower.IndexOf("{restart}") == 0)
+                                {
+                                    Process.Start(new ProcessStartInfo(Assembly.GetExecutingAssembly().Location)
+                                    {
+                                        Arguments = "/wait_shutdown"
+                                    });
+                                    Application.Current.Shutdown();
+                                }
+                                else if (!mPausedHotKey)
+                                {
+                                    if (valueLower.IndexOf("{run}") == 0 || valueLower.IndexOf("{wiki}") == 0)
+                                    {
+                                        mClipboardBlock = true;
+                                        Clipboard.Clear();
+
+                                        try
+                                        {
+                                            System.Windows.Forms.SendKeys.SendWait("^{c}");
+
+                                            for (int i = 0; i < 35; i++)
+                                            {
+                                                Thread.Sleep(100);
+                                                if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
+                                                {
+                                                    ItemTextParser(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)), valueLower.IndexOf("{run}") == 0);
+                                                    if (valueLower.IndexOf("{wiki}") == 0) Button_Click_4(null, new RoutedEventArgs());
+                                                    mClipboardBlock = false;
+                                                    break;
+                                                }
+                                            }
+
+                                            if(mClipboardBlock && valueLower.IndexOf("{wiki}") == 0) Clipboard.Clear();
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Console.WriteLine(ex.Message);
+                                        }
+                                        finally
+                                        {
+                                            mClipboardBlock = false;
+                                        }
+                                    }
+                                    else if (valueLower.IndexOf("{enter}") == 0)
+                                    {
+                                        Regex regex = new Regex(@"{enter}", RegexOptions.IgnoreCase);
+                                        string tmp = regex.Replace(shortcut.Value, "" + '\n');
+                                        string[] strs = tmp.Trim().Split('\n');
+
+                                        for (int i = 0; i < strs.Length; i++)
+                                        {
+                                            SetClipText(strs[i], TextDataFormat.UnicodeText);
+                                            Thread.Sleep(300);
+                                            System.Windows.Forms.SendKeys.SendWait("{enter}");
+                                            System.Windows.Forms.SendKeys.SendWait("^{a}");
+                                            System.Windows.Forms.SendKeys.SendWait("^{v}");
+                                            System.Windows.Forms.SendKeys.SendWait("{enter}");
+                                        }
+                                    }
+                                    else if (valueLower.IndexOf("{link}") == 0)
+                                    {
+                                        Regex regex = new Regex(@"{link}", RegexOptions.IgnoreCase);
+                                        string tmp = regex.Replace(shortcut.Value, "" + '\n');
+                                        string[] strs = tmp.Trim().Split('\n');
+                                        if (strs.Length > 0) Process.Start(strs[0]);
+                                    }
+                                    else if (valueLower.IndexOf("{grid:quad}") == 0 || valueLower.IndexOf("{grid:stash}") == 0)
+                                    {
+                                        IntPtr pHwnd = Native.FindWindow(null, Title + " - " + "{grid:stash}");
+                                        if (pHwnd.ToInt32() != 0)
+                                        {
+                                            Native.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
+                                        }
+                                        else
+                                        {
+                                            WinGrid winGrid = new WinGrid(valueLower.IndexOf("{grid:quad}") == 0, findHwnd);
+                                            winGrid.Title = Title + " - " + "{grid:stash}";
+                                            winGrid.Show();
+                                        }
+                                    }
+                                    else if (valueLower.IndexOf(".jpg") > 0)
+                                    {
+                                        IntPtr pHwnd = Native.FindWindow(null, popWinTitle);
+                                        if (pHwnd.ToInt32() != 0)
+                                            Native.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
+
+                                        WinPopup winPopup = new WinPopup(shortcut.Value);
+                                        winPopup.WindowStartupLocation = WindowStartupLocation.Manual;
+                                        winPopup.Left = 10;
+                                        winPopup.Top = 10;
+                                        winPopup.Title = popWinTitle;
+                                        winPopup.Show();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        ForegroundMessage("잘못된 단축키 명령입니다.", "단축키 에러", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+
+                    handled = true;
+                }
+
+                mHotkeyProcBlock = false;
+            }
+
+            return IntPtr.Zero;
+        }
+
+        private void InstallRegisterHotKey()
+        {
+            mInstalledHotKey = true;
+            Native.RegisterHotKey(mMainHwnd, 10000, 0, (uint)KeyInterop.VirtualKeyFromKey(Key.Escape));
+
+            for (int i = 0; i < mConfigData.Shortcuts.Length; i++)
+            {
+                ConfigShortcut shortcut = mConfigData.Shortcuts[i];
+                if (shortcut.Keycode > 0 && (shortcut.Value ?? "") != "")
+                    Native.RegisterHotKey(mMainHwnd, 10001 + i, (uint)shortcut.Modifiers, (uint)shortcut.Keycode);
+            }
+        }
+
+        private void RemoveRegisterHotKey()
+        {
+            for (int i = 0; i < mConfigData.Shortcuts.Length; i++)
+            {
+                ConfigShortcut shortcut = mConfigData.Shortcuts[i];
+                if (shortcut.Keycode > 0 && (shortcut.Value ?? "") != "")
+                    Native.UnregisterHotKey(mMainHwnd, 10001 + i);
+            }
+
+            Native.UnregisterHotKey(mMainHwnd, 10000);
+            mInstalledHotKey = false;
         }
     }
 }

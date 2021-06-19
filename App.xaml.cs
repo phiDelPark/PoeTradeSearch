@@ -143,19 +143,16 @@ namespace PoeTradeSearch
             Application.Current.Properties["DataPath"] = path;
             Application.Current.Properties["IsAdministrator"] = IsAdministrator();
 
-            if (File.Exists(path + "Admin.run"))
+            if (File.Exists(path + "Admin.run") && !(bool)Application.Current.Properties["IsAdministrator"])
             {
-                if (!(bool)Application.Current.Properties["IsAdministrator"])
+                Process.Start(new ProcessStartInfo(Assembly.GetEntryAssembly().CodeBase)
                 {
-                    Process.Start(new ProcessStartInfo(Assembly.GetEntryAssembly().CodeBase)
-                    {
-                        UseShellExecute = true,
-                        Verb = "runas",
-                        Arguments = "/wait_shutdown"
-                    });
-                    Environment.Exit(-1);
-                    return;
-                }
+                    UseShellExecute = true,
+                    Verb = "runas",
+                    Arguments = "/wait_shutdown"
+                });
+                Environment.Exit(-1);
+                return;
             }
 
             mLogFilePath = Assembly.GetExecutingAssembly().Location;

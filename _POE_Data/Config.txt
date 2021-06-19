@@ -20,37 +20,42 @@
         {
             "keycode": 0,
             "modifiers": 0,
-            "value": "{Run} 작동 (기본값: Ctrl+C)"
+            "value": "{RUN} 작동 (기본값: Ctrl+C)"
+        },
+        {
+            "keycode": 122,
+            "modifiers": 0,
+            "value": "{RESTART} 프로그램 재시작"
         },
         {
             "keycode": 72,
             "modifiers": 2,
-            "value": "{Wiki} 아이템의 위키 보기"
+            "value": "{WIKI} 아이템의 위키 보기"
         },
         {
             "keycode": 113,
             "modifiers": 0,
-            "value": "{Enter}\/hideout{Enter}"
+            "value": "{ENTER}\/hideout{ENTER}"
         },
         {
             "keycode": 115,
             "modifiers": 0,
-            "value": "{Enter}\/exit{Enter}"
+            "value": "{ENTER}\/exit{ENTER}"
         },
         {
             "keycode": 116,
             "modifiers": 0,
-            "value": "{Enter}\/remaining{Enter}"
+            "value": "{ENTER}\/remaining{ENTER}"
         },
         {
             "keycode": 117,
             "modifiers": 0,
-            "value": "{grid:stash} 창고 좌표 보기"
+            "value": "{GRID:STASH} 창고 좌표 보기"
         },
         {
             "keycode": 118,
             "modifiers": 0,
-            "value": "{grid:quad} 창고 좌표 보기 - 쿼드"
+            "value": "{GRID:QUAD} 창고 좌표 보기 - 쿼드"
         },
         {
             "keycode": 120,
@@ -65,12 +70,7 @@
         {
             "keycode": 78,
             "modifiers": 2,
-            "value": "{Link}https:\/\/poe.ninja\/{Link}"
-        },
-        {
-            "keycode": 0,
-            "modifiers": 0,
-            "value": ""
+            "value": "{LINK}https:\/\/poe.ninja\/{LINK}"
         },
         {
             "keycode": 0,

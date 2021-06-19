@@ -24,7 +24,7 @@
                             <ComboBoxItem>60초</ComboBoxItem>
                         </ComboBox>
                         <Label Content="검색시 해당 전 날로 검색:" HorizontalAlignment="Left" Margin="10,104,0,0" VerticalAlignment="Top"/>
-                        <ComboBox Name="cbSearchBeforeDay" HorizontalAlignment="Left" VerticalAlignment="Top" Height="22" Width="106" Margin="165,108,0,0" SelectedIndex="3">
+                        <ComboBox Name="cbSearchBeforeDay" HorizontalAlignment="Left" VerticalAlignment="Top" Height="22" Width="106" Margin="165,108,0,0" SelectedIndex="1">
                             <ComboBoxItem>모두</ComboBoxItem>
                             <ComboBoxItem>7일 전</ComboBoxItem>
                             <ComboBoxItem>14일 전</ComboBoxItem>
