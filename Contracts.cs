@@ -79,7 +79,7 @@ namespace PoeTradeSearch
     [DataContract]
     public class Itemfilter
     {
-        public string id;
+        public string stat;
         public string type;
         public string text;
         public double max;

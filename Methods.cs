@@ -253,11 +253,11 @@ namespace PoeTradeSearch
                             }
                             else if (k < 10 && (!lItemOption[PS.ItemLevel.Text[z]].IsEmpty() || !lItemOption[PS.MapUltimatum.Text[z]].IsEmpty()))
                             {
-                                string cluster_jewel = "";
-                                double min = 99999, max = 99999;
-                                bool resistance = false;
                                 bool crafted = asOpt[j].IndexOf("(crafted)") > -1;
                                 bool implicit_ = asOpt[j].IndexOf("(implicit)") > -1;
+                                bool resistance = false;
+                                double min = 99999, max = 99999;
+                                string cluster_jewel = "";
 
                                 if (asLocal.Length == 2)
                                 {
@@ -434,6 +434,8 @@ namespace PoeTradeSearch
                                     if (((CheckBox)FindName("tbOpt" + k + "_3")).Visibility == Visibility.Visible && mConfigData.Options.AutoCheckTotalres)
                                         ((CheckBox)FindName("tbOpt" + k + "_3")).IsChecked = true;
 
+                                    string[] split_id = filter.Id.Split('.');
+
                                     if (min != 99999 && max != 99999)
                                     {
                                         if (filter.Text.IndexOf("#~#") > -1)
@@ -445,8 +447,7 @@ namespace PoeTradeSearch
                                     }
                                     else if (min != 99999 || max != 99999)
                                     {
-                                        string[] split = filter.Id.Split('.');
-                                        bool defMaxPosition = split.Length == 2 && RS.lDefaultPosition.ContainsKey(split[1]);
+                                        bool defMaxPosition = RS.lDefaultPosition.ContainsKey(split_id[1]);
                                         if (((defMaxPosition && min > 0) || (!defMaxPosition && min < 0)) && max == 99999)
                                         {
                                             max = min;
@@ -456,7 +457,7 @@ namespace PoeTradeSearch
 
                                     itemfilters.Add(new Itemfilter
                                     {
-                                        id = filter.Id,
+                                        stat = split_id[1],
                                         type = filter.Type,
                                         text = filter.Text,
                                         max = max,
@@ -652,7 +653,7 @@ namespace PoeTradeSearch
                                 }
                             }
 
-                            if (RS.lDisable.ContainsKey(ifilter.id.Split('.')[1]))
+                            if (RS.lDisable.ContainsKey(ifilter.stat))
                             {
                                 tmpCheckBox.IsChecked = false;
                                 tmpCheckBox.IsEnabled = false;
@@ -761,7 +762,8 @@ namespace PoeTradeSearch
                                 if (cbAltQuality.SelectedIndex == -1)
                                 {
                                     cbAltQuality.Items.Clear();
-                                    cbAltQuality.Items.Add(lItemOption[PS.Radius.Text[z]]);
+                                    cbAltQuality.Items.Add(lItemOption[PS.Radius.Text[z]] ?? "");
+                                    cbAltQuality.SelectedIndex = 0;
                                 }
                             }
                             else if (is_heist)
@@ -897,30 +899,40 @@ namespace PoeTradeSearch
 
             itemOption.AltQuality = cbAltQuality.SelectedIndex;
             itemOption.RarityAt = cbRarity.Items.Count > 1 ? cbRarity.SelectedIndex : 0;
-            itemOption.Flags = (string)(cbRarity.SelectedValue ?? "") == "결전" ? "결전|" + cbAltQuality.SelectedValue : "";
             itemOption.PriceMin = tbPriceFilterMin.Text == "" ? 0 : tbPriceFilterMin.Text.ToDouble(99999);
+
+            bool is_ultimatumi = (cbRarity.SelectedValue ?? "").Equals("결전");
+            bool is_cluster = (cbRarity.SelectedValue ?? "").Equals("군 주얼");                
+            itemOption.Flags = is_ultimatumi ? "ULTIMATUM|" + cbAltQuality.SelectedValue : (is_cluster ? "CLUSTER" : "");
 
             itemOption.itemfilters.Clear();
 
-            if (itemOption.Inherits[0] == "jewel" && itemOption.AltQuality != 0)
+            if (!is_ultimatumi && itemOption.AltQuality > 0 && itemOption.Inherits[0].WithIn(new string[] { "jewel", "map" }))
             {
                 Itemfilter itemfilter = new Itemfilter();
-                itemfilter.text = "";
                 itemfilter.min = itemfilter.max = 99999;
-                itemfilter.type = "explicit";
-                itemfilter.id = "explicit.stat_3642528642";
-                itemfilter.option = itemOption.AltQuality.ToString();
                 itemfilter.disabled = false;
 
-                string type_name = RS.lFilterType[itemfilter.type];
-                DataResult filterResult = Array.Find(mFilterData[itemOption.LangIndex].Result, x => x.Label == type_name);
-                if (filterResult != null)
+                if (itemOption.Inherits[0] == "jewel")
                 {
-                    DataEntrie filter = Array.Find(filterResult.Entries, x => x.Id == itemfilter.id && x.Type == itemfilter.type);
-                    itemfilter.text = filter?.Text ?? "";
+                    itemfilter.type = "explicit";
+                    itemfilter.stat = "stat_3642528642";
+                    itemfilter.option = itemOption.AltQuality.ToString();
+                }
+                else
+                {
+                    itemfilter.type = "implicit";
+                    itemfilter.stat = "stat_1792283443";
+                    itemfilter.option = itemOption.AltQuality.ToString();
                 }
 
-                itemOption.itemfilters.Add(itemfilter);
+                DataResult filterResult = Array.Find(mFilterData[itemOption.LangIndex].Result, x => x.Label == RS.lFilterType[itemfilter.type]);
+                if (filterResult != null)
+                {
+                    DataEntrie filter = Array.Find(filterResult.Entries, x => x.Id == itemfilter.type + "." + itemfilter.stat);
+                    itemfilter.text = filter?.Text ?? "";
+                    itemOption.itemfilters.Add(itemfilter);
+                }
             }
 
             int total_res_idx = -1;
@@ -937,13 +949,15 @@ namespace PoeTradeSearch
                     itemfilter.disabled = ((CheckBox)FindName("tbOpt" + i + "_2")).IsChecked != true;
                     itemfilter.min = ((TextBox)FindName("tbOpt" + i + "_0")).Text.ToDouble(99999);
                     itemfilter.max = ((TextBox)FindName("tbOpt" + i + "_1")).Text.ToDouble(99999);
+                    itemfilter.option = null;
 
                     if (itemfilter.disabled == false && ((CheckBox)FindName("tbOpt" + i + "_3")).IsChecked == true)
                     {
                         if (total_res_idx == -1)
                         {
                             total_res_idx = itemOption.itemfilters.Count;
-                            itemfilter.id = "pseudo.pseudo_total_resistance";
+                            itemfilter.type = "pseudo";
+                            itemfilter.stat = "pseudo_total_resistance";
                         }
                         else
                         {
@@ -956,11 +970,17 @@ namespace PoeTradeSearch
                     }
                     else
                     {
-                        itemfilter.id = ((FilterEntrie)comboBox.SelectedItem).ID;
+                        string[] Split_id = ((FilterEntrie)comboBox.SelectedItem).ID.Split('.');
+                        itemfilter.type = Split_id[0];
+                        itemfilter.stat = Split_id[1];
+
+                        if(itemfilter.flag == "CLUSTER")
+                        {
+                            itemfilter.option = itemfilter.min;
+                            itemfilter.min = 99999;
+                        }
                     }
 
-                    itemfilter.option = null;
-                    itemfilter.type = itemfilter.id.Split('.')[0];
                     itemOption.itemfilters.Add(itemfilter);
                 }
             }
@@ -1002,7 +1022,6 @@ namespace PoeTradeSearch
 
                 byte lang_index = (byte)itemOptions.LangIndex;
                 string Inherit = itemOptions.Inherits.Length > 0 ? itemOptions.Inherits[0] : "any";
-                string[] flags = itemOptions.Flags.Split('|');
 
                 JQ.Name = itemOptions.Name;
                 JQ.Type = itemOptions.Type;
@@ -1017,13 +1036,8 @@ namespace PoeTradeSearch
                 JQ.Filters.Trade.Disabled = mConfigData.Options.SearchBeforeDay == 0;
                 JQ.Filters.Trade.Filters.Indexed.Option = BeforeDayToString(mConfigData.Options.SearchBeforeDay);
                 JQ.Filters.Trade.Filters.SaleType.Option = useSaleType ? "priced" : "any";
-                JQ.Filters.Trade.Filters.Price.Min = 99999;
                 JQ.Filters.Trade.Filters.Price.Max = 99999;
-
-                if (itemOptions.PriceMin > 0)
-                {
-                    JQ.Filters.Trade.Filters.Price.Min = itemOptions.PriceMin;
-                }
+                JQ.Filters.Trade.Filters.Price.Min = itemOptions.PriceMin > 0 ? itemOptions.PriceMin : 99999;
 
                 JQ.Filters.Socket.Disabled = itemOptions.ChkSocket != true;
 
@@ -1065,7 +1079,6 @@ namespace PoeTradeSearch
                     || (Inherit != "map" && (itemOptions.Influence1 != 0 || itemOptions.ChkLv == true || itemOptions.Synthesis == true))
                 );
 
-                JQ.Filters.Ultimatum.Disabled = !(itemOptions.AltQuality > 0 && flags.Length > 1 && flags[0] == "결전");
                 JQ.Filters.Map.Disabled = !(
                     Inherit == "map" && (itemOptions.AltQuality > 0 || itemOptions.ChkLv == true || itemOptions.Synthesis == true || itemOptions.Influence1 != 0)
                 );
@@ -1075,27 +1088,12 @@ namespace PoeTradeSearch
                 JQ.Filters.Map.Filters.Shaper.Option = Inherit == "map" && itemOptions.Influence1 == 1 ? "true" : "any";
                 JQ.Filters.Map.Filters.Elder.Option = Inherit == "map" && itemOptions.Influence1 == 2 ? "true" : "any";
                 JQ.Filters.Map.Filters.Blight.Option = Inherit == "map" && itemOptions.Synthesis == true ? "true" : "any";
-                if (JQ.Filters.Ultimatum.Disabled && Inherit == "map" && itemOptions.AltQuality > 0)
-                {
-                    Itemfilter itemfilter = new Itemfilter();
-                    itemfilter.id = "implicit.stat_1792283443";
-                    DataResult filterResult = Array.Find(mFilterData[lang_index].Result, x => x.Label == RS.lFilterType["implicit"]);
-                    DataEntrie filter = Array.Find(filterResult.Entries, x => x.Id == itemfilter.id);
-                    if (filter != null)
-                    {
-                        itemfilter.text = filter.Text;
-                        itemfilter.type = "implicit";
-                        itemfilter.flag = "INFLUENCED";
-                        itemfilter.disabled = false;
-                        itemfilter.min = itemOptions.AltQuality;
-                        itemfilter.max = 99999;
-                        itemOptions.itemfilters.Add(itemfilter);
-                    }
-                }
-                else if (!JQ.Filters.Ultimatum.Disabled && flags.Length > 1 && itemOptions.AltQuality > 0)
+
+                JQ.Filters.Ultimatum.Disabled = !(itemOptions.AltQuality > 0 && itemOptions.Flags.IndexOf("ULTIMATUM|") == 0);
+                if (!JQ.Filters.Ultimatum.Disabled && itemOptions.AltQuality > 0)
                 {
                     JQ.Filters.Ultimatum.Filters.Reward.Option = mParserData.RewardUltimatum.Entries[itemOptions.AltQuality - 1].Id;
-                    JQ.Filters.Ultimatum.Filters.Output.Option = itemOptions.AltQuality == mParserData.RewardUltimatum.Entries.Length ? flags[1] : "any";
+                    JQ.Filters.Ultimatum.Filters.Output.Option = JQ.Filters.Ultimatum.Filters.Reward.Option == "ExchangeUnique" ? itemOptions.Flags.Split('|')[1] : "any";
                 }
 
                 bool error_filter = false;
@@ -1112,7 +1110,7 @@ namespace PoeTradeSearch
                     for (int i = 0; i < itemOptions.itemfilters.Count; i++)
                     {
                         string input = itemOptions.itemfilters[i].text;
-                        string id = itemOptions.itemfilters[i].id;
+                        string stat = itemOptions.itemfilters[i].stat;
                         string type = itemOptions.itemfilters[i].type;
 
                         if (input.Trim() != "" && RS.lFilterType.ContainsKey(type))
@@ -1124,12 +1122,12 @@ namespace PoeTradeSearch
                             if (filterResult != null)
                             {
                                 // 무기에 경우 pseudo_adds_[a-z]+_damage 옵션은 공격 시 가 붙음
-                                if (type == "pseudo" && Inherit == "weapon" && Regex.IsMatch(id, @"^pseudo.pseudo_adds_[a-z]+_damage$"))
+                                if (Inherit == "weapon" && type == "pseudo" && Regex.IsMatch(stat, @"^pseudo_adds_[a-z]+_damage$"))
                                 {
-                                    id = id + "_to_attacks";
+                                    stat += "_to_attacks";
                                 }
 
-                                DataEntrie filter = Array.Find(filterResult.Entries, x => x.Id == id && x.Type == type);
+                                DataEntrie filter = Array.Find(filterResult.Entries, x => x.Id == type + "." + stat);
 
                                 JQ.Stats[0].Filters[idx] = new q_Stats_filters();
                                 JQ.Stats[0].Filters[idx].Value = new q_Min_And_Max();
@@ -1140,19 +1138,6 @@ namespace PoeTradeSearch
                                     JQ.Stats[0].Filters[idx].Value.Min = itemOptions.itemfilters[i].min;
                                     JQ.Stats[0].Filters[idx].Value.Max = itemOptions.itemfilters[i].max;
                                     JQ.Stats[0].Filters[idx].Value.Option = itemOptions.itemfilters[i].option;
-
-
-                                    if ((itemOptions.itemfilters[i].flag ?? "") == "CLUSTER")
-                                    {
-                                        JQ.Stats[0].Filters[idx].Value.Option = itemOptions.itemfilters[i].min;
-                                        JQ.Stats[0].Filters[idx].Value.Min = 99999;
-                                    }
-                                    else if ((itemOptions.itemfilters[i].flag ?? "") == "INFLUENCED")
-                                    {
-                                        JQ.Stats[0].Filters[idx].Value.Option = itemOptions.itemfilters[i].min.ToString();
-                                        JQ.Stats[0].Filters[idx].Value.Min = 99999;
-                                    }
-
                                     JQ.Stats[0].Filters[idx++].Id = filter.Id;
                                 }
                                 else
