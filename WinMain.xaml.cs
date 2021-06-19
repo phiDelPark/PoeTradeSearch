@@ -579,13 +579,13 @@ namespace PoeTradeSearch
                 if (Native.GetForegroundWindow().Equals(findHwnd))
                 {
                     int key_idx = wParam.ToInt32() - 10001;
-                    string popWinTitle = "이곳을 잡고 이동, 닫기는 클릭 혹은 ESC";
+                    const string POPUP_WINDOW_TITLE = "이곳을 잡고 이동, 닫기는 클릭 또는 ESC";
 
                     try
                     {
                         if (key_idx == -1)
                         {
-                            IntPtr pHwnd = Native.FindWindow(null, popWinTitle);
+                            IntPtr pHwnd = Native.FindWindow(null, POPUP_WINDOW_TITLE);
                             IntPtr pHwnd2 = Native.FindWindow(null, Title + " - " + "{grid:stash}");
                             if (pHwnd.ToInt32() != 0 || pHwnd2.ToInt32() != 0)
                             {
@@ -662,7 +662,7 @@ namespace PoeTradeSearch
                                                 }
                                             }
 
-                                            if(mClipboardBlock && valueLower.IndexOf("{wiki}") == 0) Clipboard.Clear();
+                                            if (mClipboardBlock && valueLower.IndexOf("{wiki}") == 0) Clipboard.Clear();
                                         }
                                         catch (Exception ex)
                                         {
@@ -696,7 +696,7 @@ namespace PoeTradeSearch
                                         string[] strs = tmp.Trim().Split('\n');
                                         if (strs.Length > 0) Process.Start(strs[0]);
                                     }
-                                    else if (valueLower.IndexOf("{grid:quad}") == 0 || valueLower.IndexOf("{grid:stash}") == 0)
+                                    else if (valueLower.IndexOf("{grid:stash}") == 0)
                                     {
                                         IntPtr pHwnd = Native.FindWindow(null, Title + " - " + "{grid:stash}");
                                         if (pHwnd.ToInt32() != 0)
@@ -705,22 +705,22 @@ namespace PoeTradeSearch
                                         }
                                         else
                                         {
-                                            WinGrid winGrid = new WinGrid(valueLower.IndexOf("{grid:quad}") == 0, findHwnd);
+                                            WinGrid winGrid = new WinGrid(findHwnd);
                                             winGrid.Title = Title + " - " + "{grid:stash}";
                                             winGrid.Show();
                                         }
                                     }
                                     else if (valueLower.IndexOf(".jpg") > 0)
                                     {
-                                        IntPtr pHwnd = Native.FindWindow(null, popWinTitle);
+                                        IntPtr pHwnd = Native.FindWindow(null, POPUP_WINDOW_TITLE);
                                         if (pHwnd.ToInt32() != 0)
                                             Native.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
 
                                         WinPopup winPopup = new WinPopup(shortcut.Value);
                                         winPopup.WindowStartupLocation = WindowStartupLocation.Manual;
+                                        winPopup.Title = POPUP_WINDOW_TITLE;
                                         winPopup.Left = 10;
                                         winPopup.Top = 10;
-                                        winPopup.Title = popWinTitle;
                                         winPopup.Show();
                                     }
                                 }

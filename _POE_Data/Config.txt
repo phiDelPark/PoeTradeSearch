@@ -14,7 +14,7 @@
         "server_redirect": false,
         "server_timeout": 5,
         "server_type": 0,
-        "use_ctrl_wheel": true
+        "use_ctrl_wheel": false
     },
     "shortcuts": [
         {
@@ -53,11 +53,6 @@
             "value": "{GRID:STASH} 창고 좌표 보기"
         },
         {
-            "keycode": 118,
-            "modifiers": 0,
-            "value": "{GRID:QUAD} 창고 좌표 보기 - 쿼드"
-        },
-        {
             "keycode": 120,
             "modifiers": 0,
             "value": "Syndicate_0.jpg"
@@ -71,6 +66,11 @@
             "keycode": 78,
             "modifiers": 2,
             "value": "{LINK}https:\/\/poe.ninja\/{LINK}"
+        },
+        {
+            "keycode": 0,
+            "modifiers": 0,
+            "value": ""
         },
         {
             "keycode": 0,

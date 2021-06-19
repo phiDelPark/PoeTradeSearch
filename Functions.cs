@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Json;
@@ -178,25 +177,25 @@ namespace PoeTradeSearch
 
     internal static class Json
     {
-        private const string INDENT_STRING = "    ";
-
+        private const char INDENT_CHAR = ' ';
         private static string BeautifyJson(string str)
         {
-            var indent = 0;
-            var quoted = false;
-            var sb = new StringBuilder();
+            int indent = 0;
+            bool quoted = false;
+            StringBuilder sb = new StringBuilder();
             for (var i = 0; i < str.Length; i++)
             {
-                var ch = str[i];
+                char ch = str[i];
                 switch (ch)
                 {
                     case '{':
                     case '[':
+                    case ',':
                         sb.Append(ch);
                         if (!quoted)
                         {
                             sb.AppendLine();
-                            Enumerable.Range(0, ++indent).ForEach(item => sb.Append(INDENT_STRING));
+                            sb.Append(new String(INDENT_CHAR, (ch == ',' ? indent : ++indent) * 4));
                         }
                         break;
                     case '}':
@@ -204,34 +203,21 @@ namespace PoeTradeSearch
                         if (!quoted)
                         {
                             sb.AppendLine();
-                            Enumerable.Range(0, --indent).ForEach(item => sb.Append(INDENT_STRING));
+                            sb.Append(new String(INDENT_CHAR, (--indent) * 4));
                         }
                         sb.Append(ch);
                         break;
                     case '"':
                         sb.Append(ch);
+                        int index = i;
                         bool escaped = false;
-                        var index = i;
                         while (index > 0 && str[--index] == '\\')
                             escaped = !escaped;
-                        if (!escaped)
-                            quoted = !quoted;
-                        break;
-                    case ',':
-                        sb.Append(ch);
-                        if (!quoted)
-                        {
-                            sb.AppendLine();
-                            Enumerable.Range(0, indent).ForEach(item => sb.Append(INDENT_STRING));
-                        }
-                        break;
-                    case ':':
-                        sb.Append(ch);
-                        if (!quoted)
-                            sb.Append(" ");
+                        if (!escaped) quoted = !quoted;
                         break;
                     default:
                         sb.Append(ch);
+                        if (ch == ':' && !quoted) sb.Append(" ");
                         break;
                 }
             }

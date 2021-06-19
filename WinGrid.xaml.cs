@@ -21,13 +21,13 @@ namespace PoeTradeSearch
             // http://pinvoke.net/default.aspx/gdi32/GetDeviceCaps.html
         }
 
-        bool isQuad;
+        // isQuad;
         IntPtr poeHwnd;
 
-        public WinGrid(bool quad, IntPtr hWnd)
+        public WinGrid(IntPtr hWnd)
         {
             InitializeComponent();
-            isQuad = quad;
+            //isQuad = quad;
             poeHwnd = hWnd;
         }
 
@@ -54,9 +54,6 @@ namespace PoeTradeSearch
             double winX = (wrect.Left) / resDPI;
             double winY = (wrect.Top) / resDPI;
 
-            int btn_cnt = isQuad ? 24 : 12;
-            double squareW = ((isQuad ? 26.4 : 53) / (double)1080) * winH;
-
             double x = ((double)16 / (double)1080) * winH;
             double y = ((double)127 / (double)1080) * winH;
             double tabH = ((double)27 / (double)1080) * winH;
@@ -65,11 +62,6 @@ namespace PoeTradeSearch
             this.Left = x + winX + (borderSide / 2);
             this.Width = (wrect.Right - wrect.Left) / 2;
             this.Height = (wrect.Bottom - wrect.Top) - y;
-
-            double ax = btn_cnt * squareW + 5;
-            double ay = btn_cnt * squareW + 4;
-
-            Button[] btn2 = new Button[btn_cnt];
 
             Line verticalLine = new Line();
             verticalLine.Stroke = System.Windows.Media.Brushes.LightSteelBlue;
@@ -86,33 +78,6 @@ namespace PoeTradeSearch
             verticalLine2.IsHitTestVisible = false;
             grButtons.Children.Add(verticalLine2);
 
-
-            for (int i = 0; i < (btn_cnt); i++)
-            {
-                btn2[i] = new Button();
-                btn2[i].Content = (i + 1).ToString();
-                btn2[i].Tag = (double)i;
-                btn2[i].Width = btn2[i].Height = squareW;
-                btn2[i].HorizontalAlignment = HorizontalAlignment.Left;
-                btn2[i].VerticalAlignment = VerticalAlignment.Top;
-                btn2[i].Margin = new Thickness(ax, (double)i * squareW, 0, 0);
-                btn2[i].Click += (s1, e1) =>
-                {
-                    double idx = (double)(s1 as Button).Tag;
-                    verticalLine.X1 = 0;
-                    verticalLine.X2 = ax;
-                    verticalLine.Y1 = idx * squareW;
-                    verticalLine.Y2 = idx * squareW;
-                    verticalLine2.X1 = 0;
-                    verticalLine2.X2 = ax;
-                    verticalLine2.Y1 = idx * squareW + squareW;
-                    verticalLine2.Y2 = idx * squareW + squareW;
-                };
-                grButtons.Children.Add(btn2[i]);
-            }
-
-            Button[] btn = new Button[btn_cnt];
-
             Line horizontalAliLine = new Line();
             horizontalAliLine.Stroke = System.Windows.Media.Brushes.LightSteelBlue;
             horizontalAliLine.HorizontalAlignment = HorizontalAlignment.Left;
@@ -128,28 +93,68 @@ namespace PoeTradeSearch
             horizontalAliLine2.IsHitTestVisible = false;
             grButtons.Children.Add(horizontalAliLine2);
 
-            for (int i = 0; i < btn_cnt; i++)
+            int btn_cnt = 0;
+            foreach (double sw in new double[2] { 52.8, 26.4 })
             {
-                btn[i] = new Button();
-                btn[i].Content = (i + 1).ToString();
-                btn[i].Tag = (double)i;
-                btn[i].Width = btn[i].Height = squareW;
-                btn[i].HorizontalAlignment = HorizontalAlignment.Left;
-                btn[i].VerticalAlignment = VerticalAlignment.Top;
-                btn[i].Margin = new Thickness((double)i * squareW, ay, 0, 0);
-                btn[i].Click += (s1, e1) =>
+                btn_cnt += 12;
+                double squareW = sw / (double)1080 * winH;
+
+                double ax = btn_cnt * squareW + 5 + (btn_cnt == 12 ? squareW / 2 : 0);
+                double ay = btn_cnt * squareW + 4 + (btn_cnt == 12 ? squareW / 2 : 0);
+
+                Button[] btn2 = new Button[btn_cnt];
+
+                for (int i = 0; i < (btn_cnt); i++)
                 {
-                    double idx = (double)(s1 as Button).Tag;
-                    horizontalAliLine.X1 = idx * squareW;
-                    horizontalAliLine.X2 = idx * squareW;
-                    horizontalAliLine.Y1 = 0;
-                    horizontalAliLine.Y2 = ay;
-                    horizontalAliLine2.X1 = idx * squareW + squareW;
-                    horizontalAliLine2.X2 = idx * squareW + squareW;
-                    horizontalAliLine2.Y1 = 0;
-                    horizontalAliLine2.Y2 = ay;
-                };
-                grButtons.Children.Add(btn[i]);
+                    btn2[i] = new Button();
+                    btn2[i].Content = (i + 1).ToString();
+                    btn2[i].Tag = (double)i;
+                    btn2[i].Width = squareW * ((double)btn_cnt / 24);
+                    btn2[i].Height = squareW;
+                    btn2[i].HorizontalAlignment = HorizontalAlignment.Left;
+                    btn2[i].VerticalAlignment = VerticalAlignment.Top;
+                    btn2[i].Margin = new Thickness(ax, (double)i * squareW, 0, 0);
+                    btn2[i].Click += (s1, e1) =>
+                    {
+                        double idx = (double)(s1 as Button).Tag;
+                        verticalLine.X1 = 0;
+                        verticalLine.X2 = ax;
+                        verticalLine.Y1 = idx * squareW;
+                        verticalLine.Y2 = idx * squareW;
+                        verticalLine2.X1 = 0;
+                        verticalLine2.X2 = ax;
+                        verticalLine2.Y1 = idx * squareW + squareW;
+                        verticalLine2.Y2 = idx * squareW + squareW;
+                    };
+                    grButtons.Children.Add(btn2[i]);
+                }
+
+                Button[] btn = new Button[btn_cnt];
+
+                for (int i = 0; i < btn_cnt; i++)
+                {
+                    btn[i] = new Button();
+                    btn[i].Content = (i + 1).ToString();
+                    btn[i].Tag = (double)i;
+                    btn[i].Width = squareW;
+                    btn[i].Height = squareW * ((double)btn_cnt / 24);
+                    btn[i].HorizontalAlignment = HorizontalAlignment.Left;
+                    btn[i].VerticalAlignment = VerticalAlignment.Top;
+                    btn[i].Margin = new Thickness((double)i * squareW, ay, 0, 0);
+                    btn[i].Click += (s1, e1) =>
+                    {
+                        double idx = (double)(s1 as Button).Tag;
+                        horizontalAliLine.X1 = idx * squareW;
+                        horizontalAliLine.X2 = idx * squareW;
+                        horizontalAliLine.Y1 = 0;
+                        horizontalAliLine.Y2 = ay;
+                        horizontalAliLine2.X1 = idx * squareW + squareW;
+                        horizontalAliLine2.X2 = idx * squareW + squareW;
+                        horizontalAliLine2.Y1 = 0;
+                        horizontalAliLine2.Y2 = ay;
+                    };
+                    grButtons.Children.Add(btn[i]);
+                }
             }
 
             Window_Deactivated(null, new EventArgs());
