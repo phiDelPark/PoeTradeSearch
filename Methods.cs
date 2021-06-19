@@ -303,7 +303,7 @@ namespace PoeTradeSearch
                                     if (entries.Length > 1)
                                     {
                                         DataEntrie[] entries_tmp = Array.FindAll(entries, x => x.Part == cate_ids[0]);
-                                        if (entries_tmp.Length > 0)
+                                        if (entries_tmp.Length > 0 && (cate_ids.Length == 1 || cate_ids[1] != "quiver"))
                                         {
                                             local_exists = true;
                                             entries = entries_tmp;
