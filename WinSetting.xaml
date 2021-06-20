@@ -42,7 +42,8 @@
                         <CheckBox Name="ckAutoCheckUnique" Content="고유 장비는 옵션 자동 체크하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,224,0,0"/>
                         <CheckBox Name="ckAutoSelectPseudo" Content="가능하면 유사 옵션 사용하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,244,0,0"/>
                         <CheckBox Name="ckAutoCheckTotalres" Content="저항의 경우 합산 검색하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,264,0,0"/>
-                        <CheckBox Name="ckAutoCheckUpdates" Content="업데이트 자동 체크하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,296,0,0"/>
+                        <CheckBox Content="체크 우클릭으로 항상 체크 토글" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,284,0,0" IsChecked="True" IsEnabled="False" />
+                        <CheckBox Name="ckAutoCheckUpdates" Content="업데이트 자동 체크하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,316,0,0"/>
                         <Label Name="lbDbVersion" Content="0000000" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" HorizontalAlignment="Left" Margin="10,0,0,5" VerticalAlignment="Bottom"/>
                         <Button Name="btUpdateDB" Content="최신 데이터 업데이트" VerticalAlignment="Bottom" Height="38" Width="172" Click="btUpdateDB_Click" HorizontalAlignment="Right" Margin="0,0,10,10"/>
                     </Grid>
