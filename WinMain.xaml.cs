@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -422,7 +424,7 @@ namespace PoeTradeSearch
 
         private void cbPriceListCount_DropDownOpened(object sender, EventArgs e)
         {
-            // 탭 컨트로 뒤에 있어서 Window_Loaded 에서 작동안해 여기서 처리
+            // 탭 컨트롤 뒤에 있어서 Window_Loaded 에서 작동안해 여기서 처리
             if (cbPriceListCount.Tag == null)
             {
                 ControlTemplate ct = cbPriceListCount.Template;
@@ -431,6 +433,57 @@ namespace PoeTradeSearch
                     popup.Placement = PlacementMode.Top;
                 cbPriceListCount.Tag = 1;
             }
+        }
+
+        private void tbOpt0_2_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            int index = ((string)(sender as CheckBox).Tag).ToInt();
+
+            if ((FilterEntrie)(FindName("cbOpt" + index) as ComboBox).SelectedItem == null)
+                return;
+
+            (sender as CheckBox).IsChecked = (sender as CheckBox).BorderThickness.Left == 1;
+            (sender as CheckBox).BorderThickness = new Thickness((sender as CheckBox).IsChecked == true ? 2 : 1);
+
+            string stat = ((FilterEntrie)(FindName("cbOpt" + index) as ComboBox).SelectedItem).Stat;
+            string key = ((FilterEntrie)(FindName("cbOpt" + index) as ComboBox).SelectedItem).Key;
+
+            int iii = mCheckedData.Entries.FindIndex(x => x.Id == stat);
+            if (iii == -1 && (sender as CheckBox).IsChecked == true)
+            {
+                mCheckedData.Entries.Add(new ParserDictionary() { Key = key + "/", Id = stat });
+            }
+            else if (iii != -1)
+            {
+                string tmp = "";
+                string[] keys = mCheckedData.Entries[iii].Key.Split('/');
+                foreach (string k in keys)
+                {
+                    // 빈값 같은값 걸러냄
+                    if (k.IsEmpty() || k.Equals(key)) continue;
+                    tmp += k + "/";
+                }
+
+                if ((sender as CheckBox).IsChecked == true)
+                {
+                    mCheckedData.Entries[iii].Key = tmp + key + "/";
+                }
+                else
+                {
+                    if (tmp.IsEmpty())
+                        mCheckedData.Entries.RemoveAt(iii);
+                    else
+                        mCheckedData.Entries[iii].Key = tmp;
+                }
+            }
+
+            string path = (string)Application.Current.Properties["DataPath"];
+            using (StreamWriter writer = new StreamWriter(path + "Checked.txt", false, Encoding.UTF8))
+            {
+                writer.Write(Json.Serialize<CheckedData>(mCheckedData, true));
+                writer.Close();
+            }
+
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -449,11 +502,8 @@ namespace PoeTradeSearch
         {
             if (mAdministrator && mConfigData != null)
             {
-                if (mInstalledHotKey)
-                    RemoveRegisterHotKey();
-
-                if (mConfigData.Options.UseCtrlWheel)
-                    MouseHook.Stop();
+                if (mInstalledHotKey) RemoveRegisterHotKey();
+                if (mConfigData.Options.UseCtrlWheel) MouseHook.Stop();
             }
         }
 

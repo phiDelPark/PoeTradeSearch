@@ -212,8 +212,8 @@ namespace PoeTradeSearch
     [DataContract()]
     internal class CheckedData
     {
-        [DataMember(Name = "checked")]
-        internal ParserEntries Checked = null;
+        [DataMember(Name = "entries")]
+        internal List<ParserDictionary> Entries = null;
     }
 
     [DataContract]
@@ -643,12 +643,16 @@ namespace PoeTradeSearch
 
     public class FilterEntrie
     {
-        public string ID { get; set; }
+        public string Key { get; set; }
+        public string Stat { get; set; }
+        public string Type { get; set; }
         public string Name { get; set; }
 
-        public FilterEntrie(string id, string name)
+        public FilterEntrie(string key, string type, string stat, string name)
         {
-            this.ID = id;
+            this.Key = key;
+            this.Type = type;
+            this.Stat = stat;
             this.Name = name;
         }
     }

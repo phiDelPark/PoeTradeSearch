@@ -144,6 +144,9 @@ namespace PoeTradeSearch
                     string json = reader.ReadToEnd();
                     mCheckedData = Json.Deserialize<CheckedData>(json);
                 }
+
+                if (mCheckedData.Entries == null)
+                    mCheckedData.Entries = new List<ParserDictionary>();
             }
             catch (Exception ex)
             {

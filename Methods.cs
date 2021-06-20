@@ -97,6 +97,7 @@ namespace PoeTradeSearch
                 ((TextBox)FindName("tbOpt" + i + "_0")).Foreground = ((TextBox)FindName("tbOpt" + i)).Foreground;
                 ((CheckBox)FindName("tbOpt" + i + "_2")).IsEnabled = true;
                 ((CheckBox)FindName("tbOpt" + i + "_2")).IsChecked = false;
+                ((CheckBox)FindName("tbOpt" + i + "_2")).BorderThickness = new Thickness(1);
                 ((CheckBox)FindName("tbOpt" + i + "_3")).IsChecked = false;
                 ((CheckBox)FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
                 SetFilterObjectColor(i, SystemColors.ActiveBorderBrush);
@@ -363,14 +364,13 @@ namespace PoeTradeSearch
 
                                             if (isBreak)
                                             {
-                                                ((ComboBox)FindName("cbOpt" + k)).Items.Add(new FilterEntrie(entrie.Id, data_result.Label));
+                                                string[] id_split = entrie.Id.Split('.');
+                                                (FindName("cbOpt" + k) as ComboBox).Items.Add(new FilterEntrie(cate_ids[0], id_split[0], id_split[1], data_result.Label));
 
                                                 if (filter == null)
                                                 {
-                                                    string[] id_split = entrie.Id.Split('.');
-                                                    resistance = id_split.Length == 2 && RS.lResistance.ContainsKey(id_split[1]);
-
                                                     filter = entrie;
+                                                    resistance = id_split.Length == 2 && RS.lResistance.ContainsKey(id_split[1]);
                                                     min = isMin && matches1.Count > idxMin ? ((Match)matches1[idxMin]).Value.ToDouble(99999) : 99999;
                                                     max = isMax && idxMin < idxMax && matches1.Count > idxMax ? ((Match)matches1[idxMax]).Value.ToDouble(99999) : 99999;
                                                 }
@@ -383,44 +383,42 @@ namespace PoeTradeSearch
 
                                 if (filter != null)
                                 {
-                                    ((ComboBox)FindName("cbOpt" + k)).SelectedValue = RS.lFilterType["crafted"];
-                                    int selidx = ((ComboBox)FindName("cbOpt" + k)).SelectedIndex;
+                                    string[] split_id = filter.Id.Split('.');
+
+                                    (FindName("cbOpt" + k) as ComboBox).SelectedValue = RS.lFilterType["crafted"];
+                                    int selidx = (FindName("cbOpt" + k) as ComboBox).SelectedIndex;
 
                                     if (crafted && selidx > -1)
                                     {
                                         SetFilterObjectColor(k, System.Windows.Media.Brushes.Blue);
-                                        ((ComboBox)FindName("cbOpt" + k)).SelectedIndex = selidx;
+                                        (FindName("cbOpt" + k) as ComboBox).SelectedIndex = selidx;
                                     }
                                     else
                                     {
-                                        ((ComboBox)FindName("cbOpt" + k)).SelectedValue = RS.lFilterType["pseudo"];
-                                        selidx = ((ComboBox)FindName("cbOpt" + k)).SelectedIndex;
+                                        (FindName("cbOpt" + k) as ComboBox).SelectedValue = RS.lFilterType["pseudo"];
+                                        selidx = (FindName("cbOpt" + k) as ComboBox).SelectedIndex;
 
-                                        if (selidx == -1 && ((ComboBox)FindName("cbOpt" + k)).Items.Count > 0)
+                                        if (selidx == -1 && (FindName("cbOpt" + k) as ComboBox).Items.Count > 0)
                                         {
-                                            FilterEntrie filterEntrie = (FilterEntrie)((ComboBox)FindName("cbOpt" + k)).Items[0];
-                                            string[] id_split = filterEntrie.ID.Split('.');
-                                            if (id_split.Length == 2 && RS.lPseudo.ContainsKey(id_split[1]))
-                                            {
-                                                ((ComboBox)FindName("cbOpt" + k)).Items.Add(new FilterEntrie("pseudo." + RS.lPseudo[id_split[1]], RS.lFilterType["pseudo"]));
-                                            }
+                                            if (split_id.Length == 2 && RS.lPseudo.ContainsKey(split_id[1]))
+                                                (FindName("cbOpt" + k) as ComboBox).Items.Add(new FilterEntrie(cate_ids[0], "pseudo", split_id[1], RS.lFilterType["pseudo"]));
                                         }
 
-                                        selidx = ((ComboBox)FindName("cbOpt" + k)).Items.Count == 1 ? 0 : -1;
+                                        selidx = (FindName("cbOpt" + k) as ComboBox).Items.Count == 1 ? 0 : -1;
 
                                         // 인첸트, 제작은 다른 곳에서 다시 체크함
                                         string[] tmps = { !local_exists && mConfigData.Options.AutoSelectPseudo ? "pseudo" : "explicit", "explicit", "fractured" };
                                         foreach (string tmp in tmps)
                                         {
-                                            ((ComboBox)FindName("cbOpt" + k)).SelectedValue = RS.lFilterType[tmp];
-                                            if (((ComboBox)FindName("cbOpt" + k)).SelectedIndex > -1)
+                                            (FindName("cbOpt" + k) as ComboBox).SelectedValue = RS.lFilterType[tmp];
+                                            if ((FindName("cbOpt" + k) as ComboBox).SelectedIndex > -1)
                                             {
-                                                selidx = ((ComboBox)FindName("cbOpt" + k)).SelectedIndex;
+                                                selidx = (FindName("cbOpt" + k) as ComboBox).SelectedIndex;
                                                 break;
                                             }
                                         }
 
-                                        ((ComboBox)FindName("cbOpt" + k)).SelectedIndex = selidx;
+                                        (FindName("cbOpt" + k) as ComboBox).SelectedIndex = selidx;
                                     }
 
                                     if (i != baki)
@@ -429,12 +427,10 @@ namespace PoeTradeSearch
                                         notImpCnt = 0;
                                     }
 
-                                    ((TextBox)FindName("tbOpt" + k)).Text = filter.Text;
-                                    ((CheckBox)FindName("tbOpt" + k + "_3")).Visibility = resistance ? Visibility.Visible : Visibility.Hidden;
-                                    if (((CheckBox)FindName("tbOpt" + k + "_3")).Visibility == Visibility.Visible && mConfigData.Options.AutoCheckTotalres)
-                                        ((CheckBox)FindName("tbOpt" + k + "_3")).IsChecked = true;
-
-                                    string[] split_id = filter.Id.Split('.');
+                                    (FindName("tbOpt" + k) as TextBox).Text = filter.Text;
+                                    (FindName("tbOpt" + k + "_3") as CheckBox).Visibility = resistance ? Visibility.Visible : Visibility.Hidden;
+                                    if ((FindName("tbOpt" + k + "_3") as CheckBox).Visibility == Visibility.Visible && mConfigData.Options.AutoCheckTotalres)
+                                        (FindName("tbOpt" + k + "_3") as CheckBox).IsChecked = true;
 
                                     if (min != 99999 && max != 99999)
                                     {
@@ -467,16 +463,16 @@ namespace PoeTradeSearch
 
                                     if (cluster_jewel != "")
                                     {
-                                        ((TextBox)FindName("tbOpt" + k + "_0")).IsEnabled = false;
-                                        ((TextBox)FindName("tbOpt" + k + "_1")).IsEnabled = false;
-                                        ((TextBox)FindName("tbOpt" + k + "_0")).Background = SystemColors.WindowBrush;
-                                        ((TextBox)FindName("tbOpt" + k + "_0")).Foreground = SystemColors.WindowBrush;
-                                        ((TextBox)FindName("tbOpt" + k)).Text = cluster_jewel;
-                                        ((TextBox)FindName("tbOpt" + k)).Tag = "CLUSTER";
+                                        (FindName("tbOpt" + k + "_0") as TextBox).IsEnabled = false;
+                                        (FindName("tbOpt" + k + "_1") as TextBox).IsEnabled = false;
+                                        (FindName("tbOpt" + k + "_0") as TextBox).Background = SystemColors.WindowBrush;
+                                        (FindName("tbOpt" + k + "_0") as TextBox).Foreground = SystemColors.WindowBrush;
+                                        (FindName("tbOpt" + k) as TextBox).Text = cluster_jewel;
+                                        (FindName("tbOpt" + k) as TextBox).Tag = "CLUSTER";
                                     }
 
-                                    ((TextBox)FindName("tbOpt" + k + "_0")).Text = min == 99999 ? "" : min.ToString();
-                                    ((TextBox)FindName("tbOpt" + k + "_1")).Text = max == 99999 ? "" : max.ToString();
+                                    (FindName("tbOpt" + k + "_0") as TextBox).Text = min == 99999 ? "" : min.ToString();
+                                    (FindName("tbOpt" + k + "_1") as TextBox).Text = max == 99999 ? "" : max.ToString();
 
                                     attackSpeedIncr += filter.Text == PS.AttackSpeedIncr.Text[z] && min.WithIn(1, 999) ? min : 0;
                                     PhysicalDamageIncr += filter.Text == PS.PhysicalDamageIncr.Text[z] && min.WithIn(1, 9999) ? min : 0;
@@ -495,7 +491,7 @@ namespace PoeTradeSearch
                     //if (is_map || is_currency) is_map_fragment = false;
                     */
                     bool is_map = cate_ids[0] == "map"; // || lItemOption[PS.MapTier.Text[z]] != "";
-                    bool is_map_fragment = cate_ids.Length > 1 && cate_ids.Join(".") == "map.fragment";
+                    bool is_map_fragment = cate_ids.Length > 1 && cate_ids.Join('.') == "map.fragment";
                     bool is_map_ultimatum = lItemOption[PS.MapUltimatum.Text[z]] != "";
                     bool is_prophecy = lItemOption[PS.ProphecyItem.Text[z]] == "_TRUE_";
                     bool is_currency = rarity_id == "currency";
@@ -588,7 +584,7 @@ namespace PoeTradeSearch
                                 for (int i = 0; i < tmp.Length - 1; i++)
                                 {
                                     tmp[i] = "";
-                                    string tmp2 = tmp.Join(" ").Trim();
+                                    string tmp2 = tmp.Join(' ').Trim();
 
                                     DataEntrie entries = Array.Find(data.Entries, x => x.Type.Equals(tmp2));
                                     if (entries != null)
@@ -640,14 +636,17 @@ namespace PoeTradeSearch
                                     SetFilterObjectColor(i, System.Windows.Media.Brushes.DarkRed);
                                     tmpComboBox.SelectedValue = RS.lFilterType["implicit"];
                                 }
-                                tmpCheckBox.IsChecked = ((string)((TextBox)FindName("tbOpt" + i)).Tag ?? "") == "CLUSTER";
+                                tmpCheckBox.IsChecked = ((string)(FindName("tbOpt" + i) as TextBox).Tag ?? "") == "CLUSTER";
                                 itemfilters[i].disabled = true;
                             }
                             else if (cate_ids[0] != "" && tmpComboBox.SelectedIndex > -1)
                             {
-                                if ((string)tmpComboBox.SelectedValue != RS.lFilterType["crafted"] && ((mConfigData.Options.AutoCheckUnique && rarity_id == "unique")
-                                    || (Array.Find(mCheckedData.Checked.Entries, x => x.Text[z] == ifilter.text && x.Id.IndexOf(cate_ids[0] + "/") > -1) != null)))
+                                if ((string)tmpComboBox.SelectedValue != RS.lFilterType["crafted"] && (
+                                        (mConfigData.Options.AutoCheckUnique && rarity_id == "unique")
+                                        || (mCheckedData.Entries?.Find(x => x.Id == ifilter.stat && x.Key.IndexOf(cate_ids[0] + "/") > -1) != null)
+                                    ))
                                 {
+                                    if(!(mConfigData.Options.AutoCheckUnique && rarity_id == "unique")) tmpCheckBox.BorderThickness = new Thickness(2);
                                     tmpCheckBox.IsChecked = true;
                                     itemfilters[i].disabled = false;
                                 }
@@ -662,7 +661,7 @@ namespace PoeTradeSearch
                         }
 
                         // 장기는 중복 옵션 제거
-                        if (cate_ids.Join(".") == "monster.sample")
+                        if (cate_ids.Join('.') == "monster.sample")
                         {
                             Deduplicationfilter(itemfilters);
                         }
@@ -690,7 +689,7 @@ namespace PoeTradeSearch
                     string[] bys = mConfigData.Options.AutoSelectByType.ToLower().Split(',');
                     if (bys.Length > 0)
                     {
-                        ckByCategory.IsChecked = Array.IndexOf(bys, cate_ids.Join(".")) > -1;
+                        ckByCategory.IsChecked = Array.IndexOf(bys, cate_ids.Join('.')) > -1;
                     }
 
                     cbRarity.SelectedValue = item_rarity;
@@ -902,7 +901,7 @@ namespace PoeTradeSearch
             itemOption.PriceMin = tbPriceFilterMin.Text == "" ? 0 : tbPriceFilterMin.Text.ToDouble(99999);
 
             bool is_ultimatumi = (cbRarity.SelectedValue ?? "").Equals("결전");
-            bool is_cluster = (cbRarity.SelectedValue ?? "").Equals("군 주얼");                
+            bool is_cluster = (cbRarity.SelectedValue ?? "").Equals("군 주얼");
             itemOption.Flags = is_ultimatumi ? "ULTIMATUM|" + cbAltQuality.SelectedValue : (is_cluster ? "CLUSTER" : "");
 
             itemOption.itemfilters.Clear();
@@ -970,11 +969,15 @@ namespace PoeTradeSearch
                     }
                     else
                     {
-                        string[] Split_id = ((FilterEntrie)comboBox.SelectedItem).ID.Split('.');
-                        itemfilter.type = Split_id[0];
-                        itemfilter.stat = Split_id[1];
+                        itemfilter.stat = ((FilterEntrie)comboBox.SelectedItem).Stat;
+                        itemfilter.type = ((FilterEntrie)comboBox.SelectedItem).Type;
 
-                        if(itemfilter.flag == "CLUSTER")
+                        if (itemfilter.type == "pseudo" && RS.lPseudo.ContainsKey(itemfilter.stat))
+                        {
+                            itemfilter.stat = RS.lPseudo[itemfilter.stat];
+                        }
+
+                        if (itemfilter.flag == "CLUSTER")
                         {
                             itemfilter.option = itemfilter.min;
                             itemfilter.min = 99999;
@@ -1029,7 +1032,7 @@ namespace PoeTradeSearch
                 JQ.Stats = new q_Stats[0];
                 JQ.Status.Option = "online";
 
-                JQ.Filters.Type.Filters.Category.Option = Inherit == "jewel" ? Inherit : itemOptions.Inherits.Join(".");
+                JQ.Filters.Type.Filters.Category.Option = Inherit == "jewel" ? Inherit : itemOptions.Inherits.Join('.');
                 JQ.Filters.Type.Filters.Rarity.Option = itemOptions.RarityAt > 0 ? mParserData.Rarity.Entries[itemOptions.RarityAt - 1].Id : "any";
                 //JQ.Filters.Type.Filters.Rarity.Option = itemOptions.RarityAt > 0 ? RS.lRarity.ElementAt(itemOptions.RarityAt - 1).Key.ToLower() : "any";
 
@@ -1266,7 +1269,7 @@ namespace PoeTradeSearch
                                 }
 
                                 string json_result = "";
-                                string url = RS.FetchApi[langIndex] + tmp.Join(",") + "?query=" + resultData.ID;
+                                string url = RS.FetchApi[langIndex] + tmp.Join(',') + "?query=" + resultData.ID;
                                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(url));
                                 request.CookieContainer = new CookieContainer();
                                 request.UserAgent = RS.UserAgent;
@@ -1315,7 +1318,7 @@ namespace PoeTradeSearch
                                                     liPrice.Items.Add((
                                                         String.Format(
                                                             "{0} {1} [{2}]",
-                                                            GetLapsedTime(indexed).PadRight(10, '\u2000'), (amount + " " + keyName).PadRight(12, '\u2000'), account)
+                                                            GetLapsedTime(indexed).PadRight(10, '\u2000'), (amount + " " + keyName).PadRight(14, '\u2000'), account)
                                                         )
                                                     );
                                                 }

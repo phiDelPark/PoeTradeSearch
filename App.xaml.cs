@@ -166,7 +166,7 @@ namespace PoeTradeSearch
                         Thread.Sleep(1000);
                         if (i == 9)
                         {
-                            MessageBox.Show("애플리케이션이 종료되지 않았습니다.", "실행 오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                            MessageBox.Show("이 프로그램이 종료되지 않았습니다.", "실행 오류", MessageBoxButton.OK, MessageBoxImage.Error);
                             Environment.Exit(-1);
                             return;
                         }
@@ -176,7 +176,7 @@ namespace PoeTradeSearch
 
             if (CheckMutex())
             {
-                MessageBox.Show("애플리케이션이 이미 시작되었습니다.", "중복 실행", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("이 프로그램은 이미 시작되었습니다.", "중복 실행", MessageBoxButton.OK, MessageBoxImage.Information);
                 Environment.Exit(-1);
                 return;
             }
@@ -219,7 +219,7 @@ namespace PoeTradeSearch
                 TrayCM.MenuItems.Add(new System.Windows.Forms.MenuItem() { Text = "설정", Tag = 1 });
                 TrayCM.MenuItems.Add(new System.Windows.Forms.MenuItem() { Text = "-" });
                 TrayCM.MenuItems.Add(new System.Windows.Forms.MenuItem() { Text = "재시작", Tag = 2 });
-                TrayCM.MenuItems.Add(new System.Windows.Forms.MenuItem() { Text = "업데이트", Name= "this_update", Tag = 3 });
+                TrayCM.MenuItems.Add(new System.Windows.Forms.MenuItem() { Text = "업데이트", Name = "this_update", Tag = 3 });
                 TrayCM.MenuItems.Add(new System.Windows.Forms.MenuItem() { Text = "-" });
                 TrayCM.MenuItems.Add(new System.Windows.Forms.MenuItem() { Text = "종료", Tag = 0 });
                 foreach (System.Windows.Forms.MenuItem item in TrayCM.MenuItems)
