@@ -404,6 +404,8 @@ namespace PoeTradeSearch
         {
             string name = (cbName.Items[1] as ItemNames).Name;
             string type = (cbName.Items[1] as ItemNames).Type;
+            if (cbRarity.SelectedIndex > 0 && mParserData.Rarity.Entries[cbRarity.SelectedIndex - 1].Id == "unique") type = "";
+
             try
             {
                 Process.Start(
@@ -412,7 +414,7 @@ namespace PoeTradeSearch
                         Array.Find(mParserData.Rarity.Entries,
                                 x => (x.Text[0] == (string)cbRarity.SelectedValue || x.Text[1] == (string)cbRarity.SelectedValue)
                             ) != null
-                        && name != "" ? name : type
+                        && type != "" ? type : name
                     ).Replace(' ', '_')
                 );
             }
