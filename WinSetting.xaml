@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:PoeTradeSearch"
         mc:Ignorable="d"
         Title="설정" Height="470" Width="482" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Topmost="True">
+
     <Grid>
         <TabControl TabStripPlacement="Left" BorderThickness="0">
             <TabItem Header="기본" HorizontalAlignment="Left" Height="50" Margin="5,5,-5,-5" VerticalAlignment="Top" Width="80">
@@ -42,8 +43,7 @@
                         <CheckBox Name="ckAutoCheckUnique" Content="고유 장비는 옵션 자동 체크하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,224,0,0"/>
                         <CheckBox Name="ckAutoSelectPseudo" Content="가능하면 유사 옵션 사용하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,244,0,0"/>
                         <CheckBox Name="ckAutoCheckTotalres" Content="저항의 경우 합산 검색하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,264,0,0"/>
-                        <CheckBox Content="체크 우클릭으로 항상 체크 토글" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,284,0,0" IsChecked="True" IsEnabled="False" />
-                        <CheckBox Name="ckAutoCheckUpdates" Content="업데이트 자동 체크하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,316,0,0"/>
+                        <CheckBox Name="ckAutoCheckUpdates" Content="업데이트 자동 체크하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,306,0,0"/>
                         <Label Name="lbDbVersion" Content="0000000" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" HorizontalAlignment="Left" Margin="10,0,0,5" VerticalAlignment="Bottom"/>
                         <Button Name="btUpdateDB" Content="최신 데이터 업데이트" VerticalAlignment="Bottom" Height="38" Width="172" Click="btUpdateDB_Click" HorizontalAlignment="Right" Margin="0,0,10,10"/>
                     </Grid>
@@ -79,6 +79,43 @@
                         <TextBox Name="HotkeyValue11" Margin="132,344,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="22"/>
                         <local:HotkeyBox x:Name="Hotkey12" HorizontalAlignment="Left" Margin="15,371,0,0" VerticalAlignment="Top" Height="22" Width="102"/>
                         <TextBox Name="HotkeyValue12" Margin="132,371,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="22"/>
+                    </Grid>
+                </Border>
+            </TabItem>
+            <TabItem Header="자동 체크" HorizontalAlignment="Left" Height="50" Margin="5,5,-5,-5" VerticalAlignment="Top" Width="80">
+                <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Margin="5">
+                    <Grid>
+                        <Label Content="필터의 체크 박스를 우클릭하면 자동 등록 됩니다." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,10,0,0" IsEnabled="False"/>
+                        <Label Content="항목을 더블 클릭하면 최소값, 최대값 입력이 가능합니다." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,30,0,0" IsEnabled="False"/>
+                        <Grid Margin="10,61,10,10">
+                            <Grid DockPanel.Dock="Top" Height="28" VerticalAlignment="Top">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition Width="40"></ColumnDefinition>
+                                    <ColumnDefinition Width="40"></ColumnDefinition>
+                                    <ColumnDefinition Width="20"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0">옵션</Label>
+                                <Label Grid.Column="1">최소</Label>
+                                <Label Grid.Column="2">최대</Label>
+                            </Grid>
+                            <ListBox Name="lbChecked" ItemsSource="{Binding}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,28,0,0">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition></ColumnDefinition>
+                                                <ColumnDefinition Width="40"></ColumnDefinition>
+                                                <ColumnDefinition Width="40"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding Path=Id}"></TextBlock>
+                                            <TextBox Text="{Binding Path=Min}" Grid.Column="1" Margin="0,0,1,0"></TextBox>
+                                            <TextBox Text="{Binding Path=Max}" Grid.Column="2"></TextBox>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
                     </Grid>
                 </Border>
             </TabItem>

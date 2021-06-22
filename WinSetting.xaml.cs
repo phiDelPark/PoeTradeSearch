@@ -80,6 +80,8 @@ namespace PoeTradeSearch
                 ((HotkeyBox)FindName("Hotkey" + (i + 1))).Hotkey = hotkey;
                 ((TextBox)FindName("HotkeyValue" + (i + 1))).Text = shortcut.Value;
             }
+
+            lbChecked.ItemsSource = winMain.mCheckedData.Entries;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

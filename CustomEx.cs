@@ -13,9 +13,9 @@ namespace PoeTradeSearch
             return orNull ? string.IsNullOrEmpty(owner) : owner == "";
         }
 
-        public static bool WithIn(this string owner, string[] value)
+        public static bool WithIn(this string owner, params string[] args)
         {
-            return owner != null && Array.Exists(value, x => x.Equals(owner));
+            return owner != null && Array.Exists(args, x => x.Equals(owner));
         }
 
         public static bool WithIn(this string owner, double minimum, double maximum)

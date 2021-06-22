@@ -453,7 +453,7 @@ namespace PoeTradeSearch
             int iii = mCheckedData.Entries.FindIndex(x => x.Id == stat);
             if (iii == -1 && (sender as CheckBox).IsChecked == true)
             {
-                mCheckedData.Entries.Add(new ParserDictionary() { Key = key + "/", Id = stat });
+                mCheckedData.Entries.Add(new CheckedDictionary(stat, key + "/", null, null));
             }
             else if (iii != -1)
             {

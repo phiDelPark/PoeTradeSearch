@@ -248,7 +248,7 @@ namespace PoeTradeSearch
                         {
                             if (asOpt[j].Trim().IsEmpty()) continue;
 
-                            string[] asLocal = asOpt[j].Regex(@" \([\w\s]+\)", "").Split(':').Select(x => x.Trim()).ToArray();
+                            string[] asLocal = asOpt[j].Replace(@" \([\w\s]+\)", "").Split(':').Select(x => x.Trim()).ToArray();
                             //asLocal = (from x in asLocal select x.Trim()).ToArray(); 
 
                             if (lItemOption.ContainsKey(asLocal[0]))
@@ -400,23 +400,23 @@ namespace PoeTradeSearch
                                     {
                                         (FindName("cbOpt" + k) as ComboBox).SelectedIndex = 0;
                                     }
-                                    else 
+                                    else
                                     {
                                         (FindName("cbOpt" + k) as ComboBox).SelectedValue = RS.lFilterType.ContainsKey(ft_type) ? RS.lFilterType[ft_type] : "_none_";
                                         if ((FindName("cbOpt" + k) as ComboBox).SelectedValue == null)
                                         {
-                                            foreach (string type in new string[] { 
-                                                !local_exists && mConfigData.Options.AutoSelectPseudo ? "pseudo" : "explicit", "explicit", "fractured" 
+                                            foreach (string type in new string[] {
+                                                !local_exists && mConfigData.Options.AutoSelectPseudo ? "pseudo" : "explicit", "explicit", "fractured"
                                             })
                                             {
                                                 (FindName("cbOpt" + k) as ComboBox).SelectedValue = RS.lFilterType[type];
-                                                if ((FindName("cbOpt" + k) as ComboBox).SelectedValue != null) break; 
+                                                if ((FindName("cbOpt" + k) as ComboBox).SelectedValue != null) break;
                                             }
                                         }
                                     }
 
                                     // 평균
-                                    if (min != 99999 && max != 99999 && filter.Text.IndexOf("#" + ( z == 0 ? "~" : " to ") + "#") > -1)
+                                    if (min != 99999 && max != 99999 && filter.Text.IndexOf("#" + (z == 0 ? "~" : " to ") + "#") > -1)
                                     {
                                         min += max;
                                         min = Math.Truncate(min / 2 * 10) / 10;
@@ -476,7 +476,7 @@ namespace PoeTradeSearch
                                     }
                                     else
                                     {
-                                        if (!(FindName("cbOpt" + k) as ComboBox).SelectedValue.Equals(RS.lFilterType["crafted"]) 
+                                        if (!(FindName("cbOpt" + k) as ComboBox).SelectedValue.Equals(RS.lFilterType["crafted"])
                                             && (
                                                 (mConfigData.Options.AutoCheckUnique && rarity_id == "unique")
                                                 || (mCheckedData.Entries?.Find(x => x.Id.Equals(split_id[1]) && x.Key.IndexOf(cate_ids[0] + "/") > -1) != null)
@@ -620,7 +620,7 @@ namespace PoeTradeSearch
                     }
 
                     string item_quality = Regex.Replace(lItemOption[PS.Quality.Text[z]], "[^0-9]", "");
-                    bool is_gear = cate_ids.Length > 1 && cate_ids[0].WithIn(new string[] { "weapon", "armour", "accessory" });
+                    bool is_gear = cate_ids.Length > 1 && cate_ids[0].WithIn("weapon", "armour", "accessory");
 
                     if (is_detail || is_map_fragment)
                     {
@@ -884,7 +884,7 @@ namespace PoeTradeSearch
 
             itemOption.itemfilters.Clear();
 
-            if (!is_ultimatumi && itemOption.AltQuality > 0 && itemOption.Inherits[0].WithIn(new string[] { "jewel", "map" }))
+            if (!is_ultimatumi && itemOption.AltQuality > 0 && itemOption.Inherits[0].WithIn("jewel", "map"))
             {
                 Itemfilter itemfilter = new Itemfilter();
                 itemfilter.min = itemfilter.max = 99999;

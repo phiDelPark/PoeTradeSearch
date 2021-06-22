@@ -1,124 +1,124 @@
 ﻿{
     "entries": [
         {
-            "hidden": false,
             "id": "stat_3299347043",
             "key": "accessory\/armour\/jewel\/",
-            "text": null
+            "max": 3,
+            "min": 5
         },
         {
-            "hidden": false,
             "id": "stat_4220027924",
             "key": "accessory\/armour\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "stat_1671376347",
             "key": "accessory\/armour\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "stat_1546046884",
             "key": "accessory\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "stat_983749596",
             "key": "jewel\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "stat_2901986750",
             "key": "accessory\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "stat_3372524247",
             "key": "armour\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "pseudo_global_critical_strike_multiplier",
             "key": "jewel\/accessory\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "stat_4036575250",
             "key": "jewel\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "stat_2669029667",
             "key": "jewel\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "stat_1265282021",
             "key": "accessory\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "stat_1002362373",
             "key": "accessory\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "stat_2923486259",
             "key": "accessory\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "stat_250961191",
             "key": "accessory\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
-            "id": "pseudo_increased_movement_speed",
-            "key": "armour\/",
-            "text": null
-        },
-        {
-            "hidden": false,
             "id": "stat_2003753577",
             "key": "accessory\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "pseudo_increased_spell_damage",
             "key": "weapon\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "stat_2843100721",
             "key": "weapon\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "stat_1509134228",
             "key": "weapon\/",
-            "text": null
+            "max": null,
+            "min": null
         },
         {
-            "hidden": false,
             "id": "stat_3086156145",
             "key": "jewel\/",
-            "text": null
+            "max": null,
+            "min": null
+        },
+        {
+            "id": "pseudo_increased_movement_speed",
+            "key": "armour\/",
+            "max": null,
+            "min": null
         }
     ]
 }

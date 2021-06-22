@@ -217,7 +217,31 @@ namespace PoeTradeSearch
     internal class CheckedData
     {
         [DataMember(Name = "entries")]
-        internal List<ParserDictionary> Entries = null;
+        internal List<CheckedDictionary> Entries = null;
+    }
+
+    [DataContract]
+    public class CheckedDictionary
+    {
+        [DataMember(Name = "id")]
+        public string Id { get; set; }
+
+        [DataMember(Name = "key")]
+        public string Key { get; set; }
+
+        [DataMember(Name = "min")]
+        public object Min { get; set; }
+
+        [DataMember(Name = "max")]
+        public object Max { get; set; }
+
+        public CheckedDictionary(string id, string key, object min, object max)
+        {
+            this.Id = id;
+            this.Key = key;
+            this.Min = min;
+            this.Max = max;
+        }
     }
 
     [DataContract]

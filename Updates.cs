@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -87,26 +86,11 @@ namespace PoeTradeSearch
                                 int index = Array.FindIndex(rootClass.Result[i].Entries, x => x.Id.Substring(x.Id.IndexOf(".") + 1) == itm.Id);
                                 if (index > -1)
                                 {
-                                    rootClass.Result[i].Entries[index].Text = rootClass.Result[i].Entries[index].Text.Replace("("+local+")", "").Trim();
+                                    rootClass.Result[i].Entries[index].Text = rootClass.Result[i].Entries[index].Text.Replace("(" + local + ")", "").Trim();
                                     rootClass.Result[i].Entries[index].Part = itm.Key;
                                 }
                             }
                         }
-
-                        /*
-                        foreach (KeyValuePair<string, bool> itm in RS.lDisable)
-                        {
-                            for (int i = 0; i < rootClass.Result.Length; i++)
-                            {
-                                int index = Array.FindIndex(rootClass.Result[i].Entries, x => x.Id.Substring(x.Id.IndexOf(".") + 1) == itm.Key);
-                                if (index > -1)
-                                {
-                                    rootClass.Result[i].Entries[index].Text = "__DISABLE__";
-                                    rootClass.Result[i].Entries[index].Part = "Disable";
-                                }
-                            }
-                        }
-                        */
 
                         rootClass.Upddate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
                         using (StreamWriter writer = new StreamWriter(path + (isKR ? "FiltersKO.txt" : "FiltersEN.txt"), false, Encoding.UTF8))

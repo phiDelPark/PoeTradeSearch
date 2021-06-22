@@ -68,8 +68,8 @@ namespace PoeTradeSearch
     public partial class WinMain : Window
     {
         internal ConfigData mConfigData;
+        internal CheckedData mCheckedData;
         private ParserData mParserData;
-        private CheckedData mCheckedData;
 
         internal PoeData[] mFilterData = new PoeData[2];
         private PoeData[] mItemsData = new PoeData[2];
@@ -118,6 +118,7 @@ namespace PoeTradeSearch
                     if (!BasicDataUpdate(path, "Checked.txt"))
                         throw new UnauthorizedAccessException("checked 파일 생성 실패");
                 }
+
                 fs = new FileStream(path + "Checked.txt", FileMode.Open);
                 using (StreamReader reader = new StreamReader(fs))
                 {
@@ -127,7 +128,7 @@ namespace PoeTradeSearch
                 }
 
                 if (mCheckedData.Entries == null)
-                    mCheckedData.Entries = new List<ParserDictionary>();
+                    mCheckedData.Entries = new List<CheckedDictionary>();
             }
             catch (Exception ex)
             {
