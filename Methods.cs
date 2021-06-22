@@ -416,7 +416,7 @@ namespace PoeTradeSearch
                                     }
 
                                     // 평균
-                                    if (min != 99999 && max != 99999 && filter.Text.IndexOf("#~#") > -1)
+                                    if (min != 99999 && max != 99999 && filter.Text.IndexOf("#" + ( z == 0 ? "~" : " to ") + "#") > -1)
                                     {
                                         min += max;
                                         min = Math.Truncate(min / 2 * 10) / 10;
