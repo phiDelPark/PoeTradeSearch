@@ -183,6 +183,17 @@
 	"attack_speed_incr":{"text":[ "공격 속도 #% 증가", "#% increased Attack Speed" ]},
 	"physical_damage_incr":{"text":[ "물리 피해 #% 증가", "#% increased Physical Damage" ]},
 
+	"position":{
+		"entries":[
+			{ "id":"stat_3853018505", "key":"reverse" }, { "id":"stat_969865219", "key":"reverse" },  { "id":"stat_4176970656", "key":"reverse" },
+			{ "id":"stat_3691641145", "key":"reverse" }, { "id":"stat_3557561376", "key":"reverse" }, { "id":"stat_705686721", "key":"reverse" },
+			{ "id":"stat_2156764291", "key":"reverse" }, { "id":"stat_3743301799", "key":"reverse" },  { "id":"stat_1625103793", "key":"reverse" },
+			{ "id":"stat_308618188", "key":"reverse" },  { "id":"stat_2590715472", "key":"reverse" }, { "id":"stat_1964333391", "key":"reverse" }, 
+			{ "id":"stat_2440172920", "key":"reverse" }, { "id":"stat_3522931817", "key":"reverse" }, { "id":"stat_1443108510", "key":"reverse" },
+			{ "id":"stat_2477636501", "key":"reverse" }, { "id":"stat_3086156145", "key":"reverse" }
+		]
+	},
+
 	"category":{
 		"text":[ "아이템 종류", "Item Class" ],
 		"entries":[

@@ -432,23 +432,29 @@ namespace PoeTradeSearch
                                     if ((FindName("tbOpt" + k + "_3") as CheckBox).Visibility == Visibility.Visible && mConfigData.Options.AutoCheckTotalres)
                                         (FindName("tbOpt" + k + "_3") as CheckBox).IsChecked = true;
 
-                                    if (min != 99999 && max != 99999)
+                                    // 평균
+                                    if (min != 99999 && max != 99999 && filter.Text.IndexOf("#~#") > -1)
                                     {
-                                        if (filter.Text.IndexOf("#~#") > -1)
-                                        {
-                                            min += max;
-                                            min = Math.Truncate(min / 2 * 10) / 10;
-                                            max = 99999;
-                                        }
+                                        min += max;
+                                        min = Math.Truncate(min / 2 * 10) / 10;
+                                        max = 99999;
                                     }
-                                    else if (min != 99999 || max != 99999)
+
+                                    // 음수면 위치 바꿈
+                                    if ((min == 99999 || max == 99999) && (min < 0 || max < 0))
                                     {
-                                        bool defMaxPosition = RS.lDefaultPosition.ContainsKey(split_id[1]);
-                                        if (((defMaxPosition && min > 0) || (!defMaxPosition && min < 0)) && max == 99999)
-                                        {
-                                            max = min;
-                                            min = 99999;
-                                        }
+                                        double tmp = min;
+                                        min = max;
+                                        max = tmp;
+                                    }
+
+                                    // 역방향 이면 위치 바꿈
+                                    ParserDictionary force_pos = Array.Find(PS.Position.Entries, x => x.Id.Equals(split_id[1]));
+                                    if (force_pos?.Key == "reverse" || force_pos?.Key == "right")
+                                    {
+                                        double tmp = min;
+                                        min = max;
+                                        max = tmp;
                                     }
 
                                     itemfilters.Add(new Itemfilter
