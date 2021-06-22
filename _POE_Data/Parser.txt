@@ -1,4 +1,29 @@
 ﻿{
+	"local":{
+		"text":[ "특정", "Local" ],
+		"entries":[
+			{ "id":"stat_210067635", "key":"weapon" }, { "id":"stat_691932474", "key":"weapon" }, { "id":"stat_3885634897", "key":"weapon" },
+			{ "id":"stat_2223678961", "key":"weapon" }, { "id":"stat_1940865751", "key":"weapon" }, { "id":"stat_3336890334", "key":"weapon" },
+			{ "id":"stat_709508406", "key":"weapon" }, { "id":"stat_1037193709", "key":"weapon" }, { "id":"stat_821021828", "key":"weapon" },
+			{ "id":"stat_55876295", "key":"weapon" }, { "id":"stat_669069897", "key":"weapon" },
+			{ "id":"stat_4052037485", "key":"armour" }, { "id":"stat_4015621042", "key":"armour" }, { "id":"stat_124859000", "key":"armour" },
+			{ "id":"stat_53045048", "key":"armour" }, { "id":"stat_1062208444", "key":"armour" }, { "id":"stat_3484657501", "key":"armour" },
+			{ "id":"stat_3321629045", "key":"armour" }, { "id":"stat_1999113824", "key":"armour" }, { "id":"stat_2451402625", "key":"armour" },
+			{ "id":"stat_3523867985", "key":"armour" }
+		]
+	},
+
+	"position":{
+		"entries":[
+			{ "id":"stat_3853018505", "key":"reverse" }, { "id":"stat_969865219", "key":"reverse" },  { "id":"stat_4176970656", "key":"reverse" },
+			{ "id":"stat_3691641145", "key":"reverse" }, { "id":"stat_3557561376", "key":"reverse" }, { "id":"stat_705686721", "key":"reverse" },
+			{ "id":"stat_2156764291", "key":"reverse" }, { "id":"stat_3743301799", "key":"reverse" },  { "id":"stat_1625103793", "key":"reverse" },
+			{ "id":"stat_308618188", "key":"reverse" },  { "id":"stat_2590715472", "key":"reverse" }, { "id":"stat_1964333391", "key":"reverse" },
+			{ "id":"stat_2440172920", "key":"reverse" }, { "id":"stat_3522931817", "key":"reverse" }, { "id":"stat_1443108510", "key":"reverse" },
+			{ "id":"stat_2477636501", "key":"reverse" }, { "id":"stat_3086156145", "key":"reverse" }
+		]
+	},
+
 	"currency":{
 		"entries":[
 			{"id":"ancient-orb","hidden":false,"text":[ "고대의 오브", "Ancient Orb" ]},
@@ -182,17 +207,6 @@
 	"attacks_per_second":{"text":[ "초당 공격 횟수", "Attacks per Second" ]},
 	"attack_speed_incr":{"text":[ "공격 속도 #% 증가", "#% increased Attack Speed" ]},
 	"physical_damage_incr":{"text":[ "물리 피해 #% 증가", "#% increased Physical Damage" ]},
-
-	"position":{
-		"entries":[
-			{ "id":"stat_3853018505", "key":"reverse" }, { "id":"stat_969865219", "key":"reverse" },  { "id":"stat_4176970656", "key":"reverse" },
-			{ "id":"stat_3691641145", "key":"reverse" }, { "id":"stat_3557561376", "key":"reverse" }, { "id":"stat_705686721", "key":"reverse" },
-			{ "id":"stat_2156764291", "key":"reverse" }, { "id":"stat_3743301799", "key":"reverse" },  { "id":"stat_1625103793", "key":"reverse" },
-			{ "id":"stat_308618188", "key":"reverse" },  { "id":"stat_2590715472", "key":"reverse" }, { "id":"stat_1964333391", "key":"reverse" }, 
-			{ "id":"stat_2440172920", "key":"reverse" }, { "id":"stat_3522931817", "key":"reverse" }, { "id":"stat_1443108510", "key":"reverse" },
-			{ "id":"stat_2477636501", "key":"reverse" }, { "id":"stat_3086156145", "key":"reverse" }
-		]
-	},
 
 	"category":{
 		"text":[ "아이템 종류", "Item Class" ],

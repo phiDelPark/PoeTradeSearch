@@ -54,6 +54,7 @@ namespace PoeTradeSearch
                 foreach (string u in urls)
                 {
                     isKR = !isKR;
+
                     string sResult = SendHTTP(null, u, 5);
                     if ((sResult ?? "") != "")
                     {
@@ -78,17 +79,16 @@ namespace PoeTradeSearch
                             }
                         }
 
-                        string local = isKR ? "(특정)" : " (Local)";
-
-                        foreach (KeyValuePair<string, byte> itm in RS.lParticular)
+                        string local = mParserData.Local.Text[isKR ? 0 : 1];
+                        foreach (ParserDictionary itm in mParserData.Local.Entries)
                         {
                             for (int i = 0; i < rootClass.Result.Length; i++)
                             {
-                                int index = Array.FindIndex(rootClass.Result[i].Entries, x => x.Id.Substring(x.Id.IndexOf(".") + 1) == itm.Key);
+                                int index = Array.FindIndex(rootClass.Result[i].Entries, x => x.Id.Substring(x.Id.IndexOf(".") + 1) == itm.Id);
                                 if (index > -1)
                                 {
-                                    rootClass.Result[i].Entries[index].Text = rootClass.Result[i].Entries[index].Text.Replace(local, "");
-                                    rootClass.Result[i].Entries[index].Part = itm.Value == 1 ? "weapon" : "armour";
+                                    rootClass.Result[i].Entries[index].Text = rootClass.Result[i].Entries[index].Text.Replace("("+local+")", "").Trim();
+                                    rootClass.Result[i].Entries[index].Part = itm.Key;
                                 }
                             }
                         }

@@ -224,7 +224,7 @@ namespace PoeTradeSearch
                     string rarity_id = rarity != null ? rarity.Id : "";
                     item_rarity = rarity != null ? rarity.Text[0] : item_rarity;
 
-                    int k = 0, baki = 0, Imp_count = 0;
+                    int k = 0;
                     double attackSpeedIncr = 0, PhysicalDamageIncr = 0;
 
                     List<Itemfilter> itemfilters = new List<Itemfilter>();

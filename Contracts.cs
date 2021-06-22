@@ -123,6 +123,8 @@ namespace PoeTradeSearch
     [DataContract()]
     internal class ParserData
     {
+        [DataMember(Name = "local")]
+        internal ParserEntries Local = null;
         [DataMember(Name = "position")]
         internal ParserEntries Position = null;
         [DataMember(Name = "category")]
