@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -247,27 +248,28 @@ namespace PoeTradeSearch
                         {
                             if (asOpt[j].Trim().IsEmpty()) continue;
 
-                            string[] asLocal = Regex.Replace(asOpt[j], @" \([\w\s]+\)\: ", ": ").Split(':');
+                            string[] asLocal = asOpt[j].Regex(@" \([\w\s]+\)", "").Split(':').Select(x => x.Trim()).ToArray();
+                            //asLocal = (from x in asLocal select x.Trim()).ToArray(); 
 
                             if (lItemOption.ContainsKey(asLocal[0]))
                             {
-                                if (lItemOption[asLocal[0]] == "") lItemOption[asLocal[0]] = asLocal.Length > 1 ? asLocal[1].Trim() : "_TRUE_";
+                                if (lItemOption[asLocal[0]] == "") lItemOption[asLocal[0]] = asLocal.Length > 1 ? asLocal[1] : "_TRUE_";
                             }
                             else if (k < 10 && (!lItemOption[PS.ItemLevel.Text[z]].IsEmpty() || !lItemOption[PS.MapUltimatum.Text[z]].IsEmpty()))
                             {
-                                string ft_type = asOpt[j].Regex(@"^(.+)\s\(([a-zA-Z]+)\)$", "$2");
+                                string ft_type = asOpt[j].Split(new string[] { "\n" }, StringSplitOptions.None)[0].Regex(@"(.+)\s\(([a-zA-Z]+)\)$", "$2");
                                 if (ft_type == asOpt[j]) ft_type = "_none_";
                                 bool _resistance = false;
                                 double min = 99999, max = 99999;
                                 ParserDictionary radius = null;
                                 ParserDictionary cluster = null;
 
-                                string input = Regex.Replace(asOpt[j], @" \([a-zA-Z]+\)", "");
+                                string input = asOpt[j].Regex(@" \([a-zA-Z]+\)", "");
 
-                                if (ft_type == "enchant" && asLocal.Length == 2 && cluster == null)
+                                if (ft_type == "enchant" && asLocal.Length > 1 && cluster == null)
                                 {
-                                    cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == asLocal[1]);
-                                    // if (cluster != null)  asOpt[j] = asLocal[0] + ": " + cluster.Id;
+                                    cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == asLocal[asLocal.Length - 1]);
+                                    if (cluster != null) input = asLocal[0] + ": #";
                                 }
                                 else if (ft_type == "implicit" && cate_ids.Length == 1 && cate_ids[0] == "map")
                                 {
@@ -463,6 +465,8 @@ namespace PoeTradeSearch
                                         (FindName("tbOpt" + k + "_0") as TextBox).IsEnabled = false;
                                         (FindName("tbOpt" + k + "_1") as TextBox).IsEnabled = false;
                                         (FindName("tbOpt" + k + "_2") as CheckBox).IsChecked = true;
+                                        itemfilters[itemfilters.Count - 1].min = min = cluster.Id.ToInt();
+                                        itemfilters[itemfilters.Count - 1].max = max = 99999;
                                     }
 
                                     if (RS.lDisable.ContainsKey(split_id[1]))

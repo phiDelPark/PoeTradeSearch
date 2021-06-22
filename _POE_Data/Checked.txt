@@ -113,6 +113,12 @@
             "id": "stat_1509134228",
             "key": "weapon\/",
             "text": null
+        },
+        {
+            "hidden": false,
+            "id": "stat_3086156145",
+            "key": "jewel\/",
+            "text": null
         }
     ]
 }

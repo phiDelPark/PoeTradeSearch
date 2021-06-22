@@ -76,7 +76,7 @@ namespace PoeTradeSearch
 
         #endregion
 
-        #region Enumerable Extensions
+        #region Array Extensions
 
         public static void ForEach<T>(this IEnumerable<T> ie, Action<T> action)
         {
