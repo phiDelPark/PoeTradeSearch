@@ -14,12 +14,12 @@
         "server_redirect": false,
         "server_timeout": 5,
         "server_type": 0,
-        "use_ctrl_wheel": false
+        "use_ctrl_wheel": true
     },
     "shortcuts": [
         {
-            "keycode": 0,
-            "modifiers": 0,
+            "keycode": 81,
+            "modifiers": 2,
             "value": "{RUN} 작동 (기본값: Ctrl+C)"
         },
         {

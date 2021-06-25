@@ -46,9 +46,14 @@ namespace PoeTradeSearch
             return string.Join(" ", words);
         }
 
-        public static string Regex(this string owner, string pattern, string replacement)
+        public static string RepEx(this string owner, string pattern, string replacement)
         {
             return System.Text.RegularExpressions.Regex.Replace(owner, pattern, replacement);
+        }
+
+        public static string Escape(this string owner)
+        {
+            return System.Text.RegularExpressions.Regex.Escape(owner);
         }
 
         #endregion

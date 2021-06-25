@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace PoeTradeSearch
@@ -53,27 +57,29 @@ namespace PoeTradeSearch
             { "stat_3325883026", "pseudo_total_life_regen" }, { "stat_836936635", "pseudo_percent_life_regen" }, { "stat_789117908", "pseudo_increased_mana_regen" }
         };
 
-        internal static ParserEntries lRadius = new ParserEntries()
+        internal static ParserDict lRadius = new ParserDict()
         {
-            Entries = new ParserDictionary[4]
+            Entries = new ParserDictItem[4]
             {
-                new ParserDictionary { Text = new string[2] { "좁은 반경", "Small Ring" } },
-                new ParserDictionary { Text = new string[2] { "중간 반경", "Medium Ring" } },
-                new ParserDictionary { Text = new string[2] { "넓은 반경", "Large Ring" } },
-                new ParserDictionary { Text = new string[2] { "아주 넓은 반경", "Very Large Ring" } }
+                new ParserDictItem { Text = new string[2] { "좁은 반경", "Small Ring" } },
+                new ParserDictItem { Text = new string[2] { "중간 반경", "Medium Ring" } },
+                new ParserDictItem { Text = new string[2] { "넓은 반경", "Large Ring" } },
+                new ParserDictItem { Text = new string[2] { "아주 넓은 반경", "Very Large Ring" } }
             }
         };
     }
 
     public partial class WinMain : Window
     {
-        internal ConfigData mConfigData;
-        internal CheckedData mCheckedData;
-        private ParserData mParserData;
+        internal ConfigData mConfig;
+        internal CheckedDict mChecked;
 
-        internal PoeData[] mFilterData = new PoeData[2];
-        private PoeData[] mItemsData = new PoeData[2];
-        private PoeData[] mStaticData = new PoeData[2];
+        private ParserData mParser;
+        private ModsDict mMods;
+
+        private FilterData[] mItems = new FilterData[2];
+        private FilterData[] mStatic = new FilterData[2];
+        internal FilterData[] mFilter = new FilterData[2];
 
         internal bool Setting()
         {
@@ -94,11 +100,11 @@ namespace PoeTradeSearch
                 {
                     fs = null;
                     string json = reader.ReadToEnd();
-                    mConfigData = Json.Deserialize<ConfigData>(json);
+                    mConfig = Json.Deserialize<ConfigData>(json);
                 }
 
-                if (mConfigData.Options.SearchListCount > 80)
-                    mConfigData.Options.SearchListCount = 80;
+                if (mConfig.Options.SearchListCount > 80)
+                    mConfig.Options.SearchListCount = 80;
 
                 if (!File.Exists(path + "Parser.txt"))
                 {
@@ -110,7 +116,7 @@ namespace PoeTradeSearch
                 {
                     fs = null;
                     string json = reader.ReadToEnd();
-                    mParserData = Json.Deserialize<ParserData>(json);
+                    mParser = Json.Deserialize<ParserData>(json);
                 }
 
                 if (!File.Exists(path + "Checked.txt"))
@@ -124,11 +130,10 @@ namespace PoeTradeSearch
                 {
                     fs = null;
                     string json = reader.ReadToEnd();
-                    mCheckedData = Json.Deserialize<CheckedData>(json);
+                    mChecked = Json.Deserialize<CheckedDict>(json);
                 }
 
-                if (mCheckedData.Entries == null)
-                    mCheckedData.Entries = new List<CheckedDictionary>();
+                if (mChecked.Entries == null) mChecked.Entries = new List<CheckedDictItem>();
             }
             catch (Exception ex)
             {
@@ -143,6 +148,134 @@ namespace PoeTradeSearch
 
             return true;
         }
+
+        /*
+        [DataContract]
+        public class MODS
+        {
+            [DataMember(Name = "FIELD1")]
+            public string FIELD1;
+            [DataMember(Name = "FIELD2")]
+            public string FIELD2;
+            [DataMember(Name = "FIELD3")]
+            public int FIELD3;
+            [DataMember(Name = "FIELD4")]
+            public string FIELD4;
+            [DataMember(Name = "FIELD5")]
+            public string FIELD5;
+        }
+
+        private bool MergeModData()
+        {
+            string path = (string)Application.Current.Properties["DataPath"];
+            FileStream fs = null;
+            string s = "";
+            try
+            {
+                List<MODS>[] modsData = new List<MODS>[2];
+
+                s = "_POE_EXE/mods_ko.txt";
+                fs = new FileStream(path + s, FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    modsData[0] = Json.Deserialize<List<MODS>>(json);
+                    reader.Close();
+                }
+
+                s = "_POE_EXE/mods_en.txt";
+                fs = new FileStream(path + s, FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    modsData[1] = Json.Deserialize<List<MODS>>(json);
+                    reader.Close();
+                }
+
+                ModsDict modsDict = new ModsDict();
+                modsDict.Entries = new List<ModsDictItem>();
+
+                int i = -1;
+
+                foreach (var item in modsData[1])
+                {
+                    i++;
+                    string[] split = item.FIELD4.Replace("\u000a", "\n").Split(new string[] { "\n" }, StringSplitOptions.None);
+
+                    string[] sa = new string[2] { "Eternal Iron Hook", "Totemic Wood Lure" };
+                    if (split[0].WithIn(sa)) continue;
+
+                    for (int k = 0; k < split.Length; k++)
+                    {
+                        FilterDictItem filter = null;
+                        string[] matches = { null, null };
+
+                        foreach (var re in mFilter[1].Result)
+                        {
+                            split[k] = split[k].RepEx(@" an additional (Arrow|Target|Curse)", " 1 additional $1s");
+
+                            string tmp = split[k].RepEx(@"\([0-9\-\.]+\)", "#");
+                            filter = Array.Find(re.Entries, x => x.Text == tmp);
+                            if (filter == null)
+                            {
+                                tmp = tmp.RepEx(@"[0-9]+ to #|# to [0-9]+|[0-9]+ to [0-9]+", "# to #");
+                                filter = Array.Find(re.Entries, x => x.Text == tmp);
+                            }
+                            if (filter == null)
+                            {
+                                tmp = tmp.RepEx(@"[+-]?[0-9]+\.[0-9]+|[+-]?[0-9]+", "#").Escape()
+                                        .RepEx(@"\\#", "[+-]?([0-9]+\\.[0-9]+|[0-9]+|\\#)")
+                                        .Replace("Attacks\\ have\\ ", "(Melee )?Attacks\\ have\\ ");
+                                Regex rgx = new Regex("^" + tmp + "$", RegexOptions.IgnoreCase);
+                                filter = Array.Find(re.Entries, x => rgx.IsMatch(x.Text));
+                            }
+                            if (filter != null)
+                            {
+                                tmp = filter.Text.Replace("#", @"(\([0-9\.-]+\)|[0-9]+|[0-9]+\.[0-9]+)");
+                                matches = split[k].RepEx(tmp, "$1,$2").Split(',')
+                                                .Select(x => x[0] == '$' ? null : x.RepEx(@"\(|\)|\+", "")).ToArray();
+                                if(matches.Length == 1) matches = new string[] { null, null };
+                                break;
+                            }
+                        }
+
+                        if (filter != null)
+                        {
+                            ModsDictItem modsDictItem = new ModsDictItem();
+                            modsDictItem.Id = filter != null ? filter.Id.Split('.')[1] : split[k];
+                            modsDictItem.Level = item.FIELD3;
+                            modsDictItem.Fix = item.FIELD1;
+                            modsDictItem.Tags = item.FIELD5;
+                            modsDictItem.Name = new string[2] { item.FIELD2, modsData[0][i].FIELD2 };
+                            modsDictItem.Min = matches[0]?.RepEx("([0-9])-", "$1~");
+                            modsDictItem.Max = matches[1]?.RepEx("([0-9])-", "$1~");
+                            modsDict.Entries.Add(modsDictItem);
+                        }
+                    }
+                }
+
+                File.Delete(path + "Mods.txt");
+                using (StreamWriter writer = new StreamWriter(path + "Mods.txt", false, Encoding.UTF8))
+                {
+                    writer.Write(Json.Serialize<ModsDict>(modsDict, true));
+                    writer.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(Application.Current.MainWindow, ex.Message, "에러");
+                return false;
+            }
+            finally
+            {
+                if (fs != null) fs.Dispose();
+            }
+
+            return true;
+        }
+        */
 
         private bool LoadData(out string outString)
         {
@@ -173,7 +306,7 @@ namespace PoeTradeSearch
                 {
                     fs = null;
                     string json = reader.ReadToEnd();
-                    mFilterData[0] = Json.Deserialize<PoeData>(json);
+                    mFilter[0] = Json.Deserialize<FilterData>(json);
                     reader.Close();
                 }
 
@@ -183,7 +316,7 @@ namespace PoeTradeSearch
                 {
                     fs = null;
                     string json = reader.ReadToEnd();
-                    mFilterData[1] = Json.Deserialize<PoeData>(json);
+                    mFilter[1] = Json.Deserialize<FilterData>(json);
                     reader.Close();
                 }
 
@@ -193,7 +326,7 @@ namespace PoeTradeSearch
                 {
                     fs = null;
                     string json = reader.ReadToEnd();
-                    mItemsData[0] = Json.Deserialize<PoeData>(json);
+                    mItems[0] = Json.Deserialize<FilterData>(json);
                     reader.Close();
                 }
 
@@ -203,7 +336,7 @@ namespace PoeTradeSearch
                 {
                     fs = null;
                     string json = reader.ReadToEnd();
-                    mItemsData[1] = Json.Deserialize<PoeData>(json);
+                    mItems[1] = Json.Deserialize<FilterData>(json);
                     reader.Close();
                 }
 
@@ -213,7 +346,7 @@ namespace PoeTradeSearch
                 {
                     fs = null;
                     string json = reader.ReadToEnd();
-                    mStaticData[0] = Json.Deserialize<PoeData>(json);
+                    mStatic[0] = Json.Deserialize<FilterData>(json);
                     reader.Close();
                 }
 
@@ -223,9 +356,21 @@ namespace PoeTradeSearch
                 {
                     fs = null;
                     string json = reader.ReadToEnd();
-                    mStaticData[1] = Json.Deserialize<PoeData>(json);
+                    mStatic[1] = Json.Deserialize<FilterData>(json);
                     reader.Close();
                 }
+
+                s = "Mods.txt";
+                fs = new FileStream(path + s, FileMode.Open);
+                using (StreamReader reader = new StreamReader(fs))
+                {
+                    fs = null;
+                    string json = reader.ReadToEnd();
+                    mMods = Json.Deserialize<ModsDict>(json);
+                    reader.Close();
+                }
+
+                //MergeModData();
             }
             catch (Exception ex)
             {

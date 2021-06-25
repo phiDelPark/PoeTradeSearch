@@ -15,7 +15,7 @@ namespace PoeTradeSearch
     /// </summary>
     public partial class WinSetting : Window
     {
-        PoeData mLeagues = null;
+        FilterData mLeagues = null;
 
         public WinSetting()
         {
@@ -28,7 +28,7 @@ namespace PoeTradeSearch
                 string json = winMain.SendHTTP(null, RS.LeaguesApi, 5);
                 if ((json ?? "") != "")
                 {
-                    mLeagues = Json.Deserialize<PoeData>(json);
+                    mLeagues = Json.Deserialize<FilterData>(json);
                 }
             });
             thread.Start();
@@ -42,38 +42,38 @@ namespace PoeTradeSearch
             cbLeague.Items.Clear();
             if (mLeagues?.Result.Length > 0)
             {
-                foreach (DataResult item in mLeagues.Result)
+                foreach (FilterDict item in mLeagues.Result)
                 {
                     cbLeague.Items.Add(item.Id);
                 }
             }
 
-            lbDbVersion.Content = "버전: " + Application.Current.Properties["FileVersion"] + "\n" + winMain.mFilterData[0].Upddate;
+            lbDbVersion.Content = "버전: " + Application.Current.Properties["FileVersion"] + "\n" + winMain.mFilter[0].Upddate;
 
-            cbLeague.SelectedItem = winMain.mConfigData.Options.League ?? "";
+            cbLeague.SelectedItem = winMain.mConfig.Options.League ?? "";
             if (cbLeague.SelectedIndex == -1)
             {
-                cbLeague.Items.Add(winMain.mConfigData.Options.League ?? "");
+                cbLeague.Items.Add(winMain.mConfig.Options.League ?? "");
                 cbLeague.SelectedIndex = cbLeague.Items.Count - 1;
             }
 
-            cbServerType.SelectedIndex = winMain.mConfigData.Options.ServerType;
-            cbSearchAutoDelay.SelectedIndex = Math.Abs(winMain.mConfigData.Options.SearchAutoDelay / 30);
-            cbSearchBeforeDay.SelectedIndex = Math.Abs(winMain.mConfigData.Options.SearchBeforeDay / 7);
-            cbSearchListCount.SelectedIndex = Math.Abs((winMain.mConfigData.Options.SearchListCount / 20) - 1);
+            cbServerType.SelectedIndex = winMain.mConfig.Options.ServerType;
+            cbSearchAutoDelay.SelectedIndex = Math.Abs(winMain.mConfig.Options.SearchAutoDelay / 30);
+            cbSearchBeforeDay.SelectedIndex = Math.Abs(winMain.mConfig.Options.SearchBeforeDay / 7);
+            cbSearchListCount.SelectedIndex = Math.Abs((winMain.mConfig.Options.SearchListCount / 20) - 1);
 
-            ckAutoCheckUnique.IsChecked = winMain.mConfigData.Options.AutoCheckUnique == true;
-            ckAutoSelectPseudo.IsChecked = winMain.mConfigData.Options.AutoSelectPseudo == true;
-            ckAutoCheckTotalres.IsChecked = winMain.mConfigData.Options.AutoCheckTotalres == true;
-            ckAutoCheckUpdates.IsChecked = winMain.mConfigData.Options.AutoCheckUpdates == true;
+            ckAutoCheckUnique.IsChecked = winMain.mConfig.Options.AutoCheckUnique == true;
+            ckAutoSelectPseudo.IsChecked = winMain.mConfig.Options.AutoSelectPseudo == true;
+            ckAutoCheckTotalres.IsChecked = winMain.mConfig.Options.AutoCheckTotalres == true;
+            ckAutoCheckUpdates.IsChecked = winMain.mConfig.Options.AutoCheckUpdates == true;
 
-            ckUseCtrlWheel.IsChecked = winMain.mConfigData.Options.UseCtrlWheel == true;
+            ckUseCtrlWheel.IsChecked = winMain.mConfig.Options.UseCtrlWheel == true;
 
-            for (int i = 0; i < winMain.mConfigData.Shortcuts.Length; i++)
+            for (int i = 0; i < winMain.mConfig.Shortcuts.Length; i++)
             {
                 if (i == 12) break;
 
-                ConfigShortcut shortcut = winMain.mConfigData.Shortcuts[i];
+                ConfigShortcut shortcut = winMain.mConfig.Shortcuts[i];
                 HotkeyBox.keyBinding hotkey = new HotkeyBox.keyBinding(
                         KeyInterop.KeyFromVirtualKey(shortcut.Keycode), (ModifierKeys)shortcut.Modifiers
                     );
@@ -81,47 +81,47 @@ namespace PoeTradeSearch
                 ((TextBox)FindName("HotkeyValue" + (i + 1))).Text = shortcut.Value;
             }
 
-            lbChecked.ItemsSource = winMain.mCheckedData.Entries;
+            lbChecked.ItemsSource = winMain.mChecked.Entries;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             WinMain winMain = (WinMain)Application.Current.MainWindow;
 
-            winMain.mConfigData.Options.League = (string)cbLeague.SelectedItem;
-            winMain.mConfigData.Options.ServerType = cbServerType.SelectedIndex;
-            winMain.mConfigData.Options.SearchAutoDelay = cbSearchAutoDelay.SelectedIndex * 30;
-            winMain.mConfigData.Options.SearchBeforeDay = cbSearchBeforeDay.SelectedIndex * 7;
-            winMain.mConfigData.Options.SearchListCount = (cbSearchListCount.SelectedIndex + 1) * 20;
+            winMain.mConfig.Options.League = (string)cbLeague.SelectedItem;
+            winMain.mConfig.Options.ServerType = cbServerType.SelectedIndex;
+            winMain.mConfig.Options.SearchAutoDelay = cbSearchAutoDelay.SelectedIndex * 30;
+            winMain.mConfig.Options.SearchBeforeDay = cbSearchBeforeDay.SelectedIndex * 7;
+            winMain.mConfig.Options.SearchListCount = (cbSearchListCount.SelectedIndex + 1) * 20;
 
-            winMain.mConfigData.Options.AutoCheckUnique = ckAutoCheckUnique.IsChecked == true;
-            winMain.mConfigData.Options.AutoSelectPseudo = ckAutoSelectPseudo.IsChecked == true;
-            winMain.mConfigData.Options.AutoCheckTotalres = ckAutoCheckTotalres.IsChecked == true;
-            winMain.mConfigData.Options.AutoCheckUpdates = ckAutoCheckUpdates.IsChecked == true;
+            winMain.mConfig.Options.AutoCheckUnique = ckAutoCheckUnique.IsChecked == true;
+            winMain.mConfig.Options.AutoSelectPseudo = ckAutoSelectPseudo.IsChecked == true;
+            winMain.mConfig.Options.AutoCheckTotalres = ckAutoCheckTotalres.IsChecked == true;
+            winMain.mConfig.Options.AutoCheckUpdates = ckAutoCheckUpdates.IsChecked == true;
 
 
-            winMain.mConfigData.Options.UseCtrlWheel = ckUseCtrlWheel.IsChecked == true;
-            bool enable_admin = winMain.mConfigData.Options.UseCtrlWheel;
+            winMain.mConfig.Options.UseCtrlWheel = ckUseCtrlWheel.IsChecked == true;
+            bool enable_admin = winMain.mConfig.Options.UseCtrlWheel;
 
-            winMain.mConfigData.Shortcuts = new ConfigShortcut[12];
+            winMain.mConfig.Shortcuts = new ConfigShortcut[12];
             for (int i = 0; i < 12; i++)
             {
-                winMain.mConfigData.Shortcuts[i] = new ConfigShortcut();
+                winMain.mConfig.Shortcuts[i] = new ConfigShortcut();
 
                 HotkeyBox.keyBinding hotkey = ((HotkeyBox)FindName("Hotkey" + (i + 1))).Hotkey;
                 string value = ((TextBox)FindName("HotkeyValue" + (i + 1))).Text;
 
-                winMain.mConfigData.Shortcuts[i].Keycode = (int)KeyInterop.VirtualKeyFromKey(hotkey?.Key ?? 0);
-                winMain.mConfigData.Shortcuts[i].Modifiers = (int)(hotkey?.Modifiers ?? 0);
-                winMain.mConfigData.Shortcuts[i].Value = value;
+                winMain.mConfig.Shortcuts[i].Keycode = (int)KeyInterop.VirtualKeyFromKey(hotkey?.Key ?? 0);
+                winMain.mConfig.Shortcuts[i].Modifiers = (int)(hotkey?.Modifiers ?? 0);
+                winMain.mConfig.Shortcuts[i].Value = value;
 
-                if (!enable_admin) enable_admin = winMain.mConfigData.Shortcuts[i].Keycode != 0;
+                if (!enable_admin) enable_admin = winMain.mConfig.Shortcuts[i].Keycode != 0;
             }
 
             string path = (string)Application.Current.Properties["DataPath"];
             using (StreamWriter writer = new StreamWriter(path + "Config.txt", false, Encoding.UTF8))
             {
-                writer.Write(Json.Serialize<ConfigData>(winMain.mConfigData, true));
+                writer.Write(Json.Serialize<ConfigData>(winMain.mConfig, true));
                 writer.Close();
             }
 

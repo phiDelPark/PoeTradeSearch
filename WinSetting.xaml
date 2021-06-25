@@ -87,30 +87,12 @@
                     <Grid>
                         <Label Content="필터의 체크 박스를 우클릭하면 자동 등록 됩니다." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,10,0,0" IsEnabled="False"/>
                         <Label Content="항목을 더블 클릭하면 최소값, 최대값 입력이 가능합니다." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,30,0,0" IsEnabled="False"/>
-                        <Grid Margin="10,61,10,10">
-                            <Grid DockPanel.Dock="Top" Height="28" VerticalAlignment="Top">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition Width="40"></ColumnDefinition>
-                                    <ColumnDefinition Width="40"></ColumnDefinition>
-                                    <ColumnDefinition Width="20"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <Label Grid.Column="0">옵션</Label>
-                                <Label Grid.Column="1">최소</Label>
-                                <Label Grid.Column="2">최대</Label>
-                            </Grid>
-                            <ListBox Name="lbChecked" ItemsSource="{Binding}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,28,0,0">
+                        <Grid Margin="10,65,10,10">
+                            <ListBox Name="lbChecked" ItemsSource="{Binding}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,0,0,0">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Grid Margin="0,2">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition></ColumnDefinition>
-                                                <ColumnDefinition Width="40"></ColumnDefinition>
-                                                <ColumnDefinition Width="40"></ColumnDefinition>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="{Binding Path=Id}"></TextBlock>
-                                            <TextBox Text="{Binding Path=Min}" Grid.Column="1" Margin="0,0,1,0"></TextBox>
-                                            <TextBox Text="{Binding Path=Max}" Grid.Column="2"></TextBox>
+                                            <TextBlock Text="{Binding Path=Text}" Grid.Column="0"></TextBlock>
                                         </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>

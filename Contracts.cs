@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
+using System.Windows;
 
 namespace PoeTradeSearch
 {
@@ -76,186 +78,111 @@ namespace PoeTradeSearch
         internal string Value = null;
     }
 
-    [DataContract]
-    public class Itemfilter
-    {
-        public string stat;
-        public string type;
-        public string text;
-        public double max;
-        public double min;
-        public object option;
-        public string flag;
-        public bool disabled;
-        public bool isNull = false;
-    }
-
-    [DataContract]
-    public class ItemOption
-    {
-        public int LangIndex;
-        public string Name;
-        public string Type;
-        public string[] Inherits;
-        public int RarityAt;
-        public int Corrupt;
-        public int Influence1;
-        public int Influence2;
-        public int AltQuality;
-        public bool ByCategory;
-        public bool ChkLv;
-        public bool ChkSocket;
-        public bool ChkQuality;
-        public bool Synthesis;
-        public double SocketMin;
-        public double SocketMax;
-        public double LinkMin;
-        public double LinkMax;
-        public double QualityMin;
-        public double QualityMax;
-        public double LvMin;
-        public double LvMax;
-        public double PriceMin;
-        public string Flags;
-        public List<Itemfilter> itemfilters = new List<Itemfilter>();
-    }
-
     [DataContract()]
     internal class ParserData
     {
         [DataMember(Name = "local")]
-        internal ParserEntries Local = null;
+        internal ParserDict Local = null;
         [DataMember(Name = "position")]
-        internal ParserEntries Position = null;
+        internal ParserDict Position = null;
         [DataMember(Name = "category")]
-        internal ParserEntries Category = null;
+        internal ParserDict Category = null;
         [DataMember(Name = "rarity")]
-        internal ParserEntries Rarity = null;
+        internal ParserDict Rarity = null;
         [DataMember(Name = "quality")]
-        internal ParserEntries Quality = null;
+        internal ParserDict Quality = null;
         [DataMember(Name = "sockets")]
-        internal ParserEntries Sockets = null;
+        internal ParserDict Sockets = null;
         [DataMember(Name = "radius")]
-        internal ParserEntries Radius = null;
+        internal ParserDict Radius = null;
         [DataMember(Name = "unidentified")]
-        internal ParserEntries Unidentified = null;
+        internal ParserDict Unidentified = null;
         [DataMember(Name = "max")]
-        internal ParserEntries Max = null;
+        internal ParserDict Max = null;
         [DataMember(Name = "level")]
-        internal ParserEntries Level = null;
+        internal ParserDict Level = null;
         [DataMember(Name = "item_level")]
-        internal ParserEntries ItemLevel = null;
+        internal ParserDict ItemLevel = null;
         [DataMember(Name = "talisman_tier")]
-        internal ParserEntries TalismanTier = null;
+        internal ParserDict TalismanTier = null;
         [DataMember(Name = "map_tier")]
-        internal ParserEntries MapTier = null;
+        internal ParserDict MapTier = null;
         [DataMember(Name = "map_ultimatum")]
-        internal ParserEntries MapUltimatum = null;
+        internal ParserDict MapUltimatum = null;
         [DataMember(Name = "reward_ultimatum")]
-        internal ParserEntries RewardUltimatum = null;
+        internal ParserDict RewardUltimatum = null;
         [DataMember(Name = "superior")]
-        internal ParserEntries Superior = null;
+        internal ParserDict Superior = null;
         [DataMember(Name = "vaal")]
-        internal ParserEntries Vaal = null;
+        internal ParserDict Vaal = null;
         [DataMember(Name = "corrupted")]
-        internal ParserEntries Corrupted = null;
+        internal ParserDict Corrupted = null;
         [DataMember(Name = "metamorph")]
-        internal ParserEntries Metamorph = null;
+        internal ParserDict Metamorph = null;
         [DataMember(Name = "shaper_item")]
-        internal ParserEntries ShaperItem = null;
+        internal ParserDict ShaperItem = null;
         [DataMember(Name = "elder_item")]
-        internal ParserEntries ElderItem = null;
+        internal ParserDict ElderItem = null;
         [DataMember(Name = "crusader_item")]
-        internal ParserEntries CrusaderItem = null;
+        internal ParserDict CrusaderItem = null;
         [DataMember(Name = "redeemer_item")]
-        internal ParserEntries RedeemerItem = null;
+        internal ParserDict RedeemerItem = null;
         [DataMember(Name = "hunter_item")]
-        internal ParserEntries HunterItem = null;
+        internal ParserDict HunterItem = null;
         [DataMember(Name = "warlord_item")]
-        internal ParserEntries WarlordItem = null;
+        internal ParserDict WarlordItem = null;
         [DataMember(Name = "synthesised_item")]
-        internal ParserEntries SynthesisedItem = null;
+        internal ParserDict SynthesisedItem = null;
         [DataMember(Name = "shaped")]
-        internal ParserEntries Shaped = null;
+        internal ParserDict Shaped = null;
         [DataMember(Name = "blighted")]
-        internal ParserEntries Blighted = null;
+        internal ParserDict Blighted = null;
         [DataMember(Name = "monster_genus")]
-        internal ParserEntries MonsterGenus = null;
+        internal ParserDict MonsterGenus = null;
         [DataMember(Name = "monster_group")]
-        internal ParserEntries MonsterGroup = null;
+        internal ParserDict MonsterGroup = null;
         [DataMember(Name = "physical_damage")]
-        internal ParserEntries PhysicalDamage = null;
+        internal ParserDict PhysicalDamage = null;
         [DataMember(Name = "elemental_damage")]
-        internal ParserEntries ElementalDamage = null;
+        internal ParserDict ElementalDamage = null;
         [DataMember(Name = "chaos_damage")]
-        internal ParserEntries ChaosDamage = null;
+        internal ParserDict ChaosDamage = null;
         [DataMember(Name = "attacks_per_second")]
-        internal ParserEntries AttacksPerSecond = null;
+        internal ParserDict AttacksPerSecond = null;
         [DataMember(Name = "attack_speed_incr")]
-        internal ParserEntries AttackSpeedIncr = null;
+        internal ParserDict AttackSpeedIncr = null;
         [DataMember(Name = "physical_damage_incr")]
-        internal ParserEntries PhysicalDamageIncr = null;
+        internal ParserDict PhysicalDamageIncr = null;
         [DataMember(Name = "prophecy_item")]
-        internal ParserEntries ProphecyItem = null;
+        internal ParserDict ProphecyItem = null;
         [DataMember(Name = "entrails_item")]
-        internal ParserEntries EntrailsItem = null;
+        internal ParserDict EntrailsItem = null;
         [DataMember(Name = "unstack_items")]
-        internal ParserEntries UnstackItems = null;
+        internal ParserDict UnstackItems = null;
         [DataMember(Name = "gems")]
-        internal ParserEntries Gems = null;
+        internal ParserDict Gems = null;
         [DataMember(Name = "currency")]
-        internal ParserEntries Currency = null;
+        internal ParserDict Currency = null;
         [DataMember(Name = "exchange")]
-        internal ParserEntries Exchange = null;
+        internal ParserDict Exchange = null;
         [DataMember(Name = "cluster")]
-        internal ParserEntries Cluster = null;
+        internal ParserDict Cluster = null;
         [DataMember(Name = "heist")]
-        internal ParserEntries Heist = null;
-    }
-
-    [DataContract()]
-    internal class CheckedData
-    {
-        [DataMember(Name = "entries")]
-        internal List<CheckedDictionary> Entries = null;
+        internal ParserDict Heist = null;
     }
 
     [DataContract]
-    public class CheckedDictionary
-    {
-        [DataMember(Name = "id")]
-        public string Id { get; set; }
-
-        [DataMember(Name = "key")]
-        public string Key { get; set; }
-
-        [DataMember(Name = "min")]
-        public object Min { get; set; }
-
-        [DataMember(Name = "max")]
-        public object Max { get; set; }
-
-        public CheckedDictionary(string id, string key, object min, object max)
-        {
-            this.Id = id;
-            this.Key = key;
-            this.Min = min;
-            this.Max = max;
-        }
-    }
-
-    [DataContract]
-    internal class ParserEntries
+    internal class ParserDict
     {
         [DataMember(Name = "text")]
         internal string[] Text = null;
 
         [DataMember(Name = "entries")]
-        internal ParserDictionary[] Entries = null;
+        internal ParserDictItem[] Entries = null;
     }
 
     [DataContract]
-    internal class ParserDictionary
+    internal class ParserDictItem
     {
         [DataMember(Name = "id")]
         internal string Id = null;
@@ -270,18 +197,85 @@ namespace PoeTradeSearch
         internal bool Hidden = false;
     }
 
+    [DataContract()]
+    internal class ModsDict
+    {
+        [DataMember(Name = "entries")]
+        internal List<ModsDictItem> Entries = null;
+    }
+
+
     [DataContract]
-    internal class PoeData
+    public class ModsDictItem
+    {
+        [DataMember(Name = "id")]
+        public string Id { get; set; }
+
+        [DataMember(Name = "level")]
+        public int Level { get; set; }
+
+        [DataMember(Name = "fix")]
+        public string Fix { get; set; }
+
+        [DataMember(Name = "name")]
+        public string[] Name { get; set; }
+
+        [DataMember(Name = "tags")]
+        public string Tags { get; set; }
+
+        [DataMember(Name = "min")]
+        public string Min { get; set; }
+
+        [DataMember(Name = "max")]
+        public string Max { get; set; }
+    }
+
+    [DataContract()]
+    internal class CheckedDict
+    {
+        [DataMember(Name = "entries")]
+        internal List<CheckedDictItem> Entries = null;
+    }
+
+    [DataContract]
+    public class CheckedDictItem
+    {
+        [DataMember(Name = "id")]
+        public string Id { get; set; }
+
+        [DataMember(Name = "key")]
+        public string Key { get; set; }
+
+        public string Text
+        {
+            get
+            {
+                FilterDictItem dictItem = null;
+                WinMain winMain = (WinMain)Application.Current.MainWindow;
+
+                foreach (FilterDict data_result in winMain.mFilter[0].Result)
+                {
+                    dictItem = Array.Find(data_result.Entries, x => x.Id.IndexOf("." + this.Id) > 1);
+                    if (dictItem != null) break;
+                }
+
+                return dictItem?.Text ?? this.Id;
+            }
+        }
+    }
+
+    [DataContract]
+    internal class FilterData
     {
         [DataMember(Name = "result")]
-        internal DataResult[] Result = null;
+        internal FilterDict[] Result = null;
 
         [DataMember(Name = "upddate")]
         internal string Upddate = null;
     }
 
     [DataContract]
-    internal class DataResult
+    internal class FilterDict
     {
         [DataMember(Name = "id")]
         internal string Id = "";
@@ -290,11 +284,11 @@ namespace PoeTradeSearch
         internal string Label = "";
 
         [DataMember(Name = "entries")]
-        internal DataEntrie[] Entries = null;
+        internal FilterDictItem[] Entries = null;
     }
 
     [DataContract]
-    internal class DataEntrie
+    internal class FilterDictItem
     {
         [DataMember(Name = "id")]
         internal string Id = "";
@@ -310,27 +304,47 @@ namespace PoeTradeSearch
 
         [DataMember(Name = "part")]
         internal string Part = "";
-
-        [DataMember(Name = "flags")]
-        internal DataFlags[] Flags = null;
     }
 
     [DataContract]
-    internal class DataFlags
+    internal class FetchData
     {
-        [DataMember(Name = "unique")]
-        internal bool Unique = false;
+        [DataMember(Name = "result")]
+        internal FetchInfo[] Result;
     }
 
     [DataContract]
-    internal class AccountData
+    internal class FetchInfo
+    {
+        [DataMember(Name = "id")]
+        internal string ID = "";
+
+        [DataMember(Name = "listing")]
+        internal FetchListing Listing = new FetchListing();
+    }
+
+    [DataContract]
+    internal class FetchListing
+    {
+        [DataMember(Name = "indexed")]
+        internal string Indexed = "";
+
+        [DataMember(Name = "account")]
+        internal FetchAccount Account = new FetchAccount();
+
+        [DataMember(Name = "price")]
+        internal FetchPrice Price = new FetchPrice();
+    }
+
+    [DataContract]
+    internal class FetchAccount
     {
         [DataMember(Name = "name")]
         internal string Name = "";
     }
 
     [DataContract]
-    internal class PriceData
+    internal class FetchPrice
     {
         [DataMember(Name = "type")]
         internal string Type = "";
@@ -340,36 +354,6 @@ namespace PoeTradeSearch
 
         [DataMember(Name = "currency")]
         internal string Currency = "";
-    }
-
-    [DataContract]
-    internal class FetchDataListing
-    {
-        [DataMember(Name = "indexed")]
-        internal string Indexed = "";
-
-        [DataMember(Name = "account")]
-        internal AccountData Account = new AccountData();
-
-        [DataMember(Name = "price")]
-        internal PriceData Price = new PriceData();
-    }
-
-    [DataContract]
-    internal class FetchDataInfo
-    {
-        [DataMember(Name = "id")]
-        internal string ID = "";
-
-        [DataMember(Name = "listing")]
-        internal FetchDataListing Listing = new FetchDataListing();
-    }
-
-    [DataContract]
-    internal class FetchData
-    {
-        [DataMember(Name = "result")]
-        internal FetchDataInfo[] Result;
     }
 
     [DataContract]
@@ -384,6 +368,15 @@ namespace PoeTradeSearch
         [DataMember(Name = "total")]
         internal int Total = 0;
     }
+
+    /*
+    [DataContract]
+    internal class DataFlags
+    {
+        [DataMember(Name = "unique")]
+        internal bool Unique = false;
+    }
+    */
 
     [DataContract]
     internal class q_Option
@@ -700,5 +693,49 @@ namespace PoeTradeSearch
                     Regex.Replace(type, @"\([a-zA-Z\,\s']+\)$", "")
                 ).Trim();
         }
+    }
+
+    [DataContract]
+    public class ItemOption
+    {
+        public int LangIndex;
+        public string Name;
+        public string Type;
+        public string[] Inherits;
+        public int RarityAt;
+        public int Corrupt;
+        public int Influence1;
+        public int Influence2;
+        public int AltQuality;
+        public bool ByCategory;
+        public bool ChkLv;
+        public bool ChkSocket;
+        public bool ChkQuality;
+        public bool Synthesis;
+        public double SocketMin;
+        public double SocketMax;
+        public double LinkMin;
+        public double LinkMax;
+        public double QualityMin;
+        public double QualityMax;
+        public double LvMin;
+        public double LvMax;
+        public double PriceMin;
+        public string Flags;
+        public List<Itemfilter> itemfilters = new List<Itemfilter>();
+    }
+
+    [DataContract]
+    public class Itemfilter
+    {
+        public string stat;
+        public string type;
+        public string text;
+        public double max;
+        public double min;
+        public object option;
+        public string flag;
+        public bool disabled;
+        public bool isNull = false;
     }
 }
