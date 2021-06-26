@@ -425,14 +425,6 @@ namespace PoeTradeSearch
                                         max = 99999;
                                     }
 
-                                    // 음수면 위치 바꿈
-                                    if ((min == 99999 || max == 99999) && (min < 0 || max < 0))
-                                    {
-                                        double tmp = min;
-                                        min = max;
-                                        max = tmp;
-                                    }
-
                                     // 역방향 이면 위치 바꿈
                                     ParserDictItem force_pos = Array.Find(PS.Position.Entries, x => x.Id.Equals(split_id[1]));
                                     if (force_pos?.Key == "reverse" || force_pos?.Key == "right")
@@ -478,22 +470,10 @@ namespace PoeTradeSearch
                                     }
                                     else
                                     {
-                                        List<ModsDictItem> modItems = mMods.Entries.FindAll(x => x.Id.Equals(split_id[1]));
-                                        if (modItems.Count > 0)
+                                        if (!color.ContainsKey(ft_type) &&
+                                            (mChecked.Entries?.Find(x => x.Id.Equals(split_id[1]) && x.Key.IndexOf(cate_ids[0] + "/") > -1) != null))
                                         {
-
-                                        }
-
-                                        if (!(FindName("cbOpt" + k) as ComboBox).SelectedValue.Equals(RS.lFilterType["crafted"])
-                                            && (
-                                                (mConfig.Options.AutoCheckUnique && rarity_id == "unique")
-                                                || (mChecked.Entries?.Find(x => x.Id.Equals(split_id[1]) && x.Key.IndexOf(cate_ids[0] + "/") > -1) != null)
-                                            )
-                                        )
-                                        {
-                                            if (!(mConfig.Options.AutoCheckUnique && rarity_id == "unique"))
-                                                (FindName("tbOpt" + k + "_2") as CheckBox).BorderThickness = new Thickness(2);
-
+                                            (FindName("tbOpt" + k + "_2") as CheckBox).BorderThickness = new Thickness(2); 
                                             (FindName("tbOpt" + k + "_2") as CheckBox).IsChecked = true;
                                             itemfilters[itemfilters.Count - 1].disabled = false;
                                         }
@@ -737,7 +717,7 @@ namespace PoeTradeSearch
                             if (is_gem)
                             {
                                 ckLv.IsChecked = lItemOption[PS.Level.Text[z]].IndexOf(" (" + PS.Max.Text[z]) > 0;
-                                ckQuality.IsChecked = item_quality.ToInt(0) > 20;
+                                ckQuality.IsChecked = item_quality.ToInt(0) > 19;
                                 cbAltQuality.SelectedIndex = alt_quality;
                             }
                             else if (is_Jewel)
@@ -832,6 +812,9 @@ namespace PoeTradeSearch
                         {
                             liPrice.Items.Clear();
                         }
+
+                        if (mConfig.Options.AutoCheckUnique && rarity_id == "unique")
+                            cbAiiCheck.IsChecked = true;
 
                         this.ShowActivated = false;
                         this.Visibility = Visibility.Visible;

@@ -284,8 +284,13 @@ namespace PoeTradeSearch
 
             for (int i = 0; i < 10; i++)
             {
-                if (((CheckBox)FindName("tbOpt" + i + "_2")).IsEnabled == true)
-                    ((CheckBox)FindName("tbOpt" + i + "_2")).IsChecked = is_checked;
+                if ((FindName("tbOpt" + i + "_2") as CheckBox).IsEnabled == true &&
+                    !(FindName("tbOpt" + i) as TextBox).Text.IsEmpty() &&
+                    (FindName("tbOpt" + i) as TextBox).BorderBrush == SystemColors.ActiveBorderBrush)
+                {
+                    
+                    (FindName("tbOpt" + i + "_2") as CheckBox).IsChecked = is_checked;
+                }
             }
         }
 
