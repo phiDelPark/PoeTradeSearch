@@ -203,15 +203,15 @@ namespace PoeTradeSearch
 
                     byte z = (byte)(asData[0].IndexOf(PS.Category.Text[0] + ": ") == 0 ? 0 : 1);
 
-                    string[] asOpt = asData[0].Trim().Split(new string[] { "\r\n" }, StringSplitOptions.None);
+                    string[] asOpts = asData[0].Trim().Split(new string[] { "\r\n" }, StringSplitOptions.None);
 
-                    item_category = asOpt[0].Split(':')[1].Trim();
-                    item_rarity = asOpt[1].Split(':')[1].Trim();
+                    item_category = asOpts[0].Split(':')[1].Trim();
+                    item_rarity = asOpts[1].Split(':')[1].Trim();
 
-                    item_name = Regex.Replace(asOpt[2] ?? "", @"<<set:[A-Z]+>>", "");
-                    if (asOpt.Length > 3 && asOpt[3] != "")
+                    item_name = Regex.Replace(asOpts[2] ?? "", @"<<set:[A-Z]+>>", "");
+                    if (asOpts.Length > 3 && asOpts[3] != "")
                     {
-                        item_type = Regex.Replace(asOpt[3] ?? "", @"<<set:[A-Z]+>>", "");
+                        item_type = Regex.Replace(asOpts[3] ?? "", @"<<set:[A-Z]+>>", "");
                     }
                     else
                     {
@@ -244,34 +244,43 @@ namespace PoeTradeSearch
 
                     for (int i = 1; i < asData.Length; i++)
                     {
-                        asOpt = asData[i].Trim().Split(new string[] { "\r\n" }, StringSplitOptions.None);
+                        asOpts = asData[i].Split(new string[] { "\r\n" }, 0).Select(x => x.Trim()).ToArray();
 
-                        for (int j = 0; j < asOpt.Length; j++)
+                        for (int j = 0; j < asOpts.Length; j++)
                         {
-                            if (asOpt[j].Trim().IsEmpty()) continue;
+                            if (asOpts[j].Trim().IsEmpty()) continue;
 
-                            string[] asLocal = asOpt[j].Replace(@" \([\w\s]+\)", "").Split(':').Select(x => x.Trim()).ToArray();
-                            //asLocal = (from x in asLocal select x.Trim()).ToArray(); 
-
-                            if (lItemOption.ContainsKey(asLocal[0]))
+                            string[] asDeep = asOpts[j].Split(new string[] { "\n" }, 0).Select(x => x.Trim()).ToArray();
+                            int is_deep = asDeep[0][0] == '{' && asDeep.Length == 2 ? 0 : -1;
+                            if (is_deep == 0)
                             {
-                                if (lItemOption[asLocal[0]] == "") lItemOption[asLocal[0]] = asLocal.Length > 1 ? asLocal[1] : "_TRUE_";
+                                asDeep[1] = asDeep[1].RepEx(@"([0-9]+)\([0-9\.\+\-]*[0-9].\)", "$1");
+                                is_deep = asDeep[0].RepEx(@"^.+\s\(" + PS.OptionTier.Text[z] + @": ([0-9])\)\s—.+$", "$1").ToInt(0);
+                            }
+
+                            string option = asDeep[is_deep > -1 ? 1 : 0];
+                            string[] asSplit = option.Replace(@" \([\w\s]+\)", "").Split(':').Select(x => x.Trim()).ToArray();
+
+                            if (lItemOption.ContainsKey(asSplit[0]))
+                            {
+                                if (lItemOption[asSplit[0]] == "") lItemOption[asSplit[0]] = asSplit.Length > 1 ? asSplit[1] : "_TRUE_";
                             }
                             else if (k < 10 && (!lItemOption[PS.ItemLevel.Text[z]].IsEmpty() || !lItemOption[PS.MapUltimatum.Text[z]].IsEmpty()))
                             {
-                                string ft_type = asOpt[j].Split(new string[] { "\n" }, StringSplitOptions.None)[0].RepEx(@"(.+)\s\(([a-zA-Z]+)\)$", "$2");
-                                if (ft_type == asOpt[j]) ft_type = "_none_";
+                                string input = option.RepEx(@" \([a-zA-Z]+\)", "");
+                                string ft_type = option.Split(new string[] { "\n" }, 0)[0].RepEx(@"(.+)\s\(([a-zA-Z]+)\)$", "$2");
+                                if (ft_type == option) ft_type = "_none_";
+
                                 bool _resistance = false;
                                 double min = 99999, max = 99999;
                                 ParserDictItem radius = null;
                                 ParserDictItem cluster = null;
 
-                                string input = asOpt[j].RepEx(@" \([a-zA-Z]+\)", "");
 
-                                if (ft_type == "enchant" && asLocal.Length > 1 && cluster == null)
+                                if (ft_type == "enchant" && asSplit.Length > 1 && cluster == null)
                                 {
                                     cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == input.Split(':')?[1].Trim());
-                                    if (cluster != null) input = asLocal[0] + ": #";
+                                    if (cluster != null) input = asSplit[0] + ": #";
                                 }
                                 else if (ft_type == "implicit" && cate_ids.Length == 1 && cate_ids[0] == "map")
                                 {
@@ -290,7 +299,7 @@ namespace PoeTradeSearch
                                 }
                                 else if (ft_type == "_none_" && lItemOption[PS.Radius.Text[z]] != "" && radius == null)
                                 {
-                                    radius = Array.Find(PS.Radius.Entries, x => x.Text[z] == asLocal[0]);
+                                    radius = Array.Find(PS.Radius.Entries, x => x.Text[z] == asSplit[0]);
                                     if (radius != null)
                                     {
                                         lItemOption[PS.Radius.Text[z]] = RS.lRadius.Entries[radius.Id.ToInt() - 1].Text[z];
@@ -298,7 +307,7 @@ namespace PoeTradeSearch
                                 }
 
                                 input = Regex.Escape(Regex.Replace(input, @"[+-]?[0-9]+\.[0-9]+|[+-]?[0-9]+", "#"));
-                                input = Regex.Replace(input, @"\\#", "[+-]?([0-9]+\\.[0-9]+|[0-9]+|\\#)");
+                                input = Regex.Replace(input, @"\\#", @"[+-]?([0-9]+\.[0-9]+|[0-9]+|\#)");
 
                                 bool local_exists = false;
                                 FilterDictItem filter = null;
@@ -331,7 +340,7 @@ namespace PoeTradeSearch
                                             return (entrie2.Part ?? "").CompareTo(entrie1.Part ?? "");
                                         });
 
-                                        MatchCollection matches1 = Regex.Matches(asOpt[j], @"[-]?([0-9]+\.[0-9]+|[0-9]+)");
+                                        MatchCollection matches1 = Regex.Matches(option, @"[-]?([0-9]+\.[0-9]+|[0-9]+)");
                                         foreach (FilterDictItem entrie in entries)
                                         {
                                             int idxMin = 0, idxMax = 0;
@@ -444,7 +453,7 @@ namespace PoeTradeSearch
                                         disabled = true
                                     });
 
-                                    (FindName("tbOpt" + k) as TextBox).Text = filter.Text;
+                                    (FindName("tbOpt" + k) as TextBox).Text = (is_deep > 0 ? is_deep.ToString() + ") " : "") + filter.Text;
 
                                     (FindName("tbOpt" + k + "_3") as CheckBox).Visibility = _resistance ? Visibility.Visible : Visibility.Hidden;
                                     if ((FindName("tbOpt" + k + "_3") as CheckBox).Visibility == Visibility.Visible && mConfig.Options.AutoCheckTotalres)
@@ -475,7 +484,7 @@ namespace PoeTradeSearch
                                     }
                                     else
                                     {
-                                        if (!color.ContainsKey(ft_type) &&
+                                        if (!color.ContainsKey(ft_type) && (is_deep < 1 || is_deep < 3) &&
                                             (mChecked.Entries?.Find(x => x.Id.Equals(split_id[1]) && x.Key.IndexOf(cate_ids[0] + "/") > -1) != null))
                                         {
                                             (FindName("tbOpt" + k + "_2") as CheckBox).BorderThickness = new Thickness(2); 

@@ -105,6 +105,8 @@ namespace PoeTradeSearch
         internal ParserDict ItemLevel = null;
         [DataMember(Name = "talisman_tier")]
         internal ParserDict TalismanTier = null;
+        [DataMember(Name = "option_tier")]
+        internal ParserDict OptionTier = null;
         [DataMember(Name = "map_tier")]
         internal ParserDict MapTier = null;
         [DataMember(Name = "map_ultimatum")]

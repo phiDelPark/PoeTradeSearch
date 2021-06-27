@@ -328,6 +328,7 @@
 	"level":{"text":[ "레벨", "Level" ]},
 	"item_level":{"text":[ "아이템 레벨", "Item Level" ]},
 	"talisman_tier":{"text":[ "부적 등급", "Talisman Tier" ]},
+	"option_tier":{"text":[ "등급", "Tier" ]},
 	"superior":{"text":[ "상급", "Superior" ]},
 	"unidentified":{"text":[ "미확인", "Unidentified" ]},
 	"max":{"text":[ "최대", "Max" ]},

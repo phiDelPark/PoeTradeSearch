@@ -25,7 +25,14 @@ namespace PoeTradeSearch
 
         public static int ToInt(this string owner, int @default = 0)
         {
-            return owner.IsEmpty() ? @default : int.Parse(owner);
+            try
+            {
+                return owner.IsEmpty() ? @default : int.Parse(owner);
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
         public static double ToDouble(this string owner, double @default = 0)
