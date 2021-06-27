@@ -43,8 +43,12 @@ namespace PoeTradeSearch
         [DllImport("user32.dll")] internal static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
         [DllImport("user32.dll")] internal static extern bool ClientToScreen(IntPtr hWnd, ref Point lpPoint);
 
+        internal const int GWL_STYLE = -16;
         internal const int GWL_EXSTYLE = -20;
+        internal const int WS_MAXIMIZEBOX = 0x00010000;
+        internal const int WS_MINIMIZEBOX = 0x00020000;
         internal const int WS_EX_NOACTIVATE = 0x08000000;
+        internal const int WS_EX_CONTEXTHELP = 0x00000400;
 
         [DllImport("user32.dll")] internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 

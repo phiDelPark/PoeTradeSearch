@@ -128,8 +128,6 @@ namespace PoeTradeSearch
             tkPriceInfo.Tag = tkPriceInfo.Text = "시세를 검색하려면 클릭해주세요";
 
             mMainHwnd = new WindowInteropHelper(this).Handle;
-            HwndSource source = HwndSource.FromHwnd(mMainHwnd);
-            source.AddHook(new HwndSourceHook(WndProc));
 
             if (mAdministrator)
             {
@@ -151,10 +149,11 @@ namespace PoeTradeSearch
                 timer.Start();
             }
 
-            if (Array.Find(mConfig.Shortcuts, x => x.Keycode > 0 && (x.Value ?? "").ToLower() == "{run}") == null)
-            {
-                IntPtr mNextClipBoardViewerHWnd = Native.SetClipboardViewer(mMainHwnd);
-            }
+            uint styles = (uint)Native.GetWindowLong(mMainHwnd, Native.GWL_EXSTYLE);
+            Native.SetWindowLong(mMainHwnd, Native.GWL_EXSTYLE, (int)(styles |= Native.WS_EX_CONTEXTHELP));
+
+            IntPtr mNextClipBoardViewerHWnd = Native.SetClipboardViewer(mMainHwnd);
+            HwndSource.FromHwnd(mMainHwnd).AddHook(new HwndSourceHook(WndProc));
         }
 
         private void Window_Activated(object sender, EventArgs e)
@@ -591,6 +590,12 @@ namespace PoeTradeSearch
                         }
                     }
                 }
+            }
+            else if (msg == (int)0x0112 /*WM_SYSCOMMAND*/ && ((int)wParam & 0xFFF0) == (int)0xf180 /*SC_CONTEXTHELP*/)
+            {
+                WinSetting winSetting = new WinSetting();
+                winSetting.Show();
+                handled = true;
             }
             else if (!mHotkeyProcBlock && msg == (int)0x312) //WM_HOTKEY
             {
