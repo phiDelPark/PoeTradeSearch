@@ -137,6 +137,8 @@ namespace PoeTradeSearch
         internal ParserDict Shaped = null;
         [DataMember(Name = "blighted")]
         internal ParserDict Blighted = null;
+        [DataMember(Name = "delirium_reward")]
+        internal ParserDict DeliriumReward = null;
         [DataMember(Name = "monster_genus")]
         internal ParserDict MonsterGenus = null;
         [DataMember(Name = "monster_group")]

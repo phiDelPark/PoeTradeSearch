@@ -235,7 +235,7 @@ namespace PoeTradeSearch
                     {
                         { PS.Quality.Text[z], "" }, { PS.Level.Text[z], "" }, { PS.ItemLevel.Text[z], "" }, { PS.TalismanTier.Text[z], "" }, { PS.MapTier.Text[z], "" },
                         { PS.Sockets.Text[z], "" }, { PS.Heist.Text[z], "" }, { PS.MapUltimatum.Text[z], "" }, { PS.RewardUltimatum.Text[z], "" },
-                        { PS.Radius.Text[z], "" },  { PS.MonsterGenus.Text[z], "" }, { PS.MonsterGroup.Text[z], "" },
+                        { PS.Radius.Text[z], "" },  { PS.DeliriumReward.Text[z], "" }, { PS.MonsterGenus.Text[z], "" }, { PS.MonsterGroup.Text[z], "" },
                         { PS.PhysicalDamage.Text[z], "" }, { PS.ElementalDamage.Text[z], "" }, { PS.ChaosDamage.Text[z], "" }, { PS.AttacksPerSecond.Text[z], "" },
                         { PS.ShaperItem.Text[z], "" }, { PS.ElderItem.Text[z], "" }, { PS.CrusaderItem.Text[z], "" }, { PS.RedeemerItem.Text[z], "" },
                         { PS.HunterItem.Text[z], "" }, { PS.WarlordItem.Text[z], "" }, { PS.SynthesisedItem.Text[z], "" },
@@ -270,7 +270,7 @@ namespace PoeTradeSearch
 
                                 if (ft_type == "enchant" && asLocal.Length > 1 && cluster == null)
                                 {
-                                    cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == asLocal[asLocal.Length - 1]);
+                                    cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == input.Split(':')?[1].Trim());
                                     if (cluster != null) input = asLocal[0] + ": #";
                                 }
                                 else if (ft_type == "implicit" && cate_ids.Length == 1 && cate_ids[0] == "map")
@@ -461,6 +461,11 @@ namespace PoeTradeSearch
                                         (FindName("tbOpt" + k + "_2") as CheckBox).IsChecked = true;
                                         itemfilters[itemfilters.Count - 1].min = min = cluster.Id.ToInt();
                                         itemfilters[itemfilters.Count - 1].max = max = 99999;
+                                        if(itemfilters.Count > 0) // 군 주얼 패시브 갯수 자동 체크
+                                        {
+                                            (FindName("tbOpt0_2") as CheckBox).IsChecked = true;
+                                            itemfilters[0].disabled = false;
+                                        }
                                     }
 
                                     if (RS.lDisable.ContainsKey(split_id[1]))
@@ -565,15 +570,26 @@ namespace PoeTradeSearch
                             }
                         }
                         else if (is_map && item_type.Length > 5)
-                        {
-                            if (item_type.IndexOf(PS.Blighted.Text[z] + " ") == 0)
+                        {                            
+                            if (item_type.Length > 5)
                             {
-                                is_blight = true;
-                                item_type = item_type.Substring(PS.Blighted.Text[z].Length + 1);
-                            }
+                                if (item_type.IndexOf(PS.Blighted.Text[z] + " ") == 0)
+                                {
+                                    is_blight = true;
+                                    item_type = item_type.Substring(PS.Blighted.Text[z].Length + 1);
+                                }
 
-                            if (item_type.IndexOf(PS.Shaped.Text[z] + " ") == 0)
-                                item_type = item_type.Substring(PS.Shaped.Text[z].Length + 1);
+                                if (item_type.IndexOf(PS.Shaped.Text[z] + " ") == 0)
+                                    item_type = item_type.Substring(PS.Shaped.Text[z].Length + 1);
+                            }
+                            // 환영 지도면 구분을 위해서 1번 옵션 자동 체크
+                            if (!lItemOption[PS.DeliriumReward.Text[z]].IsEmpty() && itemfilters.Count > 0)
+                            {
+                                (FindName("tbOpt0_2") as CheckBox).IsChecked = true;
+                                (FindName("tbOpt0_0") as TextBox).Text = "";
+                                itemfilters[0].disabled = false;
+                                itemfilters[0].min = 99999;
+                            }
                         }
                         else if (lItemOption[PS.SynthesisedItem.Text[z]] == "_TRUE_")
                         {
