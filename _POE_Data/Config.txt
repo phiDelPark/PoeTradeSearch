@@ -14,7 +14,7 @@
         "server_redirect": false,
         "server_timeout": 5,
         "server_type": 0,
-        "use_ctrl_wheel": true
+        "use_ctrl_wheel": false
     },
     "shortcuts": [
         {

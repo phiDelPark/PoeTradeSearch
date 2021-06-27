@@ -75,7 +75,7 @@ namespace PoeTradeSearch
         internal CheckedDict mChecked;
 
         private ParserData mParser;
-        private ModsDict mMods;
+        //private ModsDict mMods;
 
         private FilterData[] mItems = new FilterData[2];
         private FilterData[] mStatic = new FilterData[2];
@@ -360,6 +360,7 @@ namespace PoeTradeSearch
                     reader.Close();
                 }
 
+                /*
                 s = "Mods.txt";
                 fs = new FileStream(path + s, FileMode.Open);
                 using (StreamReader reader = new StreamReader(fs))
@@ -369,6 +370,7 @@ namespace PoeTradeSearch
                     mMods = Json.Deserialize<ModsDict>(json);
                     reader.Close();
                 }
+                */
 
                 //MergeModData();
             }
