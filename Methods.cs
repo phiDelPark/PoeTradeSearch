@@ -251,7 +251,7 @@ namespace PoeTradeSearch
                             if (asOpts[j].Trim().IsEmpty()) continue;
 
                             string[] asDeep = asOpts[j].Split(new string[] { "\n" }, 0).Select(x => x.Trim()).ToArray();
-                            int is_deep = asDeep[0][0] == '{' && asDeep.Length == 2 ? 0 : -1;
+                            int is_deep = asDeep[0][0] == '{' && asDeep.Length > 1 ? 0 : -1;
                             if (is_deep == 0)
                             {
                                 asDeep[1] = asDeep[1].RepEx(@"([0-9]+)\([0-9\.\+\-]*[0-9].\)", "$1");
@@ -267,7 +267,7 @@ namespace PoeTradeSearch
                             }
                             else if (k < 10 && (!lItemOption[PS.ItemLevel.Text[z]].IsEmpty() || !lItemOption[PS.MapUltimatum.Text[z]].IsEmpty()))
                             {
-                                string input = option.RepEx(@" \([a-zA-Z]+\)", "");
+                                string input = option.RepEx(@"\s(\([a-zA-Z]+\)|—\s.+)$", "");
                                 string ft_type = option.Split(new string[] { "\n" }, 0)[0].RepEx(@"(.+)\s\(([a-zA-Z]+)\)$", "$2");
                                 if (ft_type == option) ft_type = "_none_";
 
