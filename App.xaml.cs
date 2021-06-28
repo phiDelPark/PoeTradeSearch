@@ -194,18 +194,6 @@ namespace PoeTradeSearch
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
             Application.Current.Properties["FileVersion"] = fvi.FileVersion;
 
-            if (File.Exists(path + "Admin.run") && !(bool)Application.Current.Properties["IsAdministrator"])
-            {
-                Process.Start(new ProcessStartInfo(Assembly.GetEntryAssembly().CodeBase)
-                {
-                    UseShellExecute = true,
-                    Verb = "runas",
-                    Arguments = "/wait_shutdown"
-                });
-                Environment.Exit(-1);
-                return;
-            }
-
             mLogFilePath = Assembly.GetExecutingAssembly().Location;
             mLogFilePath = mLogFilePath.Remove(mLogFilePath.Length - 4) + ".log";
             if (File.Exists(mLogFilePath)) File.Delete(mLogFilePath);

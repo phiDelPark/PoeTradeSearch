@@ -99,9 +99,7 @@ namespace PoeTradeSearch
             winMain.mConfig.Options.AutoCheckTotalres = ckAutoCheckTotalres.IsChecked == true;
             winMain.mConfig.Options.AutoCheckUpdates = ckAutoCheckUpdates.IsChecked == true;
 
-
             winMain.mConfig.Options.UseCtrlWheel = ckUseCtrlWheel.IsChecked == true;
-            bool enable_admin = winMain.mConfig.Options.UseCtrlWheel;
 
             winMain.mConfig.Shortcuts = new ConfigShortcut[12];
             for (int i = 0; i < 12; i++)
@@ -114,8 +112,6 @@ namespace PoeTradeSearch
                 winMain.mConfig.Shortcuts[i].Keycode = (int)KeyInterop.VirtualKeyFromKey(hotkey?.Key ?? 0);
                 winMain.mConfig.Shortcuts[i].Modifiers = (int)(hotkey?.Modifiers ?? 0);
                 winMain.mConfig.Shortcuts[i].Value = value;
-
-                if (!enable_admin) enable_admin = winMain.mConfig.Shortcuts[i].Keycode != 0;
             }
 
             string path = (string)Application.Current.Properties["DataPath"];
@@ -124,9 +120,6 @@ namespace PoeTradeSearch
                 writer.Write(Json.Serialize<ConfigData>(winMain.mConfig, true));
                 writer.Close();
             }
-
-            if (enable_admin) File.Create(path + "Admin.run");
-            else File.Delete(path + "Admin.run");
 
             // 설정이 바뀌면 재시작
             Process.Start(new ProcessStartInfo(Assembly.GetExecutingAssembly().Location)
