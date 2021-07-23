@@ -278,8 +278,8 @@ namespace PoeTradeSearch
 
                                 if (ft_type == "enchant" && asSplit.Length > 1 && cluster == null)
                                 {
-                                    input = input.Split(':')?[1].Trim().RepEx(@"[0-9]+\%", "#%");
-                                    cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == input);
+                                    string tmp = input.Split(':')?[1].Trim().RepEx(@"[0-9]+\%", "#%");
+                                    cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == tmp);
                                     if (cluster != null) input = asSplit[0] + ": #";
                                 }
                                 else if (ft_type == "implicit" && cate_ids.Length == 1 && cate_ids[0] == "map")

@@ -85,7 +85,7 @@
             <TabItem Header="자동 체크" HorizontalAlignment="Left" Height="50" Margin="5,5,-5,-5" VerticalAlignment="Top" Width="80">
                 <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Margin="5">
                     <Grid>
-                        <Label Content="필터의 체크 박스를 우클릭하면 자동 등록 됩니다." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,10,0,0" IsEnabled="False"/>
+                        <Label Content="필터의 체크 박스를 우클릭하면 자동 등록 됩니다. (고정옵 제외)" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,10,0,0" IsEnabled="False"/>
                         <Label Content="Alt+Ctrl+C 로 작동시 등급이 표시되며 2등급 이상만 체크합니다." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,30,0,0" IsEnabled="False"/>
                         <Grid Margin="10,65,10,10">
                             <ListBox Name="lbChecked" ItemsSource="{Binding}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,0,0,0">
