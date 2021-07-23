@@ -365,7 +365,7 @@ namespace PoeTradeSearch
                 }
                 else
                 {
-                    return " - " + HourPeriod.ToString().PadLeft(2, '\u2000') + "시전";
+                    return " - " + HourPeriod.ToString().PadLeft(2, '\u2000') + "시간전";
                 }
             }
             else if ((DayPeriod > 0) && (DayPeriod < 7))

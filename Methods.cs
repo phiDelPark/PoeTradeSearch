@@ -276,10 +276,10 @@ namespace PoeTradeSearch
                                 ParserDictItem radius = null;
                                 ParserDictItem cluster = null;
 
-
                                 if (ft_type == "enchant" && asSplit.Length > 1 && cluster == null)
                                 {
-                                    cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == input.Split(':')?[1].Trim());
+                                    input = input.Split(':')?[1].Trim().RepEx(@"[0-9]+\%", "#%");
+                                    cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == input);
                                     if (cluster != null) input = asSplit[0] + ": #";
                                 }
                                 else if (ft_type == "implicit" && cate_ids.Length == 1 && cate_ids[0] == "map")
@@ -484,7 +484,7 @@ namespace PoeTradeSearch
                                     }
                                     else
                                     {
-                                        if (!color.ContainsKey(ft_type) && (is_deep < 1 || is_deep < 3) &&
+                                        if (ft_type != "implicit" && (is_deep < 1 || is_deep < 3) &&
                                             (mChecked.Entries?.Find(x => x.Id.Equals(split_id[1]) && x.Key.IndexOf(cate_ids[0] + "/") > -1) != null))
                                         {
                                             (FindName("tbOpt" + k + "_2") as CheckBox).BorderThickness = new Thickness(2); 
@@ -1222,7 +1222,7 @@ namespace PoeTradeSearch
                         json_entity = "{\"exchange\":{\"status\":{\"option\":\"online\"},\"have\":[\"" + entity[0] + "\"],\"want\":[\"" + entity[1] + "\"]}}";
                     }
                     string request_result = SendHTTP(json_entity, url_string, mConfig.Options.ServerTimeout);
-                    msg = "거래소 접속이 원활하지 않습니다";
+                    msg = "현재 리그의 거래소 접속이 원활하지 않습니다";
 
                     if (request_result != null)
                     {
@@ -1310,8 +1310,7 @@ namespace PoeTradeSearch
                                                 {
                                                     liPrice.Items.Add((
                                                         String.Format(
-                                                            "{0} {1} [{2}]",
-                                                            GetLapsedTime(indexed).PadRight(10, '\u2000'), (amount + " " + keyName).PadRight(14, '\u2000'), account)
+                                                            "{0} [{1}] {2}", (amount + " " + keyName).PadRight(14, '\u2000'), account, GetLapsedTime(indexed).PadRight(10, '\u2000'))
                                                         )
                                                     );
                                                 }

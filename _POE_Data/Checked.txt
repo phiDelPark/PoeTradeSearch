@@ -33,14 +33,6 @@
             "key": "jewel\/accessory\/weapon\/"
         },
         {
-            "id": "stat_4036575250",
-            "key": "jewel\/"
-        },
-        {
-            "id": "stat_2669029667",
-            "key": "jewel\/"
-        },
-        {
             "id": "stat_1265282021",
             "key": "accessory\/"
         },
@@ -65,24 +57,12 @@
             "key": "weapon\/"
         },
         {
-            "id": "stat_2843100721",
-            "key": "weapon\/"
-        },
-        {
             "id": "stat_1509134228",
             "key": "weapon\/"
         },
         {
-            "id": "stat_3086156145",
-            "key": "jewel\/"
-        },
-        {
             "id": "pseudo_increased_movement_speed",
             "key": "armour\/"
-        },
-        {
-            "id": "stat_829382474",
-            "key": "weapon\/"
         }
     ]
 }

@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace PoeTradeSearch
@@ -118,6 +119,7 @@ namespace PoeTradeSearch
                 mTrayIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             }
 
+            Native.SetForegroundWindow(Native.FindWindow("Shell_TrayWnd", null));
             mTrayIcon.ShowBalloonTip(5000);
 
             InitializeControls();
@@ -154,6 +156,8 @@ namespace PoeTradeSearch
 
             IntPtr mNextClipBoardViewerHWnd = Native.SetClipboardViewer(mMainHwnd);
             HwndSource.FromHwnd(mMainHwnd).AddHook(new HwndSourceHook(WndProc));
+
+            this.Title += " - " + mConfig.Options.League;
         }
 
         private void Window_Activated(object sender, EventArgs e)
@@ -447,6 +451,8 @@ namespace PoeTradeSearch
 
             if ((FilterEntrie)(FindName("cbOpt" + index) as ComboBox).SelectedItem == null)
                 return;
+
+            if ((sender as CheckBox).BorderBrush == Brushes.DarkRed) return;
 
             (sender as CheckBox).IsChecked = (sender as CheckBox).BorderThickness.Left == 1;
             (sender as CheckBox).BorderThickness = new Thickness((sender as CheckBox).IsChecked == true ? 2 : 1);
