@@ -26,7 +26,7 @@
         },
         {
             "id": "stat_3372524247",
-            "key": "armour\/"
+            "key": "armour\/accessory\/"
         },
         {
             "id": "pseudo_global_critical_strike_multiplier",
