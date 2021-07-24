@@ -53,7 +53,7 @@
                 <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1" Margin="5">
                     <Grid>
                         <CheckBox Name="ckUseCtrlWheel" Content="컨트롤 + 마우스 휠로 스크롤하여 창고 탭이동 하기" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,14,0,0"/>
-                        <Label Content="단축키" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,43,0,0"/>
+                        <Label Content="단축키 (없음: ESC)" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,43,0,0"/>
                         <Label Content="작업값" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="128,43,0,0"/>
                         <local:HotkeyBox x:Name="Hotkey1" HorizontalAlignment="Left" Margin="15,74,0,0" VerticalAlignment="Top" Height="22" Width="102"/>
                         <TextBox Name="HotkeyValue1" Margin="132,74,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="22"/>
