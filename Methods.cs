@@ -520,8 +520,8 @@ namespace PoeTradeSearch
                                             k++;
                                             SetFilterObjectVisibility(k, Visibility.Hidden);
                                             (FindName("tbOpt" + k) as TextBox).Text = strs_tmp[ssi];
-                                            (FindName("tbOpt" + ssi + "_2") as CheckBox).IsChecked = false;
-                                            ((ComboBox)FindName("cbOpt" + ssi)).Items.Clear();
+                                            (FindName("tbOpt" + k + "_2") as CheckBox).IsChecked = false;
+                                            ((ComboBox)FindName("cbOpt" + k)).Items.Clear();
                                             SetFilterObjectColor(k, color.ContainsKey(ft_type) ? color[ft_type] : SystemColors.ActiveBorderBrush);
                                         }
                                     }
