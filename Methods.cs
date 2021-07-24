@@ -101,8 +101,11 @@ namespace PoeTradeSearch
                 ((CheckBox)FindName("tbOpt" + i + "_2")).IsEnabled = true;
                 ((CheckBox)FindName("tbOpt" + i + "_2")).IsChecked = false;
                 ((CheckBox)FindName("tbOpt" + i + "_3")).IsChecked = false;
-                ((CheckBox)FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
+
                 SetFilterObjectColor(i, SystemColors.ActiveBorderBrush);
+                SetFilterObjectVisibility(i, Visibility.Visible);
+
+                ((CheckBox)FindName("tbOpt" + i + "_3")).Visibility = Visibility.Hidden;
             }
         }
 
@@ -113,6 +116,15 @@ namespace PoeTradeSearch
             ((Control)FindName("tbOpt" + index + "_1")).BorderBrush = colorBrush;
             ((Control)FindName("tbOpt" + index + "_2")).BorderBrush = colorBrush;
             ((Control)FindName("tbOpt" + index + "_3")).BorderBrush = colorBrush;
+        }
+
+        private void SetFilterObjectVisibility(int index, Visibility visibility)
+        {
+            ((ComboBox)FindName("cbOpt" + index)).Visibility = visibility;
+            ((Control)FindName("tbOpt" + index + "_0")).Visibility = visibility;
+            ((Control)FindName("tbOpt" + index + "_1")).Visibility = visibility;
+            ((Control)FindName("tbOpt" + index + "_2")).Visibility = visibility;
+            ((Control)FindName("tbOpt" + index + "_3")).Visibility = visibility;
         }
 
         private void setDPS(string physical, string elemental, string chaos, string quality, string perSecond, double phyDmgIncr, double speedIncr)
@@ -311,7 +323,7 @@ namespace PoeTradeSearch
 
                                 bool local_exists = false;
                                 FilterDictItem filter = null;
-                                Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
+                                Regex rgx = new Regex("^" + input + "(\n|$)", RegexOptions.IgnoreCase);
 
                                 foreach (FilterDict data_result in mFilter[z].Result)
                                 {
@@ -347,7 +359,7 @@ namespace PoeTradeSearch
                                             bool isMin = false, isMax = false;
                                             bool isBreak = true;
 
-                                            MatchCollection matches2 = Regex.Matches(entrie.Text, @"[-]?([0-9]+\.[0-9]+|[0-9]+|#)");
+                                            MatchCollection matches2 = Regex.Matches(entrie.Text.Split('\n')[0], @"[-]?([0-9]+\.[0-9]+|[0-9]+|#)");
 
                                             for (int t = 0; t < matches2.Count; t++)
                                             {
@@ -498,6 +510,21 @@ namespace PoeTradeSearch
 
                                     attackSpeedIncr += filter.Text == PS.AttackSpeedIncr.Text[z] && min.WithIn(1, 999) ? min : 0;
                                     PhysicalDamageIncr += filter.Text == PS.PhysicalDamageIncr.Text[z] && min.WithIn(1, 9999) ? min : 0;
+
+                                    string[] strs_tmp = (FindName("tbOpt" + k) as TextBox).Text.Split('\n');
+                                    if (strs_tmp.Length > 1)
+                                    {
+                                        (FindName("tbOpt" + k) as TextBox).Text = strs_tmp[0];
+                                        for (int ssi = 1; ssi < strs_tmp.Length; ssi++)
+                                        {
+                                            k++;
+                                            SetFilterObjectVisibility(k, Visibility.Hidden);
+                                            (FindName("tbOpt" + k) as TextBox).Text = strs_tmp[ssi];
+                                            (FindName("tbOpt" + ssi + "_2") as CheckBox).IsChecked = false;
+                                            ((ComboBox)FindName("cbOpt" + ssi)).Items.Clear();
+                                            SetFilterObjectColor(k, color.ContainsKey(ft_type) ? color[ft_type] : SystemColors.ActiveBorderBrush);
+                                        }
+                                    }
 
                                     k++;
                                 }
