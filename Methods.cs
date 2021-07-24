@@ -266,7 +266,7 @@ namespace PoeTradeSearch
                             int is_deep = asDeep[0][0] == '{' && asDeep.Length > 1 ? 0 : -1;
                             if (is_deep == 0)
                             {
-                                asDeep[1] = asDeep[1].RepEx(@"([0-9]+)\([0-9\.\+\-]*[0-9].\)", "$1");
+                                asDeep[1] = asDeep[1].RepEx(@"([0-9]+)\([0-9\.\+\-]*[0-9]+\)", "$1");
                                 is_deep = asDeep[0].RepEx(@"^.+\s\(" + PS.OptionTier.Text[z] + @": ([0-9])\)\s—.+$", "$1").ToInt(0);
                             }
 
