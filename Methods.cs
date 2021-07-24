@@ -262,271 +262,283 @@ namespace PoeTradeSearch
                         {
                             if (asOpts[j].Trim().IsEmpty()) continue;
 
+                            string[] options = null;
                             string[] asDeep = asOpts[j].Split(new string[] { "\n" }, 0).Select(x => x.Trim()).ToArray();
                             int is_deep = asDeep[0][0] == '{' && asDeep.Length > 1 ? 0 : -1;
+
                             if (is_deep == 0)
                             {
-                                asDeep[1] = asDeep[1].RepEx(@"([0-9]+)\([0-9\.\+\-]*[0-9]+\)", "$1");
                                 is_deep = asDeep[0].RepEx(@"^.+\s\(" + PS.OptionTier.Text[z] + @": ([0-9])\)\s—.+$", "$1").ToInt(0);
+                                options = new string[asDeep.Length - 1];
+                                for (int ssi = 0; ssi < options.Length; ssi++)
+                                {
+                                    options[ssi] = asDeep[ssi + 1].RepEx(@"([0-9]+)\([0-9\.\+\-]*[0-9]+\)", "$1");
+                                }
+                            }
+                            else
+                            {
+                                options = new string[1] { asDeep[0] };
                             }
 
-                            string option = asDeep[is_deep > -1 ? 1 : 0];
-                            string[] asSplit = option.Replace(@" \([\w\s]+\)", "").Split(':').Select(x => x.Trim()).ToArray();
-
-                            if (lItemOption.ContainsKey(asSplit[0]))
+                            foreach (string option in options)
                             {
-                                if (lItemOption[asSplit[0]] == "") lItemOption[asSplit[0]] = asSplit.Length > 1 ? asSplit[1] : "_TRUE_";
-                            }
-                            else if (k < 10 && (!lItemOption[PS.ItemLevel.Text[z]].IsEmpty() || !lItemOption[PS.MapUltimatum.Text[z]].IsEmpty()))
-                            {
-                                string input = option.RepEx(@"\s(\([a-zA-Z]+\)|—\s.+)$", "");
-                                string ft_type = option.Split(new string[] { "\n" }, 0)[0].RepEx(@"(.+)\s\(([a-zA-Z]+)\)$", "$2");
-                                if (ft_type == option) ft_type = "_none_";
+                                string[] asSplit = option.Replace(@" \([\w\s]+\)", "").Split(':').Select(x => x.Trim()).ToArray();
 
-                                bool _resistance = false;
-                                double min = 99999, max = 99999;
-                                ParserDictItem radius = null;
-                                ParserDictItem cluster = null;
-
-                                if (ft_type == "enchant" && asSplit.Length > 1 && cluster == null)
+                                if (lItemOption.ContainsKey(asSplit[0]))
                                 {
-                                    string tmp = input.Split(':')?[1].Trim().RepEx(@"[0-9]+\%", "#%");
-                                    cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == tmp);
-                                    if (cluster != null) input = asSplit[0] + ": #";
+                                    if (lItemOption[asSplit[0]] == "") lItemOption[asSplit[0]] = asSplit.Length > 1 ? asSplit[1] : "_TRUE_";
                                 }
-                                else if (ft_type == "implicit" && cate_ids.Length == 1 && cate_ids[0] == "map")
+                                else if (k < 10 && (!lItemOption[PS.ItemLevel.Text[z]].IsEmpty() || !lItemOption[PS.MapUltimatum.Text[z]].IsEmpty()))
                                 {
-                                    string pats = "";
-                                    foreach (ParserDictItem item in PS.MapTier.Entries)
+                                    string input = option.RepEx(@"\s(\([a-zA-Z]+\)|—\s.+)$", "");
+                                    string ft_type = option.Split(new string[] { "\n" }, 0)[0].RepEx(@"(.+)\s\(([a-zA-Z]+)\)$", "$2");
+                                    if (ft_type == option) ft_type = "_none_";
+
+                                    bool _resistance = false;
+                                    double min = 99999, max = 99999;
+                                    ParserDictItem radius = null;
+                                    ParserDictItem cluster = null;
+
+                                    if (ft_type == "enchant" && asSplit.Length > 1 && cluster == null)
                                     {
-                                        pats += item.Text[z] + "|";
+                                        string tmp = input.Split(':')?[1].Trim().RepEx(@"[0-9]+\%", "#%");
+                                        cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == tmp);
+                                        if (cluster != null) input = asSplit[0] + ": #";
                                     }
-                                    Match match = Regex.Match(input.Trim(), "(.+) (" + pats + "_none_)(.*)");
-                                    if (match.Success)
+                                    else if (ft_type == "implicit" && cate_ids.Length == 1 && cate_ids[0] == "map")
                                     {
-                                        map_influenced = match.Groups[2] + "";
-                                        input = match.Groups[1] + " #" + match.Groups[3];
-                                    }
-                                    continue;
-                                }
-                                else if (ft_type == "_none_" && lItemOption[PS.Radius.Text[z]] != "" && radius == null)
-                                {
-                                    radius = Array.Find(PS.Radius.Entries, x => x.Text[z] == asSplit[0]);
-                                    if (radius != null)
-                                    {
-                                        lItemOption[PS.Radius.Text[z]] = RS.lRadius.Entries[radius.Id.ToInt() - 1].Text[z];
-                                    }
-                                }
-
-                                input = Regex.Escape(Regex.Replace(input, @"[+-]?[0-9]+\.[0-9]+|[+-]?[0-9]+", "#"));
-                                input = Regex.Replace(input, @"\\#", @"[+-]?([0-9]+\.[0-9]+|[0-9]+|\#)");
-
-                                bool local_exists = false;
-                                FilterDictItem filter = null;
-                                Regex rgx = new Regex("^" + input + "(\n|$)", RegexOptions.IgnoreCase);
-
-                                foreach (FilterDict data_result in mFilter[z].Result)
-                                {
-                                    FilterDictItem[] entries = Array.FindAll(data_result.Entries, x => rgx.IsMatch(x.Text));
-
-                                    // 2개 이상 같은 옵션이 있을때 장비 옵션 (특정) 만 추출
-                                    if (entries.Length > 1)
-                                    {
-                                        FilterDictItem[] entries_tmp = Array.FindAll(entries, x => x.Part == cate_ids[0]);
-                                        // 화살통 제외
-                                        if (entries_tmp.Length > 0 && (cate_ids.Length == 1 || cate_ids[1] != "quiver"))
+                                        string pats = "";
+                                        foreach (ParserDictItem item in PS.MapTier.Entries)
                                         {
-                                            local_exists = true;
-                                            entries = entries_tmp;
+                                            pats += item.Text[z] + "|";
                                         }
-                                        else
+                                        Match match = Regex.Match(input.Trim(), "(.+) (" + pats + "_none_)(.*)");
+                                        if (match.Success)
                                         {
-                                            entries = Array.FindAll(entries, x => x.Part == null);
+                                            map_influenced = match.Groups[2] + "";
+                                            input = match.Groups[1] + " #" + match.Groups[3];
+                                        }
+                                        continue;
+                                    }
+                                    else if (ft_type == "_none_" && lItemOption[PS.Radius.Text[z]] != "" && radius == null)
+                                    {
+                                        radius = Array.Find(PS.Radius.Entries, x => x.Text[z] == asSplit[0]);
+                                        if (radius != null)
+                                        {
+                                            lItemOption[PS.Radius.Text[z]] = RS.lRadius.Entries[radius.Id.ToInt() - 1].Text[z];
                                         }
                                     }
 
-                                    if (entries.Length > 0)
+                                    input = Regex.Escape(Regex.Replace(input, @"[+-]?[0-9]+\.[0-9]+|[+-]?[0-9]+", "#"));
+                                    input = Regex.Replace(input, @"\\#", @"[+-]?([0-9]+\.[0-9]+|[0-9]+|\#)");
+
+                                    bool local_exists = false;
+                                    FilterDictItem filter = null;
+                                    Regex rgx = new Regex("^" + input + "(\n|$)", RegexOptions.IgnoreCase);
+
+                                    foreach (FilterDict data_result in mFilter[z].Result)
                                     {
-                                        Array.Sort(entries, delegate (FilterDictItem entrie1, FilterDictItem entrie2)
+                                        FilterDictItem[] entries = Array.FindAll(data_result.Entries, x => rgx.IsMatch(x.Text));
+
+                                        // 2개 이상 같은 옵션이 있을때 장비 옵션 (특정) 만 추출
+                                        if (entries.Length > 1)
                                         {
-                                            return (entrie2.Part ?? "").CompareTo(entrie1.Part ?? "");
-                                        });
-
-                                        MatchCollection matches1 = Regex.Matches(option, @"[-]?([0-9]+\.[0-9]+|[0-9]+)");
-                                        foreach (FilterDictItem entrie in entries)
-                                        {
-                                            int idxMin = 0, idxMax = 0;
-                                            bool isMin = false, isMax = false;
-                                            bool isBreak = true;
-
-                                            MatchCollection matches2 = Regex.Matches(entrie.Text.Split('\n')[0], @"[-]?([0-9]+\.[0-9]+|[0-9]+|#)");
-
-                                            for (int t = 0; t < matches2.Count; t++)
+                                            FilterDictItem[] entries_tmp = Array.FindAll(entries, x => x.Part == cate_ids[0]);
+                                            // 화살통 제외
+                                            if (entries_tmp.Length > 0 && (cate_ids.Length == 1 || cate_ids[1] != "quiver"))
                                             {
-                                                if (matches2[t].Value == "#")
+                                                local_exists = true;
+                                                entries = entries_tmp;
+                                            }
+                                            else
+                                            {
+                                                entries = Array.FindAll(entries, x => x.Part == null);
+                                            }
+                                        }
+
+                                        if (entries.Length > 0)
+                                        {
+                                            Array.Sort(entries, delegate (FilterDictItem entrie1, FilterDictItem entrie2)
+                                            {
+                                                return (entrie2.Part ?? "").CompareTo(entrie1.Part ?? "");
+                                            });
+
+                                            MatchCollection matches1 = Regex.Matches(option, @"[-]?([0-9]+\.[0-9]+|[0-9]+)");
+                                            foreach (FilterDictItem entrie in entries)
+                                            {
+                                                int idxMin = 0, idxMax = 0;
+                                                bool isMin = false, isMax = false;
+                                                bool isBreak = true;
+
+                                                MatchCollection matches2 = Regex.Matches(entrie.Text.Split('\n')[0], @"[-]?([0-9]+\.[0-9]+|[0-9]+|#)");
+
+                                                for (int t = 0; t < matches2.Count; t++)
                                                 {
-                                                    if (!isMin)
+                                                    if (matches2[t].Value == "#")
                                                     {
-                                                        isMin = true;
-                                                        idxMin = t;
+                                                        if (!isMin)
+                                                        {
+                                                            isMin = true;
+                                                            idxMin = t;
+                                                        }
+                                                        else if (!isMax)
+                                                        {
+                                                            isMax = true;
+                                                            idxMax = t;
+                                                        }
                                                     }
-                                                    else if (!isMax)
+                                                    else if (matches1[t].Value != matches2[t].Value)
                                                     {
-                                                        isMax = true;
-                                                        idxMax = t;
+                                                        isBreak = false;
+                                                        break;
                                                     }
                                                 }
-                                                else if (matches1[t].Value != matches2[t].Value)
+
+                                                if (isBreak)
                                                 {
-                                                    isBreak = false;
+                                                    string[] id_split = entrie.Id.Split('.');
+                                                    (FindName("cbOpt" + k) as ComboBox).Items.Add(new FilterEntrie(cate_ids[0], id_split[0], id_split[1], data_result.Label));
+
+                                                    if (filter == null)
+                                                    {
+                                                        filter = entrie;
+                                                        _resistance = id_split.Length == 2 && RS.lResistance.ContainsKey(id_split[1]);
+                                                        min = isMin && matches1.Count > idxMin ? ((Match)matches1[idxMin]).Value.ToDouble(99999) : 99999;
+                                                        max = isMax && idxMin < idxMax && matches1.Count > idxMax ? ((Match)matches1[idxMax]).Value.ToDouble(99999) : 99999;
+                                                    }
+
                                                     break;
                                                 }
                                             }
-
-                                            if (isBreak)
-                                            {
-                                                string[] id_split = entrie.Id.Split('.');
-                                                (FindName("cbOpt" + k) as ComboBox).Items.Add(new FilterEntrie(cate_ids[0], id_split[0], id_split[1], data_result.Label));
-
-                                                if (filter == null)
-                                                {
-                                                    filter = entrie;
-                                                    _resistance = id_split.Length == 2 && RS.lResistance.ContainsKey(id_split[1]);
-                                                    min = isMin && matches1.Count > idxMin ? ((Match)matches1[idxMin]).Value.ToDouble(99999) : 99999;
-                                                    max = isMax && idxMin < idxMax && matches1.Count > idxMax ? ((Match)matches1[idxMax]).Value.ToDouble(99999) : 99999;
-                                                }
-
-                                                break;
-                                            }
                                         }
                                     }
-                                }
 
-                                if (filter != null)
-                                {
-                                    string[] split_id = filter.Id.Split('.');
-                                    Dictionary<string, SolidColorBrush> color = new Dictionary<string, SolidColorBrush>()
+                                    if (filter != null)
+                                    {
+                                        string[] split_id = filter.Id.Split('.');
+                                        Dictionary<string, SolidColorBrush> color = new Dictionary<string, SolidColorBrush>()
                                     {
                                         { "implicit", Brushes.DarkRed }, { "crafted", Brushes.Blue }, { "enchant", Brushes.Blue }
                                     };
 
-                                    SetFilterObjectColor(k, color.ContainsKey(ft_type) ? color[ft_type] : SystemColors.ActiveBorderBrush);
+                                        SetFilterObjectColor(k, color.ContainsKey(ft_type) ? color[ft_type] : SystemColors.ActiveBorderBrush);
 
-                                    (FindName("cbOpt" + k) as ComboBox).SelectedValue = RS.lFilterType["pseudo"];
-                                    if ((FindName("cbOpt" + k) as ComboBox).SelectedValue == null)
-                                    {
-                                        if (split_id.Length == 2 && RS.lPseudo.ContainsKey(split_id[1]))
-                                            (FindName("cbOpt" + k) as ComboBox).Items.Add(new FilterEntrie(cate_ids[0], "pseudo", split_id[1], RS.lFilterType["pseudo"]));
-                                    }
-
-                                    if ((FindName("cbOpt" + k) as ComboBox).Items.Count == 1)
-                                    {
-                                        (FindName("cbOpt" + k) as ComboBox).SelectedIndex = 0;
-                                    }
-                                    else
-                                    {
-                                        (FindName("cbOpt" + k) as ComboBox).SelectedValue = RS.lFilterType.ContainsKey(ft_type) ? RS.lFilterType[ft_type] : "_none_";
+                                        (FindName("cbOpt" + k) as ComboBox).SelectedValue = RS.lFilterType["pseudo"];
                                         if ((FindName("cbOpt" + k) as ComboBox).SelectedValue == null)
                                         {
-                                            foreach (string type in new string[] {
+                                            if (split_id.Length == 2 && RS.lPseudo.ContainsKey(split_id[1]))
+                                                (FindName("cbOpt" + k) as ComboBox).Items.Add(new FilterEntrie(cate_ids[0], "pseudo", split_id[1], RS.lFilterType["pseudo"]));
+                                        }
+
+                                        if ((FindName("cbOpt" + k) as ComboBox).Items.Count == 1)
+                                        {
+                                            (FindName("cbOpt" + k) as ComboBox).SelectedIndex = 0;
+                                        }
+                                        else
+                                        {
+                                            (FindName("cbOpt" + k) as ComboBox).SelectedValue = RS.lFilterType.ContainsKey(ft_type) ? RS.lFilterType[ft_type] : "_none_";
+                                            if ((FindName("cbOpt" + k) as ComboBox).SelectedValue == null)
+                                            {
+                                                foreach (string type in new string[] {
                                                 !local_exists && mConfig.Options.AutoSelectPseudo ? "pseudo" : "explicit", "explicit", "fractured"
                                             })
-                                            {
-                                                (FindName("cbOpt" + k) as ComboBox).SelectedValue = RS.lFilterType[type];
-                                                if ((FindName("cbOpt" + k) as ComboBox).SelectedValue != null) break;
+                                                {
+                                                    (FindName("cbOpt" + k) as ComboBox).SelectedValue = RS.lFilterType[type];
+                                                    if ((FindName("cbOpt" + k) as ComboBox).SelectedValue != null) break;
+                                                }
                                             }
                                         }
-                                    }
 
-                                    // 평균
-                                    if (min != 99999 && max != 99999 && filter.Text.IndexOf("#" + (z == 0 ? "~" : " to ") + "#") > -1)
-                                    {
-                                        min += max;
-                                        min = Math.Truncate(min / 2 * 10) / 10;
-                                        max = 99999;
-                                    }
-
-                                    // 역방향 이면 위치 바꿈
-                                    ParserDictItem force_pos = Array.Find(PS.Position.Entries, x => x.Id.Equals(split_id[1]));
-                                    if (force_pos?.Key == "reverse" || force_pos?.Key == "right")
-                                    {
-                                        double tmp = min;
-                                        min = max;
-                                        max = tmp;
-                                    }
-
-                                    itemfilters.Add(new Itemfilter
-                                    {
-                                        stat = split_id[1],
-                                        type = filter.Type,
-                                        text = filter.Text,
-                                        max = max,
-                                        min = min,
-                                        disabled = true
-                                    });
-
-                                    (FindName("tbOpt" + k) as TextBox).Text = (is_deep > 0 ? is_deep.ToString() + ") " : "") + filter.Text;
-
-                                    (FindName("tbOpt" + k + "_3") as CheckBox).Visibility = _resistance ? Visibility.Visible : Visibility.Hidden;
-                                    if ((FindName("tbOpt" + k + "_3") as CheckBox).Visibility == Visibility.Visible && mConfig.Options.AutoCheckTotalres)
-                                        (FindName("tbOpt" + k + "_3") as CheckBox).IsChecked = true;
-
-                                    if (cluster != null)
-                                    {
-                                        (FindName("tbOpt" + k) as TextBox).Text = cluster.Text[z];
-                                        (FindName("tbOpt" + k) as TextBox).Tag = "CLUSTER";
-                                        (FindName("tbOpt" + k + "_0") as TextBox).Background = SystemColors.WindowBrush;
-                                        (FindName("tbOpt" + k + "_0") as TextBox).Foreground = SystemColors.WindowBrush;
-                                        (FindName("tbOpt" + k + "_0") as TextBox).IsEnabled = false;
-                                        (FindName("tbOpt" + k + "_1") as TextBox).IsEnabled = false;
-                                        (FindName("tbOpt" + k + "_2") as CheckBox).IsChecked = true;
-                                        itemfilters[itemfilters.Count - 1].min = min = cluster.Id.ToInt();
-                                        itemfilters[itemfilters.Count - 1].max = max = 99999;
-                                        if(itemfilters.Count > 0) // 군 주얼 패시브 갯수 자동 체크
+                                        // 평균
+                                        if (min != 99999 && max != 99999 && filter.Text.IndexOf("#" + (z == 0 ? "~" : " to ") + "#") > -1)
                                         {
-                                            (FindName("tbOpt0_2") as CheckBox).IsChecked = true;
-                                            itemfilters[0].disabled = false;
+                                            min += max;
+                                            min = Math.Truncate(min / 2 * 10) / 10;
+                                            max = 99999;
                                         }
-                                    }
 
-                                    if (RS.lDisable.ContainsKey(split_id[1]))
-                                    {
-                                        (FindName("tbOpt" + k + "_2") as CheckBox).IsChecked = false;
-                                        (FindName("tbOpt" + k + "_2") as CheckBox).IsEnabled = false;
-                                    }
-                                    else
-                                    {
-                                        if (ft_type != "implicit" && (is_deep < 1 || is_deep < 3) &&
-                                            (mChecked.Entries?.Find(x => x.Id.Equals(split_id[1]) && x.Key.IndexOf(cate_ids[0] + "/") > -1) != null))
+                                        // 역방향 이면 위치 바꿈
+                                        ParserDictItem force_pos = Array.Find(PS.Position.Entries, x => x.Id.Equals(split_id[1]));
+                                        if (force_pos?.Key == "reverse" || force_pos?.Key == "right")
                                         {
-                                            (FindName("tbOpt" + k + "_2") as CheckBox).BorderThickness = new Thickness(2); 
+                                            double tmp = min;
+                                            min = max;
+                                            max = tmp;
+                                        }
+
+                                        itemfilters.Add(new Itemfilter
+                                        {
+                                            stat = split_id[1],
+                                            type = filter.Type,
+                                            text = filter.Text,
+                                            max = max,
+                                            min = min,
+                                            disabled = true
+                                        });
+
+                                        (FindName("tbOpt" + k) as TextBox).Text = (is_deep > 0 ? is_deep.ToString() + ") " : "") + filter.Text;
+
+                                        (FindName("tbOpt" + k + "_3") as CheckBox).Visibility = _resistance ? Visibility.Visible : Visibility.Hidden;
+                                        if ((FindName("tbOpt" + k + "_3") as CheckBox).Visibility == Visibility.Visible && mConfig.Options.AutoCheckTotalres)
+                                            (FindName("tbOpt" + k + "_3") as CheckBox).IsChecked = true;
+
+                                        if (cluster != null)
+                                        {
+                                            (FindName("tbOpt" + k) as TextBox).Text = cluster.Text[z];
+                                            (FindName("tbOpt" + k) as TextBox).Tag = "CLUSTER";
+                                            (FindName("tbOpt" + k + "_0") as TextBox).Background = SystemColors.WindowBrush;
+                                            (FindName("tbOpt" + k + "_0") as TextBox).Foreground = SystemColors.WindowBrush;
+                                            (FindName("tbOpt" + k + "_0") as TextBox).IsEnabled = false;
+                                            (FindName("tbOpt" + k + "_1") as TextBox).IsEnabled = false;
                                             (FindName("tbOpt" + k + "_2") as CheckBox).IsChecked = true;
-                                            itemfilters[itemfilters.Count - 1].disabled = false;
+                                            itemfilters[itemfilters.Count - 1].min = min = cluster.Id.ToInt();
+                                            itemfilters[itemfilters.Count - 1].max = max = 99999;
+                                            if (itemfilters.Count > 0) // 군 주얼 패시브 갯수 자동 체크
+                                            {
+                                                (FindName("tbOpt0_2") as CheckBox).IsChecked = true;
+                                                itemfilters[0].disabled = false;
+                                            }
                                         }
-                                    }
 
-                                    (FindName("tbOpt" + k + "_0") as TextBox).Text = min == 99999 ? "" : min.ToString();
-                                    (FindName("tbOpt" + k + "_1") as TextBox).Text = max == 99999 ? "" : max.ToString();
-
-                                    attackSpeedIncr += filter.Text == PS.AttackSpeedIncr.Text[z] && min.WithIn(1, 999) ? min : 0;
-                                    PhysicalDamageIncr += filter.Text == PS.PhysicalDamageIncr.Text[z] && min.WithIn(1, 9999) ? min : 0;
-
-                                    string[] strs_tmp = (FindName("tbOpt" + k) as TextBox).Text.Split('\n');
-                                    if (strs_tmp.Length > 1)
-                                    {
-                                        (FindName("tbOpt" + k) as TextBox).Text = strs_tmp[0];
-                                        for (int ssi = 1; ssi < strs_tmp.Length; ssi++)
+                                        if (RS.lDisable.ContainsKey(split_id[1]))
                                         {
-                                            k++;
-                                            SetFilterObjectVisibility(k, Visibility.Hidden);
-                                            (FindName("tbOpt" + k) as TextBox).Text = strs_tmp[ssi];
                                             (FindName("tbOpt" + k + "_2") as CheckBox).IsChecked = false;
-                                            ((ComboBox)FindName("cbOpt" + k)).Items.Clear();
-                                            SetFilterObjectColor(k, color.ContainsKey(ft_type) ? color[ft_type] : SystemColors.ActiveBorderBrush);
+                                            (FindName("tbOpt" + k + "_2") as CheckBox).IsEnabled = false;
                                         }
-                                    }
+                                        else
+                                        {
+                                            if (ft_type != "implicit" && (is_deep < 1 || is_deep < 3) &&
+                                                (mChecked.Entries?.Find(x => x.Id.Equals(split_id[1]) && x.Key.IndexOf(cate_ids[0] + "/") > -1) != null))
+                                            {
+                                                (FindName("tbOpt" + k + "_2") as CheckBox).BorderThickness = new Thickness(2);
+                                                (FindName("tbOpt" + k + "_2") as CheckBox).IsChecked = true;
+                                                itemfilters[itemfilters.Count - 1].disabled = false;
+                                            }
+                                        }
 
-                                    k++;
+                                        (FindName("tbOpt" + k + "_0") as TextBox).Text = min == 99999 ? "" : min.ToString();
+                                        (FindName("tbOpt" + k + "_1") as TextBox).Text = max == 99999 ? "" : max.ToString();
+
+                                        attackSpeedIncr += filter.Text == PS.AttackSpeedIncr.Text[z] && min.WithIn(1, 999) ? min : 0;
+                                        PhysicalDamageIncr += filter.Text == PS.PhysicalDamageIncr.Text[z] && min.WithIn(1, 9999) ? min : 0;
+
+                                        string[] strs_tmp = (FindName("tbOpt" + k) as TextBox).Text.Split('\n');
+                                        if (strs_tmp.Length > 1)
+                                        {
+                                            (FindName("tbOpt" + k) as TextBox).Text = strs_tmp[0];
+                                            for (int ssi = 1; ssi < strs_tmp.Length; ssi++)
+                                            {
+                                                k++;
+                                                SetFilterObjectVisibility(k, Visibility.Hidden);
+                                                (FindName("tbOpt" + k) as TextBox).Text = strs_tmp[ssi];
+                                                (FindName("tbOpt" + k + "_2") as CheckBox).IsChecked = false;
+                                                ((ComboBox)FindName("cbOpt" + k)).Items.Clear();
+                                                SetFilterObjectColor(k, color.ContainsKey(ft_type) ? color[ft_type] : SystemColors.ActiveBorderBrush);
+                                            }
+                                        }
+
+                                        k++;
+                                    }
                                 }
                             }
                         }
