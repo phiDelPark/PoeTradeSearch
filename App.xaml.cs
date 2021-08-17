@@ -96,29 +96,33 @@ namespace PoeTradeSearch
 
         private void TrayMenuClick(object sender, EventArgs e)
         {
-            switch ((int)(sender as System.Windows.Forms.MenuItem).Tag)
+            string path = (string)Current.Properties["DataPath"];
+            int idx = (int)(sender as System.Windows.Forms.MenuItem).Tag;
+
+            switch (idx)
             {
                 case 0:
-                    Application.Current.Shutdown();
+                    Current.Shutdown();
                     break;
                 case 1:
                     WinSetting winSetting = new WinSetting();
                     winSetting.Show();
                     break;
                 case 2:
-                    Process.Start(new ProcessStartInfo(Assembly.GetExecutingAssembly().Location)
+                case 4:
+                    if (idx == 4)
+                    {
+                        File.Delete(path + "FiltersKO.txt");
+                    }
+                    _ = Process.Start(new ProcessStartInfo(Assembly.GetExecutingAssembly().Location)
                     {
                         Arguments = "/wait_shutdown"
                     });
-                    Application.Current.Shutdown();
+                    Current.Shutdown();
                     break;
                 case 3:
-                    PoeExeUpdates((string)Application.Current.Properties["DataPath"]);
-                    Application.Current.Shutdown();
-                    break;
-                case 4:
-                    string path = (string)Application.Current.Properties["DataPath"];
-                    File.Delete(path + "FiltersKO.txt");
+                    PoeExeUpdates(path);
+                    Current.Shutdown();
                     break;
             }
         }

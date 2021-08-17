@@ -62,7 +62,7 @@ namespace PoeTradeSearch
             if (update_type == 2)
             {
                 mTrayIcon.ContextMenu.MenuItems.Find("this_update", false)[0].Tag = 4; // Tag = 4 = data update
-                mTrayIcon.BalloonTipText = "최신 데이터가 발견 되었습니다." + "\n" + "트레이 아이콘을 우클릭해 업데이트 하세요.";
+                mTrayIcon.BalloonTipText = "데이터가 오래 되었습니다." + "\n" + "트레이 아이콘을 우클릭해 업데이트 하세요.";
                 mTrayIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.None;
             }
             else if (update_type == 1)
