@@ -260,6 +260,7 @@
 			{"id":"heistmission.contract","key":"heistmission","text":[ "계약", "Contract" ]},
 			{"id":"heistmission.blueprint","key":"heistmission","text":[ "도면", "Blueprint" ]},
 			{"id":"heistequipment","key":"heistequipment","text":[ "강탈 도구", "Heist Tool" ]},
+			{"id":"logbook","key":"logbook","text":[ "탐험 일지", "Expedition Logbook" ]},
 			{"id":"currency.incubator","key":"currency","text":[ "인큐베이터", "Incubator" ]},
 			{"id":"currency.resonator","key":"currency","text":[ "탐광 중첩 및 결합형 화폐", "Delve Stackable Socketable Currency" ]},
 			{"id":"currency","key":"currency","text":[ "중첩 가능 화폐", "Stackable Currency" ]},
