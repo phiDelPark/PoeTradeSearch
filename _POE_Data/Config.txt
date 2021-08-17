@@ -18,8 +18,8 @@
     },
     "shortcuts": [
         {
-            "keycode": 69,
-            "modifiers": 2,
+            "keycode": 0,
+            "modifiers": 0,
             "value": "{RUN} 작동 (기본값: Ctrl+C)"
         },
         {
