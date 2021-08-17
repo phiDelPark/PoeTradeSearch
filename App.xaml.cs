@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Security.Principal;
 using System.Threading;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Threading;
 
 namespace PoeTradeSearch
@@ -114,6 +115,10 @@ namespace PoeTradeSearch
                 case 3:
                     PoeExeUpdates((string)Application.Current.Properties["DataPath"]);
                     Application.Current.Shutdown();
+                    break;
+                case 4:
+                    string path = (string)Application.Current.Properties["DataPath"];
+                    File.Delete(path + "FiltersKO.txt");
                     break;
             }
         }

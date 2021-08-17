@@ -880,8 +880,7 @@ namespace PoeTradeSearch
                         if (mConfig.Options.AutoCheckUnique && rarity_id == "unique")
                             cbAiiCheck.IsChecked = true;
 
-                        this.ShowActivated = false;
-                        this.Visibility = Visibility.Visible;
+                        this.Show();
                     }
                 }
             }

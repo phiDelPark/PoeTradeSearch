@@ -48,7 +48,7 @@ namespace PoeTradeSearch
                 }
             }
 
-            lbDbVersion.Content = "버전: " + Application.Current.Properties["FileVersion"] + "\n" + winMain.mFilter[0].Upddate;
+            lbDbVersion.Content = "버전: " + Application.Current.Properties["FileVersion"] + "\n" + winMain.mFilter[0].Update;
 
             cbLeague.SelectedItem = winMain.mConfig.Options.League ?? "";
             if (cbLeague.SelectedIndex == -1)

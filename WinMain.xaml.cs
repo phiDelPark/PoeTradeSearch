@@ -38,7 +38,50 @@ namespace PoeTradeSearch
         {
             Clipboard.Clear();
             InitializeComponent();
+
             mAdministrator = (bool)Application.Current.Properties["IsAdministrator"];
+
+            if (!Setting())
+            {
+                Application.Current.Shutdown(0xD); //ERROR_INVALID_DATA
+                return;
+            }
+
+            mTrayIcon.BalloonTipTitle = "버전 " + Application.Current.Properties["FileVersion"];
+
+            string outString = "";
+
+            if (!LoadData(out outString))
+            {
+                Application.Current.Shutdown(0xD); //ERROR_INVALID_DATA
+                return;
+            }
+
+            int update_type = mConfig.Options.AutoCheckUpdates ? CheckUpdates(mFilter[0].Update) : 0;
+
+            if (update_type == 2)
+            {
+                mTrayIcon.ContextMenu.MenuItems.Find("this_update", false)[0].Tag = 4; // Tag = 4 = data update
+                mTrayIcon.BalloonTipText = "최신 데이터가 발견 되었습니다." + "\n" + "트레이 아이콘을 우클릭해 업데이트 하세요.";
+                mTrayIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.None;
+            }
+            else if (update_type == 1)
+            {
+                mTrayIcon.BalloonTipText = "최신 버전이 발견 되었습니다." + "\n" + "트레이 아이콘을 우클릭해 업데이트 하세요.";
+                mTrayIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.None;
+                //mTrayIcon.BalloonTipClicked += (sd,ea) => {};
+            }
+            else
+            {
+                mTrayIcon.ContextMenu.MenuItems.Find("this_update", false)[0].Enabled = false;
+                mTrayIcon.BalloonTipText = "프로그램을 시작합니다." + "\n" + "사용법: 아이템 위에서 Ctrl + C" + "\n" + "종료는: 트레이 아이콘을 우클릭";
+                mTrayIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            }
+
+            Native.SetForegroundWindow(Native.FindWindow("Shell_TrayWnd", null));
+            mTrayIcon.ShowBalloonTip(5000);
+
+            this.Title += " - " + mConfig.Options.League;
         }
 
         private void InitializeControls()
@@ -83,51 +126,16 @@ namespace PoeTradeSearch
                     cbSplinters.Items.Add(item.Text[0]);
             }
 
-            this.Visibility = Visibility.Hidden;
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (!Setting())
-            {
-                Application.Current.Shutdown(0xD); //ERROR_INVALID_DATA
-                return;
-            }
-
-            string outString = "";
-            int update_type = mConfig.Options.AutoCheckUpdates ? CheckUpdates() : 0;
-
-            mTrayIcon.BalloonTipTitle = "버전 " + Application.Current.Properties["FileVersion"];
-
-            if (!LoadData(out outString))
-            {
-                this.Visibility = Visibility.Hidden;
-                Application.Current.Shutdown(0xD); //ERROR_INVALID_DATA
-                return;
-            }
-
-            if (update_type == 1)
-            {
-                mTrayIcon.BalloonTipText = "최신 버전이 발견 되었습니다." + "\n" + "트레이 아이콘을 우클릭해 업데이트 하세요.";
-                mTrayIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.None;
-                //mTrayIcon.BalloonTipClicked += (sd,ea) => {};
-            }
-            else
-            {
-                mTrayIcon.ContextMenu.MenuItems.Find("this_update", false)[0].Enabled = false;
-                mTrayIcon.BalloonTipText = "프로그램을 시작합니다." + "\n" + "사용법: 아이템 위에서 Ctrl + C" + "\n" + "종료는: 트레이 아이콘을 우클릭";
-                mTrayIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
-            }
-
-            Native.SetForegroundWindow(Native.FindWindow("Shell_TrayWnd", null));
-            mTrayIcon.ShowBalloonTip(5000);
-
-            InitializeControls();
-
             mAutoSearchTimer = new DispatcherTimer();
             mAutoSearchTimer.Interval = TimeSpan.FromSeconds(1);
             mAutoSearchTimer.Tick += new EventHandler(AutoSearchTimer_Tick);
             tkPriceInfo.Tag = tkPriceInfo.Text = "시세를 검색하려면 클릭해주세요";
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Hidden;
+            InitializeControls();
 
             mMainHwnd = new WindowInteropHelper(this).Handle;
 
@@ -156,12 +164,6 @@ namespace PoeTradeSearch
 
             IntPtr mNextClipBoardViewerHWnd = Native.SetClipboardViewer(mMainHwnd);
             HwndSource.FromHwnd(mMainHwnd).AddHook(new HwndSourceHook(WndProc));
-
-            this.Title += " - " + mConfig.Options.League;
-        }
-
-        private void Window_Activated(object sender, EventArgs e)
-        {
         }
 
         private void Window_Deactivated(object sender, EventArgs e)
@@ -506,7 +508,7 @@ namespace PoeTradeSearch
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true;
-            this.Visibility = Visibility.Hidden;
+            this.Hide(); 
             Keyboard.ClearFocus();
         }
 
@@ -575,6 +577,7 @@ namespace PoeTradeSearch
 #if DEBUG
                     if (true)
 #else
+                    //test123();
                     if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
 #endif
                     {

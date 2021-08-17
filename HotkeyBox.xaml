@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              x:Name="HotkeyBoxControl"
              mc:Ignorable="d">
-    <TextBox x:Name="HotkeyTextBox" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+    <TextBox x:Name="HotkeyTextBox" Cursor="Arrow" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
              IsReadOnly="True" IsReadOnlyCaretVisible="False" IsUndoEnabled="False" PreviewKeyDown="HotkeyBox_PreviewKeyDown"
-             Text="{Binding Hotkey, ElementName=HotkeyBoxControl, Mode=OneWay, TargetNullValue=&lt; 없음 &gt;}" Cursor="Arrow">
+             Text="{Binding Hotkey, ElementName=HotkeyBoxControl, Mode=OneWay, TargetNullValue=&lt; 없음 &gt;}">
         <TextBox.ContextMenu>
             <ContextMenu Visibility="Collapsed" />
         </TextBox.ContextMenu>

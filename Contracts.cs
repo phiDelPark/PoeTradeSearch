@@ -274,8 +274,8 @@ namespace PoeTradeSearch
         [DataMember(Name = "result")]
         internal FilterDict[] Result = null;
 
-        [DataMember(Name = "upddate")]
-        internal string Upddate = null;
+        [DataMember(Name = "update")]
+        internal string Update = null;
     }
 
     [DataContract]
