@@ -24,7 +24,7 @@ namespace PoeTradeSearch
                     {
                         Version version = new Version((string)Application.Current.Properties["FileVersion"]);
                         isUpdates = version.CompareTo(new Version(versions[0])) < 0 ? 1 : 0;
-                        
+
                         if (isUpdates == 0)
                         {
                             // POE 데이터 버전 검사

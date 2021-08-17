@@ -618,7 +618,7 @@ namespace PoeTradeSearch
                             }
                         }
                         else if (is_map && item_type.Length > 5)
-                        {                            
+                        {
                             if (item_type.Length > 5)
                             {
                                 if (item_type.IndexOf(PS.Blighted.Text[z] + " ") == 0)

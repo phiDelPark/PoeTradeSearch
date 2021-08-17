@@ -22,8 +22,9 @@ namespace PoeTradeSearch
     {
         private static IntPtr mMainHwnd;
         public static DateTime mMouseHookCallbackTime;
-
+        private static IntPtr mNextClipBoardViewerHWnd;
         private static bool mInstalledHotKey = false;
+        private static bool mCustomRunKey = false;
         public static bool mPausedHotKey = false;
 
         private bool mAdministrator = false;
@@ -162,7 +163,7 @@ namespace PoeTradeSearch
             uint styles = (uint)Native.GetWindowLong(mMainHwnd, Native.GWL_EXSTYLE);
             Native.SetWindowLong(mMainHwnd, Native.GWL_EXSTYLE, (int)(styles |= Native.WS_EX_CONTEXTHELP));
 
-            IntPtr mNextClipBoardViewerHWnd = Native.SetClipboardViewer(mMainHwnd);
+            mNextClipBoardViewerHWnd = Native.SetClipboardViewer(mMainHwnd);
             HwndSource.FromHwnd(mMainHwnd).AddHook(new HwndSourceHook(WndProc));
         }
 
@@ -293,7 +294,7 @@ namespace PoeTradeSearch
                     !(FindName("tbOpt" + i) as TextBox).Text.IsEmpty() &&
                     (FindName("tbOpt" + i) as TextBox).BorderBrush == SystemColors.ActiveBorderBrush)
                 {
-                    
+
                     (FindName("tbOpt" + i + "_2") as CheckBox).IsChecked = is_checked;
                 }
             }
@@ -508,12 +509,15 @@ namespace PoeTradeSearch
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true;
-            this.Hide(); 
+            this.Hide();
             Keyboard.ClearFocus();
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
+            if (mNextClipBoardViewerHWnd != IntPtr.Zero)
+                Native.ChangeClipboardChain(mMainHwnd, mNextClipBoardViewerHWnd);
+
             if (mAdministrator && mConfig != null)
             {
                 if (mInstalledHotKey) RemoveRegisterHotKey();
@@ -568,37 +572,44 @@ namespace PoeTradeSearch
             }
         }
 
+        private void ClipboardParser()
+        {
+            try
+            {
+                if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
+                {
+                    ItemTextParser(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)), !mShowWiki);
+                    if (mShowWiki) Button_Click_4(null, new RoutedEventArgs());
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                mShowWiki = false;
+            }
+        }
+
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (msg == Native.WM_DRAWCLIPBOARD)
+            if (msg == Native.WM_DRAWCLIPBOARD && !mCustomRunKey && !mPausedHotKey)
             {
-                if (!mPausedHotKey)
-                {
 #if DEBUG
-                    if (true)
+                test123();
+                if (true)
 #else
-                    //test123();
-                    if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
+                if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
 #endif
-                    {
-                        try
-                        {
-                            if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
-                            {
-                                ItemTextParser(GetClipText(Clipboard.ContainsText(TextDataFormat.UnicodeText)), !mShowWiki);
-                                if (mShowWiki) Button_Click_4(null, new RoutedEventArgs());
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
-                        }
-                        finally
-                        {
-                            mShowWiki = false;
-                        }
-                    }
+                {
+                    ClipboardParser();
                 }
+
+            }
+            else if (msg == Native.WM_CHANGECBCHAIN)
+            {
+                if (wParam == mNextClipBoardViewerHWnd) mNextClipBoardViewerHWnd = lParam;
             }
             else if (msg == (int)0x0112 /*WM_SYSCOMMAND*/ && ((int)wParam & 0xFFF0) == (int)0xf180 /*SC_CONTEXTHELP*/)
             {
@@ -679,8 +690,27 @@ namespace PoeTradeSearch
                                 {
                                     if (valueLower.IndexOf("{run}") == 0 || valueLower.IndexOf("{wiki}") == 0)
                                     {
+                                        Clipboard.Clear();
                                         mShowWiki = valueLower.IndexOf("{wiki}") == 0;
                                         System.Windows.Forms.SendKeys.SendWait("^{c}");
+
+                                        //클립 데이터가 들어올때까지 대기...
+                                        Thread thread = new Thread(() =>
+                                        {
+                                            for (int i = 0; i < 99; i++)
+                                            {
+                                                if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
+                                                {
+                                                    break;
+                                                }
+                                                Thread.Sleep(100);
+                                            }
+                                        });
+                                        thread.SetApartmentState(ApartmentState.STA);
+                                        thread.Start();
+                                        thread.Join();
+
+                                        ClipboardParser();
                                     }
                                     else if (valueLower.IndexOf("{enter}") == 0)
                                     {
@@ -759,7 +789,10 @@ namespace PoeTradeSearch
             {
                 ConfigShortcut shortcut = mConfig.Shortcuts[i];
                 if (shortcut.Keycode > 0 && (shortcut.Value ?? "") != "")
+                {
+                    mCustomRunKey = mCustomRunKey == true | shortcut.Value.ToLower().IndexOf("{run}") == 0;
                     Native.RegisterHotKey(mMainHwnd, 10001 + i, (uint)shortcut.Modifiers, (uint)shortcut.Keycode);
+                }
             }
         }
 

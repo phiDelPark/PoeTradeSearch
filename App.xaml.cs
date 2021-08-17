@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Security.Principal;
 using System.Threading;
 using System.Windows;
-using System.Windows.Interop;
 using System.Windows.Threading;
 
 namespace PoeTradeSearch
