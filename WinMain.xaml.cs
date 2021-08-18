@@ -609,7 +609,14 @@ namespace PoeTradeSearch
             }
             else if (msg == Native.WM_CHANGECBCHAIN)
             {
-                if (wParam == mNextClipBoardViewerHWnd) mNextClipBoardViewerHWnd = lParam;
+                if (wParam == mNextClipBoardViewerHWnd)
+                {
+                    mNextClipBoardViewerHWnd = lParam;
+                }
+                else
+                {
+                    Native.SendMessage(mNextClipBoardViewerHWnd, (uint)msg, wParam, lParam);
+                }
             }
             else if (msg == (int)0x0112 /*WM_SYSCOMMAND*/ && ((int)wParam & 0xFFF0) == (int)0xf180 /*SC_CONTEXTHELP*/)
             {
