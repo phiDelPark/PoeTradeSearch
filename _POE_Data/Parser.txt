@@ -315,6 +315,15 @@
 			{"id":"ExchangeUnique","text":[ "유니크 아이템", "Unique Item" ]}
 		]
 	},
+	"logbook":{
+		"text":[ "지역에 (#) 등장", "Area contains (#)" ],
+		"entries":[
+			{"id":"1","text":[ "영웅을 쓰러뜨리는 자 메드베드", "Medved, Feller of Heroes" ]},
+			{"id":"2","text":[ "최후의 보루 보라나", "Vorana, Last to Fall" ]},
+			{"id":"3","text":[ "갈망하는 배반자 우트레드", "Uhtred, Covetous Traitor" ]},
+			{"id":"4","text":[ "몰락의 기원 올로스", "Olroth, Origin of the Fall" ]}
+		]
+	},
 	"radius":{
 		"text":[ "적용 반경", "Radius" ],
 		"entries":[

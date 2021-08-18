@@ -207,6 +207,27 @@ namespace PoeTradeSearch
                 };
             }
 
+            List<string> ItemOptionParser(string opts, string tier, ref int is_deep, ref bool is_multi_line)
+            {
+                List<string> options = new List<string>();
+                string[] tmp = opts.Split(new string[] { "\n" }, 0).Select(x => x.Trim()).ToArray();
+                is_deep = tmp[0][0] == '{' && tmp.Length > 1 ? 0 : -1;
+
+                if (tmp.Length == (is_deep == 0 ? 3 : 2))
+                {
+                    is_multi_line = true;
+                    options.Add(tmp[0 + (is_deep == 0 ? 1 : 0)] + "\n" + tmp[1 + (is_deep == 0 ? 1 : 0)]);
+                }
+
+                for (int ssi = 0; ssi < tmp.Length - (is_deep == 0 ? 1 : 0); ssi++)
+                {
+                    options.Add(tmp[ssi + (is_deep == 0 ? 1 : 0)].RepEx(@"([0-9]+)\([0-9\.\+\-]*[0-9]+\)", "$1"));
+                }
+
+                is_deep = is_deep == 0 ? tmp[0].RepEx(@"^.+\s\(" + tier + @": ([0-9])\)\s—.+$", "$1").ToInt(0) : is_deep;
+                return options;
+            }
+
             //TODO 위키 보기시 이름만 빼자
             string map_influenced = "";
             ParserData PS = mParser;
@@ -243,6 +264,7 @@ namespace PoeTradeSearch
                         { PS.Corrupted.Text[z], "" }, { PS.Unidentified.Text[z], "" }, { PS.ProphecyItem.Text[z], "" }, { PS.Vaal.Text[z] + " " + ibase_info[3], "" }
                     };
 
+                    // 시즌이 지날수록 땜질을 많이해 점점 복잡지는 소스 언제 정리하지?...
                     for (int i = 1; i < asData.Length; i++)
                     {
                         string[] asOpts = asData[i].Split(new string[] { "\r\n" }, 0).Select(x => x.Trim()).ToArray();
@@ -251,24 +273,13 @@ namespace PoeTradeSearch
                         {
                             if (asOpts[j].Trim().IsEmpty()) continue;
 
-                            string[] asDeep = asOpts[j].Split(new string[] { "\n" }, 0).Select(x => x.Trim()).ToArray();
+                            int is_deep = -1;
+                            bool is_multi_line = false;
+                            List<string> options = ItemOptionParser(asOpts[j], PS.OptionTier.Text[z], ref is_deep, ref is_multi_line);
 
-                            string[] options = new string[] { asDeep.Join("\n") };
-                            int is_deep = asDeep[0][0] == '{' && asDeep.Length > 1 ? 0 : -1;
-                            if (is_deep == 0)
+                            for (int o = 0; o < options.Count; o++)
                             {
-                                options = new string[asDeep.Length - 1];
-                                for (int ssi = 0; ssi < options.Length; ssi++)
-                                {
-                                    options[ssi] = asDeep[ssi + 1].RepEx(@"([0-9]+)\([0-9\.\+\-]*[0-9]+\)", "$1");
-                                }
-
-                                is_deep = asDeep[0].RepEx(@"^.+\s\(" + PS.OptionTier.Text[z] + @": ([0-9])\)\s—.+$", "$1").ToInt(0);
-                            }
-
-                            foreach (string option in options)
-                            {
-                                string[] asSplit = option.Replace(@" \([\w\s]+\)", "").Split(':').Select(x => x.Trim()).ToArray();
+                                string[] asSplit = options[o].Replace(@" \([\w\s]+\)", "").Split(':').Select(x => x.Trim()).ToArray();
 
                                 if (lItemOption.ContainsKey(asSplit[0]))
                                 {
@@ -276,8 +287,8 @@ namespace PoeTradeSearch
                                 }
                                 else if (k < 10 && (!lItemOption[PS.ItemLevel.Text[z]].IsEmpty() || !lItemOption[PS.MapUltimatum.Text[z]].IsEmpty()))
                                 {
-                                    string input = option.RepEx(@"\s(\([a-zA-Z]+\)|—\s.+)$", "");
-                                    string ft_type = option.Split(new string[] { "\n" }, 0)[0].RepEx(@"(.+)\s\(([a-zA-Z]+)\)$", "$2");
+                                    string input = options[o].RepEx(@"\s(\([a-zA-Z]+\)|—\s.+)$", "");
+                                    string ft_type = options[o].Split(new string[] { "\n" }, 0)[0].RepEx(@"(.+)\s\(([a-zA-Z]+)\)$", "$2");
                                     if (!RS.lFilterType.ContainsKey(ft_type)) ft_type = "_none_";
 
                                     bool _resistance = false;
@@ -287,9 +298,14 @@ namespace PoeTradeSearch
 
                                     if (ft_type == "enchant" && asSplit.Length > 1 && cluster == null)
                                     {
-                                        string tmp = input.Split(':')?[1].Trim().RepEx(@"[0-9]+\%", "#%");
-                                        cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == tmp);
+                                        string tmp2 = input.Split(':')?[1].Trim().RepEx(@"[0-9]+\%", "#%");
+                                        cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == tmp2);
                                         if (cluster != null) input = asSplit[0] + ": #";
+                                    }
+                                    else if (ft_type == "_none_" && lItemOption[PS.Radius.Text[z]] != "" && radius == null)
+                                    {
+                                        radius = Array.Find(PS.Radius.Entries, x => x.Text[z] == asSplit[0]);
+                                        if (radius != null) lItemOption[PS.Radius.Text[z]] = RS.lRadius.Entries[radius.Id.ToInt() - 1].Text[z];
                                     }
                                     else if (ft_type == "implicit" && cate_ids.Length == 1 && cate_ids[0] == "map")
                                     {
@@ -305,14 +321,6 @@ namespace PoeTradeSearch
                                             input = match.Groups[1] + " #" + match.Groups[3];
                                         }
                                         continue;
-                                    }
-                                    else if (ft_type == "_none_" && lItemOption[PS.Radius.Text[z]] != "" && radius == null)
-                                    {
-                                        radius = Array.Find(PS.Radius.Entries, x => x.Text[z] == asSplit[0]);
-                                        if (radius != null)
-                                        {
-                                            lItemOption[PS.Radius.Text[z]] = RS.lRadius.Entries[radius.Id.ToInt() - 1].Text[z];
-                                        }
                                     }
 
                                     input = Regex.Escape(Regex.Replace(input, @"[+-]?[0-9]+\.[0-9]+|[+-]?[0-9]+", "#"));
@@ -349,7 +357,7 @@ namespace PoeTradeSearch
                                                 return (entrie2.Part ?? "").CompareTo(entrie1.Part ?? "");
                                             });
 
-                                            MatchCollection matches1 = Regex.Matches(option, @"[-]?([0-9]+\.[0-9]+|[0-9]+)");
+                                            MatchCollection matches1 = Regex.Matches(options[o], @"[-]?([0-9]+\.[0-9]+|[0-9]+)");
                                             foreach (FilterDictItem entrie in entries)
                                             {
                                                 int idxMin = 0, idxMax = 0;
@@ -403,9 +411,9 @@ namespace PoeTradeSearch
                                     {
                                         string[] split_id = filter.Id.Split('.');
                                         Dictionary<string, SolidColorBrush> color = new Dictionary<string, SolidColorBrush>()
-                                    {
-                                        { "implicit", Brushes.DarkRed }, { "crafted", Brushes.Blue }, { "enchant", Brushes.Blue }
-                                    };
+                                        {
+                                            { "implicit", Brushes.DarkRed }, { "crafted", Brushes.Blue }, { "enchant", Brushes.Blue }
+                                        };
 
                                         SetFilterObjectColor(k, color.ContainsKey(ft_type) ? color[ft_type] : SystemColors.ActiveBorderBrush);
 
@@ -447,9 +455,9 @@ namespace PoeTradeSearch
                                         ParserDictItem force_pos = Array.Find(PS.Position.Entries, x => x.Id.Equals(split_id[1]));
                                         if (force_pos?.Key == "reverse" || force_pos?.Key == "right")
                                         {
-                                            double tmp = min;
+                                            double tmp2 = min;
                                             min = max;
-                                            max = tmp;
+                                            max = tmp2;
                                         }
 
                                         itemfilters.Add(new Itemfilter
@@ -531,6 +539,7 @@ namespace PoeTradeSearch
                                         }
 
                                         k++;
+                                        if (o == 0 && is_multi_line) break; // break if multi lines
                                     }
                                 }
                             }
