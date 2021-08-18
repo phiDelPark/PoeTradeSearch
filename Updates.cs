@@ -65,6 +65,7 @@ namespace PoeTradeSearch
                                 && RS.lFilterType.ContainsKey(rootClass.Result[i].Entries[0].Type)
                             )
                             {
+                                rootClass.Result[i].Id = rootClass.Result[i].Entries[0].Type;
                                 rootClass.Result[i].Label = RS.lFilterType[rootClass.Result[i].Entries[0].Type];
                             }
 

@@ -251,26 +251,20 @@ namespace PoeTradeSearch
                         {
                             if (asOpts[j].Trim().IsEmpty()) continue;
 
-                            string[] options = null;
                             string[] asDeep = asOpts[j].Split(new string[] { "\n" }, 0).Select(x => x.Trim()).ToArray();
-                            int is_deep = asDeep[0][0] == '{' && asDeep.Length > 1 ? 0 : -1;
 
+                            string[] options = new string[] { asDeep.Join("\n") };
+                            int is_deep = asDeep[0][0] == '{' && asDeep.Length > 1 ? 0 : -1;
                             if (is_deep == 0)
                             {
-                                is_deep = asDeep[0].RepEx(@"^.+\s\(" + PS.OptionTier.Text[z] + @": ([0-9])\)\s—.+$", "$1").ToInt(0);
                                 options = new string[asDeep.Length - 1];
                                 for (int ssi = 0; ssi < options.Length; ssi++)
                                 {
                                     options[ssi] = asDeep[ssi + 1].RepEx(@"([0-9]+)\([0-9\.\+\-]*[0-9]+\)", "$1");
                                 }
-                            }
-                            else
-                            
-                            {
-                                options = new string[1] { asDeep[0] };
-                            }
 
-                            string multi_line = "";
+                                is_deep = asDeep[0].RepEx(@"^.+\s\(" + PS.OptionTier.Text[z] + @": ([0-9])\)\s—.+$", "$1").ToInt(0);
+                            }
 
                             foreach (string option in options)
                             {
@@ -284,7 +278,7 @@ namespace PoeTradeSearch
                                 {
                                     string input = option.RepEx(@"\s(\([a-zA-Z]+\)|—\s.+)$", "");
                                     string ft_type = option.Split(new string[] { "\n" }, 0)[0].RepEx(@"(.+)\s\(([a-zA-Z]+)\)$", "$2");
-                                    if (ft_type == option) ft_type = "_none_";
+                                    if (!RS.lFilterType.ContainsKey(ft_type)) ft_type = "_none_";
 
                                     bool _resistance = false;
                                     double min = 99999, max = 99999;
@@ -321,26 +315,16 @@ namespace PoeTradeSearch
                                         }
                                     }
 
-                                    input = Regex.Escape(Regex.Replace(multi_line + input, @"[+-]?[0-9]+\.[0-9]+|[+-]?[0-9]+", "#"));
-                                    input = multi_line + Regex.Replace(input, @"\\#", @"[+-]?([0-9]+\.[0-9]+|[0-9]+|\#)");
+                                    input = Regex.Escape(Regex.Replace(input, @"[+-]?[0-9]+\.[0-9]+|[+-]?[0-9]+", "#"));
+                                    input = Regex.Replace(input, @"\\#", @"[+-]?([0-9]+\.[0-9]+|[0-9]+|\#)");
 
-                                    multi_line = "";
                                     bool local_exists = false;
                                     FilterDictItem filter = null;
 
                                     foreach (FilterDict data_result in mFilter[z].Result)
                                     {
-                                        Regex rgx = new Regex("^" + input + "\n", RegexOptions.IgnoreCase);
+                                        Regex rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
                                         FilterDictItem[] entries = Array.FindAll(data_result.Entries, x => rgx.IsMatch(x.Text));
-
-                                        if (entries.Length > 0)
-                                        {
-                                            multi_line = input;
-                                            break;
-                                        }
-
-                                        rgx = new Regex("^" + input + "$", RegexOptions.IgnoreCase);
-                                        entries = Array.FindAll(data_result.Entries, x => rgx.IsMatch(x.Text));
 
                                         // 2개 이상 같은 옵션이 있을때 장비 옵션 (특정) 만 추출
                                         if (entries.Length > 1)
@@ -537,6 +521,13 @@ namespace PoeTradeSearch
                                                 ((ComboBox)FindName("cbOpt" + k)).Items.Clear();
                                                 SetFilterObjectColor(k, color.ContainsKey(ft_type) ? color[ft_type] : SystemColors.ActiveBorderBrush);
                                             }
+                                        }
+
+                                        if (ft_type == "_none_" && (FindName("cbOpt" + k) as ComboBox).SelectedIndex > -1 &&
+                                            (string)(FindName("cbOpt" + k) as ComboBox).SelectedValue != RS.lFilterType["explicit"] &&
+                                            (string)(FindName("cbOpt" + k) as ComboBox).SelectedValue != RS.lFilterType["pseudo"])
+                                        {
+                                            SetFilterObjectColor(k, Brushes.Pink);
                                         }
 
                                         k++;

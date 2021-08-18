@@ -67,6 +67,11 @@ namespace PoeTradeSearch
 
         #region Strings Extensions
 
+        public static string Join(this string[] owner, string separator)
+        {
+            return owner.Length > 1 ? string.Join(separator, owner) : owner[0];
+        }
+
         public static string Join(this string[] owner, char separator)
         {
             return owner.Length > 1 ? string.Join(separator.ToString(), owner) : owner[0];
