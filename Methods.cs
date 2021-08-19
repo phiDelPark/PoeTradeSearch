@@ -89,7 +89,7 @@ namespace PoeTradeSearch
                 ((ComboBox)FindName("cbOpt" + i)).SelectedValuePath = "Name";
 
                 ((TextBox)FindName("tbOpt" + i)).Text = "";
-                ((TextBox)FindName("tbOpt" + i)).Tag = null;
+                ((TextBox)FindName("tbOpt" + i)).Tag = null; // 특수 옵션에 사용
                 ((TextBox)FindName("tbOpt" + i)).Background = SystemColors.WindowBrush;
                 ((TextBox)FindName("tbOpt" + i + "_0")).Text = "";
                 ((TextBox)FindName("tbOpt" + i + "_1")).Text = "";
@@ -293,21 +293,9 @@ namespace PoeTradeSearch
 
                                     bool _resistance = false;
                                     double min = 99999, max = 99999;
-                                    ParserDictItem radius = null;
-                                    ParserDictItem cluster = null;
+                                    ParserDictItem special_option = null;
 
-                                    if (ft_type == "enchant" && asSplit.Length > 1 && cluster == null)
-                                    {
-                                        string tmp2 = input.Split(':')?[1].Trim().RepEx(@"[0-9]+\%", "#%");
-                                        cluster = Array.Find(PS.Cluster.Entries, x => x.Text[z] == tmp2);
-                                        if (cluster != null) input = asSplit[0] + ": #";
-                                    }
-                                    else if (ft_type == "_none_" && lItemOption[PS.Radius.Text[z]] != "" && radius == null)
-                                    {
-                                        radius = Array.Find(PS.Radius.Entries, x => x.Text[z] == asSplit[0]);
-                                        if (radius != null) lItemOption[PS.Radius.Text[z]] = RS.lRadius.Entries[radius.Id.ToInt() - 1].Text[z];
-                                    }
-                                    else if (ft_type == "implicit" && cate_ids.Length == 1 && cate_ids[0] == "map")
+                                    if (ft_type == "implicit" && cate_ids.Length == 1 && cate_ids[0] == "map")
                                     {
                                         string pats = "";
                                         foreach (ParserDictItem item in PS.MapTier.Entries)
@@ -321,6 +309,37 @@ namespace PoeTradeSearch
                                             input = match.Groups[1] + " #" + match.Groups[3];
                                         }
                                         continue;
+                                    }
+                                    else if (special_option == null)
+                                    {
+                                        if (ft_type == "implicit" && cate_ids.Length == 1 && cate_ids[0] == "logbook")
+                                        {
+                                            special_option = Array.Find(PS.Logbook.Entries, x => x.Text[z] == input);
+                                            if (special_option != null)
+                                            {
+                                                input = PS.Logbook.Text[z];
+                                                special_option.Key = "LOGBOOK";
+                                            }
+                                        }
+                                        else if (ft_type == "enchant" && asSplit.Length > 1 && cate_ids.Length == 2 && cate_ids[0] == "jewel")
+                                        {
+                                            string tmp2 = input.Split(':')?[1].Trim().RepEx(@"[0-9]+\%", "#%");
+                                            special_option = Array.Find(PS.Cluster.Entries, x => x.Text[z] == tmp2);
+                                            if (special_option != null)
+                                            {
+                                                input = asSplit[0] + ": #";
+                                                special_option.Key = "CLUSTER";
+                                            }
+                                        }
+                                        else if (ft_type == "_none_" && lItemOption[PS.Radius.Text[z]] != "")
+                                        {
+                                            special_option = Array.Find(PS.Radius.Entries, x => x.Text[z] == asSplit[0]);
+                                            if (special_option != null)
+                                            {
+                                                lItemOption[PS.Radius.Text[z]] = RS.lRadius.Entries[special_option.Id.ToInt() - 1].Text[z];
+                                                special_option.Key = "RADIUS";
+                                            }
+                                        }
                                     }
 
                                     input = Regex.Escape(Regex.Replace(input, @"[+-]?[0-9]+\.[0-9]+|[+-]?[0-9]+", "#"));
@@ -476,16 +495,14 @@ namespace PoeTradeSearch
                                         if ((FindName("tbOpt" + k + "_3") as CheckBox).Visibility == Visibility.Visible && mConfig.Options.AutoCheckTotalres)
                                             (FindName("tbOpt" + k + "_3") as CheckBox).IsChecked = true;
 
-                                        if (cluster != null)
+                                        if (special_option != null && (special_option.Key == "CLUSTER" || special_option.Key == "LOGBOOK"))
                                         {
-                                            (FindName("tbOpt" + k) as TextBox).Text = cluster.Text[z];
-                                            (FindName("tbOpt" + k) as TextBox).Tag = "CLUSTER";
-                                            (FindName("tbOpt" + k + "_0") as TextBox).Background = SystemColors.WindowBrush;
-                                            (FindName("tbOpt" + k + "_0") as TextBox).Foreground = SystemColors.WindowBrush;
+                                            (FindName("tbOpt" + k) as TextBox).Text = special_option.Text[z];
+                                            (FindName("tbOpt" + k) as TextBox).Tag = special_option.Key;
                                             (FindName("tbOpt" + k + "_0") as TextBox).IsEnabled = false;
                                             (FindName("tbOpt" + k + "_1") as TextBox).IsEnabled = false;
                                             (FindName("tbOpt" + k + "_2") as CheckBox).IsChecked = true;
-                                            itemfilters[itemfilters.Count - 1].min = min = cluster.Id.ToInt();
+                                            itemfilters[itemfilters.Count - 1].min = min = special_option.Id.ToInt();
                                             itemfilters[itemfilters.Count - 1].max = max = 99999;
                                             if (itemfilters.Count > 0) // 군 주얼 패시브 갯수 자동 체크
                                             {
@@ -936,13 +953,12 @@ namespace PoeTradeSearch
             itemOption.RarityAt = cbRarity.Items.Count > 1 ? cbRarity.SelectedIndex : 0;
             itemOption.PriceMin = tbPriceFilterMin.Text == "" ? 0 : tbPriceFilterMin.Text.ToDouble(99999);
 
-            bool is_ultimatumi = (cbRarity.SelectedValue ?? "").Equals("결전");
-            bool is_cluster = (cbRarity.SelectedValue ?? "").Equals("군 주얼");
-            itemOption.Flags = is_ultimatumi ? "ULTIMATUM|" + cbAltQuality.SelectedValue : (is_cluster ? "CLUSTER" : "");
+            bool is_ultimatum = (cbRarity.SelectedValue ?? "").Equals("결전");
+            itemOption.Flags = is_ultimatum ? "ULTIMATUM|" + cbAltQuality.SelectedValue : "";
 
             itemOption.itemfilters.Clear();
 
-            if (!is_ultimatumi && itemOption.AltQuality > 0 && itemOption.Inherits[0].WithIn("jewel", "map"))
+            if (!is_ultimatum && itemOption.AltQuality > 0 && itemOption.Inherits[0].WithIn("jewel", "map"))
             {
                 Itemfilter itemfilter = new Itemfilter();
                 itemfilter.min = itemfilter.max = 99999;
@@ -1013,10 +1029,10 @@ namespace PoeTradeSearch
                             itemfilter.stat = RS.lPseudo[itemfilter.stat];
                         }
 
-                        if (itemfilter.flag == "CLUSTER")
+                        if (itemfilter.flag == "CLUSTER" || itemfilter.flag == "LOGBOOK")
                         {
                             itemfilter.option = itemfilter.min;
-                            itemfilter.min = 99999;
+                            if (itemfilter.flag == "CLUSTER") itemfilter.min = 99999;
                         }
                     }
 

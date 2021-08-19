@@ -211,6 +211,18 @@
 	"attack_speed_incr":{"text":[ "공격 속도 #% 증가", "#% increased Attack Speed" ]},
 	"physical_damage_incr":{"text":[ "물리 피해 #% 증가", "#% increased Physical Damage" ]},
 
+	"rarity":{
+		"text":[ "아이템 희귀도", "Rarity" ],
+		"entries":[
+			{"id":"normal","text":[ "일반", "Normal" ]},
+			{"id":"magic","text":[ "마법", "Magic" ]},
+			{"id":"rare","text":[ "희귀", "Rare" ]},
+			{"id":"unique","text":[ "고유", "Unique" ]},
+			{"id":"gem","text":[ "젬", "Gem" ]},
+			{"id":"currency","text":[ "화폐", "Currency" ]},
+			{"id":"card","text":[ "점술 카드", "Divination Card" ]}
+		]
+	},
 	"category":{
 		"text":[ "아이템 종류", "Item Class" ],
 		"entries":[
@@ -260,7 +272,7 @@
 			{"id":"heistmission.contract","key":"heistmission","text":[ "계약", "Contract" ]},
 			{"id":"heistmission.blueprint","key":"heistmission","text":[ "도면", "Blueprint" ]},
 			{"id":"heistequipment","key":"heistequipment","text":[ "강탈 도구", "Heist Tool" ]},
-			{"id":"logbook","key":"logbook","text":[ "탐험 일지", "Expedition Logbook" ]},
+			{"id":"logbook","key":"logbook","text":[ "탐험 일지", "Expedition Logbooks" ]},
 			{"id":"currency.incubator","key":"currency","text":[ "인큐베이터", "Incubator" ]},
 			{"id":"currency.resonator","key":"currency","text":[ "탐광 중첩 및 결합형 화폐", "Delve Stackable Socketable Currency" ]},
 			{"id":"currency","key":"currency","text":[ "중첩 가능 화폐", "Stackable Currency" ]},
@@ -268,18 +280,6 @@
 			{"id":"prophecy","key":"prophecies","flag":"--","text":[ "예언", "Prophecy" ]},
 			{"id":"monster.beast","key":"monsters","flag":"--","text":[ "야수", "Beast" ]},
 			{"id":"currency.fossil","key":"currency","flag":"--","text":[ "화석", "Fossil" ]}
-		]
-	},
-	"rarity":{
-		"text":[ "아이템 희귀도", "Rarity" ],
-		"entries":[
-			{"id":"normal","text":[ "일반", "Normal" ]},
-			{"id":"magic","text":[ "마법", "Magic" ]},
-			{"id":"rare","text":[ "희귀", "Rare" ]},
-			{"id":"unique","text":[ "고유", "Unique" ]},
-			{"id":"gem","text":[ "젬", "Gem" ]},
-			{"id":"currency","text":[ "화폐", "Currency" ]},
-			{"id":"card","text":[ "점술 카드", "Divination Card" ]}
 		]
 	},
 	"gems":{
@@ -316,12 +316,12 @@
 		]
 	},
 	"logbook":{
-		"text":[ "지역에 (#) 등장", "Area contains (#)" ],
+		"text":[ "지역에 탐험 보스 (#) 등장", "Area contains an Expedition Boss (#)" ],
 		"entries":[
-			{"id":"1","text":[ "영웅을 쓰러뜨리는 자 메드베드", "Medved, Feller of Heroes" ]},
-			{"id":"2","text":[ "최후의 보루 보라나", "Vorana, Last to Fall" ]},
-			{"id":"3","text":[ "갈망하는 배반자 우트레드", "Uhtred, Covetous Traitor" ]},
-			{"id":"4","text":[ "몰락의 기원 올로스", "Olroth, Origin of the Fall" ]}
+			{"id":"1","text":[ "지역에 영웅을 쓰러뜨리는 자 메드베드 등장", "Area contains Medved, Feller of Heroes" ]},
+			{"id":"2","text":[ "지역에 최후의 보루 보라나 등장", "Area contains Vorana, Last to Fall" ]},
+			{"id":"3","text":[ "지역에 갈망하는 배반자 우트레드 등장", "Area contains Uhtred, Covetous Traitor" ]},
+			{"id":"4","text":[ "지역에 몰락의 기원 올로스 등장", "Area contains Olroth, Origin of the Fall" ]}
 		]
 	},
 	"radius":{

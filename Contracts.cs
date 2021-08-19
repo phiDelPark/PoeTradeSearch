@@ -173,6 +173,8 @@ namespace PoeTradeSearch
         internal ParserDict Cluster = null;
         [DataMember(Name = "heist")]
         internal ParserDict Heist = null;
+        [DataMember(Name = "logbook")]
+        internal ParserDict Logbook = null;
     }
 
     [DataContract]
