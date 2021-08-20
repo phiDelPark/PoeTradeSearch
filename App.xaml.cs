@@ -112,6 +112,7 @@ namespace PoeTradeSearch
                     if (idx == 4)
                     {
                         File.Delete(path + "FiltersKO.txt");
+                        File.Delete(path + "Parser.txt");
                     }
                     _ = Process.Start(new ProcessStartInfo(Assembly.GetExecutingAssembly().Location)
                     {

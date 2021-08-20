@@ -563,15 +563,14 @@ namespace PoeTradeSearch
                         }
                     }
 
+                    string item_rarity = rarity.Text[0];
                     string item_name = ibase_info[2];
                     string item_type = ibase_info[3];
 
                     int alt_quality = 0;
                     bool is_blight = false;
 
-                    /*
-                    //if (is_map || is_currency) is_map_fragment = false;
-                    */
+
                     bool is_map = cate_ids[0] == "map"; // || lItemOption[PS.MapTier.Text[z]] != "";
                     bool is_map_fragment = cate_ids.Length > 1 && cate_ids.Join('.') == "map.fragment";
                     bool is_map_ultimatum = lItemOption[PS.MapUltimatum.Text[z]] != "";
@@ -591,12 +590,12 @@ namespace PoeTradeSearch
                     if (is_prophecy)
                     {
                         cate_ids = new string[] { "prophecy" };
-                        rarity.Text[0] = Array.Find(PS.Category.Entries, x => x.Id == "prophecy").Text[z];
+                        item_rarity = Array.Find(PS.Category.Entries, x => x.Id == "prophecy").Text[z];
                         item_idx = Array.FindIndex(mItems[z].Result[cate_idx].Entries, x => x.Type == item_type);
                     }
                     if (is_map_fragment || is_map_ultimatum)
                     {
-                        rarity.Text[0] = is_map_ultimatum ? "결전" : Array.Find(PS.Category.Entries, x => x.Id == "map.fragment").Text[z];
+                        item_rarity = is_map_ultimatum ? "결전" : Array.Find(PS.Category.Entries, x => x.Id == "map.fragment").Text[z];
                         item_idx = Array.FindIndex(mItems[z].Result[cate_idx].Entries, x => x.Type == item_type);
                     }
                     else if (lItemOption[PS.MonsterGenus.Text[z]] != "" && lItemOption[PS.MonsterGroup.Text[z]] != "")
@@ -604,7 +603,7 @@ namespace PoeTradeSearch
                         cate_ids = new string[] { "monster", "beast" };
                         cate_idx = Array.FindIndex(mItems[z].Result, x => x.Id.Equals("monsters"));
                         item_idx = Array.FindIndex(mItems[z].Result[cate_idx].Entries, x => x.Text == item_type);
-                        rarity.Text[0] = Array.Find(PS.Category.Entries, x => x.Id == "monster.beast").Text[z];
+                        item_rarity = Array.Find(PS.Category.Entries, x => x.Id == "monster.beast").Text[z];
                         item_type = z == 1 || item_idx == -1 ? item_type : mItems[1].Result[cate_idx].Entries[item_idx].Type;
                         item_idx = -1; // 야수는 영어로만 검색됨...
                     }
@@ -743,12 +742,12 @@ namespace PoeTradeSearch
                         ckByCategory.IsChecked = Array.IndexOf(bys, cate_ids.Join('.')) > -1;
                     }
 
-                    cbRarity.SelectedValue = rarity.Text[0];
+                    cbRarity.SelectedValue = item_rarity;
 
                     if (cbRarity.SelectedIndex == -1)
                     {
                         cbRarity.Items.Clear();
-                        cbRarity.Items.Add(rarity.Text[0]);
+                        cbRarity.Items.Add(item_rarity);
                         cbRarity.SelectedIndex = 0;
                     }
                     else if ((string)cbRarity.SelectedValue == "normal")
