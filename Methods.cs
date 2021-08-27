@@ -817,8 +817,13 @@ namespace PoeTradeSearch
                             }
                             else if (is_heist)
                             {
-                                //string tmp = Regex.Replace(lItemOption[PS.Heist.Text[z]], @".+ \(([^\)]+)\)$", "$1");
-                                cbAltQuality.SelectedIndex = 0; // SelectedValue = tmp;
+                                string tmp = Regex.Replace(lItemOption[PS.Heist.Text[z]], @".+ \(([^\)]+)\)$", "$1");
+                                cbAltQuality.SelectedValue = tmp;
+                                if (cbAltQuality.SelectedIndex == -1)
+                                {
+                                    cbAltQuality.SelectedIndex = 0;
+                                }
+                                ckLv.IsChecked = true;
                             }
                             else if (is_map || is_map_ultimatum)
                             {

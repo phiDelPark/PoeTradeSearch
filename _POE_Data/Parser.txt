@@ -29,6 +29,8 @@
 
 	"currency":{
 		"entries":[
+			{"id":"chaos","hidden":false,"text":[ "카오스 오브", "Chaos Orb" ]},
+			{"id":"exalted","hidden":false,"text":[ "엑잘티드 오브", "Exalted Orb" ]},
 			{"id":"ancient-orb","hidden":false,"text":[ "고대의 오브", "Ancient Orb" ]},
 			{"id":"engineers","hidden":false,"text":[ "기술자의 오브", "Engineer's Orb" ]},
 			{"id":"chance","hidden":false,"text":[ "기회의 오브", "Orb of Chance" ]},
@@ -42,14 +44,12 @@
 			{"id":"fusing","hidden":false,"text":[ "연결의 오브", "Orb of Fusing" ]},
 			{"id":"alch","hidden":false,"text":[ "연금술의 오브", "Orb of Alchemy" ]},
 			{"id":"eternal","hidden":false,"text":[ "영원의 오브", "Eternal Orb" ]},
-			{"id":"exalted","hidden":false,"text":[ "엑잘티드 오브", "Exalted Orb" ]},
 			{"id":"scour","hidden":false,"text":[ "정제의 오브", "Orb of Scouring" ]},
 			{"id":"jewellers","hidden":false,"text":[ "쥬얼러 오브", "Jeweller's Orb" ]},
 			{"id":"orb-of-horizons","hidden":false,"text":[ "지평의 오브", "Orb of Horizons" ]},
 			{"id":"transmute","hidden":false,"text":[ "진화의 오브", "Orb of Transmutation" ]},
 			{"id":"regal","hidden":false,"text":[ "제왕의 오브", "Regal Orb" ]},
 			{"id":"blessed","hidden":false,"text":[ "축복의 오브", "Blessed Orb" ]},
-			{"id":"chaos","hidden":false,"text":[ "카오스 오브", "Chaos Orb" ]},
 			{"id":"mirror","hidden":false,"text":[ "칼란드라의 거울", "Mirror of Kalandra" ]},
 			{"id":"aug","hidden":false,"text":[ "확장의 오브", "Orb of Augmentation" ]},
 			{"id":"regret","hidden":false,"text":[ "후회의 오브", "Orb of Regret" ]},

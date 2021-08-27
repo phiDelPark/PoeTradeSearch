@@ -1,7 +1,7 @@
 ﻿{
     "options": {
         "auto_check_totalres": true,
-        "auto_check_unique": true,
+        "auto_check_unique": false,
         "auto_select_bytype": "monster.sample,sample",
         "auto_select_corrupt": "no or yes",
         "auto_select_pseudo": true,
