@@ -870,21 +870,22 @@ namespace PoeTradeSearch
                         ckSocket.IsChecked = socket[1] > 4;
                     }
 
-                    if (ckLv.IsChecked == false && cbName.Items.Count == 2)
+                    if (is_gear && ckLv.IsChecked == false && cbName.Items.Count == 2)
                     {
-                        ItemNames names = (ItemNames)cbName.Items[z == 0 ? 0 : 1];
+                        ItemNames names = (ItemNames)cbName.Items[0];
                         string tmp = names.Type.Escape() + @"\(([0-9]+)\)\/";
-                        CheckedDictItem baseitem = mChecked.bases?.Find(x => x.Id.Equals("모두") && Regex.IsMatch(x.Key, tmp));
+                        string tmp2 = (cbInfluence1.Text ?? "__NULL__") + "|" + (cbInfluence2.Text ?? "__NULL__");
+                        CheckedDictItem baseitem = mChecked.bases?.Find(x => Regex.IsMatch(x.Id, "모두|" + tmp2) && Regex.IsMatch(x.Key, tmp));
                         if (baseitem != null)
                         {
-                            MatchCollection mmm = Regex.Matches(baseitem.Key, tmp);            
+                            MatchCollection mmm = Regex.Matches(baseitem.Key, tmp);
                             if (mmm.Count == 1 && mmm[0].Groups.Count == 2 && mmm[0].Groups[1].Value.ToInt(101) <= tbLvMin.Text.ToInt(0))
                             {
                                 ckLv.FontWeight = FontWeights.Bold;
                                 ckLv.Foreground = System.Windows.Media.Brushes.DarkRed;
                                 ckLv.BorderBrush = System.Windows.Media.Brushes.DarkRed;
                                 ckLv.IsChecked = true;
-                            }                            
+                            }
                         }
                     }
 
