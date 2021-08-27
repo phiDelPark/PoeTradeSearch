@@ -241,6 +241,9 @@ namespace PoeTradeSearch
     {
         [DataMember(Name = "entries")]
         internal List<CheckedDictItem> Entries = null;
+
+        [DataMember(Name = "bases")]
+        internal List<CheckedDictItem> bases = null;
     }
 
     [DataContract]

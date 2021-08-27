@@ -570,7 +570,6 @@ namespace PoeTradeSearch
                     int alt_quality = 0;
                     bool is_blight = false;
 
-
                     bool is_map = cate_ids[0] == "map"; // || lItemOption[PS.MapTier.Text[z]] != "";
                     bool is_map_fragment = cate_ids.Length > 1 && cate_ids.Join('.') == "map.fragment";
                     bool is_map_ultimatum = lItemOption[PS.MapUltimatum.Text[z]] != "";
@@ -858,13 +857,6 @@ namespace PoeTradeSearch
 
                             if (is_gear)
                             {
-                                if (tbLvMin.Text.ToInt(0) > 82)
-                                {
-                                    ckLv.FontWeight = FontWeights.Bold;
-                                    ckLv.Foreground = System.Windows.Media.Brushes.DarkRed;
-                                    ckLv.BorderBrush = System.Windows.Media.Brushes.DarkRed;
-                                }
-
                                 cbCorrupt.SelectedIndex = mConfig.Options.AutoSelectCorrupt == "no" ? 2 : (mConfig.Options.AutoSelectCorrupt == "yes" ? 1 : 0);
                             }
                         }
@@ -876,6 +868,24 @@ namespace PoeTradeSearch
                         tbSocketMin.Text = socket[0].ToString();
                         tbLinksMin.Text = socket[1] > 0 ? socket[1].ToString() : "";
                         ckSocket.IsChecked = socket[1] > 4;
+                    }
+
+                    if (ckLv.IsChecked == false && cbName.Items.Count == 2)
+                    {
+                        ItemNames names = (ItemNames)cbName.Items[z == 0 ? 0 : 1];
+                        string tmp = names.Type.Escape() + @"\(([0-9]+)\)\/";
+                        CheckedDictItem baseitem = mChecked.bases?.Find(x => x.Id.Equals("모두") && Regex.IsMatch(x.Key, tmp));
+                        if (baseitem != null)
+                        {
+                            MatchCollection mmm = Regex.Matches(baseitem.Key, tmp);            
+                            if (mmm.Count == 1 && mmm[0].Groups.Count == 2 && mmm[0].Groups[1].Value.ToInt(101) <= tbLvMin.Text.ToInt(0))
+                            {
+                                ckLv.FontWeight = FontWeights.Bold;
+                                ckLv.Foreground = System.Windows.Media.Brushes.DarkRed;
+                                ckLv.BorderBrush = System.Windows.Media.Brushes.DarkRed;
+                                ckLv.IsChecked = true;
+                            }                            
+                        }
                     }
 
                     if (isWinShow || this.Visibility == Visibility.Visible)
