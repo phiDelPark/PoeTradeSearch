@@ -78,7 +78,7 @@ namespace PoeTradeSearch
                             }
                         }
 
-                        string local = mParser.Local.Text[isKR ? 0 : 1];
+                        //string local = mParser.Local.Text[isKR ? 0 : 1];
                         foreach (ParserDictItem itm in mParser.Local.Entries)
                         {
                             for (int i = 0; i < rootClass.Result.Length; i++)
@@ -86,7 +86,7 @@ namespace PoeTradeSearch
                                 int index = Array.FindIndex(rootClass.Result[i].Entries, x => x.Id.Substring(x.Id.IndexOf(".") + 1) == itm.Id);
                                 if (index > -1)
                                 {
-                                    rootClass.Result[i].Entries[index].Text = rootClass.Result[i].Entries[index].Text.Replace("(" + local + ")", "").Trim();
+                                    rootClass.Result[i].Entries[index].Text = rootClass.Result[i].Entries[index].Text.RepEx(@"\([^\)]+\)\s?$", "").Trim();
                                     rootClass.Result[i].Entries[index].Part = itm.Key;
                                 }
                             }

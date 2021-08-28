@@ -83,6 +83,8 @@ namespace PoeTradeSearch
     {
         [DataMember(Name = "local")]
         internal ParserDict Local = null;
+        [DataMember(Name = "disable")]
+        internal ParserDict Disable = null;
         [DataMember(Name = "position")]
         internal ParserDict Position = null;
         [DataMember(Name = "category")]

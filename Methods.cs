@@ -511,7 +511,7 @@ namespace PoeTradeSearch
                                             }
                                         }
 
-                                        if (RS.lDisable.ContainsKey(split_id[1]))
+                                        if (Array.Find(mParser.Disable.Entries, x => x.Id.Equals(split_id[1])) != null)
                                         {
                                             (FindName("tbOpt" + k + "_2") as CheckBox).IsChecked = false;
                                             (FindName("tbOpt" + k + "_2") as CheckBox).IsEnabled = false;

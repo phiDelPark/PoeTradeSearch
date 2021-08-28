@@ -1,6 +1,5 @@
 ﻿{
 	"local":{
-		"text":[ "특정", "Local" ],
 		"entries":[
 			{ "id":"stat_210067635", "key":"weapon" }, { "id":"stat_691932474", "key":"weapon" }, { "id":"stat_3885634897", "key":"weapon" },
 			{ "id":"stat_2223678961", "key":"weapon" }, { "id":"stat_1940865751", "key":"weapon" }, { "id":"stat_3336890334", "key":"weapon" },
@@ -9,7 +8,14 @@
 			{ "id":"stat_4052037485", "key":"armour" }, { "id":"stat_4015621042", "key":"armour" }, { "id":"stat_124859000", "key":"armour" },
 			{ "id":"stat_53045048", "key":"armour" }, { "id":"stat_1062208444", "key":"armour" }, { "id":"stat_3484657501", "key":"armour" },
 			{ "id":"stat_3321629045", "key":"armour" }, { "id":"stat_1999113824", "key":"armour" }, { "id":"stat_2451402625", "key":"armour" },
-			{ "id":"stat_3523867985", "key":"armour" }
+			{ "id":"stat_3523867985", "key":"armour" },
+			{ "id":"stat_1001829678", "key":"weapon" }, { "id":"stat_2881111359", "key":"__none__" },{ "id":"stat_57434274", "key":"map" }
+		]
+	},
+
+	"disable":{
+		"entries":[
+			{ "id":"stat_144887967", "key":"armour" }
 		]
 	},
 

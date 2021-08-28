@@ -597,7 +597,7 @@ namespace PoeTradeSearch
             if (msg == Native.WM_DRAWCLIPBOARD && !mCustomRunKey && !mPausedHotKey)
             {
 #if DEBUG
-                test123(); // 체크 베이스 설정및 일반,인첸 유사 별로, 강탈 가치 자동 선택
+                test123();
                 if (true)
 #else
                 if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
