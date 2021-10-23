@@ -6,7 +6,7 @@
         "auto_select_corrupt": "no or yes",
         "auto_select_pseudo": true,
         "check_updates": true,
-        "league": "Expedition",
+        "league": "Scourge",
         "search_auto_delay": 0,
         "search_before_day": 7,
         "search_list_count": 20,
