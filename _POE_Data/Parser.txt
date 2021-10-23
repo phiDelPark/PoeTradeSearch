@@ -73,6 +73,22 @@
 			{"id":"master-sextant","hidden":false,"text":[ "각성한 육분의", "Awakened Sextant" ]},
 			{"id":"elevated-sextant","hidden":false,"text":[ "고양된 육분의", "elevated-sextant" ]},
 
+			{"id":"crusaders-exalted-orb","hidden":true,"text":[ "십자군의 엑잘티드 오브", "Crusader's Exalted Orb" ]},
+			{"id":"redeemers-exalted-orb","hidden":true,"text":[ "대속자의 엑잘티드 오브", "Redeemer's Exalted Orb" ]},
+			{"id":"hunters-exalted-orb","hidden":true,"text":[ "사냥꾼의 엑잘티드 오브", "Hunter's Exalted Orb" ]},
+			{"id":"warlords-exalted-orb","hidden":true,"text":[ "전쟁군주의 엑잘티드 오브", "Warlord's Exalted Orb" ]},
+
+			{"id":"awakeners-orb","hidden":true,"text":[ "각성자의 오브", "Awakener's Orb" ]},
+			{"id":"tempering-orb","hidden":true,"text":[ "단조 오브", "Tempering Orb" ]},
+			{"id":"tailoring-orb","hidden":true,"text":[ "재단 오브", "Tailoring Orb" ]},
+
+			{"id":"veiled-chaos-orb","hidden":true,"text":[ "장막의 카오스 오브", "Veiled Chaos Orb" ]},
+			{"id":"enkindling-orb","hidden":true,"text":[ "자극의 오브", "Enkindling Orb" ]},
+			{"id":"instilling-orb","hidden":true,"text":[ "주입의 오브", "Instilling Orb" ]},
+
+			{"id":"prime-regrading-lens","hidden":true,"text":[ "1차 재보정 렌즈", "Prime Regrading Lens" ]},
+			{"id":"secondary-regrading-lens","hidden":true,"text":[ "2차 재보정 렌즈", "Secondary Regrading Lens" ]},
+
 			{"id":"ancient-shard","hidden":true,"text":[ "고대의 파편", "Ancient Shard" ]},
 			{"id":"engineers-shard","hidden":true,"text":[ "기술자의 파편", "Engineer's Shard" ]},
 			{"id":"harbingers-shard","hidden":true,"text":[ "선구자의 파편", "Harbinger's Shard" ]},

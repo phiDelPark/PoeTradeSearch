@@ -597,7 +597,7 @@ namespace PoeTradeSearch
             if (msg == Native.WM_DRAWCLIPBOARD && !mCustomRunKey && !mPausedHotKey)
             {
 #if DEBUG
-                test123();
+                //test123();
                 if (true)
 #else
                 if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
