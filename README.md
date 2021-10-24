@@ -9,7 +9,7 @@ POE 거래소 검색 (한글/영문)
 
 ### 개발환경:
 * 윈도우 10, POE 창 모드<br>
-* 윈도우 7 은 프레임워크 버전 4.6 이상 필요, [설치법 보러가기↗](https://github.com/phiDelPark/PoeTradeSearch/wiki/Windows-7)
+* 윈도우 7 은 프레임워크 버전 4.8 이상 필요, [설치법 보러가기↗](https://github.com/phiDelPark/PoeTradeSearch/wiki/Windows-7)
 
 ### 사용:
 * 인게임 아이템 위에서 Ctrl+C 하면 검색창이 뜹니다.
