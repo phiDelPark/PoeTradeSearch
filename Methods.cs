@@ -431,7 +431,7 @@ namespace PoeTradeSearch
                                         string[] split_id = filter.Id.Split('.');
                                         Dictionary<string, SolidColorBrush> color = new Dictionary<string, SolidColorBrush>()
                                         {
-                                            { "implicit", Brushes.DarkRed }, { "crafted", Brushes.Blue }, { "enchant", Brushes.Blue }
+                                            { "implicit", Brushes.DarkRed }, { "crafted", Brushes.Blue }, { "enchant", Brushes.Blue }, { "scourge", Brushes.DarkOrange }
                                         };
 
                                         SetFilterObjectColor(k, color.ContainsKey(ft_type) ? color[ft_type] : SystemColors.ActiveBorderBrush);
@@ -449,14 +449,14 @@ namespace PoeTradeSearch
                                         }
                                         else
                                         {
-                                            (FindName("cbOpt" + k) as ComboBox).SelectedValue = RS.lFilterType.ContainsKey(ft_type) ? RS.lFilterType[ft_type] : "_none_";
+                                            string tmp_type = !local_exists && mConfig.Options.AutoSelectPseudo ? "pseudo" : ft_type;
+                                            (FindName("cbOpt" + k) as ComboBox).SelectedValue = RS.lFilterType.ContainsKey(tmp_type) ? RS.lFilterType[tmp_type] : "_none_";
+
                                             if ((FindName("cbOpt" + k) as ComboBox).SelectedValue == null)
                                             {
-                                                foreach (string type in new string[] {
-                                                !local_exists && mConfig.Options.AutoSelectPseudo ? "pseudo" : "explicit", "explicit", "fractured"
-                                            })
+                                                foreach (string type in new string[] { ft_type, "explicit", "fractured" })
                                                 {
-                                                    (FindName("cbOpt" + k) as ComboBox).SelectedValue = RS.lFilterType[type];
+                                                    (FindName("cbOpt" + k) as ComboBox).SelectedValue = RS.lFilterType.ContainsKey(type) ? RS.lFilterType[type] : "_none_";
                                                     if ((FindName("cbOpt" + k) as ComboBox).SelectedValue != null) break;
                                                 }
                                             }
