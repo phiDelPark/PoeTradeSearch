@@ -269,7 +269,7 @@ namespace PoeTradeSearch
             return dps;
         }
 
-        internal string SendHTTP(string entity, string urlString, int timeout = 5)
+        internal string SendHTTP(string entity, string urlString, int timeout = 5, Cookie cookie = null)
         {
             string result = "";
 
@@ -297,6 +297,7 @@ namespace PoeTradeSearch
                 {
                     HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(urlString));
                     request.CookieContainer = new CookieContainer();
+                    if (cookie != null) request.CookieContainer.Add(cookie);
                     request.UserAgent = RS.UserAgent;
                     request.Timeout = timeout * 1000;
 

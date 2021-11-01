@@ -117,6 +117,9 @@
     <Compile Include="WinSetting.xaml.cs">
       <DependentUpon>WinSetting.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WinStash.xaml.cs">
+      <DependentUpon>WinStash.xaml</DependentUpon>
+    </Compile>
     <Page Include="HotkeyBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -146,6 +149,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WinSetting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WinStash.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

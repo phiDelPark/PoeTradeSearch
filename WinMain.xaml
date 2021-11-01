@@ -36,7 +36,15 @@
 
         <TextBlock Name="cbPriceListTotal" Text="0" TextAlignment="Right" HorizontalAlignment="Left" Margin="285,59,0,0" VerticalAlignment="Top" Width="96" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Visibility="Hidden" />
 
-        <Button Content="Wiki"  HorizontalAlignment="Left" Height="20" Margin="335,1,0,0" VerticalAlignment="Top" Width="50" Click="Button_Click_4" >
+        <Button Content="창고"  HorizontalAlignment="Left" Height="20" Margin="280,1,0,0" VerticalAlignment="Top" Width="50" Click="Button_Click_2" >
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="9"/>
+                </Style>
+            </Button.Resources>
+        </Button>
+        
+        <Button Content="위키"  HorizontalAlignment="Left" Height="20" Margin="335,1,0,0" VerticalAlignment="Top" Width="50" Click="Button_Click_4" >
             <Button.Resources>
                 <Style TargetType="Border">
                     <Setter Property="CornerRadius" Value="9"/>
@@ -49,7 +57,7 @@
         <Button Name="btnSearch" Content="거래소에서 찾기" HorizontalAlignment="Left" Margin="0,460,0,-5" VerticalAlignment="Top" Width="260" Height="38" Click="Button_Click" />
         <Button Name="btnClose" Content="닫기" HorizontalAlignment="Left" Margin="285,460,0,-5" VerticalAlignment="Top" Width="100" Height="38" Click="Button_Click_1" IsDefault="True" FontWeight="Bold" />
 
-        <TabControl Name="tabControl1" BorderThickness="0 1" HorizontalAlignment="Left" Height="372" Margin="0,77,0,0" VerticalAlignment="Top" Width="385" TabStripPlacement="Bottom" SelectionChanged="tabControl1_SelectionChanged">
+        <TabControl Name="tabControl1" BorderThickness="0,1" HorizontalAlignment="Left" Height="372" Margin="0,77,0,0" VerticalAlignment="Top" Width="385" TabStripPlacement="Bottom" SelectionChanged="tabControl1_SelectionChanged">
             <TabControl.Resources>
                 <Style TargetType="TabPanel">
                     <Setter Property="HorizontalAlignment" Value="Right"/>

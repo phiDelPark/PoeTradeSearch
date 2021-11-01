@@ -375,6 +375,8 @@ namespace PoeTradeSearch
 
         private void tabControl1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (!(e.Source is TabControl)) return;
+
             if (tabControl1.SelectedIndex == 1)
             {
                 cbPriceListTotal.Visibility = Visibility.Visible;
@@ -409,6 +411,12 @@ namespace PoeTradeSearch
                 }
                 */
             }
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            WinStash WinStash = new WinStash();
+            WinStash.ShowDialog();
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
@@ -597,14 +605,15 @@ namespace PoeTradeSearch
             if (msg == Native.WM_DRAWCLIPBOARD && !mCustomRunKey && !mPausedHotKey)
             {
 #if DEBUG
-                //test123();
                 if (true)
-#else
+#else                
+
                 if (Native.GetForegroundWindow().Equals(Native.FindWindow(RS.PoeClass, RS.PoeCaption)))
 #endif
                 {
                     ClipboardParser();
                 }
+                //else if (test123()) return IntPtr.Zero;
 
             }
             else if (msg == Native.WM_CHANGECBCHAIN)

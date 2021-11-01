@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace PoeTradeSearch
 {
@@ -101,5 +103,10 @@ namespace PoeTradeSearch
         }
 
         #endregion
+
+        public static void BInvoke(this FrameworkElement sender, Delegate method)
+        {
+            sender.Dispatcher.BeginInvoke(DispatcherPriority.Background, method);
+        }
     }
 }

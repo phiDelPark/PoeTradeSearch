@@ -12,7 +12,7 @@ namespace PoeTradeSearch
     /// </summary>
     public partial class WinPopup : Window
     {
-        string JpgPath = "";
+        private string JpgPath = "";
 
         public WinPopup(string jpgPath)
         {
