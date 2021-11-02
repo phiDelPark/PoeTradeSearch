@@ -614,7 +614,7 @@ namespace PoeTradeSearch
                 {
                     ClipboardParser();
                 }
-                else if (test123()) return IntPtr.Zero;
+                //else if (test123()) return IntPtr.Zero;
 
             }
             else if (msg == Native.WM_CHANGECBCHAIN)
