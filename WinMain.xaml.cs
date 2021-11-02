@@ -724,7 +724,7 @@ namespace PoeTradeSearch
                                         for (int i = 0; i < strs.Length; i++)
                                         {
                                             SetClipText(strs[i], TextDataFormat.UnicodeText);
-                                            WaitClipText();
+                                            //WaitClipText();
                                             System.Windows.Forms.SendKeys.SendWait("{enter}");
                                             System.Windows.Forms.SendKeys.SendWait("^{a}");
                                             System.Windows.Forms.SendKeys.SendWait("^{v}");

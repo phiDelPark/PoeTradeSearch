@@ -73,9 +73,9 @@
             "value": "{LINK}https:\/\/poe.ninja\/{LINK}"
         },
         {
-            "keycode": 114,
+            "keycode": 0,
             "modifiers": 0,
-            "value": "{ENTER}\/한글되니?{ENTER}"
+            "value": ""
         }
     ]
 }

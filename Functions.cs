@@ -398,15 +398,16 @@ namespace PoeTradeSearch
                     {
                         //Clipboard.Clear();
                         Clipboard.SetText(text, textDataFormat);
-                        return;
+                        break;
                     }
                     catch { }
-                    Thread.Sleep(10);
+                    Thread.Sleep(100);
                 }
             });
             ClipboardThread.SetApartmentState(ApartmentState.STA);
-            ClipboardThread.IsBackground = false;
+            //ClipboardThread.IsBackground = false;
             ClipboardThread.Start();
+            ClipboardThread.Join();
         }
 
         private void WaitClipText()
