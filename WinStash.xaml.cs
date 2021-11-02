@@ -193,6 +193,9 @@ namespace PoeTradeSearch
                             NinjaData ninja = Json.Deserialize<NinjaData>(@_NinjaJson[index]);
                             Stash stash = Json.Deserialize<Stash>(json);
 
+                            string[] cates = { "cards", "currency", "currency" };
+                            int cate_idx = Array.FindIndex(winMain.mItems[0].Result, x => x.Id.Equals(cates[index]));
+
                             lbStashItem.BInvoke((ThreadStart)delegate ()
                             {
                                 foreach (NinjaLine line in ninja.lines)
@@ -200,8 +203,10 @@ namespace PoeTradeSearch
                                     StashItem item = Array.Find(stash.Items, x => x.name.Equals(line.name));
                                     if (item != null && line.chaosValue > 1)
                                     {
-                                        string tmpname = line.name;
                                         string tmpvalue = line.chaosValue > 200 ? line.exaltedValue.ToString() + "ex" : line.chaosValue.ToString() + "ca";
+
+                                        int item_idx = Array.FindIndex(winMain.mItems[1].Result[cate_idx].Entries, x => (x.Text == line.name));
+                                        string tmpname = item_idx == -1 ? line.name : winMain.mItems[0].Result[cate_idx].Entries[item_idx].Text;
                                         list.Add(new LstItem() { name = tmpname, value = tmpvalue });
                                     }
                                 }

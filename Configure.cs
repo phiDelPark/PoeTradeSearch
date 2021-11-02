@@ -72,8 +72,8 @@ namespace PoeTradeSearch
         private ParserData mParser;
         //private ModsDict mMods;
 
-        private FilterData[] mItems = new FilterData[2];
         private FilterData[] mStatic = new FilterData[2];
+        internal FilterData[] mItems = new FilterData[2];
         internal FilterData[] mFilter = new FilterData[2];
 
         internal bool Setting()

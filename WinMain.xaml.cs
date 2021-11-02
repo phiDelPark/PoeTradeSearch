@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -711,22 +712,7 @@ namespace PoeTradeSearch
                                         mShowWiki = valueLower.IndexOf("{wiki}") == 0;
                                         System.Windows.Forms.SendKeys.SendWait("^{c}");
 
-                                        //클립 데이터가 들어올때까지 대기...
-                                        Thread thread = new Thread(() =>
-                                        {
-                                            for (int i = 0; i < 99; i++)
-                                            {
-                                                if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
-                                                {
-                                                    break;
-                                                }
-                                                Thread.Sleep(100);
-                                            }
-                                        });
-                                        thread.SetApartmentState(ApartmentState.STA);
-                                        thread.Start();
-                                        thread.Join();
-
+                                        WaitClipText();
                                         ClipboardParser();
                                     }
                                     else if (valueLower.IndexOf("{enter}") == 0)
@@ -737,13 +723,13 @@ namespace PoeTradeSearch
 
                                         for (int i = 0; i < strs.Length; i++)
                                         {
-                                            //SetClipText(strs[i], TextDataFormat.UnicodeText);
+                                            SetClipText(strs[i], TextDataFormat.UnicodeText);
+                                            WaitClipText();
                                             System.Windows.Forms.SendKeys.SendWait("{enter}");
                                             System.Windows.Forms.SendKeys.SendWait("^{a}");
-                                            //System.Windows.Forms.SendKeys.SendWait("^{v}");
-                                            System.Windows.Forms.SendKeys.SendWait(strs[i]);
+                                            System.Windows.Forms.SendKeys.SendWait("^{v}");
                                             System.Windows.Forms.SendKeys.SendWait("{enter}");
-                                            Thread.Sleep(500);
+                                            Thread.Sleep(300);
                                         }
                                     }
                                     else if (valueLower.IndexOf("{link}") == 0)
@@ -758,7 +744,7 @@ namespace PoeTradeSearch
                                         IntPtr pHwnd = Native.FindWindow(null, Title + " - " + "{grid:stash}");
                                         if (pHwnd.ToInt32() != 0)
                                         {
-                                            Native.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
+                                            Native.SendMessage(pHwnd, /* WM_CLOSE */ 0x10, IntPtr.Zero, IntPtr.Zero);
                                         }
                                         else
                                         {
@@ -771,7 +757,7 @@ namespace PoeTradeSearch
                                     {
                                         IntPtr pHwnd = Native.FindWindow(null, "특수 창고 검색");
                                         if (pHwnd.ToInt32() != 0)
-                                            Native.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
+                                            Native.SendMessage(pHwnd, /* WM_CLOSE */ 0x10, IntPtr.Zero, IntPtr.Zero);
 
                                         WinStash WinStash = new WinStash();
                                         WinStash.Show();
@@ -780,7 +766,7 @@ namespace PoeTradeSearch
                                     {
                                         IntPtr pHwnd = Native.FindWindow(null, POPUP_WINDOW_TITLE);
                                         if (pHwnd.ToInt32() != 0)
-                                            Native.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
+                                            Native.SendMessage(pHwnd, /* WM_CLOSE */ 0x10, IntPtr.Zero, IntPtr.Zero);
 
                                         WinPopup winPopup = new WinPopup(shortcut.Value);
                                         winPopup.WindowStartupLocation = WindowStartupLocation.Manual;

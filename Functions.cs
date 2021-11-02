@@ -396,6 +396,7 @@ namespace PoeTradeSearch
                 {
                     try
                     {
+                        //Clipboard.Clear();
                         Clipboard.SetText(text, textDataFormat);
                         return;
                     }
@@ -406,6 +407,23 @@ namespace PoeTradeSearch
             ClipboardThread.SetApartmentState(ApartmentState.STA);
             ClipboardThread.IsBackground = false;
             ClipboardThread.Start();
+        }
+
+        private void WaitClipText()
+        {
+            //클립 데이터가 들어올때까지 대기...
+            Thread thread = new Thread(() =>
+            {
+                for (int i = 0; i < 99; i++)
+                {
+                    if (Clipboard.ContainsText(TextDataFormat.UnicodeText) || Clipboard.ContainsText(TextDataFormat.Text))
+                        break;
+                    Thread.Sleep(100);
+                }
+            });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
         }
 
         private void ForegroundMessage(string message, string caption, MessageBoxButton button, MessageBoxImage icon)
