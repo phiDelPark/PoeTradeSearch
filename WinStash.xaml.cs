@@ -155,8 +155,8 @@ namespace PoeTradeSearch
             if ((e != null && !(e.Source is TabControl)) || @_Stash == null) return;
 
             List<LstItem> list = new List<LstItem>();
-            lbStashItem.ItemsSource = list;
-            //lbStashItem.ItemsSource = null;
+            lbStashItem.ItemsSource = null;
+            (btRefresh.Parent as Grid).Visibility = Visibility.Visible;
 
             int index = tcStash.SelectedIndex;
             WinMain winMain = (WinMain)Application.Current.MainWindow;
@@ -166,6 +166,11 @@ namespace PoeTradeSearch
 
             Thread thread = new Thread(() =>
             {
+                btRefresh.BInvoke((ThreadStart)delegate ()
+                {
+                    btRefresh.Content = ".....";
+                });
+
                 string[] types = { "DivinationCardStash", "DelveStash", "EssenceStash" };
                 StashTab stashtab = Array.Find(@_Stash.Tabs, x => x.type.Equals(types[index]));
 
@@ -200,6 +205,8 @@ namespace PoeTradeSearch
                                         list.Add(new LstItem() { name = tmpname, value = tmpvalue });
                                     }
                                 }
+
+                                btRefresh.Content = btRefresh.Content.Equals(".....") ? "..." : ".....";
                             });
                         }
                     }
@@ -208,10 +215,17 @@ namespace PoeTradeSearch
                 (btRefresh.Parent as Grid).BInvoke((ThreadStart)delegate ()
                 {
                     (btRefresh.Parent as Grid).Visibility = list.Count == 0 ? Visibility.Visible : Visibility.Hidden;
+                    btRefresh.Content = "새로 고침";
+                    lbStashItem.ItemsSource = list;
                 });
             });
             thread.Start();
-            thread.Join();
+            //thread.Join();
+        }
+
+        private void TextBlock_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/phiDelPark/PoeTradeSearch/wiki/POESESSID");
         }
     }
 }

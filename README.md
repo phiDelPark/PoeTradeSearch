@@ -43,9 +43,9 @@ POE 거래소 검색 (한글/영문)
             {"keycode":113,"value":"{Enter}/hideout{Enter}"},     // F2.  은신처 ("{Enter}채팅명령어{Enter}")
             {"keycode":115,"value":"{Enter}/exit{Enter}"},        // F4.  나가기
             {"keycode":116,"value":"{Enter}/remaining{Enter}"},   // F5.  남은 몬스터
-            {"keycode":117,"value":"{Grid:Stash}"},               // F6.  창고 좌표 보기
-            {"keycode":120,"value":"신디보상표.jpg"},              // F9.  데이터 폴더의 이미지 출력 (단 .jpg만 가능)
-            {"keycode":121,"value":"사원보상표.jpg"},              // F10. 주로 이렇게 POE 정보를 이미지 만들어 사용
+            {"keycode":118,"value":"신디보상표.jpg"},              // F7.  데이터 폴더의 이미지 출력 (단 .jpg만 가능)
+            {"keycode":120,"value":"{Grid:Stash}"},               // F9.  창고 좌표 보기
+            {"keycode":121,"value":"{Find:Stash}"},               // F10.  특수 창고 검색
             {"keycode":78,"modifiers":2,"value":"{Link}URL{Link}"}, // Ctrl+N. 링크열기 (기본은 닌자로 설정)
             {"keycode":72,"modifiers":2,"value":"{Wiki}"},          // Ctrl+H. 현재 선택된 아이템을 위키로 열기
             {"keycode":0,"modifiers":2,"value":"{Run}"}             // 작동키 Ctrl+C. 변경은 키코드 0을 원하는 키로 바꿈

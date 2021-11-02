@@ -8,6 +8,9 @@
         Title="특수 창고 검색" ResizeMode="NoResize" SizeToContent="WidthAndHeight" Topmost="True">
     <Grid Height="450" Width="600">
         <Grid VerticalAlignment="Top" Height="30">
+            <Label HorizontalAlignment="Left" Margin="3,0,3,3">
+                <TextBlock TextDecorations="Underline" Foreground="#FF1F00FF" FontWeight="Bold" MouseLeftButtonDown="TextBlock_MouseLeftButtonDown">도움말?</TextBlock>
+            </Label>
             <Label Content="POESESSID:" HorizontalAlignment="Right" Margin="0,0,225,0"/>
             <TextBox Text="" Name="tbSessid" Width="220" HorizontalAlignment="Left" Margin="377,3,0,3"/>
         </Grid>
@@ -44,10 +47,8 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <Grid>
-                <Label Name="lbRefresh" HorizontalContentAlignment="Center" Margin="0,80,0,200">
-                    <TextBlock TextAlignment="Center">상단에 POE 계정명을 적고 새로 고침 해주세요<LineBreak/>최소 가격이 카오스 이상일 경우에만 표시합니다</TextBlock>
-                </Label>
-                <Button Name="btRefresh" Content="새로 고침" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,140,0,0" Padding="25,5" Click="btRefresh_Click" />
+                <Label Content="상단에 POESESSID 을 적고 새로 고침 해주세요." Margin="0,40,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" />
+                <Button Name="btRefresh" Content="새로 고침" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,80,0,0" Padding="25,5" Click="btRefresh_Click" />
             </Grid>
         </Grid>
     </Grid>

@@ -416,7 +416,8 @@ namespace PoeTradeSearch
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             WinStash WinStash = new WinStash();
-            WinStash.ShowDialog();
+            WinStash.Show();
+            Close();
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
@@ -613,7 +614,7 @@ namespace PoeTradeSearch
                 {
                     ClipboardParser();
                 }
-                //else if (test123()) return IntPtr.Zero;
+                else if (test123()) return IntPtr.Zero;
 
             }
             else if (msg == Native.WM_CHANGECBCHAIN)
@@ -736,12 +737,13 @@ namespace PoeTradeSearch
 
                                         for (int i = 0; i < strs.Length; i++)
                                         {
-                                            SetClipText(strs[i], TextDataFormat.UnicodeText);
-                                            Thread.Sleep(300);
+                                            //SetClipText(strs[i], TextDataFormat.UnicodeText);
                                             System.Windows.Forms.SendKeys.SendWait("{enter}");
                                             System.Windows.Forms.SendKeys.SendWait("^{a}");
-                                            System.Windows.Forms.SendKeys.SendWait("^{v}");
+                                            //System.Windows.Forms.SendKeys.SendWait("^{v}");
+                                            System.Windows.Forms.SendKeys.SendWait(strs[i]);
                                             System.Windows.Forms.SendKeys.SendWait("{enter}");
+                                            Thread.Sleep(500);
                                         }
                                     }
                                     else if (valueLower.IndexOf("{link}") == 0)
@@ -764,6 +766,15 @@ namespace PoeTradeSearch
                                             winGrid.Title = Title + " - " + "{grid:stash}";
                                             winGrid.Show();
                                         }
+                                    }
+                                    else if (valueLower.IndexOf("{find:stash}") == 0)
+                                    {
+                                        IntPtr pHwnd = Native.FindWindow(null, "특수 창고 검색");
+                                        if (pHwnd.ToInt32() != 0)
+                                            Native.SendMessage(pHwnd, /* WM_CLOSE = */ 0x10, IntPtr.Zero, IntPtr.Zero);
+
+                                        WinStash WinStash = new WinStash();
+                                        WinStash.Show();
                                     }
                                     else if (valueLower.IndexOf(".jpg") > 0)
                                     {

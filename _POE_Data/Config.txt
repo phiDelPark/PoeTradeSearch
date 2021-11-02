@@ -50,17 +50,22 @@
         {
             "keycode": 117,
             "modifiers": 0,
-            "value": "{GRID:STASH} 창고 좌표 보기"
+            "value": "Temple_0.jpg"
         },
         {
-            "keycode": 120,
+            "keycode": 118,
             "modifiers": 0,
             "value": "Syndicate_0.jpg"
         },
         {
+            "keycode": 120,
+            "modifiers": 0,
+            "value": "{GRID:STASH} 창고 좌표 보기"
+        },
+        {
             "keycode": 121,
             "modifiers": 0,
-            "value": "Temple_0.jpg"
+            "value": "{FIND:STASH} 특수 창고 검색"
         },
         {
             "keycode": 78,
