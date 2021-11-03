@@ -728,8 +728,9 @@ namespace PoeTradeSearch
                                             if (tmp == "") System.Windows.Forms.SendKeys.SendWait("^{a}");
                                             //System.Windows.Forms.SendKeys.SendWait("^{v}");
                                             SendInputUTF16(strs[i]);
+                                            Thread.Sleep(10);
                                             System.Windows.Forms.SendKeys.SendWait("{enter}");
-                                            Thread.Sleep(300);
+                                            Thread.Sleep(500);
                                         }
                                     }
                                     else if (valueLower.IndexOf("{link}") == 0)

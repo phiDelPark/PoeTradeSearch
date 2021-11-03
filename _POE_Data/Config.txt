@@ -48,11 +48,6 @@
             "value": "{ENTER}\/remaining{ENTER}"
         },
         {
-            "keycode": 117,
-            "modifiers": 0,
-            "value": "Temple_0.jpg"
-        },
-        {
             "keycode": 118,
             "modifiers": 0,
             "value": "Syndicate_0.jpg"
@@ -71,6 +66,11 @@
             "keycode": 78,
             "modifiers": 2,
             "value": "{LINK}https:\/\/poe.ninja\/{LINK}"
+        },
+        {
+            "keycode": 0,
+            "modifiers": 0,
+            "value": "^{ENTER}thank you for trade{ENTER}"
         },
         {
             "keycode": 0,
