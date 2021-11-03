@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -723,11 +722,11 @@ namespace PoeTradeSearch
 
                                         for (int i = 0; i < strs.Length; i++)
                                         {
-                                            SetClipText(strs[i], TextDataFormat.UnicodeText);
-                                            //WaitClipText();
+                                            //SetClipText(strs[i], TextDataFormat.UnicodeText);
                                             System.Windows.Forms.SendKeys.SendWait("{enter}");
                                             System.Windows.Forms.SendKeys.SendWait("^{a}");
-                                            System.Windows.Forms.SendKeys.SendWait("^{v}");
+                                            //System.Windows.Forms.SendKeys.SendWait("^{v}");
+                                            SendInputUTF16(strs[i]);
                                             System.Windows.Forms.SendKeys.SendWait("{enter}");
                                             Thread.Sleep(300);
                                         }

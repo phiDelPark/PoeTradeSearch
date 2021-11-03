@@ -14,22 +14,23 @@ namespace PoeTradeSearch
 {
     internal static class Native
     {
-        [DllImport("user32.dll")] internal static extern IntPtr SetClipboardViewer(IntPtr hWnd);
+        [DllImport("kernel32")] internal static extern uint GetLastError();
+        [DllImport("user32")] internal static extern IntPtr SetClipboardViewer(IntPtr hWnd);
 
-        [DllImport("user32.dll")] internal static extern bool ChangeClipboardChain(IntPtr hWnd, IntPtr hWndNext);
+        [DllImport("user32")] internal static extern bool ChangeClipboardChain(IntPtr hWnd, IntPtr hWndNext);
 
         internal const int WM_DRAWCLIPBOARD = 0x0308;
         internal const int WM_CHANGECBCHAIN = 0x030D;
 
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)] internal static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        [DllImport("user32", CharSet = CharSet.Unicode)] internal static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)] internal static extern IntPtr FindWindowEx(IntPtr parenthWnd, IntPtr childAfter, string lpClassName, string lpWindowName);
+        [DllImport("user32", CharSet = CharSet.Unicode)] internal static extern IntPtr FindWindowEx(IntPtr parenthWnd, IntPtr childAfter, string lpClassName, string lpWindowName);
 
-        [DllImport("user32.dll")] internal static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+        [DllImport("user32")] internal static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll")] internal static extern IntPtr GetForegroundWindow();
+        [DllImport("user32")] internal static extern IntPtr GetForegroundWindow();
 
-        [DllImport("user32.dll")] internal static extern bool SetForegroundWindow(IntPtr hWnd);
+        [DllImport("user32")] internal static extern bool SetForegroundWindow(IntPtr hWnd);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
@@ -39,9 +40,9 @@ namespace PoeTradeSearch
             public int Right;       // x position of lower-right corner
             public int Bottom;      // y position of lower-right corner
         }
-        [DllImport("user32.dll")] internal static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-        [DllImport("user32.dll")] internal static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
-        [DllImport("user32.dll")] internal static extern bool ClientToScreen(IntPtr hWnd, ref Point lpPoint);
+        [DllImport("user32")] internal static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+        [DllImport("user32")] internal static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+        [DllImport("user32")] internal static extern bool ClientToScreen(IntPtr hWnd, ref Point lpPoint);
 
         internal const int GWL_STYLE = -16;
         internal const int GWL_EXSTYLE = -20;
@@ -50,32 +51,85 @@ namespace PoeTradeSearch
         internal const int WS_EX_NOACTIVATE = 0x08000000;
         internal const int WS_EX_CONTEXTHELP = 0x00000400;
 
-        [DllImport("user32.dll")] internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+        [DllImport("user32")] internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
-        [DllImport("user32.dll")] internal static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+        [DllImport("user32")] internal static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
-        [DllImport("user32.dll")] internal static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
+        [DllImport("user32")] internal static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
 
-        [DllImport("user32.dll")] internal static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+        [DllImport("user32")] internal static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
         /*
         [DllImport("user32.dll")] internal static extern uint GetWindowThreadProcessId(IntPtr hwnd, IntPtr proccess);
         [DllImport("user32.dll")] internal static extern IntPtr GetKeyboardLayout(uint thread);
         */
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] internal static extern IntPtr GetModuleHandle(string lpModuleName);
+        [DllImport("kernel32", CharSet = CharSet.Unicode)] internal static extern IntPtr GetModuleHandle(string lpModuleName);
 
         internal const int WH_MOUSE_LL = 14;
 
         internal delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll")] internal static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
+        [DllImport("user32")] internal static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
 
-        [DllImport("user32.dll")] internal static extern bool UnhookWindowsHookEx(IntPtr hhk);
+        [DllImport("user32")] internal static extern bool UnhookWindowsHookEx(IntPtr hhk);
 
-        [DllImport("user32.dll")] internal static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+        [DllImport("user32")] internal static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll")] internal static extern short GetKeyState(int nVirtKey);
+        [DllImport("user32")] internal static extern short GetKeyState(int nVirtKey);
+
+        internal const int INPUT_KEYBOARD = 1;
+        internal const uint KEYEVENTF_KEYUP = 0x0002;
+        internal const uint KEYEVENTF_UNICODE = 0x0004;
+
+        public struct INPUT
+        {
+            public int type;
+            public InputUnion u;
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        public struct InputUnion
+        {
+            [FieldOffset(0)]
+            public MOUSEINPUT mi;
+            [FieldOffset(0)]
+            public KEYBDINPUT ki;
+            [FieldOffset(0)]
+            public HARDWAREINPUT hi;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MOUSEINPUT
+        {
+            public int dx;
+            public int dy;
+            public uint mouseData;
+            public uint dwFlags;
+            public uint time;
+            public IntPtr dwExtraInfo;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct KEYBDINPUT
+        {
+            public ushort wVk;
+            public ushort wScan;
+            public uint dwFlags;
+            public uint time;
+            public IntPtr dwExtraInfo;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct HARDWAREINPUT
+        {
+            public uint uMsg;
+            public ushort wParamL;
+            public ushort wParamH;
+        }
+
+        [DllImport("user32")] internal static extern IntPtr GetMessageExtraInfo();
+        [DllImport("user32", SetLastError = true)] internal static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
     }
 
     internal static class MouseHook
@@ -425,6 +479,71 @@ namespace PoeTradeSearch
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
             thread.Join();
+        }
+
+        private void SendInputUTF16(string inputString)
+        {
+            if (string.IsNullOrEmpty(inputString))
+            { return; }
+
+            char[] chars = inputString.ToCharArray();
+            int len = chars.Length;
+
+            IntPtr ExtraInfo = Native.GetMessageExtraInfo();
+            Native.INPUT[] inputs = new Native.INPUT[len * 2];
+
+            int i = 0, idx = 0;
+            while (i < len)
+            {
+                ushort ch = chars[i++];
+
+                if ((ch < 0xD800) || (ch > 0xDFFF))
+                {
+                    for (int k = 0; k < 2; k++)
+                    {
+                        inputs[idx++] = new Native.INPUT
+                        {
+                            type = Native.INPUT_KEYBOARD,
+                            u = new Native.InputUnion
+                            {
+                                ki = new Native.KEYBDINPUT
+                                {
+                                    wVk = 0,
+                                    wScan = ch,
+                                    dwFlags = Native.KEYEVENTF_UNICODE | (k == 1 ? Native.KEYEVENTF_KEYUP : 0),
+                                    time = 0,
+                                    dwExtraInfo = ExtraInfo,
+                                }
+                            }
+                        };
+                    }
+                }
+                else
+                {
+                    ushort ch2 = chars[i++];
+
+                    for (int k = 0; k < 4; k++)
+                    {
+                        inputs[idx++] = new Native.INPUT
+                        {
+                            type = Native.INPUT_KEYBOARD,
+                            u = new Native.InputUnion
+                            {
+                                ki = new Native.KEYBDINPUT
+                                {
+                                    wVk = 0,
+                                    wScan = k % 2 == 0 ? ch : ch2,
+                                    dwFlags = Native.KEYEVENTF_UNICODE | (k > 1 ? Native.KEYEVENTF_KEYUP : 0),
+                                    time = 0,
+                                    dwExtraInfo = ExtraInfo,
+                                }
+                            }
+                        };
+                    }
+                }
+            }
+
+            Native.SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Native.INPUT)));
         }
 
         private void ForegroundMessage(string message, string caption, MessageBoxButton button, MessageBoxImage icon)
