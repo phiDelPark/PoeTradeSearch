@@ -714,17 +714,18 @@ namespace PoeTradeSearch
                                         WaitClipText();
                                         ClipboardParser();
                                     }
-                                    else if (valueLower.IndexOf("{enter}") == 0)
+                                    else if (valueLower.IndexOf("{enter}") == 0 || valueLower.IndexOf("^{enter}") == 0)
                                     {
                                         Regex regex = new Regex(@"{enter}", RegexOptions.IgnoreCase);
-                                        string tmp = regex.Replace(shortcut.Value, "" + '\n');
-                                        string[] strs = tmp.Trim().Split('\n');
 
-                                        for (int i = 0; i < strs.Length; i++)
+                                        string[] strs = regex.Replace(shortcut.Value, "" + '\n').Trim().Split('\n');
+                                        string tmp = strs[0] == "^" ? "^" : "";
+
+                                        for (int i = (tmp == "" ? 0 : 1); i < strs.Length; i++)
                                         {
                                             //SetClipText(strs[i], TextDataFormat.UnicodeText);
-                                            System.Windows.Forms.SendKeys.SendWait("{enter}");
-                                            System.Windows.Forms.SendKeys.SendWait("^{a}");
+                                            System.Windows.Forms.SendKeys.SendWait((tmp + "{enter}"));
+                                            if (tmp == "") System.Windows.Forms.SendKeys.SendWait("^{a}");
                                             //System.Windows.Forms.SendKeys.SendWait("^{v}");
                                             SendInputUTF16(strs[i]);
                                             System.Windows.Forms.SendKeys.SendWait("{enter}");
